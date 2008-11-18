@@ -1,0 +1,24 @@
+# vtk DataFile Version 1.0
+cube
+ASCII
+DATASET UNSTRUCTURED_GRID
+POINTS 8 float
+0 0 0
+1 0 0
+0 1 0
+1 1 0
+0 0 1
+1 0 1
+0 1 1
+1 1 1
+
+CELLS 1 9
+8 0 1 2 3 4 5 6 7
+
+CELL_TYPES 1
+11
+
+POINT_DATA 8
+SCALARS ElementID int 1
+LOOKUP_TABLE default
+0 0 0 0 0 0 0 0

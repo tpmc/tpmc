@@ -1,0 +1,32 @@
+# vtk DataFile Version 3.0
+mc33 case 10.1.2
+ASCII
+DATASET UNSTRUCTURED_GRID
+POINTS 12 float
+0 0 0
+0 0 0.7
+0.6 0 0
+0 1 0
+0 1 0.6
+0.8 1 0
+
+1 1 1
+1 1 0.3
+0.4 1 1
+1 0 1
+1 0 0.4
+0.2 0 1
+
+CELLS 2 14
+6 0 1 2 3 4 5
+6 6 7 8 9 10 11
+
+CELL_TYPES 2
+13
+13
+
+POINT_DATA 12
+SCALARS ElementID int 1
+LOOKUP_TABLE default
+6 6 6 6 6 6
+7 7 7 7 7 7
