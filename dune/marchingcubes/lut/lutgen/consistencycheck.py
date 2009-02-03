@@ -1,5 +1,5 @@
-from lut.generator import Permutation
-from lut.referenceelements import *
+from lutgen.generator import Permutation
+from lutgen.referenceelements import *
 from sys import exit
 
 class Consistency(object):

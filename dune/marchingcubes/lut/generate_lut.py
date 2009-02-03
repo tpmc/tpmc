@@ -2,11 +2,11 @@
 
 from sys import exit
 
-from lut.vtk import Vtk
-from lut.generator import LookupGenerator
-#from lut.generator import GeneratorContainer
-from lut.consistencycheck import Consistency
-from lut.dunecode import DuneCode
+from lutgen.vtk import Vtk
+from lutgen.generator import LookupGenerator
+#from generator import GeneratorContainer
+from lutgen.consistencycheck import Consistency
+from lutgen.dunecode import DuneCode
 
 ################################################################################
 ## 3D Cube                                                                    ##

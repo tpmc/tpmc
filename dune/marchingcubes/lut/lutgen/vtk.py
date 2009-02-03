@@ -1,4 +1,4 @@
-from referenceelements import ReferenceElements
+from lutgen.referenceelements import ReferenceElements
 from pyvtk import *
 
 class Vtk:
