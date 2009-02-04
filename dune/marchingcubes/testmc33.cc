@@ -8,33 +8,44 @@
 #include <vector>
 #include <iostream>
 
+#include <dune/common/fvector.hh>
+
 #include "thresholdfunctor.hh"
 #include "marchingcubes.hh"
+
+
+typedef size_t sizeType;
 
 int main(int argCount, char ** argArray)
 {
   std::cout << "Test MC 33 started." << std::endl;
 
-  int vertexCount = argCount - 1;
-  double * vertices = new double[vertexCount];
+  sizeType vertexCount = argCount - 1;
+  double* vertices = new double[vertexCount];
 
-  for (int i = 0; i < vertexCount; i++)
+  for (sizeType i = 0; i < vertexCount; i++)
   {
     vertices[i] = atof(argArray[i + 1]);
+    std::cout << vertices[i] << std::endl;
   }
+
   Dune::MarchingCubesAlgorithm<double, 2, Dune::MarchingCubes::ThresholdFunctor, std::string> mc;
 
-  std::vector<std::vector<double> > * codim0 = new std::vector<std::vector<double> >();
+  std::vector<std::vector<Dune::FieldVector<double, 2> > > codim0;
 
   char * offsets = new char[5];
-
   bool isMc33case = mc.getOffsets(vertices, vertexCount, true);
-  mc.getElements(vertices, vertexCount, offsets, isMc33case, codim0);
+
+  offsets[0] = 2;
+  offsets[1] = 15;
+
+
+  mc.getElements(vertices, vertexCount, offsets, false, codim0);
 
   // Ausgabe der Ergebnisse
-  for(std::vector<std::vector<double> >::iterator i = codim0->begin(); i != codim0->end(); ++i)
+  for(std::vector<std::vector<Dune::FieldVector<double, 2> > >::iterator i = codim0.begin(); i != codim0.end(); ++i)
   {
-    for(std::vector<double>::iterator j = i->begin(); j != i->end(); ++j)
+    for(std::vector<Dune::FieldVector<double, 2> >::iterator j = i->begin(); j != i->end(); ++j)
     {
       std::cout << *j << "  ";
     }

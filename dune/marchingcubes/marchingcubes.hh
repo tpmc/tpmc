@@ -4,6 +4,7 @@
 #define MARCHING_CUBES_HH_
 
 #include "marchinglut.hh"
+#include <dune/common/fvector.hh>
 
 namespace Dune {
 
@@ -14,13 +15,15 @@ namespace Dune {
   class MarchingCubesAlgorithm {
     typedef size_t sizeType;
     typedef valueType* valueVector;
+    typedef double ctype;
+    typedef Dune::FieldVector<ctype, dim> point;
   public:
     bool getOffsets(const valueVector& vertexValues, const sizeType vertexCount,
                     const bool useMc33);
     void getElements(const valueVector& vertexValues,
                      const sizeType vertexCount, const char * offsets,
                      const bool isMc33case,
-                     const std::vector<std::vector<double> > * codim0);
+                     std::vector<std::vector<point> >& codim0);
 
   private:
     /*
@@ -33,11 +36,11 @@ namespace Dune {
 
     void getCoordsFromNumber(const valueVector& vertexValues,
                              const sizeType vertexCount, char number,
-                             valueType * coords);
+                             point& coords);
 
     void getCoordsFromEdgeNumber(const valueVector& vertexValues,
                                  const sizeType vertexCount, char number,
-                                 valueType * coords);
+                                 point& coord);
   };
 
 } // end namespace Dune

@@ -77,32 +77,32 @@ namespace Dune {
   getElements(const valueVector& vertexValues,
               const sizeType vertexCount, const char * offsets,
               const bool isMc33case,
-              const std::vector<std::vector<double> > * codim0)
+              std::vector<std::vector<point> >& codim0)
   {
     // get elements for co-dimension 0
 
     const char * index;
     if (isMc33case)
-    {
+    {         //TODO: nur eine Tabelle
       index = cube2d_mc33_cases_offsets[(int)offsets[INDEX_OFFSET_CODIM_0]];
     }
     else
     {
       index = cube2d_cases_offsets[(int)offsets[INDEX_OFFSET_CODIM_0]];
     }
-    int caseCountElements = offsets[INDEX_COUNT_CODIM_0];
-    for (int i = 0; i < caseCountElements; i++)
+    sizeType caseCountElements = offsets[INDEX_COUNT_CODIM_0];
+    codim0.resize(caseCountElements);
+    for (sizeType i = 0; i < caseCountElements; i++)
     {
-      // Number of codim 1 elements
-      int numberOfPoints = index[0];
+      sizeType numberOfElements = (sizeType) index[0];
+      // Vector for storing the element points
+      codim0[i].resize(numberOfElements);
 
-      // TODO: hier sollten vielleicht Objekte erzeugt werden
-      double *points = new double[numberOfPoints * dim];
-      for (int j = 0; j < numberOfPoints; j++)
+      // Read points from table and store them
+      for (sizeType j = 0; j < numberOfElements; j++)
       {
-        getCoordsFromNumber(vertexValues, vertexCount, index[j+1], points+(j*2));
+        getCoordsFromNumber(vertexValues, vertexCount, index[j+1], codim0[i][j]);
       }
-
     }
   }
 
@@ -120,7 +120,7 @@ namespace Dune {
   void MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::
   getCoordsFromNumber(const valueVector& vertexValues,
                       const sizeType vertexCount, char number,
-                      valueType * coords)
+                      point& coords)
   {
     // it's a center point
     if (number == EV)
@@ -169,13 +169,13 @@ namespace Dune {
   void MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::
   getCoordsFromEdgeNumber(const valueVector& vertexValues,
                           const sizeType vertexCount, char number,
-                          valueType * coords)
+                          point& coord)
   {
     number /= FACTOR_FIRST_POINT;
     // Get coordinate for each dimension. It is either 0 or 1.
     for (sizeType d = 0; d < dim; d++)
     {
-      coords[d] = (valueType) (number & 1<<d);
+      coord[d] = (ctype) (number & 1<<d);
     }
   }
 
