@@ -1,6 +1,6 @@
 # $Id: duneproject 5370 2008-11-15 17:43:24Z christi $
 
-lut_LTLIBRARIES = libmclut.la
+lib_LTLIBRARIES = libmclut.la
 
 libmclut_la_SOURCES = marchinglut.cc
 
