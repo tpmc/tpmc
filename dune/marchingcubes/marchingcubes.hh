@@ -5,6 +5,7 @@
 
 #include "marchinglut.hh"
 #include <dune/common/fvector.hh>
+#include <dune/common/float_cmp.hh>
 
 namespace Dune {
 
@@ -19,10 +20,9 @@ namespace Dune {
     typedef Dune::FieldVector<ctype, dim> point;
   public:
     bool getOffsets(const valueVector& vertexValues, const sizeType vertexCount,
-                    const bool useMc33);
+                    const bool useMc33, char * offsets);
     void getElements(const valueVector& vertexValues,
                      const sizeType vertexCount, const char * offsets,
-                     const bool isMc33case,
                      std::vector<std::vector<point> >& codim0);
 
   private:
@@ -31,8 +31,8 @@ namespace Dune {
      *
      * This test is needed to chose between ambiguous MC33 cases.
      */
-    bool testFaceIsSurface(valueType cornerA, valueType cornerB,
-                           valueType cornerC, valueType cornerD) const;
+    bool testFaceIsSurface(const valueType cornerA, const valueType cornerB,
+                           const valueType cornerC, const valueType cornerD, const bool notInverted) const;
 
     void getCoordsFromNumber(const valueVector& vertexValues,
                              const sizeType vertexCount, char number,
