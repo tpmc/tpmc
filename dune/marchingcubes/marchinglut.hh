@@ -52,12 +52,12 @@
 #define MARCHING_LUT
 
 // constants for vertex and edge numbering
-static const char NO_VERTEX = 1;
+static const char NO_VERTEX = 1<<6;
 static const char VERTEX_GO_RIGHT = 1;     // x1 = 1
 static const char VERTEX_GO_DEPTH = 2;     // x2 = 1
 static const char VERTEX_GO_UP = 4;     // x3 = 1
-static const char FACTOR_FIRST_POINT = 2;
-static const char FACTOR_SECOND_POINT = 16;
+static const char FACTOR_FIRST_POINT = 1;
+static const char FACTOR_SECOND_POINT = 8;
 // vertices start with V
 static const char VA = 0;
 static const char VB = VERTEX_GO_RIGHT;
@@ -68,20 +68,20 @@ static const char VF = VERTEX_GO_RIGHT + VERTEX_GO_UP;
 static const char VG = VERTEX_GO_DEPTH + VERTEX_GO_UP;
 static const char VH = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP;
 // edges start with E
-static const char EJ = VA * FACTOR_FIRST_POINT + VB * FACTOR_SECOND_POINT;
-static const char EK = VC * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT;
-static const char EL = VA * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT;
-static const char EM = VB * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT;
-static const char EN = VA * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT;
-static const char EO = VB * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT;
-static const char EP = VC * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT;
-static const char EQ = VD * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT;
-static const char ER = VE * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT;
-static const char ES = VG * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT;
-static const char ET = VE * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT;
-static const char EU = VF * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT;
+static const char EJ = VA * FACTOR_FIRST_POINT + VB * FACTOR_SECOND_POINT + NO_VERTEX;
+static const char EK = VC * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
+static const char EL = VA * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX;
+static const char EM = VB * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
+static const char EN = VA * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
+static const char EO = VB * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
+static const char EP = VC * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
+static const char EQ = VD * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
+static const char ER = VE * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
+static const char ES = VG * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
+static const char ET = VE * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
+static const char EU = VF * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
 // Center point is in the center of a cube or tetrahedron
-static const char EV = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT;
+static const char EV = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
 
 /* Constant indicating that this case doesn't need special treatment
  * when marching cubes' 33 is used.*/
@@ -120,8 +120,6 @@ extern "C"
    */
   extern const char cube2d_cases_offsets[][5];
 
-  extern const char cube2d_mc33_cases_offsets[][4];
-
   /*
    * Contains all lines for Cube 2D.
    * The first entry indicates the number of points that belongs
@@ -137,7 +135,7 @@ extern "C"
    *  |   |
    *  0-5-1
    */
-  extern const char cube2d_codim_1[];
+  extern const char table_cube2d_codim_1[];
 
   /*
    * Contains all lines for Cube 2D.

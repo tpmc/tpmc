@@ -62,17 +62,23 @@ extern "C" {
    *  |   |
    *  0-5-1
    */
-  const char cube2d_codim_1[30] = {
-    /* case numbers / types / array entry count */
-    /*  0, 15 /  -    /  0 */ /* no entries for these cases */
-    /*  1, 14 /  2    /  0 */ 2, 5, 7,
-    /*  2, 13 /  2    /  3 */ 2, 5, 8,
-    /*  3, 12 /  2    /  6 */ 2, 7, 8,
-    /*  4, 11 /  2    /  9 */ 2, 6, 7,
-    /*  5, 10 /  2    / 12 */ 2, 5, 6,
-    /*  6     /  2, 2 / 15 */ 2, 5, 8, 2, 6, 7,
-    /*  7,  8 /  2    / 21 */ 2, 6, 8,
-    /*  9     /  2, 2 / 15 */ 2, 5, 7, 2, 6, 8
+  const char table_cube2d_codim_1[] = {
+    /* cn: case numbers
+     * bc: basis case
+     * co: current offset */
+    /* cn     / bc  / types / co  / element count and points */
+    /*  0, 15 /   0 /  -    /  0 */ /* no entries for these cases */
+    /*  1, 14 /   1 /  2    /  0 */ 2, EJ, EL,
+    /*  2, 13 /   1 /  2    /  3 */ 2, EJ, EM,
+    /*  3, 12 /   2 /  2    /  6 */ 2, EL, EM,
+    /*  4, 11 /   1 /  2    /  9 */ 2, EK, EL,
+    /*  5, 10 /   2 /  2    / 12 */ 2, EJ, EK,
+    /*  6     / 3.1 /  2, 2 / 15 */ 2, EJ, EM, 2, EK, EL,
+    /*  7,  8 /   1 /  2    / 21 */ 2, EK, EM,
+    /*  9     / 3.1 /  2, 2 / 24 */ 2, EJ, EL, 2, EK, EM,
+    /* All cases below this line are ambiguous mc 33 cases */
+    /*  6     / 3.2 / 2, 2 / 30 */ 2, EJ, EL, 2, EK, EM,
+    /*  9     / 3.2 / 2, 2 / 36 */ 2, EJ, EM, 2, EK, EL
   };
 
   /*
@@ -90,7 +96,7 @@ extern "C" {
    *  |   |
    *  0-5-1
    */
-  const char cube2d_codim_0[100] = {
+  const char cube2d_codim_0[] = {
     /* case number / types / entry count */
     /*  0 / 4       /  0 */ 4, 0, 1, 2, 3,
     /*  1 / 3, 3, 3 /  1 */ 3, 1, 3, 2, 3, 1, 2, 7, 3, 1, 7, 5,
@@ -113,7 +119,7 @@ extern "C" {
   /*
    * TODO: Comment
    */
-  const char cube2d_mc33_codim_1[12] = {
+  const char cube2d_mc33_codim_1[] = {
     /* case number / basic case / types / entry count */
     /* 6 / 3.2 / 2, 2 / 0 */ 2, 5, 7, 2, 6, 8,
     /* 9 / 3.2 / 2, 2 / 6 */ 2, 5, 8, 2, 6, 7
@@ -122,7 +128,7 @@ extern "C" {
   /*
    * TODO: Comment
    */
-  const char cube2d_mc33_codim_0 [16] = {
+  const char cube2d_mc33_codim_0 [] = {
     /* case number / basic case / types / entry count */
     /* 6 / 3.2 / 3, 3 / 0 */ 3, VA, EJ, EL, 3, VD, EK, EM,
     /* 9 / 3.2 / 3, 3 / 8 */ 3, VB, EM, EJ, 3, VC, EL, EK
