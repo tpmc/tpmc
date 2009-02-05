@@ -5,7 +5,7 @@
 
 extern "C" {
 
-  const char cube2d_cases_offsets[][5] = {
+  const char table_cube2d_cases_offsets[][5] = {
     /* vv: vertex values D, C, B, A with 0=in, 1=out
      * cn: case number
      * bc: basic case, if negative it's inverted
@@ -14,37 +14,27 @@ extern "C" {
      * c0: element count of co-dimension 0 elements
      * o0: table offset for co-dimension 0
      * uniq: whether the case is ambiguous for MC33 */
-    /* vv      / cn / bc  /   c1 o1  c0 o0  uniq */
+    /* vv      / cn / bc  /   c1 o1  c0 o0  uniq or  */
     /* 0 0 0 0 /  0 /  0 */ {0,  0, 1,  0, UNIQUE_MC33_CASE},
     /* 0 0 0 1 /  1 /  1 */ {1,  0, 3,  0, UNIQUE_MC33_CASE},
     /* 0 0 1 0 /  2 /  1 */ {1,  3, 3,  0, UNIQUE_MC33_CASE},
     /* 0 0 1 1 /  3 /  2 */ {1,  6, 1,  0, UNIQUE_MC33_CASE},
     /* 0 1 0 0 /  4 /  1 */ {1,  9, 3,  0, UNIQUE_MC33_CASE},
     /* 0 1 0 1 /  5 /  2 */ {1, 12, 1,  0, UNIQUE_MC33_CASE},
-    /* 0 1 1 0 /  6 /  3 */ {2, 15, 2,  0, AMBIGUOUS_MC33_CASE},
+    /* 0 1 1 0 /  6 /  3 */ {2, 15, 2,  0, 0},
     /* 0 1 1 1 /  7 / -1 */ {1, 21, 1,  0, UNIQUE_MC33_CASE},
     /* 1 0 0 0 /  8 /  1 */ {1, 21, 3,  0, UNIQUE_MC33_CASE},
-    /* 1 0 0 1 /  9 /  3 */ {2, 15, 0,  0, AMBIGUOUS_MC33_CASE},
+    /* 1 0 0 1 /  9 /  3 */ {2, 15, 0,  0, 1},
     /* 1 0 1 0 / 10 /  2 */ {1, 12, 1,  0, UNIQUE_MC33_CASE},
     /* 1 0 1 1 / 11 / -1 */ {1,  9, 1,  0, UNIQUE_MC33_CASE},
     /* 1 1 0 0 / 12 /  2 */ {1,  6, 1,  0, UNIQUE_MC33_CASE},
     /* 1 1 0 1 / 13 / -1 */ {1,  3, 1,  0, UNIQUE_MC33_CASE},
     /* 1 1 1 0 / 14 / -1 */ {1,  0, 1,  0, UNIQUE_MC33_CASE},
-    /* 1 1 1 1 / 15 / -0 */ {0,  0, 0,  0, UNIQUE_MC33_CASE}    //TODO: 4. Spalte fertigmachen / übertragen
-  };
-
-  const char cube2d_mc33_cases_offsets[][4] = {
-    /* vv: vertex values D, C, B, A with 0=in, 1=out
-     * cn: case number
-     * bc: basic case, if negative it's inverted
-     * c1: element count of co-dimension 1 elements
-     * o1: table offset for co-dimension 1
-     * c0: element count of co-dimension 0 elements
-     * o0: table offset for co-dimension 0
-     * uniq: whether the case is ambiguous for MC33 */
-    /* vv      / cn / bc  /   c1 o1  c0 o0  uniq */
-    /* 0 1 1 0 /  6 / 3.2 */ {0,  0, 1,  0},
-    /* 1 0 0 1 /  9 / 3.2 */ {0,  0, 1,  0}
+    /* 1 1 1 1 / 15 / -0 */ {0,  0, 0,  0, UNIQUE_MC33_CASE},    //TODO: 4. Spalte fertigmachen / übertragen
+    /* All cases below this line are ambiguous mc 33 cases */
+    /* vv      / cn / bc  /   c1 o1  c0 o0 noUse  / row count*/
+    /* 0 1 1 0 /  6 /  3.2 */ {2, 30, 2,  0, 1},    /*  16 */
+    /* 1 0 0 1 /  9 /  3.2 */ {2, 36, 0,  0, 2}     /*  17 */
   };
 
   /*
@@ -94,9 +84,9 @@ extern "C" {
    *  |   |
    *  7   8
    *  |   |
-   *  0-5-1
+   *  0-5-1char
    */
-  const char cube2d_codim_0[] = {
+  const char table_cube2d_codim_0[] = {
     /* case number / types / entry count */
     /*  0 / 4       /  0 */ 4, 0, 1, 2, 3,
     /*  1 / 3, 3, 3 /  1 */ 3, 1, 3, 2, 3, 1, 2, 7, 3, 1, 7, 5,
@@ -114,24 +104,34 @@ extern "C" {
     /* 13 / 3       /  1 */ 3,
     /* 14 / 3       /  1 */ 3,
     /* 15 / -       /  1 */ /* no entries for this case */
-  };
 
-  /*
-   * TODO: Comment
-   */
-  const char cube2d_mc33_codim_1[] = {
-    /* case number / basic case / types / entry count */
-    /* 6 / 3.2 / 2, 2 / 0 */ 2, 5, 7, 2, 6, 8,
-    /* 9 / 3.2 / 2, 2 / 6 */ 2, 5, 8, 2, 6, 7
-  };
-
-  /*
-   * TODO: Comment
-   */
-  const char cube2d_mc33_codim_0 [] = {
+    // below this line are only MC 33 cases TODO: anpassen
     /* case number / basic case / types / entry count */
     /* 6 / 3.2 / 3, 3 / 0 */ 3, VA, EJ, EL, 3, VD, EK, EM,
     /* 9 / 3.2 / 3, 3 / 8 */ 3, VB, EM, EJ, 3, VC, EL, EK
   };
 
+  /*
+   * TODO: Kommentar (diese Tabelle gibt den Index an, an der in table_cube2d_mc33_face_test_order
+   * weitergemacht werden muss)
+   */
+  const char table_cube2d_mc33_offsets[] = {
+    /* case number / basic case / row / offset / notInverted */
+    /* 6 / 3 / 0 */ 1, 1,
+    /* 9 / 3 / 1 */ 4, 0
+  };
+
+  /*
+   * TODO: Kommentar (diese Tabelle gibt an, welche Faces getestet werden müssen. Negative
+   * Zahlen sind Face-Tests (Nummerierung Dune-typisch), 0 ist Test Zentrum, positive Zahlen
+   * sind Zeilennummern in table_cube2d_cases_offsets)
+   */
+  const short table_cube2d_mc33_face_test_order[] = {
+    /* dummy entry, not used, but the index should start with 1*/
+    1,
+    /* case number 6, basis case 3.1 or 3.2, offset 1 */
+    -1, 6, 16,
+    /* case number 9, basis case 3.1 or 3.2, offset 4 */
+    -1, 9, 17
+  };
 }

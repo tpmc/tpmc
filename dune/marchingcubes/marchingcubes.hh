@@ -6,6 +6,7 @@
 #include "marchinglut.hh"
 #include <dune/common/fvector.hh>
 #include <dune/common/float_cmp.hh>
+#include <dune/grid/common/referenceelements.hh>
 
 namespace Dune {
 
@@ -34,13 +35,16 @@ namespace Dune {
     bool testFaceIsSurface(const valueType cornerA, const valueType cornerB,
                            const valueType cornerC, const valueType cornerD, const bool notInverted) const;
 
+    sizeType getMc33case(const valueVector& vertexValues,
+                         const sizeType vertexCount, char number) const;
+
     void getCoordsFromNumber(const valueVector& vertexValues,
                              const sizeType vertexCount, char number,
-                             point& coords);
+                             point& coords) const;
 
     void getCoordsFromEdgeNumber(const valueVector& vertexValues,
                                  const sizeType vertexCount, char number,
-                                 point& coord);
+                                 point& coord) const;
   };
 
 } // end namespace Dune

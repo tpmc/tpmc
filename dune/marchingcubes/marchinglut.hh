@@ -85,11 +85,7 @@ static const char EV = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_V
 
 /* Constant indicating that this case doesn't need special treatment
  * when marching cubes' 33 is used.*/
-static const char UNIQUE_MC33_CASE = 0;
-
-/* Constant indicating that this case needs special treatment
- * when marching cubes' 33 is used.*/
-static const char AMBIGUOUS_MC33_CASE = 1;
+static const char UNIQUE_MC33_CASE = 255;
 
 /* Indices for access to cube2d_cse_offsets */
 static const int INDEX_COUNT_CODIM_1 = 0;
@@ -118,7 +114,7 @@ extern "C"
    * Basic case 2: 0 0 1 1
    * Basic case 3: 0 1 0 1
    */
-  extern const char cube2d_cases_offsets[][5];
+  extern const char table_cube2d_cases_offsets[][5];
 
   /*
    * Contains all lines for Cube 2D.
@@ -152,17 +148,18 @@ extern "C"
    *  |   |
    *  0-5-1
    */
-  extern const char cube2d_codim_0[];
+  extern const char table_cube2d_codim_0[];
 
   /*
    * TODO: Comment
    */
-  extern const char cube2d_mc33_codim_1[];
+  extern const char table_cube2d_mc33_offsets[];
 
   /*
    * TODO: Comment
    */
-  extern const char cube2d_mc33_codim_0[];
+  extern const short table_cube2d_mc33_face_test_order[];
+
 
 } // extern "C"
 

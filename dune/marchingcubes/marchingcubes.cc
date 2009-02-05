@@ -28,28 +28,58 @@ namespace Dune {
     }
 
     // Is it a marching cubes' 33 case?
-    bool isAmbiguousMc33case =
-      (cube2d_cases_offsets[caseNumber][4] == AMBIGUOUS_MC33_CASE);
-    if (isAmbiguousMc33case)
+    bool isUniqueMc33case =
+      (table_cube2d_cases_offsets[caseNumber][4] == UNIQUE_MC33_CASE);
+    // if it's not unique get the rigth one
+    if ( !isUniqueMc33case)
     {
-      // TODO: test face
-      // TODO: evaluate face test
-      // TODO: store result
+      // find face tests for the case
+      sizeType testIndex = table_cube2d_mc33_offsets[
+        (sizeType) table_cube2d_cases_offsets[caseNumber][(sizeType) INDEX_UNIQUE_CASE]] - 1;
+      // offsets to have a binary tree like behavour
+      sizeType treeOffset = 1;
 
-      offsets[0] = cube2d_cases_offsets[caseNumber][0];
-      offsets[1] = cube2d_cases_offsets[caseNumber][1];
-      offsets[2] = cube2d_cases_offsets[caseNumber][2];
-      offsets[3] = cube2d_cases_offsets[caseNumber][3];
+      // perform tests and find case number
+      int faceNumber = table_cube2d_mc33_face_test_order[testIndex + treeOffset];
+      bool notInverted = (table_cube2d_mc33_offsets[
+                            (sizeType) table_cube2d_cases_offsets[caseNumber][(sizeType) INDEX_UNIQUE_CASE] + 1] == 1);
+
+      /*GeometryType geometryType;
+         geometryType.makeQuadrilateral();
+         ReferenceElementContainer<ctype, dim> container;
+         const ReferenceElement<ctype, dim> & re = container(geometryType);*/
+      // test are never positiv, positiv values are offsets
+      while (faceNumber <= 0)
+      {
+        /* TODO: verallgemeinerten Code benutzen für Würfel
+           valueType cornerA = vertexValues[re.subEntity(faceNumber, 1, 0, dim)];
+           valueType cornerB = vertexValues[re.subEntity(faceNumber, 1, 2, dim)];
+           valueType cornerC = vertexValues[re.subEntity(faceNumber, 1, 3, dim)];
+           valueType cornerD = vertexValues[re.subEntity(faceNumber, 1, 4, dim)];
+         */
+        valueType cornerA = vertexValues[0];
+        valueType cornerB = vertexValues[1];
+        valueType cornerC = vertexValues[2];
+        valueType cornerD = vertexValues[3];
+        // test face
+        bool faceIsSurface = testFaceIsSurface(cornerA, cornerB, cornerC, cornerD, notInverted);
+
+        // calculate index position (if test is true: 2*index, otherwise: 2*index+1)
+        treeOffset *= 2;
+        treeOffset += (1 -faceIsSurface);
+        faceNumber = table_cube2d_mc33_face_test_order[testIndex + treeOffset];
+      }
+      caseNumber = faceNumber;
     }
-    else
-    {
-      offsets[0] = cube2d_cases_offsets[caseNumber][0];
-      offsets[1] = cube2d_cases_offsets[caseNumber][1];
-      offsets[2] = cube2d_cases_offsets[caseNumber][2];
-      offsets[3] = cube2d_cases_offsets[caseNumber][3];
-    }
-    printf("<Debug output> case number %d\n", caseNumber);
-    return isAmbiguousMc33case;
+
+    // store result
+    offsets[0] = table_cube2d_cases_offsets[caseNumber][0];
+    offsets[1] = table_cube2d_cases_offsets[caseNumber][1];
+    offsets[2] = table_cube2d_cases_offsets[caseNumber][2];
+    offsets[3] = table_cube2d_cases_offsets[caseNumber][3];
+
+    printf("<Debug output> case number %d (row index if mc 33 case) \n", caseNumber);
+    return isUniqueMc33case;
   }
 
   /*
@@ -80,16 +110,28 @@ namespace Dune {
       sizeType numberOfPoints = (sizeType) index[0];
       // Vector for storing the element points
       codim0[i].resize(numberOfPoints);
-      printf(" Debug vectorsize: %d\n", numberOfPoints);
+      //printf(" Debug vectorsize: %d\n", numberOfPoints);
       // Read points from table and store them
       for (sizeType j = 0; j < numberOfPoints; j++)
       {
         getCoordsFromNumber(vertexValues, vertexCount, index[j+1], codim0[i][j]);
-        printf("   Loop debug output: j %d / index %p / vertex number %d / results: %1.1f %1.1f\n", j, index, index[j+1], codim0[i][j][0], codim0[i][j][1]);
+        //              printf("   Loop debug output: j %d / index %p / vertex number %d / results: %1.1f %1.1f\n", j, index, index[j+1], codim0[i][j][0], codim0[i][j][1]);
       }
       // increase index for pointing to the next element
       index += numberOfPoints + 1;
     }
+  }
+
+  /*
+   * TODO: Kommentar schreiben
+   */
+  template <typename valueType, int dim, typename thresholdFunctor, typename baseElement>
+  typename MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::sizeType
+  MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::
+  getMc33case(const valueVector& vertexValues,
+              const sizeType vertexCount, char number) const
+  {
+    return (sizeType) 0;
   }
 
   /**
@@ -104,7 +146,7 @@ namespace Dune {
   void MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::
   getCoordsFromNumber(const valueVector& vertexValues,
                       const sizeType vertexCount, char number,
-                      point& coords)
+                      point& coords) const
   {
     // it's a center point
     if (number == EV)
@@ -131,13 +173,13 @@ namespace Dune {
       valueType interpolFactor = thresholdFunctor::getDistance(vertexValues[indexA])
                                  / (thresholdFunctor::getDistance(vertexValues[indexB])
                                     - thresholdFunctor::getDistance(vertexValues[indexA]));
-      printf("     Kante: coords %1.3f %1.3f davor indexA %d  indexB %d // %d %d\n", coords[0], coords[1], indexA, indexB, NO_VERTEX^number, number);
+      //printf("     Kante: coords %1.3f %1.3f davor indexA %d  indexB %d // %d %d\n", coords[0], coords[1], indexA, indexB, NO_VERTEX^number, number);
       // calculate interpolation point
       for (sizeType i = 0; i < dim; i++)
       {
         coords[i] = pointA[i] - interpolFactor * (pointB[i] - pointA[i]);
       }
-      printf("     Kante: coords %1.3f %1.3f / A` %1.3f B` %1.3f \n", coords[0], coords[1], thresholdFunctor::getDistance(vertexValues[indexA]), thresholdFunctor::getDistance(vertexValues[indexB]));
+      //   printf("     Kante: coords %1.3f %1.3f / A` %1.3f B` %1.3f \n", coords[0], coords[1], thresholdFunctor::getDistance(vertexValues[indexA]), thresholdFunctor::getDistance(vertexValues[indexB]));
 
     }
     // it's a vertex
@@ -159,7 +201,7 @@ namespace Dune {
   void MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::
   getCoordsFromEdgeNumber(const valueVector& vertexValues,
                           const sizeType vertexCount, char number,
-                          point& coord)
+                          point& coord) const
   {
     number /= FACTOR_FIRST_POINT;
     // Get coordinate for each dimension. It is either 0 or 1.

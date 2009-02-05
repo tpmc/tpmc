@@ -30,10 +30,10 @@ int main(int argCount, char ** argArray)
      }*/
   sizeType vertexCount = 4;
   double* vertices = new double[vertexCount];
-  vertices[0] = 0.8;
-  vertices[1] = 0.2;
-  vertices[2] = 0.8;
-  vertices[3] = -1.2;
+  vertices[0] = 0.5;
+  vertices[1] = 1.8;
+  vertices[2] = 1.9;
+  vertices[3] = 0.55;
 
   Dune::MarchingCubesAlgorithm<double, 2, Dune::MarchingCubes::ThresholdFunctor, std::string> mc;
 

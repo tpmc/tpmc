@@ -6,4 +6,4 @@ Module: dune-mc
 Version: 0.1
 Maintainer: christi@dune-project.org
 #depending on
-Depends: dune-common
+Depends: dune-common dune-grid
