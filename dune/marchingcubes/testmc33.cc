@@ -30,18 +30,34 @@ int main(int argCount, char ** argArray)
      }*/
   sizeType vertexCount = 4;
   double* vertices = new double[vertexCount];
-  vertices[0] = 0.5;
+  vertices[0] = 0.5;       // basic case 16 = mc33 case 6.2
   vertices[1] = 1.8;
   vertices[2] = 1.9;
   vertices[3] = 0.55;
+  /*vertices[0] = 0.5; //basic case 6
+     vertices[1] = 0.9;
+     vertices[2] = 0.8;
+     vertices[3] = 0.4;*/
+  /*vertices[0] = 0.9; // basic case 9
+     vertices[1] = 0.5;
+     vertices[2] = 0.4;
+     vertices[3] = 0.8;*/
+  /*vertices[0] = 1.8;
+     vertices[1] = 0.52;
+     vertices[2] = 0.55;
+     vertices[3] = 1.9;*/
+
+  std::cout << "Test data: " << vertices[0] << " " << vertices[1] << " "
+            << vertices[2] << " " << vertices[3] << " " << std::endl;
 
   Dune::MarchingCubesAlgorithm<double, 2, Dune::MarchingCubes::ThresholdFunctor, std::string> mc;
 
   std::vector<std::vector<Dune::FieldVector<double, 2> > > codim0;
 
-  char * offsets = new char[5];
-  mc.getOffsets(vertices, vertexCount, true, offsets);
-  mc.getElements(vertices, vertexCount, offsets, codim0);
+  size_t caseNumber = mc.getKey(vertices, vertexCount, true);
+  mc.getElements(vertices, vertexCount, caseNumber, codim0);
+
+  std::cout << "Case number is: " << caseNumber << std::endl;
 
   // Ausgabe der Ergebnisse
   for(std::vector<std::vector<Dune::FieldVector<double, 2> > >::iterator i = codim0.begin(); i != codim0.end(); ++i)
