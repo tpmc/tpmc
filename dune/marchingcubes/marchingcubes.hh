@@ -20,10 +20,10 @@ namespace Dune {
     typedef double ctype;
     typedef Dune::FieldVector<ctype, dim> point;
   public:
-    bool getOffsets(const valueVector& vertexValues, const sizeType vertexCount,
-                    const bool useMc33, char * offsets);
+    sizeType getKey(const valueVector& vertexValues, const sizeType vertexCount,
+                    const bool useMc33);
     void getElements(const valueVector& vertexValues,
-                     const sizeType vertexCount, const char * offsets,
+                     const sizeType vertexCount, const sizeType key,
                      std::vector<std::vector<point> >& codim0);
 
   private:

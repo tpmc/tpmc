@@ -11,9 +11,10 @@ namespace Dune {
    * \return True if the case is in the regular table, false if it's a MC33-only case.
    */
   template <typename valueType, int dim, typename thresholdFunctor, typename baseElement>
-  bool MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::
-  getOffsets(const valueVector& vertexValues, const sizeType vertexCount,
-             const bool useMc33, char * offsets)
+  typename MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::sizeType
+  MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::
+  getKey(const valueVector& vertexValues, const sizeType vertexCount,
+         const bool useMc33)
   {
     // vector containing information if vertices are inside or not
     bool *vertexInside = new bool[vertexCount];
@@ -31,7 +32,7 @@ namespace Dune {
     bool isUniqueMc33case =
       (table_cube2d_cases_offsets[caseNumber][4] == UNIQUE_MC33_CASE);
     // if it's not unique get the rigth one
-    if ( !isUniqueMc33case)
+    if (useMc33 && !isUniqueMc33case)
     {
       // find face tests for the case
       sizeType testIndex = table_cube2d_mc33_offsets[
@@ -71,15 +72,7 @@ namespace Dune {
       }
       caseNumber = faceNumber;
     }
-
-    // store result
-    offsets[0] = table_cube2d_cases_offsets[caseNumber][0];
-    offsets[1] = table_cube2d_cases_offsets[caseNumber][1];
-    offsets[2] = table_cube2d_cases_offsets[caseNumber][2];
-    offsets[3] = table_cube2d_cases_offsets[caseNumber][3];
-
-    printf("<Debug output> case number %d (row index if mc 33 case) \n", caseNumber);
-    return isUniqueMc33case;
+    return caseNumber;
   }
 
   /*
@@ -95,11 +88,12 @@ namespace Dune {
   template <typename valueType, int dim, typename thresholdFunctor, typename baseElement>
   void MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::
   getElements(const valueVector& vertexValues,
-              const sizeType vertexCount, const char * offsets,
+              const sizeType vertexCount, const sizeType key,
               std::vector<std::vector<point> >& codim0)
   {
     // get elements for co-dimension 0
 
+    const char * offsets = table_cube2d_cases_offsets[key];
     // Pointer to first element
     const char * index = table_cube2d_codim_1 + (int) offsets[INDEX_OFFSET_CODIM_1];
     // Element count
@@ -163,7 +157,8 @@ namespace Dune {
       getCoordsFromEdgeNumber(vertexValues,
                               vertexCount, (number / FACTOR_SECOND_POINT * FACTOR_FIRST_POINT), pointB);
       // get indices for point in valueVector
-      sizeType indexA, indexB;
+      sizeType indexA = 0;
+      sizeType indexB = 0;
       for (sizeType i = 0; i < dim; i++)
       {
         indexA += (sizeType) pointA[i] * (1<<i);
