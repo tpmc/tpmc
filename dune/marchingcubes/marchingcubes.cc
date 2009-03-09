@@ -10,9 +10,9 @@ namespace Dune {
    *
    * \return True if the case is in the regular table, false if it's a MC33-only case.
    */
-  template <typename valueType, int dim, typename thresholdFunctor, typename baseElement>
-  typename MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::sizeType
-  MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::
+  template <typename valueType, int dim, typename thresholdFunctor>
+  typename MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::sizeType
+  MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::
   getKey(const valueVector& vertexValues, const sizeType vertexCount,
          const bool useMc33)
   {
@@ -29,28 +29,27 @@ namespace Dune {
     }
 
     // Is it a marching cubes' 33 case?
-    bool isUniqueMc33case =
-      (table_cube2d_cases_offsets[caseNumber][4] == UNIQUE_MC33_CASE);
-    // if it's not unique get the rigth one
-    if (useMc33 && !isUniqueMc33case)
+    bool isAmiguousMc33case = (CASE_AMIGUOUS_MC33 ==
+                               table_cube2d_cases_offsets[caseNumber][4] & CASE_AMIGUOUS_MC33);
+    // if it's not unique get the right one
+    if (useMc33 && isAmiguousMc33case)
     {
       // find face tests for the case
-      sizeType testIndex = table_cube2d_mc33_offsets[
-        (sizeType) table_cube2d_cases_offsets[caseNumber][(sizeType) INDEX_UNIQUE_CASE]] - 1;
-      // offsets to have a binary tree like behavour
+      sizeType testIndex = table_cube2d_mc33_offsets[caseNumber];
+      // offsets to have a binary tree like behavior
       sizeType treeOffset = 1;
 
       // perform tests and find case number
       int faceNumber = table_cube2d_mc33_face_test_order[testIndex + treeOffset];
-      bool notInverted = (table_cube2d_mc33_offsets[
-                            (sizeType) table_cube2d_cases_offsets[caseNumber][(sizeType) INDEX_UNIQUE_CASE] + 1] == 1);
+      bool notInverted = (CASE_INVERTED == CASE_INVERTED &
+                          table_cube2d_cases_offsets[caseNumber][(sizeType) INDEX_UNIQUE_CASE]);
 
       /*GeometryType geometryType;
          geometryType.makeQuadrilateral();
          ReferenceElementContainer<ctype, dim> container;
          const ReferenceElement<ctype, dim> & re = container(geometryType);*/
-      // test are never positiv, positiv values are offsets
-      while (faceNumber <= 0)
+      // test are never positive, positive values are offsets
+      while ((faceNumber <= 0) && (faceNumber != CASE_IS_REGULAR))
       {
         /* TODO: verallgemeinerten Code benutzen für Würfel
            valueType cornerA = vertexValues[re.subEntity(faceNumber, 1, 0, dim)];
@@ -64,13 +63,15 @@ namespace Dune {
         valueType cornerD = vertexValues[3];
         // test face
         bool faceIsSurface = testFaceIsSurface(cornerA, cornerB, cornerC, cornerD, notInverted);
-
         // calculate index position (if test is true: 2*index, otherwise: 2*index+1)
         treeOffset *= 2;
-        treeOffset += (1 -faceIsSurface);
+        treeOffset += (1 - faceIsSurface);
         faceNumber = table_cube2d_mc33_face_test_order[testIndex + treeOffset];
       }
-      caseNumber = faceNumber;
+      if (faceNumber != CASE_IS_REGULAR)
+      {
+        caseNumber = faceNumber;
+      }
     }
     return caseNumber;
   }
@@ -83,33 +84,38 @@ namespace Dune {
    * smaller_inside: whether smaller values are inside the isosurface
    *
    * TODO: Datentyp, Dimension und Referenzelement (Würfel, Dreieck usw) als Templates einführen
-   * TODO: Template-Parameter für codim 0 und codim1?
    */
-  template <typename valueType, int dim, typename thresholdFunctor, typename baseElement>
-  void MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::
+  template <typename valueType, int dim, typename thresholdFunctor>
+  void MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::
   getElements(const valueVector& vertexValues,
               const sizeType vertexCount, const sizeType key,
-              std::vector<std::vector<point> >& codim0)
+              std::vector<std::vector<point> >& elements,
+              const bool codim1InstedCodim0)
   {
-    // get elements for co-dimension 0
-
     const char * offsets = table_cube2d_cases_offsets[key];
     // Pointer to first element
-    const char * index = table_cube2d_codim_1 + (int) offsets[INDEX_OFFSET_CODIM_1];
+    const char * index = table_cube2d_codim_0 + (int) offsets[INDEX_OFFSET_CODIM_0];
     // Element count
-    sizeType caseCountElements = offsets[INDEX_COUNT_CODIM_1];
-    codim0.resize(caseCountElements);
+    sizeType caseCountElements = offsets[INDEX_COUNT_CODIM_0];
+
+    if (codim1InstedCodim0)
+    {
+      index = table_cube2d_codim_1 + (int) offsets[INDEX_OFFSET_CODIM_1];
+      caseCountElements = offsets[INDEX_COUNT_CODIM_1];
+    }
+    elements.resize(caseCountElements);
+    // printf("Anzahl Elemente: %d \n", (int)caseCountElements);
     for (sizeType i = 0; i < caseCountElements; i++)
     {
       sizeType numberOfPoints = (sizeType) index[0];
       // Vector for storing the element points
-      codim0[i].resize(numberOfPoints);
-      //printf(" Debug vectorsize: %d\n", numberOfPoints);
+      elements[i].resize(numberOfPoints);
+      //printf(" Debug vectorsize: %d %d\n", (int)numberOfPoints, (int)offsets[INDEX_OFFSET_CODIM_1]);
       // Read points from table and store them
       for (sizeType j = 0; j < numberOfPoints; j++)
       {
-        getCoordsFromNumber(vertexValues, vertexCount, index[j+1], codim0[i][j]);
-        //              printf("   Loop debug output: j %d / index %p / vertex number %d / results: %1.1f %1.1f\n", j, index, index[j+1], codim0[i][j][0], codim0[i][j][1]);
+        getCoordsFromNumber(vertexValues, vertexCount, index[j+1], elements[i][j]);
+        //printf("   Loop debug output: j %d / vertex number %d / results: %1.1f %1.1f\n", (int)j, (int)index[j+1], elements[i][j][0], elements[i][j][1]);
       }
       // increase index for pointing to the next element
       index += numberOfPoints + 1;
@@ -119,9 +125,9 @@ namespace Dune {
   /*
    * TODO: Kommentar schreiben
    */
-  template <typename valueType, int dim, typename thresholdFunctor, typename baseElement>
-  typename MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::sizeType
-  MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::
+  template <typename valueType, int dim, typename thresholdFunctor>
+  typename MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::sizeType
+  MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::
   getMc33case(const valueVector& vertexValues,
               const sizeType vertexCount, char number) const
   {
@@ -136,8 +142,8 @@ namespace Dune {
    *
    * TODO: Code geht nur für Würfel, Quadrate und Linien, nicht aber für Dreiecke. Als Template implementieren
    */
-  template <typename valueType, int dim, typename thresholdFunctor, typename baseElement>
-  void MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::
+  template <typename valueType, int dim, typename thresholdFunctor>
+  void MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::
   getCoordsFromNumber(const valueVector& vertexValues,
                       const sizeType vertexCount, char number,
                       point& coords) const
@@ -192,8 +198,8 @@ namespace Dune {
    * Result will be stored to \param coords.
    *
    */
-  template <typename valueType, int dim, typename thresholdFunctor, typename baseElement>
-  void MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::
+  template <typename valueType, int dim, typename thresholdFunctor>
+  void MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::
   getCoordsFromEdgeNumber(const valueVector& vertexValues,
                           const sizeType vertexCount, char number,
                           point& coord) const
@@ -211,17 +217,24 @@ namespace Dune {
    *
    * This test is needed to chose between ambiguous MC33 cases.
    */
-  template <typename valueType, int dim, typename thresholdFunctor, typename baseElement>
-  bool MarchingCubesAlgorithm<valueType, dim, thresholdFunctor, baseElement>::
+  template <typename valueType, int dim, typename thresholdFunctor>
+  bool MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::
   testFaceIsSurface(const valueType cornerA, const valueType cornerB,
-                    const valueType cornerC, const valueType cornerD, const bool notInverted) const
+                    const valueType cornerC, const valueType cornerD,
+                    const bool notInverted) const
   {
+    // Change naming scheme to jgt-paper ones
+    double a = thresholdFunctor::getDistance(cornerA);
+    double b = thresholdFunctor::getDistance(cornerC);
+    double c = thresholdFunctor::getDistance(cornerD);
+    double d = thresholdFunctor::getDistance(cornerB);
+
     // Check A*C == B*D
-    if (FloatCmp::eq((cornerA*cornerC - cornerB*cornerD), 0.0))
+    if (FloatCmp::eq((a*c - b*d), 0.0))
     {
       return notInverted;
     }
-    // notInverted and cornerA may invert the sign
-    return ((notInverted*2 -1) * cornerA * (cornerA*cornerC - cornerB*cornerD) >= 0.0);
+    // notInverted and a may invert the sign
+    return ((notInverted*2 - 1) * a * (a*c - b*d) >= 0.0);
   }
 } // end namespace Dune

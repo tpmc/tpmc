@@ -1,3 +1,4 @@
+import math
 from referenceelements import ReferenceElements
 from sys import exit
 
@@ -38,122 +39,197 @@ constNames = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", \
     VF:"VF", VG:"VG", VH:"VH", EJ:"EJ", EK:"EK", EL:"EL", \
     EM:"EM", EN:"EN", EO:"EO", EP:"EP", EQ:"EQ", ER:"ER", \
     ES:"ES", ET:"ET", EU:"EU", EV:"EV"}
+# Constants indicating whether case special treatment when marching cubes' 33 is used.
+CASE_UNIQUE_MC33 = 0
+CASE_AMIGUOUS_MC33 = 1
+# Constants indication whether basic case is inverted.
+CASE_NOT_INVERTED = 0
+CASE_INVERTED = 2
+# Face tests
+face_tests = {-1:"FACE1", -2:"FACE2", -3:"FACE3", -4:"FACE4", \
+              5:"FACE5", -6:"FACE6", 0:"CASE_IS_REGULAR"}
 
+# Stores a table as C-Code string for marchinglut.cc
+class TableStorage:
+    def __init__(self):
+        # String contatining C-Code for the table
+        self.tablestring = ""
+        # Integer indicating the number of entries, is used for indexing from other tables
+        self.offset = 0
+    # Adds some entries to the table
+    def append(self, toAppend, numberOfNewEntries):
+        self.tablestring += toAppend
+        self.offset += numberOfNewEntries
 
+# Generates the tables, writes marchinglut.cc
 class DuneCode:
-	def __init__(self, lg):
-		self.lg = lg
-		self.referenceElement = ReferenceElements[self.lg.geometryType]
-
-	# Generate lookup table
-	def write(self, file):
-		# generate value for a point on a vertex or in the center
-		def edge(a, b):
-			# ensure a < b
-			if a > b:
-				t = a
-				a = b
-				b = t
-			# get center points
-			if a == VA and b == VH:
-				return EV
-			# points on an edge
-			try:
-				# check whether edge exists
-				self.referenceElement.edges.index(set([a,b]))
-				return a * FACTOR_FIRST_POINT + b * FACTOR_SECOND_POINT + NO_VERTEX
-			except ValueError:
-				raise ValueError, "Edge (%i,%i) does not exist in %s" % \
-					  (a,b,repr(self.lg.geometryType))
-		# returns the constant name of the point as a string given by its number
-		def getPointName(v):
-			# point is a vertex
-			if type(v) is int:
-				return constNames[v]
-			# point is on a edge or in the center
-			return constNames[edge(v[0], v[1])]
-		# Start output with arrays definitions
-		tableOffsets = "    " \
-			"const char table_%(T)s%(D)id_cases_offsets[][5] = {\n" \
-			% { "D" : self.lg.dim, "T" : self.lg.basicType } \
-			+ "     /* vv: vertex values with 0=in, 1=out\n" \
-			"      * cn: case number\n" \
-			"      * bc: basic case, if negative it's inverted\n" \
-			"      * c1: element count of co-dimension 1 elements\n" \
-			"      * o1: table offset for co-dimension 1\n" \
-			"      * c0: element count of co-dimension 0 elements\n" \
-			"      * o0: table offset for co-dimension 0\n" \
-			"      * uniq: whether the case is ambiguous for MC33 */\n" \
-			"      /* vv / cn / bc / c1, o1, c0, o0, uniq */\n"
-		tableCodim0 = "    " \
-			"const char table_%(T)s%(D)id_codim0[] = {\n" \
-			% { "D" : self.lg.dim, "T" : self.lg.basicType } \
-			+ "     /* cn: case number\n" \
-			"      * bc: basic case, if negative it's inverted\n" \
-			"      * el: elements specified by number of vertices\n" \
-			"      * cp: current position in array = offset */\n" \
-			"      /* cn / bc / el / cp */\n"
-		tableCodim1 = "    " \
-			"const char table_%(T)s%(D)id_codim1[] = {\n" \
-			% { "D" : self.lg.dim, "T" : self.lg.basicType } \
-			+ "     /* cn: case number\n" \
-			"      * bc: basic case, if negative it's inverted\n" \
-			"      * el: elements specified by number of vertices\n" \
-			"      * cp: current position in array = offset */\n" \
-			"      /* cn / bc / el / cp */\n"
-		# offset counters for arrays
-		offsetCodim0 = 0
-		offsetCodim1 = 0
-		
-		
-		# write elements into the array
-		for entry in self.lg.all_cases:
-			orientation = entry.permutation.orientation
-			# string with vertices in- and outside
-			case = ",".join(map(str, entry.case))
-			# number of new entries in tableCodimX
-			newOffsetCodim0 = 0
-			newOffsetCodim1 = 0
-			# elements in codim0 and codim1
-			elementsCodim0 = entry.faces
-			elementsCodim1 = entry.cells
-			tableCodim0 += "      /* / / / %i */ " % (offsetCodim0 + newOffsetCodim0)
-			tableCodim1 += "      /* / / / %i */ " % (offsetCodim1 + newOffsetCodim1)
-			# entries for codim0
-			if len(elementsCodim0) > 0:
-				# write all points of every element
-				for codim0 in elementsCodim0:
-					tableCodim0 += "%i, " % len(codim0)
-					tableCodim0 += "%s, " % ", ".join(map(getPointName, codim0))
-					# update offset counter
-					newOffsetCodim0 += len(codim0) + 1
-			else:
-				tableCodim0 += " /* no elements */"
-			# entries for codim1
-			if len(elementsCodim1) > 0:
-				# write all points of every element
-				for codim1 in elementsCodim1:
-					tableCodim1 += "%i, " % len(codim1)
-					tableCodim1 += "%s, " % ", ".join(map(getPointName, codim1))
-					# update offset counter
-					newOffsetCodim1 += len(codim1) + 1
-			else:
-				tableCodim1 += " /* no elements */"
-			
-			tableCodim0 += "\n"
-			tableCodim1 += "\n"
-			
-			tableOffsets = tableOffsets \
-			    + "      /* %s orientation: %i */ " % (case,orientation) \
-			    + "{%i, %i, %i, %i, %i},\n" \
-			    % (offsetCodim0, newOffsetCodim0, offsetCodim1, newOffsetCodim1, 0) #TODO: letzten Wert richtig machen
-			# update offset counters
-			offsetCodim0 += newOffsetCodim0
-			offsetCodim1 += newOffsetCodim1
-			
-		# end output with closing the array
-		tableOffsets += "    };\n"
-		tableCodim0 += "    };\n"
-		tableCodim1 += "    };\n"
-		
-		file.write(tableOffsets + "\n\n" + tableCodim0 + "\n\n" + tableCodim1 + "\n\n")
+    def __init__(self, lg):
+        self.lg = lg
+        self.referenceElement = ReferenceElements[self.lg.geometryType]
+    # Generate lookup table
+    def write(self, file):
+        # generate value for a point on a vertex or in the center
+        def edge(a, b):
+            # ensure a < b
+            if a > b:
+                t = a
+                a = b
+                b = t
+            # get center points
+            if a == VA and b == VH:
+                return EV
+            # points on an edge
+            try:
+                # check whether edge exists
+                self.referenceElement.edges.index(set([a,b]))
+                return a * FACTOR_FIRST_POINT + b * FACTOR_SECOND_POINT + NO_VERTEX
+            except ValueError:
+                raise ValueError, "Edge (%i,%i) does not exist in %s" % \
+                      (a,b,repr(self.lg.geometryType))
+        # returns the constant name of the point as a string given by its number
+        def get_point_name(v):
+            # point is a vertex
+            if type(v) is int:
+                return constNames[v]
+            # point is on a edge or in the center
+            return constNames[edge(v[0], v[1])]
+        # create a table line for codimX tables
+        def create_codim_line(table, entry, new_elements):
+            table.append("      /* %s / %i / %s / %i */ " \
+                % (entry.case, entry.permutation.orientation * \
+                   self.lg.base_case_numbers[entry.base_case.case], \
+                   ", ".join(map((str), map(len, new_elements))), \
+                   table.offset), 0)
+            if len(new_elements) > 0:
+                # write all points of every element
+                for element in new_elements:
+                    table.append("%i, " % len(element), 1)
+                    table.append("%s, " % ", ".join(map(get_point_name, element)), \
+                                 len(element))
+            else:
+                table.append(" /* no elements */", 0)
+            table.append("\n", 0)
+        # creates string tables out of case tables
+        def create_tables(self, offsets, codim0, codim1):
+            for entry in self.lg.all_cases:
+                # Constant whether unique MC33 case and whether inverted
+                unique_case = CASE_NOT_INVERTED + CASE_UNIQUE_MC33
+                if entry.permutation.orientation == -1:
+                    unique_case += CASE_INVERTED
+                if self.lg.mc33_tests[self.lg.base_case_numbers[entry.base_case.case]] != []:
+                    unique_case += CASE_AMIGUOUS_MC33
+                # write offsets to offsets table
+                offsets.append("      /* %s / %i */ " \
+                    % (entry.case, entry.permutation.orientation * \
+                       self.lg.base_case_numbers[entry.base_case.case]) \
+                    + "{%i, %i, %i, %i, %i},\n" \
+                    % (codim0.offset, len(entry.cells), \
+                       codim1.offset, len(entry.faces), unique_case), 1)
+                create_codim_line(codim0, entry, entry.cells)
+                create_codim_line(codim1, entry, entry.faces)
+        # creates mc33 caste table and mc33 test table and returns 
+        def create_mc33_tables(self, offsets, codim0, codim1, mc33_offsets, mc33_tests):
+            offsets.append("      /* MC 33 cases follow */\n", 0)
+            for entry in self.lg.all_cases:
+                base_case_number = self.lg.base_case_numbers[entry.base_case.case]
+                if self.lg.mc33_tests[base_case_number] != []:
+                    mc33_offsets.append("    /* %s / %i */ " \
+                        % (entry.case, mc33_offsets.offset), 0)
+                    mc33_offsets.append("%i,\n" \
+                        % (mc33_tests.offset), 1)
+                    # Generate tests table
+                    
+                    #TODO: bei cube3d muessen die Face-Tests mitpermutiert werden
+                    
+                    i = 0
+                    for test in self.lg.mc33_tests[base_case_number]:
+                        i = i + 1
+                        if math.log(i)/math.log(2.0) == round(math.log(i)/math.log(2.0)):
+                            mc33_tests.append("\n      ", 0)
+                        
+                        # negative tests are face tests
+                        if test < 0:
+                            # TODO: permute face
+                            
+                            mc33_tests.append(str(test) + ", ", 1)
+                        # test is equal to list length => non-mc 33 case
+                        elif test == len(self.lg.mc33_cases[base_case_number]):
+                            mc33_tests.append(face_tests[0] + ", ", 1)
+                        # case number otherwise
+                        else:
+                            mc33_tests.append(str(offsets.offset + test) + ", ", 1)
+                    mc33_tests.append("\n      ", 0)
+                    
+                    for mc33_case in self.lg.mc33_cases[base_case_number]:
+                        offsets.append("      /* %d test index:%d */ " \
+                            % (base_case_number, i)
+                            +"{%i, %i, %i, %i, 0},\n" \
+                            % (codim0.offset, len(entry.cells), \
+                               codim1.offset, len(entry.faces)), 1)
+                        create_codim_line(codim0, entry, mc33_case.permute_cells(entry.permutation))
+                        create_codim_line(codim1, entry, mc33_case.permute_faces(entry.permutation))
+                else:
+                    mc33_offsets.append("    /* %s / %i */ " \
+                        % (entry.case, mc33_offsets.offset), 0)
+                    mc33_offsets.append("255,\n", 0)
+        
+        # Start output with table definitions
+        table_offsets = TableStorage()
+        table_offsets.tablestring = "    " \
+            "const char table_%(T)s%(D)id_cases_offsets[][5] = {\n" \
+            % { "D" : self.lg.dim, "T" : self.lg.basicType } \
+            + "     /* vv: vertex values with 0=in, 1=out\n" \
+            "      * cn: case number\n" \
+            "      * bc: basic case, if negative it's inverted\n" \
+            "      * c1: element count of co-dimension 1 elements\n" \
+            "      * o1: table offset for co-dimension 1\n" \
+            "      * c0: element count of co-dimension 0 elements\n" \
+            "      * o0: table offset for co-dimension 0\n" \
+            "      * uniq: whether the case is ambiguous for MC33 */\n" \
+            "      /* vv / cn / bc / c0, o0, c1, o1, uniq */\n"
+        table_codim0 = TableStorage()
+        table_codim0.tablestring = "    " \
+            "const char table_%(T)s%(D)id_codim_0[] = {\n" \
+            % { "D" : self.lg.dim, "T" : self.lg.basicType } \
+            + "     /* cn: case number\n" \
+            "      * bc: basic case, if negative it's inverted\n" \
+            "      * el: elements specified by number of vertices\n" \
+            "      * cp: current position in array = offset */\n" \
+            "      /* cn / bc / el / cp */\n"
+        table_codim1 = TableStorage()
+        table_codim1.tablestring = "    " \
+            "const char table_%(T)s%(D)id_codim_1[] = {\n" \
+            % { "D" : self.lg.dim, "T" : self.lg.basicType } \
+            + "     /* cn: case number\n" \
+            "      * bc: basic case, if negative it's inverted\n" \
+            "      * el: elements specified by number of vertices\n" \
+            "      * cp: current position in array = offset */\n" \
+            "      /* cn / bc / el / cp */\n"        
+        # write elements into the array
+        create_tables(self, table_offsets, table_codim0, table_codim1)
+        # tables for mc 33
+        table_mc33_offsets = TableStorage() #TODO: Typ der Tabelle von char auf int (?) aendern
+        table_mc33_offsets.tablestring = "    " \
+            "const char table_%(T)s%(D)id_mc33_offsets[] = {\n" \
+            % { "D" : self.lg.dim, "T" : self.lg.basicType }
+        table_mc33_tests = TableStorage()
+        table_mc33_tests.tablestring = "    " \
+            "const short table_%(T)s%(D)id_mc33_face_test_order[] = {\n" \
+            % { "D" : self.lg.dim, "T" : self.lg.basicType } \
+            + "      /* dummy entry/not used but the index has to start with 1*/\n" \
+            + "      1,\n"
+        if self.lg.basicType == "cube":
+            create_mc33_tables(self, table_offsets, table_codim0, table_codim1, \
+                               table_mc33_offsets, table_mc33_tests)
+            
+        # close the arrays and write them
+        table_offsets.append("    };\n\n\n", 0)
+        table_codim0.append("    };\n\n\n", 0)
+        table_codim1.append("    };\n\n\n", 0)
+        table_mc33_offsets.append("    };\n\n\n", 0)
+        table_mc33_tests.append("    };\n\n\n", 0)
+        file.write(table_offsets.tablestring)
+        file.write(table_codim0.tablestring)
+        file.write(table_codim1.tablestring)
+        file.write(table_mc33_offsets.tablestring)
+        file.write(table_mc33_tests.tablestring)

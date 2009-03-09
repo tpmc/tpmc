@@ -83,15 +83,26 @@ static const char EU = VF * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_V
 // Center point is in the center of a cube or tetrahedron
 static const char EV = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
 
-/* Constant indicating that this case doesn't need special treatment
- * when marching cubes' 33 is used.*/
-static const char UNIQUE_MC33_CASE = 255;
+/* Constants indicating whether case special treatment when marching cubes' 33 is used. */
+static const char CASE_UNIQUE_MC33 = 0;
+static const char CASE_AMIGUOUS_MC33 = 1;
+/* Constants indication whether basic case is inverted. */
+static const char CASE_NOT_INVERTED = 0;
+static const char CASE_INVERTED = 2;
+/* Face tests */
+static const char FACE1 = -1;
+static const char FACE2 = -2;
+static const char FACE3 = -3;
+static const char FACE4 = -4;
+static const char FACE5 = -5;
+static const char FACE6 = -6;
+static const char CASE_IS_REGULAR = -7;
 
-/* Indices for access to cube2d_cse_offsets */
-static const int INDEX_COUNT_CODIM_1 = 0;
-static const int INDEX_OFFSET_CODIM_1 = 1;
-static const int INDEX_COUNT_CODIM_0 = 2;
-static const int INDEX_OFFSET_CODIM_0 = 3;
+/* Indices for access to cube2d_case_offsets */
+static const int INDEX_OFFSET_CODIM_0 = 0;
+static const int INDEX_COUNT_CODIM_0 = 1;
+static const int INDEX_OFFSET_CODIM_1 = 2;
+static const int INDEX_COUNT_CODIM_1 = 3;
 static const int INDEX_UNIQUE_CASE = 4;
 
 #ifndef _MARCHING_LUT_CC_

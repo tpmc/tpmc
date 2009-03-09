@@ -4,6 +4,7 @@ from sys import exit
 
 from lutgen.vtk import Vtk
 from lutgen.generator import LookupGenerator
+from lutgen.generator import BaseCase
 #from generator import GeneratorContainer
 from lutgen.consistencycheck import Consistency
 from lutgen.dunecode import DuneCode
@@ -248,7 +249,7 @@ simplex3d.generate()
 ################################################################################
 ## 2D Cube                                                                    ##
 ################################################################################
-cube2d = LookupGenerator(2,"cube")
+cube2d = LookupGenerator(2, "cube")
 # base cases cube 2D:
 # 0,0,0,0 -> 0000
 cube2d.base_cases[0].faces = []
@@ -270,6 +271,21 @@ cube2d.base_cases[5].faces = []
 cube2d.base_cases[5].cells = []
 # generate code
 cube2d.generate()
+
+################################################################################
+## MC 33 cases and MC 33 face test table                                      ##
+################################################################################
+cube2d.mc33_cases = [[] for x in range(len(cube2d.base_cases))]
+cube2d.base_case_numbers = {(0, 0, 0, 0): 0, (1, 0, 0, 0): 1, \
+    (1, 1, 0, 0): 2, (0, 1, 1, 0): 3, (1, 1, 1, 0): 4, (1, 1, 1, 1): 5}
+cube2d.mc33_tests = [[] for x in range(len(cube2d.base_cases))]
+
+# 0,1,1,0 -> 0110
+cube2d.mc33_cases[3].append(BaseCase(cube2d.base_cases[3].dim, cube2d.base_cases[3].case))
+cube2d.mc33_cases[3][0].faces = [[(1, 3), (0, 1)], [(2, 3), (0, 2)]]
+cube2d.mc33_cases[3][0].cells = [[2, (2, 3), (0, 2)], [1, (1, 3), (0, 1)]]
+cube2d.mc33_tests[3] = [-1, 1, 0]
+
 
 ################################################################################
 ## 2D Simplex                                                                 ##
@@ -342,7 +358,9 @@ ccfile.write("""
 
 #include "marchinglut.hh"
 
-extern \"C\" {""")
+extern \"C\" {
+
+""")
 
 
 #DuneCode(cube3d).write(ccfile)

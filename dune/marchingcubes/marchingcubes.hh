@@ -13,7 +13,7 @@ namespace Dune {
   /*
    * Contains marching cubes' 33 algorithm.
    */
-  template <typename valueType, int dim, typename thresholdFunctor, typename baseElement>
+  template <typename valueType, int dim, typename thresholdFunctor>
   class MarchingCubesAlgorithm {
     typedef size_t sizeType;
     typedef valueType* valueVector;
@@ -24,7 +24,8 @@ namespace Dune {
                     const bool useMc33);
     void getElements(const valueVector& vertexValues,
                      const sizeType vertexCount, const sizeType key,
-                     std::vector<std::vector<point> >& codim0);
+                     std::vector<std::vector<point> >& elements,
+                     const bool codim1InstedCodim0);
 
   private:
     /*

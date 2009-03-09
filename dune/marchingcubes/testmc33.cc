@@ -30,36 +30,35 @@ int main(int argCount, char ** argArray)
      }*/
   sizeType vertexCount = 4;
   double* vertices = new double[vertexCount];
-  vertices[0] = 0.5;       // basic case 16 = mc33 case 6.2
-  vertices[1] = 1.8;
-  vertices[2] = 1.9;
-  vertices[3] = 0.55;
+  /*vertices[0] = 0.1; // basic case 16 = mc33 case 6.2
+     vertices[1] = 0.8;
+     vertices[2] = 0.9;
+     vertices[3] = 0.2;*/
   /*vertices[0] = 0.5; //basic case 6
-     vertices[1] = 0.9;
-     vertices[2] = 0.8;
+     vertices[1] = 0.8;
+     vertices[2] = 0.7;
      vertices[3] = 0.4;*/
-  /*vertices[0] = 0.9; // basic case 9
-     vertices[1] = 0.5;
-     vertices[2] = 0.4;
+  vertices[0] = 0.7;       // basic case 9
+  vertices[1] = 0.5;
+  vertices[2] = 0.4;
+  vertices[3] = 0.8;
+  /*vertices[0] = 0.9; // basic case 17 = mc33 case 9.2
+     vertices[1] = 0.1;
+     vertices[2] = 0.2;
      vertices[3] = 0.8;*/
-  /*vertices[0] = 1.8;
-     vertices[1] = 0.52;
-     vertices[2] = 0.55;
-     vertices[3] = 1.9;*/
 
   std::cout << "Test data: " << vertices[0] << " " << vertices[1] << " "
             << vertices[2] << " " << vertices[3] << " " << std::endl;
 
-  Dune::MarchingCubesAlgorithm<double, 2, Dune::MarchingCubes::ThresholdFunctor, std::string> mc;
-
+  Dune::MarchingCubesAlgorithm<double, 2, Dune::MarchingCubes::ThresholdFunctor> mc;
   std::vector<std::vector<Dune::FieldVector<double, 2> > > codim0;
-
+  // Perform mc 33 algorithm
   size_t caseNumber = mc.getKey(vertices, vertexCount, true);
-  mc.getElements(vertices, vertexCount, caseNumber, codim0);
+  mc.getElements(vertices, vertexCount, caseNumber, codim0, false);
 
   std::cout << "Case number is: " << caseNumber << std::endl;
 
-  // Ausgabe der Ergebnisse
+  // Print result
   for(std::vector<std::vector<Dune::FieldVector<double, 2> > >::iterator i = codim0.begin(); i != codim0.end(); ++i)
   {
     for(std::vector<Dune::FieldVector<double, 2> >::iterator j = i->begin(); j != i->end(); ++j)
@@ -68,7 +67,6 @@ int main(int argCount, char ** argArray)
     }
     std::cout << std::endl;
   }
-
   std::cout << "Test MC 33 finished." << std::endl;
 
   return 0;
