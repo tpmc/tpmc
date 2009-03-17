@@ -129,4 +129,59 @@ extern "C" {
   };
 
 
+  const char table_simplex2d_cases_offsets[][5] = {
+    /* vv: vertex values with 0=in, 1=out
+     * cn: case number
+     * bc: basic case, if negative it's inverted
+     * c1: element count of co-dimension 1 elements
+     * o1: table offset for co-dimension 1
+     * c0: element count of co-dimension 0 elements
+     * o0: table offset for co-dimension 0
+     * uniq: whether the case is ambiguous for MC33 */
+    /* vv / cn / bc / c0, o0, c1, o1, uniq */
+    /* (0, 0, 0) / 0 */ {0, 1, 0, 0, 0},
+    /* (1, 0, 0) / 1 */ {4, 1, 0, 1, 0},
+    /* (0, 1, 0) / 1 */ {9, 1, 3, 1, 0},
+    /* (1, 1, 0) / 2 */ {14, 1, 6, 1, 0},
+    /* (0, 0, 1) / 1 */ {18, 1, 9, 1, 0},
+    /* (1, 0, 1) / 2 */ {23, 1, 12, 1, 0},
+    /* (0, 1, 1) / 2 */ {27, 1, 15, 1, 0},
+    /* (1, 1, 1) / 3 */ {31, 0, 18, 0, 0},
+  };
+
+
+  const char table_simplex2d_codim_0[] = {
+    /* cn: case number
+     * bc: basic case, if negative it's inverted
+     * el: elements specified by number of vertices
+     * cp: current position in array = offset */
+    /* cn / bc / el / cp */
+    /* (0, 0, 0) / 0 / 3 / 0 */ 3, VA, VB, VC,
+    /* (1, 0, 0) / 1 / 4 / 4 */ 4, EL, EJ, VC, VB,
+    /* (0, 1, 0) / 1 / 4 / 9 */ 4, EJ, EV, VA, VC,
+    /* (1, 1, 0) / 2 / 3 / 14 */ 3, EL, EV, VC,
+    /* (0, 0, 1) / 1 / 4 / 18 */ 4, EV, EL, VB, VA,
+    /* (1, 0, 1) / 2 / 3 / 23 */ 3, EV, EJ, VB,
+    /* (0, 1, 1) / 2 / 3 / 27 */ 3, EJ, EL, VA,
+    /* (1, 1, 1) / 3 /  / 31 */  /* no elements */
+  };
+
+
+  const char table_simplex2d_codim_1[] = {
+    /* cn: case number
+     * bc: basic case, if negative it's inverted
+     * el: elements specified by number of vertices
+     * cp: current position in array = offset */
+    /* cn / bc / el / cp */
+    /* (0, 0, 0) / 0 /  / 0 */  /* no elements */
+    /* (1, 0, 0) / 1 / 2 / 0 */ 2, EJ, EL,
+    /* (0, 1, 0) / 1 / 2 / 3 */ 2, EV, EJ,
+    /* (1, 1, 0) / 2 / 2 / 6 */ 2, EL, EV,
+    /* (0, 0, 1) / 1 / 2 / 9 */ 2, EL, EV,
+    /* (1, 0, 1) / 2 / 2 / 12 */ 2, EV, EJ,
+    /* (0, 1, 1) / 2 / 2 / 15 */ 2, EJ, EL,
+    /* (1, 1, 1) / 3 /  / 18 */  /* no elements */
+  };
+
+
 }

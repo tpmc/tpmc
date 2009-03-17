@@ -149,7 +149,7 @@ namespace Dune {
                       point& coords) const
   {
     // it's a center point
-    if (number == EV)
+    if (number == EY)
     {
       //TODO: Koordinaten für Mittelpunkt ausrechnen
     }

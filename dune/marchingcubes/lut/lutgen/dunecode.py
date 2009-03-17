@@ -4,41 +4,44 @@ from sys import exit
 
 # Following constants are copied from marchinglut.hh
 # constants for vertex and edge numbering
-NO_VERTEX = 1<<6;
-VERTEX_GO_RIGHT = 1; # x1 = 1
-VERTEX_GO_DEPTH = 2; # x2 = 1
-VERTEX_GO_UP = 4; # x3 = 1
-FACTOR_FIRST_POINT = 1;
-FACTOR_SECOND_POINT = 8;
+NO_VERTEX = 1<<6
+VERTEX_GO_RIGHT = 1 # x1 = 1
+VERTEX_GO_DEPTH = 2 # x2 = 1
+VERTEX_GO_UP = 4 # x3 = 1
+FACTOR_FIRST_POINT = 1
+FACTOR_SECOND_POINT = 8
 # vertices start with V
-VA = 0;
-VB = VERTEX_GO_RIGHT;
-VC = VERTEX_GO_DEPTH;
-VD = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH;
+VA = 0
+VB = VERTEX_GO_RIGHT
+VC = VERTEX_GO_DEPTH
+VD = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH
 VE = VERTEX_GO_UP;
-VF = VERTEX_GO_RIGHT + VERTEX_GO_UP;
-VG = VERTEX_GO_DEPTH + VERTEX_GO_UP;
-VH = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP;
+VF = VERTEX_GO_RIGHT + VERTEX_GO_UP
+VG = VERTEX_GO_DEPTH + VERTEX_GO_UP
+VH = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP
 # edges start with E
-EJ = VA * FACTOR_FIRST_POINT + VB * FACTOR_SECOND_POINT + NO_VERTEX;
-EK = VC * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
-EL = VA * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX;
-EM = VB * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
-EN = VA * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
-EO = VB * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
-EP = VC * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
-EQ = VD * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
-ER = VE * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
-ES = VG * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
-ET = VE * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
-EU = VF * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
+EJ = VA * FACTOR_FIRST_POINT + VB * FACTOR_SECOND_POINT + NO_VERTEX
+EK = VC * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX
+EL = VA * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX
+EM = VB * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX
+EN = VA * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
+EO = VB * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX
+EP = VC * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX
+EQ = VD * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
+ER = VE * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX
+ES = VG * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
+ET = VE * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX
+EU = VF * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
+EV = VB * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX
+EW = VB * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
+EX = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
 # Center point is in the center of a cube or tetrahedron
-EV = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
+EY = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
 # dictionary to get constant names from integers
-constNames = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", \
+const_names = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", \
     VF:"VF", VG:"VG", VH:"VH", EJ:"EJ", EK:"EK", EL:"EL", \
     EM:"EM", EN:"EN", EO:"EO", EP:"EP", EQ:"EQ", ER:"ER", \
-    ES:"ES", ET:"ET", EU:"EU", EV:"EV"}
+    ES:"ES", ET:"ET", EU:"EU", EV:"EV", EW:"EW", EX:"EX"}
 # Constants indicating whether case special treatment when marching cubes' 33 is used.
 CASE_UNIQUE_MC33 = 0
 CASE_AMIGUOUS_MC33 = 1
@@ -77,22 +80,22 @@ class DuneCode:
                 b = t
             # get center points
             if a == VA and b == VH:
-                return EV
+                return EY
             # points on an edge
             try:
                 # check whether edge exists
                 self.referenceElement.edges.index(set([a,b]))
                 return a * FACTOR_FIRST_POINT + b * FACTOR_SECOND_POINT + NO_VERTEX
             except ValueError:
-                raise ValueError, "Edge (%i,%i) does not exist in %s" % \
-                      (a,b,repr(self.lg.geometryType))
+                raise ValueError, "Edge (%i, %i) does not exist in %s" % \
+                      (a, b, repr(self.lg.geometryType))
         # returns the constant name of the point as a string given by its number
         def get_point_name(v):
             # point is a vertex
             if type(v) is int:
-                return constNames[v]
+                return const_names[v]
             # point is on a edge or in the center
-            return constNames[edge(v[0], v[1])]
+            return const_names[edge(v[0], v[1])]
         # create a table line for codimX tables
         def create_codim_line(table, entry, new_elements):
             table.append("      /* %s / %i / %s / %i */ " \
@@ -116,12 +119,13 @@ class DuneCode:
                 unique_case = CASE_NOT_INVERTED + CASE_UNIQUE_MC33
                 if entry.permutation.orientation == -1:
                     unique_case += CASE_INVERTED
-                if self.lg.mc33_tests[self.lg.base_case_numbers[entry.base_case.case]] != []:
+                if self.lg.basicType == "cube" and self.lg.mc33_tests[
+                    self.lg.base_case_numbers[entry.base_case.case]] != []:
                     unique_case += CASE_AMIGUOUS_MC33
                 # write offsets to offsets table
                 offsets.append("      /* %s / %i */ " \
                     % (entry.case, entry.permutation.orientation * \
-                       self.lg.base_case_numbers[entry.base_case.case]) \
+                       self.lg.base_case_numbers[entry.base_case.case])
                     + "{%i, %i, %i, %i, %i},\n" \
                     % (codim0.offset, len(entry.cells), \
                        codim1.offset, len(entry.faces), unique_case), 1)
@@ -231,5 +235,6 @@ class DuneCode:
         file.write(table_offsets.tablestring)
         file.write(table_codim0.tablestring)
         file.write(table_codim1.tablestring)
-        file.write(table_mc33_offsets.tablestring)
-        file.write(table_mc33_tests.tablestring)
+        if self.lg.basicType == "cube":
+            file.write(table_mc33_offsets.tablestring)
+            file.write(table_mc33_tests.tablestring)

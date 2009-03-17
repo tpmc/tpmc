@@ -80,8 +80,11 @@ static const char ER = VE * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_V
 static const char ES = VG * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
 static const char ET = VE * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
 static const char EU = VF * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
+static const char EV = VB * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX;
+static const char EW = VB * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
+static const char EX = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
 // Center point is in the center of a cube or tetrahedron
-static const char EV = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
+static const char EY = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
 
 /* Constants indicating whether case special treatment when marching cubes' 33 is used. */
 static const char CASE_UNIQUE_MC33 = 0;
