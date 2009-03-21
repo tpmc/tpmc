@@ -52,54 +52,54 @@
 #define MARCHING_LUT
 
 // constants for vertex and edge numbering
-static const char NO_VERTEX = 1<<6;
-static const char VERTEX_GO_RIGHT = 1;     // x1 = 1
-static const char VERTEX_GO_DEPTH = 2;     // x2 = 1
-static const char VERTEX_GO_UP = 4;     // x3 = 1
-static const char FACTOR_FIRST_POINT = 1;
-static const char FACTOR_SECOND_POINT = 8;
+static const short NO_VERTEX = 1<<6;
+static const short VERTEX_GO_RIGHT = 1;     // x1 = 1
+static const short VERTEX_GO_DEPTH = 2;     // x2 = 1
+static const short VERTEX_GO_UP = 4;     // x3 = 1
+static const short FACTOR_FIRST_POINT = 1;
+static const short FACTOR_SECOND_POINT = 8;
 // vertices start with V
-static const char VA = 0;
-static const char VB = VERTEX_GO_RIGHT;
-static const char VC = VERTEX_GO_DEPTH;
-static const char VD = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH;
-static const char VE = VERTEX_GO_UP;
-static const char VF = VERTEX_GO_RIGHT + VERTEX_GO_UP;
-static const char VG = VERTEX_GO_DEPTH + VERTEX_GO_UP;
-static const char VH = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP;
+static const short VA = 0;
+static const short VB = VERTEX_GO_RIGHT;
+static const short VC = VERTEX_GO_DEPTH;
+static const short VD = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH;
+static const short VE = VERTEX_GO_UP;
+static const short VF = VERTEX_GO_RIGHT + VERTEX_GO_UP;
+static const short VG = VERTEX_GO_DEPTH + VERTEX_GO_UP;
+static const short VH = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP;
 // edges start with E
-static const char EJ = VA * FACTOR_FIRST_POINT + VB * FACTOR_SECOND_POINT + NO_VERTEX;
-static const char EK = VC * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
-static const char EL = VA * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX;
-static const char EM = VB * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
-static const char EN = VA * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const char EO = VB * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
-static const char EP = VC * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
-static const char EQ = VD * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
-static const char ER = VE * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
-static const char ES = VG * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
-static const char ET = VE * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
-static const char EU = VF * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
-static const char EV = VB * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX;
-static const char EW = VB * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const char EX = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EJ = VA * FACTOR_FIRST_POINT + VB * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EK = VC * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EL = VA * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EM = VB * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EN = VA * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EO = VB * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EP = VC * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EQ = VD * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short ER = VE * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short ES = VG * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short ET = VE * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EU = VF * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EV = VB * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EW = VB * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EX = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
 // Center point is in the center of a cube or tetrahedron
-static const char EY = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EY = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
 
 /* Constants indicating whether case special treatment when marching cubes' 33 is used. */
-static const char CASE_UNIQUE_MC33 = 0;
-static const char CASE_AMIGUOUS_MC33 = 1;
+static const short CASE_UNIQUE_MC33 = 0;
+static const short CASE_AMIGUOUS_MC33 = 1;
 /* Constants indication whether basic case is inverted. */
-static const char CASE_NOT_INVERTED = 0;
-static const char CASE_INVERTED = 2;
+static const short CASE_NOT_INVERTED = 0;
+static const short CASE_INVERTED = 2;
 /* Face tests */
-static const char FACE1 = -1;
-static const char FACE2 = -2;
-static const char FACE3 = -3;
-static const char FACE4 = -4;
-static const char FACE5 = -5;
-static const char FACE6 = -6;
-static const char CASE_IS_REGULAR = -7;
+static const short FACE1 = -1;
+static const short FACE2 = -2;
+static const short FACE3 = -3;
+static const short FACE4 = -4;
+static const short FACE5 = -5;
+static const short FACE6 = -6;
+static const short CASE_IS_REGULAR = -7;
 
 /* Indices for access to cube2d_case_offsets */
 static const int INDEX_OFFSET_CODIM_0 = 0;
@@ -128,7 +128,7 @@ extern "C"
    * Basic case 2: 0 0 1 1
    * Basic case 3: 0 1 0 1
    */
-  extern const char table_cube2d_cases_offsets[][5];
+  extern short table_cube2d_cases_offsets[][5];
 
   /*
    * Contains all lines for Cube 2D.
@@ -145,7 +145,7 @@ extern "C"
    *  |   |
    *  0-5-1
    */
-  extern const char table_cube2d_codim_1[];
+  extern short table_cube2d_codim_1[];
 
   /*
    * Contains all lines for Cube 2D.
@@ -162,17 +162,72 @@ extern "C"
    *  |   |
    *  0-5-1
    */
-  extern const char table_cube2d_codim_0[];
+  extern short table_cube2d_codim_0[];
 
   /*
    * TODO: Comment
    */
-  extern const char table_cube2d_mc33_offsets[];
+  extern short table_cube2d_mc33_offsets[];
 
   /*
    * TODO: Comment
    */
-  extern const short table_cube2d_mc33_face_test_order[];
+  extern short table_cube2d_mc33_face_test_order[];
+
+  /*
+   * TODO: Comment 3D cube
+   */
+  extern short table_cube3d_cases_offsets[][5];
+
+  /*
+   * TODO: Comment
+   */
+  extern short table_cube3d_codim_0[];
+
+  /*
+   * TODO: Comment
+   */
+  extern short table_cube3d_codim_0[];
+
+  /*
+   * TODO: Comment
+   */
+  extern short table_cube3d_mc33_offsets[];
+
+  /*
+   * TODO: Comment
+   */
+  extern short table_cube3d_mc33_face_test_order[];
+
+  /*
+   * TODO: Comment 2D simplex
+   */
+  extern short table_simplex2d_cases_offsets[][5];
+
+  /*
+   * TODO: Comment
+   */
+  extern short table_simplex2d_codim_0[];
+
+  /*
+   * TODO: Comment
+   */
+  extern short table_simplex2d_codim_0[];
+
+  /*
+   * TODO: Comment 3D simplex
+   */
+  extern short table_simplex3d_cases_offsets[][5];
+
+  /*
+   * TODO: Comment
+   */
+  extern short table_simplex3d_codim_0[];
+
+  /*
+   * TODO: Comment
+   */
+  extern short table_simplex3d_codim_0[];
 
 
 } // extern "C"

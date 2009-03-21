@@ -11,7 +11,86 @@
 
 extern "C" {
 
-  const char table_cube2d_cases_offsets[][5] = {
+  short table_simplex3d_cases_offsets[][5] = {
+    /* vv: vertex values with 0=in, 1=out
+     * cn: case number
+     * bc: basic case, if negative it's inverted
+     * c1: element count of co-dimension 1 elements
+     * o1: table offset for co-dimension 1
+     * c0: element count of co-dimension 0 elements
+     * o0: table offset for co-dimension 0
+     * uniq: whether the case is ambiguous for MC33 */
+    /* vv / cn / bc / c0, o0, c1, o1, uniq */
+    /* (0, 0, 0, 0) / 0 */ {0, 1, 0, 0, 0},
+    /* (1, 0, 0, 0) / 1 */ {5, 1, 0, 1, 0},
+    /* (0, 1, 0, 0) / 1 */ {12, 1, 4, 1, 0},
+    /* (1, 1, 0, 0) / 2 */ {19, 1, 8, 1, 0},
+    /* (0, 0, 1, 0) / 1 */ {26, 1, 13, 1, 0},
+    /* (1, 0, 1, 0) / 2 */ {33, 1, 17, 1, 0},
+    /* (0, 1, 1, 0) / 2 */ {40, 1, 22, 1, 0},
+    /* (1, 1, 1, 0) / 3 */ {47, 1, 27, 1, 0},
+    /* (0, 0, 0, 1) / 1 */ {52, 1, 31, 1, 0},
+    /* (1, 0, 0, 1) / 2 */ {59, 1, 35, 1, 0},
+    /* (0, 1, 0, 1) / 2 */ {66, 1, 40, 1, 0},
+    /* (1, 1, 0, 1) / 3 */ {73, 1, 45, 1, 0},
+    /* (0, 0, 1, 1) / 2 */ {78, 1, 49, 1, 0},
+    /* (1, 0, 1, 1) / 3 */ {85, 1, 54, 1, 0},
+    /* (0, 1, 1, 1) / 3 */ {90, 1, 58, 1, 0},
+    /* (1, 1, 1, 1) / 4 */ {95, 0, 62, 0, 0},
+  };
+
+
+  short table_simplex3d_codim_0[] = {
+    /* cn: case number
+     * bc: basic case, if negative it's inverted
+     * el: elements specified by number of vertices
+     * cp: current position in array = offset */
+    /* cn / bc / el / cp */
+    /* (0, 0, 0, 0) / 0 / 4 / 0 */ 4, VA, VB, VC, VE,
+    /* (1, 0, 0, 0) / 1 / 6 / 5 */ 6, EJ, EL, EN, VB, VC, VE,
+    /* (0, 1, 0, 0) / 1 / 6 / 12 */ 6, EJ, EW, EV, VA, VE, VC,
+    /* (1, 1, 0, 0) / 2 / 6 / 19 */ 6, EL, EV, VC, EN, EW, VE,
+    /* (0, 0, 1, 0) / 1 / 6 / 26 */ 6, EL, EV, EX, VA, VB, VE,
+    /* (1, 0, 1, 0) / 2 / 6 / 33 */ 6, EV, EJ, VB, EX, EN, VE,
+    /* (0, 1, 1, 0) / 2 / 6 / 40 */ 6, EJ, EL, VA, EW, EX, VE,
+    /* (1, 1, 1, 0) / 3 / 4 / 47 */ 4, EN, EW, EX, VE,
+    /* (0, 0, 0, 1) / 1 / 6 / 52 */ 6, EN, EX, EW, VA, VC, VB,
+    /* (1, 0, 0, 1) / 2 / 6 / 59 */ 6, EX, EL, VC, EW, EJ, VB,
+    /* (0, 1, 0, 1) / 2 / 6 / 66 */ 6, EV, EX, VC, EJ, EN, VA,
+    /* (1, 1, 0, 1) / 3 / 4 / 73 */ 4, EV, EL, EX, VC,
+    /* (0, 0, 1, 1) / 2 / 6 / 78 */ 6, EW, EV, VB, EN, EL, VA,
+    /* (1, 0, 1, 1) / 3 / 4 / 85 */ 4, EW, EJ, EV, VB,
+    /* (0, 1, 1, 1) / 3 / 4 / 90 */ 4, EN, EL, EJ, VA,
+    /* (1, 1, 1, 1) / 4 /  / 95 */  /* no elements */
+  };
+
+
+  short table_simplex3d_codim_1[] = {
+    /* cn: case number
+     * bc: basic case, if negative it's inverted
+     * el: elements specified by number of vertices
+     * cp: current position in array = offset */
+    /* cn / bc / el / cp */
+    /* (0, 0, 0, 0) / 0 /  / 0 */  /* no elements */
+    /* (1, 0, 0, 0) / 1 / 3 / 0 */ 3, EL, EJ, EN,
+    /* (0, 1, 0, 0) / 1 / 3 / 4 */ 3, EW, EJ, EV,
+    /* (1, 1, 0, 0) / 2 / 4 / 8 */ 4, EL, EV, EN, EW,
+    /* (0, 0, 1, 0) / 1 / 3 / 13 */ 3, EV, EL, EX,
+    /* (1, 0, 1, 0) / 2 / 4 / 17 */ 4, EV, EJ, EX, EN,
+    /* (0, 1, 1, 0) / 2 / 4 / 22 */ 4, EJ, EL, EW, EX,
+    /* (1, 1, 1, 0) / 3 / 3 / 27 */ 3, EW, EN, EX,
+    /* (0, 0, 0, 1) / 1 / 3 / 31 */ 3, EX, EN, EW,
+    /* (1, 0, 0, 1) / 2 / 4 / 35 */ 4, EX, EL, EW, EJ,
+    /* (0, 1, 0, 1) / 2 / 4 / 40 */ 4, EV, EX, EJ, EN,
+    /* (1, 1, 0, 1) / 3 / 3 / 45 */ 3, EL, EV, EX,
+    /* (0, 0, 1, 1) / 2 / 4 / 49 */ 4, EW, EV, EN, EL,
+    /* (1, 0, 1, 1) / 3 / 3 / 54 */ 3, EJ, EW, EV,
+    /* (0, 1, 1, 1) / 3 / 3 / 58 */ 3, EL, EN, EJ,
+    /* (1, 1, 1, 1) / 4 /  / 62 */  /* no elements */
+  };
+
+
+  short table_cube2d_cases_offsets[][5] = {
     /* vv: vertex values with 0=in, 1=out
      * cn: case number
      * bc: basic case, if negative it's inverted
@@ -43,7 +122,7 @@ extern "C" {
   };
 
 
-  const char table_cube2d_codim_0[] = {
+  short table_cube2d_codim_0[] = {
     /* cn: case number
      * bc: basic case, if negative it's inverted
      * el: elements specified by number of vertices
@@ -70,7 +149,7 @@ extern "C" {
   };
 
 
-  const char table_cube2d_codim_1[] = {
+  short table_cube2d_codim_1[] = {
     /* cn: case number
      * bc: basic case, if negative it's inverted
      * el: elements specified by number of vertices
@@ -97,27 +176,27 @@ extern "C" {
   };
 
 
-  const char table_cube2d_mc33_offsets[] = {
+  short table_cube2d_mc33_offsets[] = {
     /* (0, 0, 0, 0) / 0 */ 255,
-    /* (1, 0, 0, 0) / 0 */ 255,
-    /* (0, 1, 0, 0) / 0 */ 255,
-    /* (1, 1, 0, 0) / 0 */ 255,
-    /* (0, 0, 1, 0) / 0 */ 255,
-    /* (1, 0, 1, 0) / 0 */ 255,
-    /* (0, 1, 1, 0) / 0 */ 0,
-    /* (1, 1, 1, 0) / 1 */ 255,
-    /* (0, 0, 0, 1) / 1 */ 255,
-    /* (1, 0, 0, 1) / 1 */ 3,
-    /* (0, 1, 0, 1) / 2 */ 255,
-    /* (1, 1, 0, 1) / 2 */ 255,
-    /* (0, 0, 1, 1) / 2 */ 255,
-    /* (1, 0, 1, 1) / 2 */ 255,
-    /* (0, 1, 1, 1) / 2 */ 255,
-    /* (1, 1, 1, 1) / 2 */ 255,
+    /* (1, 0, 0, 0) / 1 */ 255,
+    /* (0, 1, 0, 0) / 2 */ 255,
+    /* (1, 1, 0, 0) / 3 */ 255,
+    /* (0, 0, 1, 0) / 4 */ 255,
+    /* (1, 0, 1, 0) / 5 */ 255,
+    /* (0, 1, 1, 0) / 6 */ 0,
+    /* (1, 1, 1, 0) / 7 */ 255,
+    /* (0, 0, 0, 1) / 8 */ 255,
+    /* (1, 0, 0, 1) / 9 */ 3,
+    /* (0, 1, 0, 1) / 10 */ 255,
+    /* (1, 1, 0, 1) / 11 */ 255,
+    /* (0, 0, 1, 1) / 12 */ 255,
+    /* (1, 0, 1, 1) / 13 */ 255,
+    /* (0, 1, 1, 1) / 14 */ 255,
+    /* (1, 1, 1, 1) / 15 */ 255,
   };
 
 
-  const short table_cube2d_mc33_face_test_order[] = {
+  short table_cube2d_mc33_face_test_order[] = {
     /* dummy entry/not used but the index has to start with 1*/
     1,
 
@@ -126,10 +205,11 @@ extern "C" {
 
     -1,
     CASE_IS_REGULAR, 17,
+
   };
 
 
-  const char table_simplex2d_cases_offsets[][5] = {
+  short table_simplex2d_cases_offsets[][5] = {
     /* vv: vertex values with 0=in, 1=out
      * cn: case number
      * bc: basic case, if negative it's inverted
@@ -150,7 +230,7 @@ extern "C" {
   };
 
 
-  const char table_simplex2d_codim_0[] = {
+  short table_simplex2d_codim_0[] = {
     /* cn: case number
      * bc: basic case, if negative it's inverted
      * el: elements specified by number of vertices
@@ -167,7 +247,7 @@ extern "C" {
   };
 
 
-  const char table_simplex2d_codim_1[] = {
+  short table_simplex2d_codim_1[] = {
     /* cn: case number
      * bc: basic case, if negative it's inverted
      * el: elements specified by number of vertices

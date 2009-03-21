@@ -13,13 +13,49 @@ namespace Dune {
   template <typename valueType, int dim, typename thresholdFunctor>
   typename MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::sizeType
   MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::
-  getKey(const valueVector& vertexValues, const sizeType vertexCount,
+  getKey(const valueVector& vertexValues, const sizeType vertex_count,
          const bool useMc33)
   {
+    short (* table_cases_offsets)[5] = NULL;
+    short * table_mc33_offsets = NULL;
+    short * table_mc33_face_test_order = NULL;
+    // 2D shapes
+    if (dim == 2)
+    {
+      // simplex 2D
+      if (vertex_count == 3)
+      {
+        table_cases_offsets = table_simplex2d_cases_offsets;
+      }
+      // cube 2D
+      else if (vertex_count == 4)
+      {
+        table_cases_offsets = table_cube2d_cases_offsets;
+        table_mc33_offsets = table_cube2d_mc33_offsets;
+        table_mc33_face_test_order = table_cube2d_mc33_face_test_order;
+      }
+    }
+    // 3D
+    else if (dim == 3)
+    {
+      // simplex 3D
+      if (vertex_count == 4)
+      {
+        table_cases_offsets = table_simplex3d_cases_offsets;
+      }
+      // cube 3D
+      else if (vertex_count == 8)
+      {
+        table_cases_offsets = table_cube3d_cases_offsets;
+        table_mc33_offsets = table_cube3d_mc33_offsets;
+        table_mc33_face_test_order = table_cube3d_mc33_face_test_order;
+      }
+    }
+
     // vector containing information if vertices are inside or not
-    bool *vertexInside = new bool[vertexCount];
+    bool *vertexInside = new bool[vertex_count];
     int caseNumber = 0;
-    for (sizeType i = 0; i < vertexCount; i++)
+    for (sizeType i = 0; i < vertex_count; i++)
     {
       // Shift left
       caseNumber *= 2;
@@ -30,19 +66,19 @@ namespace Dune {
 
     // Is it a marching cubes' 33 case?
     bool isAmiguousMc33case = (CASE_AMIGUOUS_MC33 ==
-                               table_cube2d_cases_offsets[caseNumber][4] & CASE_AMIGUOUS_MC33);
+                               table_cases_offsets[caseNumber][4] & CASE_AMIGUOUS_MC33);
     // if it's not unique get the right one
     if (useMc33 && isAmiguousMc33case)
     {
       // find face tests for the case
-      sizeType testIndex = table_cube2d_mc33_offsets[caseNumber];
+      sizeType testIndex = (sizeType) table_mc33_offsets[caseNumber];
       // offsets to have a binary tree like behavior
       sizeType treeOffset = 1;
 
       // perform tests and find case number
-      int faceNumber = table_cube2d_mc33_face_test_order[testIndex + treeOffset];
+      short faceNumber = table_mc33_face_test_order[testIndex + treeOffset];
       bool notInverted = (CASE_INVERTED == CASE_INVERTED &
-                          table_cube2d_cases_offsets[caseNumber][(sizeType) INDEX_UNIQUE_CASE]);
+                          table_cases_offsets[caseNumber][(sizeType) INDEX_UNIQUE_CASE]);
 
       /*GeometryType geometryType;
          geometryType.makeQuadrilateral();
@@ -66,7 +102,7 @@ namespace Dune {
         // calculate index position (if test is true: 2*index, otherwise: 2*index+1)
         treeOffset *= 2;
         treeOffset += (1 - faceIsSurface);
-        faceNumber = table_cube2d_mc33_face_test_order[testIndex + treeOffset];
+        faceNumber = table_mc33_face_test_order[testIndex + treeOffset];
       }
       if (faceNumber != CASE_IS_REGULAR)
       {
@@ -92,9 +128,9 @@ namespace Dune {
               std::vector<std::vector<point> >& elements,
               const bool codim1InstedCodim0)
   {
-    const char * offsets = table_cube2d_cases_offsets[key];
+    const short * offsets = table_cube2d_cases_offsets[key];
     // Pointer to first element
-    const char * index = table_cube2d_codim_0 + (int) offsets[INDEX_OFFSET_CODIM_0];
+    const short * index = table_cube2d_codim_0 + (int) offsets[INDEX_OFFSET_CODIM_0];
     // Element count
     sizeType caseCountElements = offsets[INDEX_COUNT_CODIM_0];
 

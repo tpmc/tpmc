@@ -32,6 +32,7 @@ ER = VE * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX
 ES = VG * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
 ET = VE * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX
 EU = VF * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
+# Diagonals for simplices
 EV = VB * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX
 EW = VB * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
 EX = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
@@ -83,12 +84,13 @@ class DuneCode:
                 return EY
             # points on an edge
             try:
-                # check whether edge exists
-                self.referenceElement.edges.index(set([a,b]))
+                # check whether edge exists, excpect 3D simplex because of changed numering
+                if self.lg.basicType != "simplex" or self.lg.dim != 3:
+                    self.referenceElement.edges.index(set([a,b]))
                 return a * FACTOR_FIRST_POINT + b * FACTOR_SECOND_POINT + NO_VERTEX
             except ValueError:
                 raise ValueError, "Edge (%i, %i) does not exist in %s" % \
-                      (a, b, repr(self.lg.geometryType))
+                    (a, b, repr(self.lg.geometryType))
         # returns the constant name of the point as a string given by its number
         def get_point_name(v):
             # point is a vertex
@@ -98,6 +100,19 @@ class DuneCode:
             return const_names[edge(v[0], v[1])]
         # create a table line for codimX tables
         def create_codim_line(table, entry, new_elements):
+            # change 3D simplex numbering scheme to 3D cube's one
+            if self.lg.basicType == "simplex" and self.lg.dim == 3:
+                for i in range(len(new_elements)):
+                    for j in range(len(new_elements[i])):
+                        if type(new_elements[i][j]) is int:
+                            if new_elements[i][j] == 3:
+                                new_elements[i][j] = 4
+                        else:
+                            if new_elements[i][j][0] == 3:
+                                new_elements[i][j] = (4, new_elements[i][j][1]) 
+                            if new_elements[i][j][1] == 3:
+                                new_elements[i][j] = (new_elements[i][j][0], 4)
+            # write comment in front of data
             table.append("      /* %s / %i / %s / %i */ " \
                 % (entry.case, entry.permutation.orientation * \
                    self.lg.base_case_numbers[entry.base_case.case], \
@@ -175,12 +190,13 @@ class DuneCode:
                 else:
                     mc33_offsets.append("    /* %s / %i */ " \
                         % (entry.case, mc33_offsets.offset), 0)
-                    mc33_offsets.append("255,\n", 0)
+                    mc33_offsets.append("255,\n", 1)
+            mc33_tests.append("\n", 0)
         
         # Start output with table definitions
         table_offsets = TableStorage()
         table_offsets.tablestring = "    " \
-            "const char table_%(T)s%(D)id_cases_offsets[][5] = {\n" \
+            "short table_%(T)s%(D)id_cases_offsets[][5] = {\n" \
             % { "D" : self.lg.dim, "T" : self.lg.basicType } \
             + "     /* vv: vertex values with 0=in, 1=out\n" \
             "      * cn: case number\n" \
@@ -193,7 +209,7 @@ class DuneCode:
             "      /* vv / cn / bc / c0, o0, c1, o1, uniq */\n"
         table_codim0 = TableStorage()
         table_codim0.tablestring = "    " \
-            "const char table_%(T)s%(D)id_codim_0[] = {\n" \
+            "short table_%(T)s%(D)id_codim_0[] = {\n" \
             % { "D" : self.lg.dim, "T" : self.lg.basicType } \
             + "     /* cn: case number\n" \
             "      * bc: basic case, if negative it's inverted\n" \
@@ -202,39 +218,39 @@ class DuneCode:
             "      /* cn / bc / el / cp */\n"
         table_codim1 = TableStorage()
         table_codim1.tablestring = "    " \
-            "const char table_%(T)s%(D)id_codim_1[] = {\n" \
+            "short table_%(T)s%(D)id_codim_1[] = {\n" \
             % { "D" : self.lg.dim, "T" : self.lg.basicType } \
             + "     /* cn: case number\n" \
             "      * bc: basic case, if negative it's inverted\n" \
             "      * el: elements specified by number of vertices\n" \
             "      * cp: current position in array = offset */\n" \
-            "      /* cn / bc / el / cp */\n"        
+            "      /* cn / bc / el / cp */\n"
         # write elements into the array
         create_tables(self, table_offsets, table_codim0, table_codim1)
+        
         # tables for mc 33
-        table_mc33_offsets = TableStorage() #TODO: Typ der Tabelle von char auf int (?) aendern
-        table_mc33_offsets.tablestring = "    " \
-            "const char table_%(T)s%(D)id_mc33_offsets[] = {\n" \
-            % { "D" : self.lg.dim, "T" : self.lg.basicType }
-        table_mc33_tests = TableStorage()
-        table_mc33_tests.tablestring = "    " \
-            "const short table_%(T)s%(D)id_mc33_face_test_order[] = {\n" \
-            % { "D" : self.lg.dim, "T" : self.lg.basicType } \
-            + "      /* dummy entry/not used but the index has to start with 1*/\n" \
-            + "      1,\n"
         if self.lg.basicType == "cube":
+            table_mc33_offsets = TableStorage() #TODO: Typ der Tabelle von char auf int (?) aendern
+            table_mc33_offsets.tablestring = "    " \
+                "short table_%(T)s%(D)id_mc33_offsets[] = {\n" \
+                % { "D" : self.lg.dim, "T" : self.lg.basicType }
+            table_mc33_tests = TableStorage()
+            table_mc33_tests.tablestring = "    " \
+                "short table_%(T)s%(D)id_mc33_face_test_order[] = {\n" \
+                % { "D" : self.lg.dim, "T" : self.lg.basicType } \
+                + "      /* dummy entry/not used but the index has to start with 1*/\n" \
+                + "      1,\n"
             create_mc33_tables(self, table_offsets, table_codim0, table_codim1, \
                                table_mc33_offsets, table_mc33_tests)
-            
         # close the arrays and write them
         table_offsets.append("    };\n\n\n", 0)
         table_codim0.append("    };\n\n\n", 0)
         table_codim1.append("    };\n\n\n", 0)
-        table_mc33_offsets.append("    };\n\n\n", 0)
-        table_mc33_tests.append("    };\n\n\n", 0)
         file.write(table_offsets.tablestring)
         file.write(table_codim0.tablestring)
         file.write(table_codim1.tablestring)
         if self.lg.basicType == "cube":
+            table_mc33_offsets.append("    };\n\n\n", 0)
+            table_mc33_tests.append("    };\n\n\n", 0)
             file.write(table_mc33_offsets.tablestring)
             file.write(table_mc33_tests.tablestring)
