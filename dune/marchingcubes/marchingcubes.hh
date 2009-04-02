@@ -6,28 +6,43 @@
 #include "marchinglut.hh"
 #include <dune/common/fvector.hh>
 #include <dune/common/float_cmp.hh>
+#include <dune/common/exceptions.hh>
 #include <dune/grid/common/referenceelements.hh>
 
 namespace Dune {
+  /*
+   * Exception to signal user that he used a method in a
+   * not-intended way.
+   */
+  class IllegalArgumentException : public Dune::Exception {};
 
   /*
    * Contains marching cubes' 33 algorithm.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
-  class MarchingCubesAlgorithm {
+  class MarchingCubes33 {
     typedef size_t sizeType;
     typedef valueType* valueVector;
     typedef double ctype;
     typedef Dune::FieldVector<ctype, dim> point;
   public:
-    sizeType getKey(const valueVector& vertexValues, const sizeType vertexCount,
-                    const bool useMc33);
+    sizeType getKey(const valueVector& vertex_values,
+                    const sizeType vertex_count, const bool use_mc_33);
     void getElements(const valueVector& vertexValues,
                      const sizeType vertexCount, const sizeType key,
                      std::vector<std::vector<point> >& elements,
                      const bool codim1InstedCodim0);
 
   private:
+    /*
+     * TODO: Comment
+     */
+    typedef const short offsetRow[5];
+    static offsetRow * all_case_offsets[];
+    static const short * const all_codim_0[];
+    static const short * const all_codim_1[];
+    static const short * const all_mc33_offsets[];
+    static const short * const all_face_tests[];
     /*
      * \brief Test if the face center is covered by the surface.
      *
@@ -39,9 +54,9 @@ namespace Dune {
     sizeType getMc33case(const valueVector& vertexValues,
                          const sizeType vertexCount, char number) const;
 
-    void getCoordsFromNumber(const valueVector& vertexValues,
-                             const sizeType vertexCount, char number,
-                             point& coords) const;
+    void getCoordsFromNumber(const valueVector& vertex_values,
+                             const sizeType vertex_count, const short number,
+                             point& coord) const;
 
     void getCoordsFromEdgeNumber(const valueVector& vertexValues,
                                  const sizeType vertexCount, char number,

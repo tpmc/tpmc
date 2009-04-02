@@ -83,7 +83,7 @@ void useMarchingCubes33(sizeType vertex_count, double * vertices, sizeType expec
   }
   std::cout << std::endl;
 
-  Dune::MarchingCubesAlgorithm<double, 2, Dune::MarchingCubes::ThresholdFunctor> mc;
+  Dune::MarchingCubes33<double, 2, Dune::MarchingCubes::ThresholdFunctor> mc;
   std::vector<std::vector<Dune::FieldVector<double, 2> > > codim0;
   // Perform MC 33 algorithm
   size_t case_number = mc.getKey(vertices, vertex_count, true);

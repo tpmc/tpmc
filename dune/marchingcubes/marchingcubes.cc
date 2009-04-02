@@ -1,8 +1,68 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#include <iostream> // FIXME: Debug only, enferne mich!
+#include <iostream> // FIXME TODO: Debug only, entferne mich!
 
 namespace Dune {
+  /*
+   * TODO: Comment
+   */
+  template <typename valueType, int dim, typename thresholdFunctor>
+  typename MarchingCubes33<valueType, dim, thresholdFunctor>::
+  offsetRow *
+  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  all_case_offsets[] = {
+    NULL, NULL, NULL, NULL, table_simplex2d_cases_offsets,
+    table_cube2d_cases_offsets, table_simplex3d_cases_offsets,
+    NULL, NULL, NULL, table_cube3d_cases_offsets
+  };
+
+  /*
+   * TODO: Comment
+   */
+  template <typename valueType, int dim, typename thresholdFunctor>
+  const short * const
+  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  all_codim_0[] = {
+    NULL, NULL, NULL, NULL, table_simplex2d_codim_0,
+    table_cube2d_codim_0, table_simplex3d_codim_0,
+    NULL, NULL, NULL, table_cube3d_codim_0
+  };
+
+  /*
+   * TODO: Comment
+   */
+  template <typename valueType, int dim, typename thresholdFunctor>
+  const short * const
+  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  all_codim_1[] = {
+    NULL, NULL, NULL, NULL, table_simplex2d_codim_1,
+    table_cube2d_codim_1, table_simplex3d_codim_1,
+    NULL, NULL, NULL, table_cube3d_codim_1
+  };
+
+  /*
+   * TODO: Comment
+   */
+  template <typename valueType, int dim, typename thresholdFunctor>
+  const short * const
+  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  all_mc33_offsets[] = {
+    NULL, NULL, NULL, NULL, NULL,
+    table_cube2d_mc33_offsets, NULL,
+    NULL, NULL, NULL, table_cube3d_mc33_offsets
+  };
+
+  /*
+   * TODO: Comment
+   */
+  template <typename valueType, int dim, typename thresholdFunctor>
+  const short * const
+  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  all_face_tests[] = {
+    NULL, NULL, NULL, NULL, NULL,
+    table_cube2d_mc33_face_test_order, NULL,
+    NULL, NULL, NULL, table_cube3d_mc33_face_test_order
+  };
 
   /*
    * Calculate key to access cube2d_cases_offsets.
@@ -11,105 +71,88 @@ namespace Dune {
    * \return True if the case is in the regular table, false if it's a MC33-only case.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
-  typename MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::sizeType
-  MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::
-  getKey(const valueVector& vertexValues, const sizeType vertex_count,
-         const bool useMc33)
+  typename MarchingCubes33<valueType, dim, thresholdFunctor>::sizeType
+  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  getKey(const valueVector& vertex_values, const sizeType vertex_count,
+         const bool use_mc_33)
   {
-    short (* table_cases_offsets)[5] = NULL;
-    short * table_mc33_offsets = NULL;
-    short * table_mc33_face_test_order = NULL;
-    // 2D shapes
-    if (dim == 2)
+    if ((dim < 0) || (dim > 3))
     {
-      // simplex 2D
-      if (vertex_count == 3)
-      {
-        table_cases_offsets = table_simplex2d_cases_offsets;
-      }
-      // cube 2D
-      else if (vertex_count == 4)
-      {
-        table_cases_offsets = table_cube2d_cases_offsets;
-        table_mc33_offsets = table_cube2d_mc33_offsets;
-        table_mc33_face_test_order = table_cube2d_mc33_face_test_order;
-      }
+      DUNE_THROW(IllegalArgumentException,
+                 "Dimension must be 0, 1, 2 or 3, not " << dim << ".");
     }
-    // 3D
-    else if (dim == 3)
+    else if ((dim == 0) || (dim == 1))
     {
-      // simplex 3D
-      if (vertex_count == 4)
-      {
-        table_cases_offsets = table_simplex3d_cases_offsets;
-      }
-      // cube 3D
-      else if (vertex_count == 8)
-      {
-        table_cases_offsets = table_cube3d_cases_offsets;
-        table_mc33_offsets = table_cube3d_mc33_offsets;
-        table_mc33_face_test_order = table_cube3d_mc33_face_test_order;
-      }
+      DUNE_THROW(IllegalArgumentException,
+                 "For dimension 0 or 1 getKey() is not needed.");
     }
+    const short (* const table_case_offsets)[5] =
+      all_case_offsets[vertex_count + dim];
+    const short * const table_mc33_offsets =
+      all_mc33_offsets[vertex_count + dim];
+    const short * const table_mc33_face_test_order =
+      all_face_tests[vertex_count + dim];
 
     // vector containing information if vertices are inside or not
-    bool *vertexInside = new bool[vertex_count];
-    int caseNumber = 0;
+    bool * vertex_inside = new bool[vertex_count];
+    int case_number = 0;
     for (sizeType i = 0; i < vertex_count; i++)
     {
-      // Shift left
-      caseNumber *= 2;
+      case_number *= 2;
       // Set bit to 0 if vertex is inside
-      vertexInside[i] = 1 - thresholdFunctor::isInside(vertexValues[i]);
-      caseNumber += (int) vertexInside[i];
+      vertex_inside[i] = 1 - thresholdFunctor::isInside(vertex_values[i]);
+      case_number += (int) vertex_inside[i];
     }
 
     // Is it a marching cubes' 33 case?
-    bool isAmiguousMc33case = (CASE_AMIGUOUS_MC33 ==
-                               table_cases_offsets[caseNumber][4] & CASE_AMIGUOUS_MC33);
-    // if it's not unique get the right one
-    if (useMc33 && isAmiguousMc33case)
+    bool ambiguous_case = (CASE_AMBIGUOUS_MC33 ==
+                           table_case_offsets[case_number][4] & CASE_AMBIGUOUS_MC33);
+    // if it's not unique get the correct one
+    if (use_mc_33 && ambiguous_case)
     {
       // find face tests for the case
-      sizeType testIndex = (sizeType) table_mc33_offsets[caseNumber];
+      sizeType test_index = (sizeType) table_mc33_offsets[case_number];
       // offsets to have a binary tree like behavior
-      sizeType treeOffset = 1;
-
+      sizeType tree_offset = 1;
       // perform tests and find case number
-      short faceNumber = table_mc33_face_test_order[testIndex + treeOffset];
-      bool notInverted = (CASE_INVERTED == CASE_INVERTED &
-                          table_cases_offsets[caseNumber][(sizeType) INDEX_UNIQUE_CASE]);
+      short face = table_mc33_face_test_order[test_index + tree_offset];
+      bool not_inverted = (CASE_INVERTED == CASE_INVERTED &
+                           table_case_offsets[case_number][(sizeType) INDEX_UNIQUE_CASE]);
 
-      /*GeometryType geometryType;
-         geometryType.makeQuadrilateral();
-         ReferenceElementContainer<ctype, dim> container;
-         const ReferenceElement<ctype, dim> & re = container(geometryType);*/
-      // test are never positive, positive values are offsets
-      while ((faceNumber <= 0) && (faceNumber != CASE_IS_REGULAR))
+      GeometryType geo_type;
+      geo_type.makeQuadrilateral();
+      ReferenceElementContainer<ctype, dim> rec;
+      const ReferenceElement<ctype, dim> & ref_element = rec(geo_type);
+      valueType corner_a, corner_b, corner_c, corner_d;
+      // tests are non-positive, positive values are offsets
+      while ((face <= 0) && (face != CASE_IS_REGULAR))
       {
-        /* TODO: verallgemeinerten Code benutzen für Würfel
-           valueType cornerA = vertexValues[re.subEntity(faceNumber, 1, 0, dim)];
-           valueType cornerB = vertexValues[re.subEntity(faceNumber, 1, 2, dim)];
-           valueType cornerC = vertexValues[re.subEntity(faceNumber, 1, 3, dim)];
-           valueType cornerD = vertexValues[re.subEntity(faceNumber, 1, 4, dim)];
-         */
-        valueType cornerA = vertexValues[0];
-        valueType cornerB = vertexValues[1];
-        valueType cornerC = vertexValues[2];
-        valueType cornerD = vertexValues[3];
-        // test face
-        bool faceIsSurface = testFaceIsSurface(cornerA, cornerB, cornerC, cornerD, notInverted);
+        if (dim == 3)
+        {
+          corner_a = vertex_values[ref_element.subEntity(face, 1, 0, dim)];
+          corner_b = vertex_values[ref_element.subEntity(face, 1, 2, dim)];
+          corner_c = vertex_values[ref_element.subEntity(face, 1, 3, dim)];
+          corner_d = vertex_values[ref_element.subEntity(face, 1, 4, dim)];
+        }
+        else if (dim == 2)
+        {
+          corner_a = vertex_values[0];
+          corner_b = vertex_values[1];
+          corner_c = vertex_values[2];
+          corner_d = vertex_values[3];
+        }
         // calculate index position (if test is true: 2*index, otherwise: 2*index+1)
-        treeOffset *= 2;
-        treeOffset += (1 - faceIsSurface);
-        faceNumber = table_mc33_face_test_order[testIndex + treeOffset];
+        tree_offset *= 2;
+        tree_offset += (1 - testAmbiguousFace(
+                          corner_a, corner_b, corner_c, corner_d, not_inverted));
+        face = table_mc33_face_test_order[test_index + tree_offset];
       }
-      if (faceNumber != CASE_IS_REGULAR)
+      if (face != CASE_IS_REGULAR)
       {
-        caseNumber = faceNumber;
+        case_number = face;
       }
     }
-    return caseNumber;
+    return case_number;
   }
 
   /*
@@ -118,54 +161,53 @@ namespace Dune {
    * vertex_count: count of vertices (array length)
    * threshold: value of the isosurface
    * smaller_inside: whether smaller values are inside the isosurface
-   *
-   * TODO: Datentyp, Dimension und Referenzelement (Würfel, Dreieck usw) als Templates einführen
    */
   template <typename valueType, int dim, typename thresholdFunctor>
-  void MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::
-  getElements(const valueVector& vertexValues,
-              const sizeType vertexCount, const sizeType key,
+  void MarchingCubes33<valueType, dim, thresholdFunctor>::
+  getElements(const valueVector& vertex_values,
+              const sizeType vertex_count, const sizeType key,
               std::vector<std::vector<point> >& elements,
-              const bool codim1InstedCodim0)
+              const bool codim_1_not_0)
   {
-    const short * offsets = table_cube2d_cases_offsets[key];
-    // Pointer to first element
-    const short * index = table_cube2d_codim_0 + (int) offsets[INDEX_OFFSET_CODIM_0];
-    // Element count
-    sizeType caseCountElements = offsets[INDEX_COUNT_CODIM_0];
-
-    if (codim1InstedCodim0)
+    sizeType element_count = all_case_offsets
+                             [vertex_count + dim][key][INDEX_COUNT_CODIM_0];
+    const short (* codim_index) = all_codim_0[vertex_count + dim]
+                                  + all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_1];
+    if (codim_1_not_0)
     {
-      index = table_cube2d_codim_1 + (int) offsets[INDEX_OFFSET_CODIM_1];
-      caseCountElements = offsets[INDEX_COUNT_CODIM_1];
+      element_count = all_case_offsets
+                      [vertex_count + dim][key][INDEX_COUNT_CODIM_1];
+      codim_index = all_codim_1[vertex_count + dim]
+                    + all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_0];
     }
-    elements.resize(caseCountElements);
+    elements.resize(element_count);
     // printf("Anzahl Elemente: %d \n", (int)caseCountElements);
-    for (sizeType i = 0; i < caseCountElements; i++)
+    for (sizeType i = 0; i < element_count; i++)
     {
-      sizeType numberOfPoints = (sizeType) index[0];
+      sizeType point_count = (sizeType) codim_index[0];
       // Vector for storing the element points
-      elements[i].resize(numberOfPoints);
+      elements[i].resize(point_count);
       //printf(" Debug vectorsize: %d %d\n", (int)numberOfPoints, (int)offsets[INDEX_OFFSET_CODIM_1]);
       // Read points from table and store them
-      for (sizeType j = 0; j < numberOfPoints; j++)
+      for (sizeType j = 0; j < point_count; j++)
       {
-        getCoordsFromNumber(vertexValues, vertexCount, index[j+1], elements[i][j]);
+        getCoordsFromNumber(vertex_values, vertex_count, codim_index[j+1], elements[i][j]);
         //printf("   Loop debug output: j %d / vertex number %d / results: %1.1f %1.1f\n", (int)j, (int)index[j+1], elements[i][j][0], elements[i][j][1]);
       }
       // increase index for pointing to the next element
-      index += numberOfPoints + 1;
+      codim_index += point_count + 1;
     }
   }
 
   /*
    * TODO: Kommentar schreiben
    */
+  /*TODO: folgende nutzlose(?) Methode entfernen*/
   template <typename valueType, int dim, typename thresholdFunctor>
-  typename MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::sizeType
-  MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::
-  getMc33case(const valueVector& vertexValues,
-              const sizeType vertexCount, char number) const
+  typename MarchingCubes33<valueType, dim, thresholdFunctor>::sizeType
+  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  getMc33case(const valueVector& vertex_values,
+              const sizeType vertex_count, char number) const
   {
     return (sizeType) 0;
   }
@@ -179,42 +221,44 @@ namespace Dune {
    * TODO: Code geht nur für Würfel, Quadrate und Linien, nicht aber für Dreiecke. Als Template implementieren
    */
   template <typename valueType, int dim, typename thresholdFunctor>
-  void MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::
-  getCoordsFromNumber(const valueVector& vertexValues,
-                      const sizeType vertexCount, char number,
-                      point& coords) const
+  void MarchingCubes33<valueType, dim, thresholdFunctor>::
+  getCoordsFromNumber(const valueVector& vertex_values,
+                      const sizeType vertex_count, const short number,
+                      point& coord) const
   {
     // it's a center point
     if (number == EY)
     {
       //TODO: Koordinaten für Mittelpunkt ausrechnen
+
     }
     // it's an edge
     else if ((number & NO_VERTEX) == NO_VERTEX)
     {
       // get both vertices
-      point pointA, pointB;
-      getCoordsFromEdgeNumber(vertexValues,
-                              vertexCount, number, pointA);
-      getCoordsFromEdgeNumber(vertexValues,
-                              vertexCount, (number / FACTOR_SECOND_POINT * FACTOR_FIRST_POINT), pointB);
+      point point_a, point_b;
+      getCoordsFromEdgeNumber(vertex_values, vertex_count,
+                              number, point_a);
+      getCoordsFromEdgeNumber(vertex_values, vertex_count,
+                              (number / FACTOR_SECOND_POINT * FACTOR_FIRST_POINT), point_b);
       // get indices for point in valueVector
-      sizeType indexA = 0;
-      sizeType indexB = 0;
+      sizeType index_a = 0;
+      sizeType index_b = 0;
       for (sizeType i = 0; i < dim; i++)
       {
-        indexA += (sizeType) pointA[i] * (1<<i);
-        indexB += (sizeType) pointB[i] * (1<<i);
+        index_a += (sizeType) point_a[i] * (1<<i);
+        index_b += (sizeType) point_b[i] * (1<<i);
       }
       // factor for interpolation
-      valueType interpolFactor = thresholdFunctor::getDistance(vertexValues[indexA])
-                                 / (thresholdFunctor::getDistance(vertexValues[indexB])
-                                    - thresholdFunctor::getDistance(vertexValues[indexA]));
+      valueType interpol_factor =
+        thresholdFunctor::getDistance(vertex_values[index_a])
+        / (thresholdFunctor::getDistance(vertex_values[index_b])
+           - thresholdFunctor::getDistance(vertex_values[index_a]));
       //printf("     Kante: coords %1.3f %1.3f davor indexA %d  indexB %d // %d %d\n", coords[0], coords[1], indexA, indexB, NO_VERTEX^number, number);
       // calculate interpolation point
       for (sizeType i = 0; i < dim; i++)
       {
-        coords[i] = pointA[i] - interpolFactor * (pointB[i] - pointA[i]);
+        coord[i] = point_a[i] - interpol_factor * (point_b[i] - point_a[i]);
       }
       //   printf("     Kante: coords %1.3f %1.3f / A` %1.3f B` %1.3f \n", coords[0], coords[1], thresholdFunctor::getDistance(vertexValues[indexA]), thresholdFunctor::getDistance(vertexValues[indexB]));
 
@@ -222,8 +266,8 @@ namespace Dune {
     // it's a vertex
     else
     {
-      getCoordsFromEdgeNumber(vertexValues,
-                              vertexCount, number, coords);
+      getCoordsFromEdgeNumber(vertex_values, vertex_count,
+                              number, coord);
     }
   }
 
@@ -235,9 +279,9 @@ namespace Dune {
    *
    */
   template <typename valueType, int dim, typename thresholdFunctor>
-  void MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::
-  getCoordsFromEdgeNumber(const valueVector& vertexValues,
-                          const sizeType vertexCount, char number,
+  void MarchingCubes33<valueType, dim, thresholdFunctor>::
+  getCoordsFromEdgeNumber(const valueVector& vertex_values,
+                          const sizeType vertex_count, char number,
                           point& coord) const
   {
     number /= FACTOR_FIRST_POINT;
@@ -254,13 +298,13 @@ namespace Dune {
    * This test is needed to chose between ambiguous MC33 cases.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
-  bool MarchingCubesAlgorithm<valueType, dim, thresholdFunctor>::
-  testFaceIsSurface(const valueType cornerA, const valueType cornerB,
+  bool MarchingCubes33<valueType, dim, thresholdFunctor>::
+  testAmbiguousFace(const valueType corner_a, const valueType corner_b,
                     const valueType cornerC, const valueType cornerD,
                     const bool notInverted) const
   {
     // Change naming scheme to jgt-paper ones
-    double a = thresholdFunctor::getDistance(cornerA);
+    double a = thresholdFunctor::getDistance(corner_a);
     double b = thresholdFunctor::getDistance(cornerC);
     double c = thresholdFunctor::getDistance(cornerD);
     double d = thresholdFunctor::getDistance(cornerB);
@@ -273,4 +317,46 @@ namespace Dune {
     // notInverted and a may invert the sign
     return ((notInverted*2 - 1) * a * (a*c - b*d) >= 0.0);
   }
+
+  /*
+   * \brief Test if the face center is inside the isosurface.
+   *
+   * This test is needed to chose between ambiguous MC33 cases.
+   */
+  template <typename valueType, int dim, typename thresholdFunctor>
+  bool MarchingCubes33<valueType, dim, thresholdFunctor>::
+  testAmbiguousCenter(const valueVector& vertex_values,
+                      const sizeType vertex_count, const bool not_inverted) const
+  {
+    const double a0 = vertex_values[0];
+    const double b0 = vertex_values[2];
+    const double c0 = vertex_values[3];
+    const double d0 = vertex_values[1];
+    const double a0 = vertex_values[5];
+    const double b0 = vertex_values[7];
+    const double c0 = vertex_values[8];
+    const double d0 = vertex_values[6];
+
+    const double a =  (a1 - a0) * (c1 - c0) - (b1 - b0) * (d1 - d0);
+    if (a >= 0.0)
+    {
+      return !not_inverted;
+    }
+    const double b =  c0*(a1 - a0) + a0*(c1 - c0) - d0*(b1 - b0) - b0*(d1 - d0);
+    const double t_max = -0.5 * b / a;
+    if ((0.0 >= t_max) || (1.0 <= tmax))
+    {
+      return !not_inverted;
+    }
+    //const double c =  (a0 * c0) - (b0 * d0);
+    const double at = a0 + (a1 - a0) * t_max;
+    const double bt = b0 + (b1 - b0) * t_max;
+    const double ct = c0 + (c1 - c0) * t_max;
+    const double dt = d0 + (d1 - d0) * t_max;
+    const bool inequation_4 = (at*ct - bt*dt > 0.0);
+    const bool corner_signs = (at*ct > 0.0) && (bt*dt > 0.0)
+                              && (at*bt < 0.0);
+    return (inequation_4 && corner_signs) == not_inverted;
+  }
+
 } // end namespace Dune

@@ -88,7 +88,7 @@ static const short EY = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_
 
 /* Constants indicating whether case special treatment when marching cubes' 33 is used. */
 static const short CASE_UNIQUE_MC33 = 0;
-static const short CASE_AMIGUOUS_MC33 = 1;
+static const short CASE_AMBIGUOUS_MC33 = 1;
 /* Constants indication whether basic case is inverted. */
 static const short CASE_NOT_INVERTED = 0;
 static const short CASE_INVERTED = 2;
@@ -128,7 +128,7 @@ extern "C"
    * Basic case 2: 0 0 1 1
    * Basic case 3: 0 1 0 1
    */
-  extern short table_cube2d_cases_offsets[][5];
+  extern const short table_cube2d_cases_offsets[][5];
 
   /*
    * Contains all lines for Cube 2D.
@@ -145,7 +145,7 @@ extern "C"
    *  |   |
    *  0-5-1
    */
-  extern short table_cube2d_codim_1[];
+  extern const short table_cube2d_codim_1[];
 
   /*
    * Contains all lines for Cube 2D.
@@ -162,73 +162,72 @@ extern "C"
    *  |   |
    *  0-5-1
    */
-  extern short table_cube2d_codim_0[];
+  extern const short table_cube2d_codim_0[];
 
   /*
    * TODO: Comment
    */
-  extern short table_cube2d_mc33_offsets[];
+  extern const short table_cube2d_mc33_offsets[];
 
   /*
    * TODO: Comment
    */
-  extern short table_cube2d_mc33_face_test_order[];
+  extern const short table_cube2d_mc33_face_test_order[];
 
   /*
    * TODO: Comment 3D cube
    */
-  extern short table_cube3d_cases_offsets[][5];
+  extern const short table_cube3d_cases_offsets[][5];
 
   /*
    * TODO: Comment
    */
-  extern short table_cube3d_codim_0[];
+  extern const short table_cube3d_codim_0[];
 
   /*
    * TODO: Comment
    */
-  extern short table_cube3d_codim_0[];
+  extern const short table_cube3d_codim_1[];
 
   /*
    * TODO: Comment
    */
-  extern short table_cube3d_mc33_offsets[];
+  extern const short table_cube3d_mc33_offsets[];
 
   /*
    * TODO: Comment
    */
-  extern short table_cube3d_mc33_face_test_order[];
+  extern const short table_cube3d_mc33_face_test_order[];
 
   /*
    * TODO: Comment 2D simplex
    */
-  extern short table_simplex2d_cases_offsets[][5];
+  extern const short table_simplex2d_cases_offsets[][5];
 
   /*
    * TODO: Comment
    */
-  extern short table_simplex2d_codim_0[];
+  extern const short table_simplex2d_codim_0[];
 
   /*
    * TODO: Comment
    */
-  extern short table_simplex2d_codim_0[];
+  extern const short table_simplex2d_codim_1[];
 
   /*
    * TODO: Comment 3D simplex
    */
-  extern short table_simplex3d_cases_offsets[][5];
+  extern const short table_simplex3d_cases_offsets[][5];
 
   /*
    * TODO: Comment
    */
-  extern short table_simplex3d_codim_0[];
+  extern const short table_simplex3d_codim_0[];
 
   /*
    * TODO: Comment
    */
-  extern short table_simplex3d_codim_0[];
-
+  extern const short table_simplex3d_codim_1[];
 
 } // extern "C"
 

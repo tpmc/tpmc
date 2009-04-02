@@ -15,7 +15,7 @@ from lutgen.dunecode import DuneCode
 cube3d = LookupGenerator(3,"cube")
 # base cases cube 3D:
 # 0,0,0,0,0,0,0,0 -> 00000000 # Basic Case 0
-cube3d.base_cases[0].faces = [[]]
+cube3d.base_cases[0].faces = []
 cube3d.base_cases[0].cells = [[0, 1, 2, 3, 4, 5, 6, 7]]
 # 1,0,0,0,0,0,0,0 -> 00000001 # Basic Case 1
 cube3d.base_cases[1].faces = [[(0, 4), (0, 1), (0, 2)]]
@@ -78,10 +78,33 @@ cube3d.base_cases[19].cells = [[0, (0, 1), (0, 2), (0, 4)], [(6, 7), (5, 7), (3,
 cube3d.base_cases[20].faces = [[(6, 7), (5, 7), (3, 7)]]
 cube3d.base_cases[20].cells = [[(6, 7), (5, 7), (3, 7), 7]]
 # 1,1,1,1,1,1,1,1 -> 11111111 # Inverse of Basic Case 0 
-cube3d.base_cases[21].faces = [[]]
-cube3d.base_cases[21].cells = [[]]
+cube3d.base_cases[21].faces = []
+cube3d.base_cases[21].cells = []
 # generate code
 cube3d.generate()
+
+################################################################################
+## MC 33 cases and MC 33 face test table                                      ##
+################################################################################
+cube3d.mc33_cases = [[] for x in range(len(cube3d.base_cases))]
+cube3d.base_case_numbers = { \
+    (0, 0, 0, 0, 0, 0, 0, 0): 0, (1, 0, 0, 0, 0, 0, 0, 0): 1, (1, 1, 0, 0, 0, 0, 0, 0): 2, \
+    (0, 1, 1, 0, 0, 0, 0, 0): 3, (0, 0, 0, 1, 1, 0, 0, 0): 4, (1, 1, 1, 0, 0, 0, 0, 0): 5, \
+    (1, 0, 0, 1, 1, 0, 0, 0): 6, (0, 1, 1, 0, 1, 0, 0, 0): 7, (1, 1, 1, 1, 0, 0, 0, 0): 8, \
+    (1, 1, 1, 0, 1, 0, 0, 0): 9, (0, 0, 1, 1, 1, 1, 0, 0): 10, (1, 1, 0, 1, 1, 0, 0, 0): 11, \
+    (0, 1, 1, 1, 1, 0, 0, 0): 12, (1, 0, 0, 1, 0, 1, 1, 0): 13, (1, 0, 1, 1, 1, 0, 0, 0): 14, \
+    (1, 1, 1, 1, 1, 1, 1, 1): -15, (1, 1, 0, 1, 0, 1, 1, 0): -7, (1, 0, 1, 1, 1, 1, 0, 0): -6, \
+    (1, 1, 1, 1, 1, 0, 0, 0): -5, \
+    (0, 1, 1, 1, 1, 1, 1, 0): -4, (1, 1, 1, 1, 0, 1, 1, 0): -3, (1, 1, 1, 1, 1, 1, 0, 0): -2, \
+    (1, 1, 1, 1, 1, 1, 1, 0): -1
+    }
+cube3d.mc33_tests = [[] for x in range(len(cube3d.base_cases))]
+
+# 0,1,1,0 -> 0110
+#cube2d.mc33_cases[3].append(BaseCase(cube2d.base_cases[3].dim, cube2d.base_cases[3].case))
+#cube2d.mc33_cases[3][0].faces = [[(1, 3), (0, 1)], [(2, 3), (0, 2)]]
+#cube2d.mc33_cases[3][0].cells = [[2, (2, 3), (0, 2)], [1, (1, 3), (0, 1)]]
+#cube2d.mc33_tests[3] = [-1, 1, 0]
 
 # TODO: remove comment from the following block to get MC33 lookup table
 #################################################################################
@@ -367,7 +390,7 @@ extern \"C\" {
 """)
 
 
-#DuneCode(cube3d).write(ccfile)
+DuneCode(cube3d).write(ccfile)
 DuneCode(simplex3d).write(ccfile)
 DuneCode(cube2d).write(ccfile)
 DuneCode(simplex2d).write(ccfile)
@@ -388,7 +411,7 @@ generators = {
 	(3,"simplex"): simplex3d,
 #	(3,"prism"): prism3d,
 #	(3,"pyramid"): pyramid3d,
-	#(3,"cube"): cube3d
+	(3,"cube"): cube3d
 	}
 
 #Consistency(generators).check(3, "simplex")

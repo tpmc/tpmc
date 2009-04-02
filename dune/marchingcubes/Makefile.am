@@ -2,7 +2,7 @@
 
 # SUBDIRS = lut
 check_PROGRAMS=testmc33
-testmc33_SOURCES=testmc33.cc marchinglut.cc thresholdfunctor.cc
+testmc33_SOURCES=testmc33.cc marchingcubes.cc marchinglut.cc thresholdfunctor.cc
 
 TESTS=$(check_PROGRAMS)
 

@@ -196,7 +196,7 @@ class DuneCode:
         # Start output with table definitions
         table_offsets = TableStorage()
         table_offsets.tablestring = "    " \
-            "short table_%(T)s%(D)id_cases_offsets[][5] = {\n" \
+            "const short table_%(T)s%(D)id_cases_offsets[][5] = {\n" \
             % { "D" : self.lg.dim, "T" : self.lg.basicType } \
             + "     /* vv: vertex values with 0=in, 1=out\n" \
             "      * cn: case number\n" \
@@ -209,7 +209,7 @@ class DuneCode:
             "      /* vv / cn / bc / c0, o0, c1, o1, uniq */\n"
         table_codim0 = TableStorage()
         table_codim0.tablestring = "    " \
-            "short table_%(T)s%(D)id_codim_0[] = {\n" \
+            "const short table_%(T)s%(D)id_codim_0[] = {\n" \
             % { "D" : self.lg.dim, "T" : self.lg.basicType } \
             + "     /* cn: case number\n" \
             "      * bc: basic case, if negative it's inverted\n" \
@@ -218,7 +218,7 @@ class DuneCode:
             "      /* cn / bc / el / cp */\n"
         table_codim1 = TableStorage()
         table_codim1.tablestring = "    " \
-            "short table_%(T)s%(D)id_codim_1[] = {\n" \
+            "const short table_%(T)s%(D)id_codim_1[] = {\n" \
             % { "D" : self.lg.dim, "T" : self.lg.basicType } \
             + "     /* cn: case number\n" \
             "      * bc: basic case, if negative it's inverted\n" \
@@ -232,11 +232,11 @@ class DuneCode:
         if self.lg.basicType == "cube":
             table_mc33_offsets = TableStorage() #TODO: Typ der Tabelle von char auf int (?) aendern
             table_mc33_offsets.tablestring = "    " \
-                "short table_%(T)s%(D)id_mc33_offsets[] = {\n" \
+                "const short table_%(T)s%(D)id_mc33_offsets[] = {\n" \
                 % { "D" : self.lg.dim, "T" : self.lg.basicType }
             table_mc33_tests = TableStorage()
             table_mc33_tests.tablestring = "    " \
-                "short table_%(T)s%(D)id_mc33_face_test_order[] = {\n" \
+                "const short table_%(T)s%(D)id_mc33_face_test_order[] = {\n" \
                 % { "D" : self.lg.dim, "T" : self.lg.basicType } \
                 + "      /* dummy entry/not used but the index has to start with 1*/\n" \
                 + "      1,\n"
