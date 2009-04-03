@@ -48,8 +48,11 @@ namespace Dune {
      *
      * This test is needed to chose between ambiguous MC33 cases.
      */
-    bool testFaceIsSurface(const valueType cornerA, const valueType cornerB,
+    bool testAmbiguousFace(const valueType corner_a, const valueType cornerB,
                            const valueType cornerC, const valueType cornerD, const bool notInverted) const;
+
+    bool testAmbiguousCenter(const valueVector& vertex_values,
+                             const sizeType vertex_count, const bool not_inverted) const;
 
     sizeType getMc33case(const valueVector& vertexValues,
                          const sizeType vertexCount, char number) const;

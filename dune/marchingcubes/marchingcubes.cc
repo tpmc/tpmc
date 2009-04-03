@@ -216,9 +216,13 @@ namespace Dune {
    * \brief Generates the coordinate for a point which is specified
    * by its vertex or edge number.
    *
-   * Result will be stored to \param coords.
-   *
-   * TODO: Code geht nur für Würfel, Quadrate und Linien, nicht aber für Dreiecke. Als Template implementieren
+   * Result will be stored to <code>coords</code>.
+   * \param vertex_values array with all vertex values in it.
+   * \param vertex_count number of vertices in <code>vertex_values</code>.
+   * \param number specifies the point of which the coordinates should
+   *               be generated; should be a <code>const</code> from
+   *               \ref marchinglut.hh .
+   * \param coord where the resulting coordinates will be stored.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   void MarchingCubes33<valueType, dim, thresholdFunctor>::
@@ -299,7 +303,7 @@ namespace Dune {
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   bool MarchingCubes33<valueType, dim, thresholdFunctor>::
-  testAmbiguousFace(const valueType corner_a, const valueType corner_b,
+  testAmbiguousFace(const valueType corner_a, const valueType cornerB,
                     const valueType cornerC, const valueType cornerD,
                     const bool notInverted) const
   {
@@ -332,10 +336,10 @@ namespace Dune {
     const double b0 = vertex_values[2];
     const double c0 = vertex_values[3];
     const double d0 = vertex_values[1];
-    const double a0 = vertex_values[5];
-    const double b0 = vertex_values[7];
-    const double c0 = vertex_values[8];
-    const double d0 = vertex_values[6];
+    const double a1 = vertex_values[5];
+    const double b1 = vertex_values[7];
+    const double c1 = vertex_values[8];
+    const double d1 = vertex_values[6];
 
     const double a =  (a1 - a0) * (c1 - c0) - (b1 - b0) * (d1 - d0);
     if (a >= 0.0)
@@ -344,7 +348,7 @@ namespace Dune {
     }
     const double b =  c0*(a1 - a0) + a0*(c1 - c0) - d0*(b1 - b0) - b0*(d1 - d0);
     const double t_max = -0.5 * b / a;
-    if ((0.0 >= t_max) || (1.0 <= tmax))
+    if ((0.0 >= t_max) || (1.0 <= t_max))
     {
       return !not_inverted;
     }
