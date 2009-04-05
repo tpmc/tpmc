@@ -1,5 +1,6 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
+#include <fstream>
 #include <iostream> // FIXME TODO: Debug only, entferne mich!
 
 namespace Dune {
@@ -11,7 +12,8 @@ namespace Dune {
   offsetRow *
   MarchingCubes33<valueType, dim, thresholdFunctor>::
   all_case_offsets[] = {
-    NULL, NULL, NULL, NULL, table_simplex2d_cases_offsets,
+    NULL, NULL, NULL, table_any1d_cases_offsets,
+    NULL, table_simplex2d_cases_offsets,
     table_cube2d_cases_offsets, table_simplex3d_cases_offsets,
     NULL, NULL, NULL, table_cube3d_cases_offsets
   };
@@ -23,7 +25,8 @@ namespace Dune {
   const short * const
   MarchingCubes33<valueType, dim, thresholdFunctor>::
   all_codim_0[] = {
-    NULL, NULL, NULL, NULL, table_simplex2d_codim_0,
+    NULL, NULL, NULL, table_any1d_codim_0,
+    NULL, table_simplex2d_codim_0,
     table_cube2d_codim_0, table_simplex3d_codim_0,
     NULL, NULL, NULL, table_cube3d_codim_0
   };
@@ -35,7 +38,8 @@ namespace Dune {
   const short * const
   MarchingCubes33<valueType, dim, thresholdFunctor>::
   all_codim_1[] = {
-    NULL, NULL, NULL, NULL, table_simplex2d_codim_1,
+    NULL, NULL, NULL, table_any1d_codim_1,
+    NULL, table_simplex2d_codim_1,
     table_cube2d_codim_1, table_simplex3d_codim_1,
     NULL, NULL, NULL, table_cube3d_codim_1
   };
@@ -47,7 +51,7 @@ namespace Dune {
   const short * const
   MarchingCubes33<valueType, dim, thresholdFunctor>::
   all_mc33_offsets[] = {
-    NULL, NULL, NULL, NULL, NULL,
+    NULL, NULL, NULL, NULL, NULL, NULL,
     table_cube2d_mc33_offsets, NULL,
     NULL, NULL, NULL, table_cube3d_mc33_offsets
   };
@@ -59,7 +63,7 @@ namespace Dune {
   const short * const
   MarchingCubes33<valueType, dim, thresholdFunctor>::
   all_face_tests[] = {
-    NULL, NULL, NULL, NULL, NULL,
+    NULL, NULL, NULL, NULL, NULL, NULL,
     table_cube2d_mc33_face_test_order, NULL,
     NULL, NULL, NULL, table_cube3d_mc33_face_test_order
   };
@@ -81,10 +85,9 @@ namespace Dune {
       DUNE_THROW(IllegalArgumentException,
                  "Dimension must be 0, 1, 2 or 3, not " << dim << ".");
     }
-    else if ((dim == 0) || (dim == 1))
+    else if (dim == 0)
     {
-      DUNE_THROW(IllegalArgumentException,
-                 "For dimension 0 or 1 getKey() is not needed.");
+      return 0;
     }
     const short (* const table_case_offsets)[5] =
       all_case_offsets[vertex_count + dim];
@@ -141,6 +144,11 @@ namespace Dune {
           corner_c = vertex_values[2];
           corner_d = vertex_values[3];
         }
+        else
+        {
+          DUNE_THROW(IllegalArgumentException, "MC 33 cases should"
+                     << " occur with dimension 2 or 3, not " << dim << ".");
+        }
         // calculate index position (if test is true: 2*index, otherwise: 2*index+1)
         tree_offset *= 2;
         tree_offset += (1 - testAmbiguousFace(
@@ -169,33 +177,53 @@ namespace Dune {
               std::vector<std::vector<point> >& elements,
               const bool codim_1_not_0)
   {
-    sizeType element_count = all_case_offsets
-                             [vertex_count + dim][key][INDEX_COUNT_CODIM_0];
-    const short (* codim_index) = all_codim_0[vertex_count + dim]
-                                  + all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_1];
-    if (codim_1_not_0)
+    if (dim == 0)
     {
-      element_count = all_case_offsets
-                      [vertex_count + dim][key][INDEX_COUNT_CODIM_1];
-      codim_index = all_codim_1[vertex_count + dim]
-                    + all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_0];
-    }
-    elements.resize(element_count);
-    // printf("Anzahl Elemente: %d \n", (int)caseCountElements);
-    for (sizeType i = 0; i < element_count; i++)
-    {
-      sizeType point_count = (sizeType) codim_index[0];
-      // Vector for storing the element points
-      elements[i].resize(point_count);
-      //printf(" Debug vectorsize: %d %d\n", (int)numberOfPoints, (int)offsets[INDEX_OFFSET_CODIM_1]);
-      // Read points from table and store them
-      for (sizeType j = 0; j < point_count; j++)
+      if (thresholdFunctor::isInside(vertex_values[0]))
       {
-        getCoordsFromNumber(vertex_values, vertex_count, codim_index[j+1], elements[i][j]);
-        //printf("   Loop debug output: j %d / vertex number %d / results: %1.1f %1.1f\n", (int)j, (int)index[j+1], elements[i][j][0], elements[i][j][1]);
+        elements.resize(1);
+        elements[1].resize(0);
       }
-      // increase index for pointing to the next element
-      codim_index += point_count + 1;
+      else
+      {
+        elements.resize(0);
+      }
+    }
+    else
+    {
+      sizeType element_count = all_case_offsets
+                               [vertex_count + dim][key][INDEX_COUNT_CODIM_0];
+      const short (* codim_index) = all_codim_0[vertex_count + dim]
+                                    + all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_0];
+      if (codim_1_not_0)
+      {
+        element_count = all_case_offsets
+                        [vertex_count + dim][key][INDEX_COUNT_CODIM_1];
+        codim_index = all_codim_1[vertex_count + dim]
+                      + all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_1];
+      }
+      /*printf(">>> %i Daten: %p\n %p %p\n %p %p\n %p %p\n", (int)key,
+              (codim_index - all_case_offsets[vertex_count + dim][key][codim_1_not_0?INDEX_OFFSET_CODIM_1:INDEX_OFFSET_CODIM_0]),
+              table_any1d_codim_0, table_any1d_codim_1,
+              table_simplex2d_codim_0, table_simplex2d_codim_1,
+              table_cube2d_codim_0, table_cube2d_codim_1);*/
+      elements.resize(element_count);
+      // printf("Anzahl Elemente: %d \n", (int)caseCountElements);
+      for (sizeType i = 0; i < element_count; i++)
+      {
+        sizeType point_count = (sizeType) codim_index[0];
+        // Vector for storing the element points
+        elements[i].resize(point_count);
+        //printf(" Debug vectorsize: %d %d\n", (int)numberOfPoints, (int)offsets[INDEX_OFFSET_CODIM_1]);
+        // Read points from table and store them
+        for (sizeType j = 0; j < point_count; j++)
+        {
+          getCoordsFromNumber(vertex_values, vertex_count, codim_index[j+1], elements[i][j]);
+          //printf("   Loop debug output: j %d / vertex number %d / results: %1.1f %1.1f\n", (int)j, (int)index[j+1], elements[i][j][0], elements[i][j][1]);
+        }
+        // increase index for pointing to the next element
+        codim_index += point_count + 1;
+      }
     }
   }
 
@@ -234,7 +262,10 @@ namespace Dune {
     if (number == EY)
     {
       //TODO: Koordinaten für Mittelpunkt ausrechnen
-
+      for (sizeType i = 0; i < dim; i++)
+      {
+        coord[i] = 0.5;
+      }
     }
     // it's an edge
     else if ((number & NO_VERTEX) == NO_VERTEX)

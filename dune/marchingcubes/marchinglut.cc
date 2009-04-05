@@ -1331,4 +1331,47 @@ extern "C" {
   };
 
 
+  const short table_any1d_cases_offsets[][5] = {
+    /* vv: vertex values with 0=in, 1=out
+     * cn: case number
+     * bc: basic case, if negative it's inverted
+     * c1: element count of co-dimension 1 elements
+     * o1: table offset for co-dimension 1
+     * c0: element count of co-dimension 0 elements
+     * o0: table offset for co-dimension 0
+     * uniq: whether the case is ambiguous for MC33 */
+    /* vv / cn / bc / c0, o0, c1, o1, uniq */
+    /* (0, 0) / 0 */ {0, 1, 0, 0, 0},
+    /* (1, 0) / 1 */ {3, 1, 0, 1, 0},
+    /* (0, 1) / 1 */ {6, 1, 2, 1, 0},
+    /* (1, 1) / 16 */ {9, 0, 4, 0, 0},
+  };
+
+
+  const short table_any1d_codim_0[] = {
+    /* cn: case number
+     * bc: basic case, if negative it's inverted
+     * el: elements specified by number of vertices
+     * cp: current position in array = offset */
+    /* cn / bc / el / cp */
+    /* (0, 0) / 0 / 2 / 0 */ 2, VA, VB,
+    /* (1, 0) / 1 / 2 / 3 */ 2, EJ, VB,
+    /* (0, 1) / 1 / 2 / 6 */ 2, EJ, VA,
+    /* (1, 1) / 16 /  / 9 */  /* no elements */
+  };
+
+
+  const short table_any1d_codim_1[] = {
+    /* cn: case number
+     * bc: basic case, if negative it's inverted
+     * el: elements specified by number of vertices
+     * cp: current position in array = offset */
+    /* cn / bc / el / cp */
+    /* (0, 0) / 0 /  / 0 */  /* no elements */
+    /* (1, 0) / 1 / 1 / 0 */ 1, EJ,
+    /* (0, 1) / 1 / 1 / 2 */ 1, EJ,
+    /* (1, 1) / 16 /  / 4 */  /* no elements */
+  };
+
+
 }

@@ -229,6 +229,21 @@ extern "C"
    */
   extern const short table_simplex3d_codim_1[];
 
+  /*
+   * TODO: Comment
+   */
+  extern const short table_any1d_cases_offsets[][5];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_any1d_codim_0[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_any1d_codim_1[];
+
 } // extern "C"
 
 #endif // _MARCHING_LUT_CC_

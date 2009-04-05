@@ -31,7 +31,7 @@ namespace Dune {
     void getElements(const valueVector& vertexValues,
                      const sizeType vertexCount, const sizeType key,
                      std::vector<std::vector<point> >& elements,
-                     const bool codim1InstedCodim0);
+                     const bool codim_1_not_0);
 
   private:
     /*

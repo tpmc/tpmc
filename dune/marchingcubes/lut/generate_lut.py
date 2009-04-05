@@ -340,17 +340,18 @@ simplex2d.base_case_numbers = {(0, 0, 0): 0, (1, 0, 0): 1, \
 lut1d = LookupGenerator(1,"any")
 # base cases cube 1D:
 # 0,0 -> 00
-lut1d.base_cases[0].faces = [[]]
+lut1d.base_cases[0].faces = []
 lut1d.base_cases[0].cells = [[0,1]]
 # 1,0 -> 01
 lut1d.base_cases[1].faces = [[(0,1)]]
 lut1d.base_cases[1].cells = [[(0,1), 1]]
 # 1,1 -> 11
-lut1d.base_cases[2].faces = [[]]
-lut1d.base_cases[2].cells = [[]]
+lut1d.base_cases[2].faces = []
+lut1d.base_cases[2].cells = []
 # generate code
 lut1d.generate()
-
+lut1d.base_case_numbers = {(0, 0): 0, (1, 0): 1, \
+    (1, 1): 16}
 
 ################################################################################
 ## 0D Cube                                                                    ##
@@ -358,11 +359,11 @@ lut1d.generate()
 lut0d = LookupGenerator(0,"any")
 # base cases cube 0D:
 # 0 -> 0
-lut0d.base_cases[0].faces = [[]]
+lut0d.base_cases[0].faces = []
 lut0d.base_cases[0].cells = [[0]]
 # 1 -> 1
-lut0d.base_cases[1].faces = [[]]
-lut0d.base_cases[1].cells = [[]]
+lut0d.base_cases[1].faces = []
+lut0d.base_cases[1].cells = []
 # generate code
 lut0d.generate()
 
@@ -394,7 +395,7 @@ DuneCode(cube3d).write(ccfile)
 DuneCode(simplex3d).write(ccfile)
 DuneCode(cube2d).write(ccfile)
 DuneCode(simplex2d).write(ccfile)
-#DuneCode(lut1d).write(ccfile)
+DuneCode(lut1d).write(ccfile)
 #DuneCode(lut0d).write(ccfile)
 
 ccfile.write("}\n")
@@ -406,12 +407,13 @@ ccfile.close()
 #Vtk(simplex2d).write()
 
 generators = {
-	(2,"simplex"): simplex2d,
-	(2,"cube"): cube2d,
-	(3,"simplex"): simplex3d,
-#	(3,"prism"): prism3d,
-#	(3,"pyramid"): pyramid3d,
-	(3,"cube"): cube3d
+    (1,"any"): lut1d,
+	(2, "simplex"): simplex2d,
+	(2, "cube"): cube2d,
+	(3, "simplex"): simplex3d,
+#	(3, "prism"): prism3d,
+#	(3, "pyramid"): pyramid3d,
+	(3, "cube"): cube3d
 	}
 
 #Consistency(generators).check(3, "simplex")
