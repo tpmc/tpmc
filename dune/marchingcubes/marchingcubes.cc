@@ -99,12 +99,13 @@ namespace Dune {
     // vector containing information if vertices are inside or not
     bool * vertex_inside = new bool[vertex_count];
     int case_number = 0;
-    for (sizeType i = 0; i < vertex_count; i++)
+    for (sizeType i = vertex_count; i > 0; i--)
     {
       case_number *= 2;
       // Set bit to 0 if vertex is inside
-      vertex_inside[i] = 1 - thresholdFunctor::isInside(vertex_values[i]);
-      case_number += (int) vertex_inside[i];
+      vertex_inside[i-1] = 1 - thresholdFunctor::isInside(vertex_values[i-1]);
+      case_number += (int) vertex_inside[i-1];
+      //TODO: Richtige Reihenfolge programmieren, um richtige Schlüßel zu erhalten
     }
 
     // Is it a marching cubes' 33 case?

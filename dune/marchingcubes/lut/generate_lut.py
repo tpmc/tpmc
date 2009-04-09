@@ -84,7 +84,7 @@ cube3d.base_cases[21].cells = []
 cube3d.generate()
 
 ################################################################################
-## MC 33 cases and MC 33 face test table                                      ##
+## MC 33 cases and MC 33 face test table for 3D Cube                          ##
 ################################################################################
 cube3d.mc33_cases = [[] for x in range(len(cube3d.base_cases))]
 cube3d.base_case_numbers = { \
@@ -100,16 +100,13 @@ cube3d.base_case_numbers = { \
     }
 cube3d.mc33_tests = [[] for x in range(len(cube3d.base_cases))]
 
-# 0,1,1,0 -> 0110
-#cube2d.mc33_cases[3].append(BaseCase(cube2d.base_cases[3].dim, cube2d.base_cases[3].case))
-#cube2d.mc33_cases[3][0].faces = [[(1, 3), (0, 1)], [(2, 3), (0, 2)]]
-#cube2d.mc33_cases[3][0].cells = [[2, (2, 3), (0, 2)], [1, (1, 3), (0, 1)]]
-#cube2d.mc33_tests[3] = [-1, 1, 0]
 
-# TODO: remove comment from the following block to get MC33 lookup table
-#################################################################################
-### 3D Cube with special cases of marching cube MC 33                          ##
-#################################################################################
+# 0,1,1,0,0,0,0,0 -> 00000110 # MC33 Case 3.2
+cube3d.mc33_cases[2].append(BaseCase(cube3d.base_cases[2].dim, cube3d.base_cases[2].case))
+cube3d.mc33_cases[2][0].faces = [[(1, 5), (1, 3), (0, 1)], [(2, 3), (0, 2), (2, 6)]]
+cube3d.mc33_cases[2][0].cells = [[(1, 5), (1, 3), (0, 1), 5, 7, 4], [(0, 2), (2, 3), (2, 6), 4, 7, 6], [(1, 3), (0, 1), 3, 7], [(0, 2), (2, 3), 0, 4], [(0, 1), 0, (2, 3), 4], [3, 7, (2, 3), (0, 1)], [(0, 1), 4, (2, 3), 7]]
+cube3d.mc33_tests[2] = [-4, 1, 0]
+
 #cube3d_mc33 = LookupGenerator(3, "cube3d")
 ## base cases cube 3D for marching cubes 33:
 #
@@ -281,7 +278,7 @@ cube2d.base_cases[0].faces = []
 cube2d.base_cases[0].cells = [[0, 1, 2, 3]]
 # 1,0,0,0 -> 0001
 cube2d.base_cases[1].faces = [[(0, 1), (0, 2)]]
-cube2d.base_cases[1].cells = [[3, 2, (0, 2)], [3, (0, 2), (0, 1)], [3, (0, 1), 1]]
+cube2d.base_cases[1].cells = [[1, 2, 3], [1, (0, 1), (0, 2), 2]]
 # 1,1,0,0 -> 0011
 cube2d.base_cases[2].faces = [[(1, 3), (0, 2)]]
 cube2d.base_cases[2].cells = [[(0, 2), (1, 3), 2, 3]]
@@ -298,7 +295,7 @@ cube2d.base_cases[5].cells = []
 cube2d.generate()
 
 ################################################################################
-## MC 33 cases and MC 33 face test table                                      ##
+## MC 33 cases and MC 33 face test table for 2D Cube                          ##
 ################################################################################
 cube2d.mc33_cases = [[] for x in range(len(cube2d.base_cases))]
 cube2d.base_case_numbers = {(0, 0, 0, 0): 0, (1, 0, 0, 0): 1, \
@@ -332,7 +329,7 @@ simplex2d.base_cases[3].cells = []
 # generate code
 simplex2d.generate()
 simplex2d.base_case_numbers = {(0, 0, 0): 0, (1, 0, 0): 1, \
-    (1, 1, 0): 2, (1, 1, 1): 3}
+    (1, 1, 0): -1, (1, 1, 1): 16}
 
 ################################################################################
 ## 1D Cube                                                                    ##
@@ -350,8 +347,7 @@ lut1d.base_cases[2].faces = []
 lut1d.base_cases[2].cells = []
 # generate code
 lut1d.generate()
-lut1d.base_case_numbers = {(0, 0): 0, (1, 0): 1, \
-    (1, 1): 16}
+lut1d.base_case_numbers = {(0, 0): 0, (1, 0): 1, (1, 1): 16}
 
 ################################################################################
 ## 0D Cube                                                                    ##

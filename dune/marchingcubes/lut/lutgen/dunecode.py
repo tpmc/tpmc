@@ -159,6 +159,10 @@ class DuneCode:
                     # Generate tests table
                     
                     #TODO: bei cube3d muessen die Face-Tests mitpermutiert werden
+                                    # debug, nur um an alle Permutationen zu kommen :-)
+                    ##if self.lg.basicType == "cube" and self.lg.dim == 3:
+                    ##    get_cube3d_face(self, 1, entry.permutation)
+
                     
                     i = 0
                     for test in self.lg.mc33_tests[base_case_number]:
@@ -192,6 +196,44 @@ class DuneCode:
                         % (entry.case, mc33_offsets.offset), 0)
                     mc33_offsets.append("255,\n", 1)
             mc33_tests.append("\n", 0)
+        # Calculate face number with respect to permutation
+        def get_cube3d_face(self, face, permutation):
+            permutations = {(0, 1, 2, 3): [0, 1, 2, 3, 4, 5], \
+                            (0, 2, 4, 6): [2, 3, 4, 5, 0, 1], \
+                            (0, 4, 1, 5): [4, 5, 0, 1, 2, 3], \
+                            (0, 4, 2, 6): [4, 5, 2, 3, 0, 1], \
+                            (1, 0, 3, 2): [1, 0, 2, 3, 4, 5], \
+                            (1, 3, 5, 7): [2, 3, 4, 5, 1, 0], \
+                            (1, 5, 0, 4): [4, 5, 1, 0, 2, 3], \
+                            (2, 0, 3, 1): [3, 2, 0, 1, 4, 5], \
+                            (2, 0, 6, 4): [3, 2, 4, 5, 0, 1], \
+                            (2, 3, 6, 7): [0, 1, 4, 5, 3, 2], \
+                            (2, 6, 0, 4): [4, 5, 3, 4, 0, 1], \
+                            (2, 6, 3, 7): [], \
+                            (3, 1, 2, 0): [], \
+                            (3, 1, 7, 5): [], \
+                            (3, 2, 1, 0): [], \
+                            (3, 2, 7, 6): [], \
+                            (3, 7, 2, 6): [], \
+                            (4, 0, 5, 1): [], \
+                            (4, 0, 6, 2): [], \
+                            (4, 5, 6, 7): [], \
+                            (4, 6, 0, 2): [], \
+                            (5, 1, 4, 0): [], \
+                            (5, 1, 7, 3): [], \
+                            (5, 4, 7, 6): [], \
+                            (5, 7, 1, 3): [], \
+                            (5, 7, 4, 6): [], \
+                            (6, 2, 7, 3): [], \
+                            (6, 4, 2, 0): [], \
+                            (6, 4, 7, 5): [], \
+                            (6, 7, 2, 3): [], \
+                            (6, 7, 4, 5): [], \
+                            (7, 3, 6, 2): [], \
+                            (7, 5, 6, 4): [], \
+                            (7, 5, 3, 1): [], \
+                            (7, 6, 3, 2): []};
+            return permutations[permutation[0:4]][face]
         
         # Start output with table definitions
         table_offsets = TableStorage()

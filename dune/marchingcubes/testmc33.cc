@@ -85,7 +85,7 @@ template <int dim> bool TestMarchingCubes33::assertEquals(sizeType expect,
 {
   if (verbose)
   {
-    std::cout << " Test data (dim: " << dim << ", size: " <<
+    std::cout << " Test data (dim: " << dim << ", vertices: " <<
     vertex_count << "): ";
     for (sizeType i = 0; i < vertex_count; i++)
     {
@@ -148,7 +148,7 @@ int main(int arg_count, char ** arg_array)
 {
   TestMarchingCubes33 testmc33;
   bool passed = true;
-  bool verbose = true;
+  bool verbose = false;
 
   /*sizeType vertexCount = argCount - 1;
      double* vertices = new double[vertexCount];
@@ -164,39 +164,55 @@ int main(int arg_count, char ** arg_array)
   passed &= testmc33.testAny0d(0, verbose, 0.8);
   // Test any 1d (line)
   passed &= testmc33.testAny1d(0, verbose, 0.4, 0.2);
-  passed &= testmc33.testAny1d(1, verbose, 0.3, 0.7);
-  passed &= testmc33.testAny1d(2, verbose, 0.7, 0.1);
+  passed &= testmc33.testAny1d(1, verbose, 0.7, 0.1);
+  passed &= testmc33.testAny1d(2, verbose, 0.3, 0.7);
   passed &= testmc33.testAny1d(3, verbose, 0.8, 0.7);
   // Test simplex 2d
-  passed &= testmc33.testSimplex2d
-              (0, verbose, 0.8, 0.8, 0.8);
-  passed &= testmc33.testSimplex2d
-              (1, verbose, 0.8, 0.8, 0.4);
-  passed &= testmc33.testSimplex2d
-              (2, verbose, 0.8, 0.4, 0.8);
-  passed &= testmc33.testSimplex2d
-              (3, verbose, 0.4, 0.8, 0.8);
-  passed &= testmc33.testSimplex2d
-              (4, verbose, 0.8, 0.8, 0.8);
-  passed &= testmc33.testSimplex2d
-              (5, verbose, 0.8, 0.8, 0.4);
-  passed &= testmc33.testSimplex2d
-              (6, verbose, 0.8, 0.4, 0.8);
-  passed &= testmc33.testSimplex2d
-              (7, verbose, 0.4, 0.8, 0.8);
-  // TODO: find infinite loop and remove return statement
-  printf("zu ende!\n");
-  return 0;
+  passed &= testmc33.testSimplex2d(0, verbose, 0.2, 0.3, 0.4);
+  passed &= testmc33.testSimplex2d(1, verbose, 0.8, 0.2, 0.4);
+  passed &= testmc33.testSimplex2d(2, verbose, 0.1, 0.7, 0.5);
+  passed &= testmc33.testSimplex2d(3, verbose, 0.8, 0.8, 0.4);
+  passed &= testmc33.testSimplex2d(4, verbose, 0.0, 0.2, 0.8);
+  passed &= testmc33.testSimplex2d(5, verbose, 0.8, 0.2, 0.9);
+  passed &= testmc33.testSimplex2d(6, verbose, 0.3, 0.7, 0.8);
+  passed &= testmc33.testSimplex2d(7, verbose, 0.9, 0.7, 0.8);
+  // Test simplex 3d
+  passed &= testmc33.testSimplex3d(0, verbose, 0.2, 0.3, 0.4, 0.5);
+  passed &= testmc33.testSimplex3d(1, verbose, 0.8, 0.3, 0.4, 0.5);
+  passed &= testmc33.testSimplex3d(2, verbose, 0.2, 1.0, 0.4, 0.5);
+  passed &= testmc33.testSimplex3d(3, verbose, 0.9, 0.7, 0.4, 0.5);
+  passed &= testmc33.testSimplex3d(4, verbose, 0.2, 0.3, 0.8, 0.4);
+  passed &= testmc33.testSimplex3d(5, verbose, 0.7, 0.3, 0.8, 0.4);
+  passed &= testmc33.testSimplex3d(6, verbose, 0.2, 0.9, 0.8, 0.4);
+  passed &= testmc33.testSimplex3d(7, verbose, 0.8, 0.7, 0.9, 0.2);
+  passed &= testmc33.testSimplex3d(8, verbose, 0.2, 0.3, 0.4, 0.8);
+  passed &= testmc33.testSimplex3d(9, verbose, 0.8, 0.3, 0.4, 0.8);
+  passed &= testmc33.testSimplex3d(10, verbose, 0.2, 1.0, 0.4, 0.8);
+  passed &= testmc33.testSimplex3d(11, verbose, 0.9, 0.7, 0.4, 0.8);
+  passed &= testmc33.testSimplex3d(12, verbose, 0.2, 0.3, 0.8, 0.8);
+  passed &= testmc33.testSimplex3d(13, verbose, 0.7, 0.3, 0.8, 0.8);
+  passed &= testmc33.testSimplex3d(14, verbose, 0.2, 0.9, 0.8, 0.8);
+  passed &= testmc33.testSimplex3d(15, verbose, 0.8, 0.7, 0.9, 0.8);
+  verbose = true;
   // Test cube 2d
-  passed &= testmc33.testCube2d
-              (16, verbose, 0.1, 0.8, 0.9, 0.2);
-  passed &= testmc33.testCube2d
-              (6, verbose, 0.5, 0.8, 0.7, 0.4);
-  passed &= testmc33.testCube2d
-              (9, verbose, 0.7, 0.5, 0.4, 0.8);
-  passed &= testmc33.testCube2d
-              (17, verbose, 0.9, 0.1, 0.2, 0.8);
-
+  passed &= testmc33.testCube2d(0, verbose, 0.1, 0.4, 0.5, 0.3);
+  passed &= testmc33.testCube2d(1, verbose, 0.7, 0.4, 0.5, 0.3);
+  passed &= testmc33.testCube2d(2, verbose, 0.2, 0.8, 0.5, 0.3);
+  passed &= testmc33.testCube2d(3, verbose, 0.7, 0.8, 0.5, 0.3);
+  passed &= testmc33.testCube2d(4, verbose, 0.1, 0.4, 0.9, 0.3);
+  passed &= testmc33.testCube2d(5, verbose, 0.7, 0.4, 0.9, 0.3);
+  passed &= testmc33.testCube2d(6, verbose, 0.5, 0.8, 0.7, 0.4);
+  passed &= testmc33.testCube2d(7, verbose, 0.9, 0.8, 0.7, 0.3);
+  passed &= testmc33.testCube2d(8, verbose, 0.1, 0.4, 0.5, 0.8);
+  passed &= testmc33.testCube2d(9, verbose, 0.7, 0.5, 0.4, 0.8);
+  passed &= testmc33.testCube2d(10, verbose, 0.1, 0.8, 0.4, 0.8);
+  passed &= testmc33.testCube2d(11, verbose, 0.7, 0.8, 0.5, 0.8);
+  passed &= testmc33.testCube2d(12, verbose, 0.1, 0.4, 0.9, 0.8);
+  passed &= testmc33.testCube2d(13, verbose, 0.7, 0.4, 0.9, 0.8);
+  passed &= testmc33.testCube2d(14, verbose, 0.5, 0.8, 0.7, 0.8);
+  passed &= testmc33.testCube2d(15, verbose, 0.9, 0.8, 0.7, 0.8);
+  passed &= testmc33.testCube2d(16, verbose, 0.1, 0.8, 0.9, 0.2);
+  passed &= testmc33.testCube2d(17, verbose, 0.9, 0.1, 0.2, 0.8);
 
   if (!passed)
   {
