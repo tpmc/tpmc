@@ -93,13 +93,14 @@ static const short CASE_AMBIGUOUS_MC33 = 1;
 static const short CASE_NOT_INVERTED = 0;
 static const short CASE_INVERTED = 2;
 /* Face tests */
-static const short FACE1 = -1;
-static const short FACE2 = -2;
-static const short FACE3 = -3;
-static const short FACE4 = -4;
-static const short FACE5 = -5;
-static const short FACE6 = -6;
-static const short CASE_IS_REGULAR = -7;
+static const short TEST_FACE_0 = -6;
+static const short TEST_FACE_1 = -1;
+static const short TEST_FACE_2 = -2;
+static const short TEST_FACE_3 = -3;
+static const short TEST_FACE_4 = -4;
+static const short TEST_FACE_5 = -5;
+static const short TEST_CENTER = -7;
+static const short CASE_IS_REGULAR = -8;
 
 /* Indices for access to cube2d_case_offsets */
 static const int INDEX_OFFSET_CODIM_0 = 0;

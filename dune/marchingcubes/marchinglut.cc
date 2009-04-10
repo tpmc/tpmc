@@ -1111,40 +1111,40 @@ extern "C" {
     /* dummy entry/not used but the index has to start with 1*/
     1,
 
-    -4,
+    TEST_FACE_2,
     CASE_IS_REGULAR, 256,
 
-    -4,
+    TEST_FACE_4,
     CASE_IS_REGULAR, 257,
 
-    -4,
+    TEST_FACE_2,
     CASE_IS_REGULAR, 258,
 
-    -4,
+    TEST_FACE_4,
     CASE_IS_REGULAR, 259,
 
-    -4,
+    TEST_FACE_2,
     CASE_IS_REGULAR, 260,
 
-    -4,
+    TEST_FACE_1,
     CASE_IS_REGULAR, 261,
 
-    -4,
+    TEST_FACE_2,
     CASE_IS_REGULAR, 262,
 
-    -4,
+    TEST_FACE_2,
     CASE_IS_REGULAR, 263,
 
-    -4,
+    TEST_FACE_2,
     CASE_IS_REGULAR, 264,
 
-    -4,
+    TEST_FACE_2,
     CASE_IS_REGULAR, 265,
 
-    -4,
+    TEST_FACE_2,
     CASE_IS_REGULAR, 266,
 
-    -4,
+    TEST_FACE_2,
     CASE_IS_REGULAR, 267,
 
   };
@@ -1339,10 +1339,10 @@ extern "C" {
     /* dummy entry/not used but the index has to start with 1*/
     1,
 
-    -1,
+    TEST_FACE_0,
     CASE_IS_REGULAR, 16,
 
-    -1,
+    TEST_FACE_0,
     CASE_IS_REGULAR, 17,
 
   };

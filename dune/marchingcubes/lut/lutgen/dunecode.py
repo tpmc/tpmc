@@ -50,8 +50,18 @@ CASE_AMIGUOUS_MC33 = 1
 CASE_NOT_INVERTED = 0
 CASE_INVERTED = 2
 # Face tests
-face_tests = {-1:"FACE1", -2:"FACE2", -3:"FACE3", -4:"FACE4", \
-              5:"FACE5", -6:"FACE6", 0:"CASE_IS_REGULAR"}
+face_tests = {-1:"TEST_FACE_1", -2:"TEST_FACE_2", -3:"TEST_FACE_3", \
+              -4:"TEST_FACE_4", -5:"TEST_FACE_5", -6:"TEST_FACE_0", \
+              -7:"TEST_CENTER", -8:"CASE_IS_REGULAR"}
+# Constants for mc 33 test order
+TEST_FACE_1 = -1
+TEST_FACE_2 = -2
+TEST_FACE_3 = -3
+TEST_FACE_4 = -4
+TEST_FACE_5 = -5
+TEST_FACE_0 = -6
+TEST_CENTER = -7
+CASE_IS_REGULAR = -8
 
 # Stores a table as C-Code string for marchinglut.cc
 class TableStorage:
@@ -157,32 +167,31 @@ class DuneCode:
                     mc33_offsets.append("%i,\n" \
                         % (mc33_tests.offset), 1)
                     # Generate tests table
-                    
-                    #TODO: bei cube3d muessen die Face-Tests mitpermutiert werden
-                                    # debug, nur um an alle Permutationen zu kommen :-)
-                    ##if self.lg.basicType == "cube" and self.lg.dim == 3:
-                    ##    get_cube3d_face(self, 1, entry.permutation)
-
-                    
                     i = 0
                     for test in self.lg.mc33_tests[base_case_number]:
                         i = i + 1
                         if math.log(i)/math.log(2.0) == round(math.log(i)/math.log(2.0)):
                             mc33_tests.append("\n      ", 0)
-                        
-                        # negative tests are face tests
-                        if test < 0:
-                            # TODO: permute face
-                            
-                            mc33_tests.append(str(test) + ", ", 1)
-                        # test is equal to list length => non-mc 33 case
-                        elif test == len(self.lg.mc33_cases[base_case_number]):
-                            mc33_tests.append(face_tests[0] + ", ", 1)
+                        # regular (non mc 33) case or test center
+                        if test == CASE_IS_REGULAR or test == TEST_CENTER:
+                            mc33_tests.append(face_tests[test] + ", ", 1)
+                        # all other negative tests are face tests
+                        elif test < 0:
+                            testnumber = test
+                            # permute faces for cube 3D
+                            if self.lg.basicType == "cube" and self.lg.dim == 3:
+                                # Regain face numbers, face 0 is stored as -6
+                                testnumber = (-1 * testnumber) % 6;
+                                testnumber = -1 * get_cube3d_face(self, test, entry.permutation)
+                                # store face 0 again as -6, invert all other face numbers
+                                if testnumber == 0:
+                                    testnumber = -6
+                            mc33_tests.append(face_tests[testnumber] + ", ", 1)
                         # case number otherwise
                         else:
                             mc33_tests.append(str(offsets.offset + test) + ", ", 1)
                     mc33_tests.append("\n      ", 0)
-                    
+                    # Case tables for mc 33 cases
                     for mc33_case in self.lg.mc33_cases[base_case_number]:
                         offsets.append("      /* %d test index:%d */ " \
                             % (base_case_number, i)
@@ -209,30 +218,30 @@ class DuneCode:
                             (2, 0, 6, 4): [3, 2, 4, 5, 0, 1], \
                             (2, 3, 6, 7): [0, 1, 4, 5, 3, 2], \
                             (2, 6, 0, 4): [4, 5, 3, 4, 0, 1], \
-                            (2, 6, 3, 7): [], \
-                            (3, 1, 2, 0): [], \
-                            (3, 1, 7, 5): [], \
-                            (3, 2, 1, 0): [], \
-                            (3, 2, 7, 6): [], \
-                            (3, 7, 2, 6): [], \
-                            (4, 0, 5, 1): [], \
-                            (4, 0, 6, 2): [], \
-                            (4, 5, 6, 7): [], \
-                            (4, 6, 0, 2): [], \
-                            (5, 1, 4, 0): [], \
-                            (5, 1, 7, 3): [], \
-                            (5, 4, 7, 6): [], \
-                            (5, 7, 1, 3): [], \
-                            (5, 7, 4, 6): [], \
-                            (6, 2, 7, 3): [], \
-                            (6, 4, 2, 0): [], \
-                            (6, 4, 7, 5): [], \
-                            (6, 7, 2, 3): [], \
-                            (6, 7, 4, 5): [], \
-                            (7, 3, 6, 2): [], \
-                            (7, 5, 6, 4): [], \
-                            (7, 5, 3, 1): [], \
-                            (7, 6, 3, 2): []};
+                            (2, 6, 3, 7): [0, 1, 2, 3, 4, 5], \
+                            (3, 1, 2, 0): [0, 1, 2, 3, 4, 5], \
+                            (3, 1, 7, 5): [0, 1, 2, 3, 4, 5], \
+                            (3, 2, 1, 0): [0, 1, 2, 3, 4, 5], \
+                            (3, 2, 7, 6): [0, 1, 2, 3, 4, 5], \
+                            (3, 7, 2, 6): [0, 1, 2, 3, 4, 5], \
+                            (4, 0, 5, 1): [0, 1, 2, 3, 4, 5], \
+                            (4, 0, 6, 2): [0, 1, 2, 3, 4, 5], \
+                            (4, 5, 6, 7): [0, 1, 2, 3, 4, 5], \
+                            (4, 6, 0, 2): [0, 1, 2, 3, 4, 5], \
+                            (5, 1, 4, 0): [0, 1, 2, 3, 4, 5], \
+                            (5, 1, 7, 3): [0, 1, 2, 3, 4, 5], \
+                            (5, 4, 7, 6): [0, 1, 2, 3, 4, 5], \
+                            (5, 7, 1, 3): [0, 1, 2, 3, 4, 5], \
+                            (5, 7, 4, 6): [0, 1, 2, 3, 4, 5], \
+                            (6, 2, 7, 3): [0, 1, 2, 3, 4, 5], \
+                            (6, 4, 2, 0): [0, 1, 2, 3, 4, 5], \
+                            (6, 4, 7, 5): [0, 1, 2, 3, 4, 5], \
+                            (6, 7, 2, 3): [0, 1, 2, 3, 4, 5], \
+                            (6, 7, 4, 5): [0, 1, 2, 3, 4, 5], \
+                            (7, 3, 6, 2): [0, 1, 2, 3, 4, 5], \
+                            (7, 5, 6, 4): [0, 1, 2, 3, 4, 5], \
+                            (7, 5, 3, 1): [0, 1, 2, 3, 4, 5], \
+                            (7, 6, 3, 2): [0, 1, 2, 3, 4, 5]};
             return permutations[permutation[0:4]][face]
         
         # Start output with table definitions

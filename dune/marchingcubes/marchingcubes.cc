@@ -105,7 +105,6 @@ namespace Dune {
       // Set bit to 0 if vertex is inside
       vertex_inside[i-1] = 1 - thresholdFunctor::isInside(vertex_values[i-1]);
       case_number += (int) vertex_inside[i-1];
-      //TODO: Richtige Reihenfolge programmieren, um richtige Schlüßel zu erhalten
     }
 
     // Is it a marching cubes' 33 case?
@@ -128,15 +127,17 @@ namespace Dune {
       ReferenceElementContainer<ctype, dim> rec;
       const ReferenceElement<ctype, dim> & ref_element = rec(geo_type);
       valueType corner_a, corner_b, corner_c, corner_d;
-      // tests are non-positive, positive values are offsets
-      while ((face <= 0) && (face != CASE_IS_REGULAR))
+      // tests are negative, non-negativ values are offsets
+      while ((face < 0) && (face != CASE_IS_REGULAR))
       {
         if (dim == 3)
         {
-          corner_a = vertex_values[ref_element.subEntity(face, 1, 0, dim)];
-          corner_b = vertex_values[ref_element.subEntity(face, 1, 2, dim)];
-          corner_c = vertex_values[ref_element.subEntity(face, 1, 3, dim)];
-          corner_d = vertex_values[ref_element.subEntity(face, 1, 4, dim)];
+          // face tests are stored inverted and face 0 is stored as -6
+          int test_face = (-1 * face) % 6;
+          corner_a = vertex_values[ref_element.subEntity(test_face, 1, 0, dim)];
+          corner_b = vertex_values[ref_element.subEntity(test_face, 1, 2, dim)];
+          corner_c = vertex_values[ref_element.subEntity(test_face, 1, 3, dim)];
+          corner_d = vertex_values[ref_element.subEntity(test_face, 1, 4, dim)];
         }
         else if (dim == 2)
         {
@@ -152,8 +153,10 @@ namespace Dune {
         }
         // calculate index position (if test is true: 2*index, otherwise: 2*index+1)
         tree_offset *= 2;
-        tree_offset += (1 - testAmbiguousFace(
-                          corner_a, corner_b, corner_c, corner_d, not_inverted));
+        bool test_result = (face == TEST_CENTER) ?
+                           testAmbiguousCenter(vertex_values, vertex_count, not_inverted) :
+                           testAmbiguousFace(corner_a, corner_b, corner_c, corner_d, not_inverted);
+        tree_offset += (1 - test_result);
         face = table_mc33_face_test_order[test_index + tree_offset];
       }
       if (face != CASE_IS_REGULAR)
