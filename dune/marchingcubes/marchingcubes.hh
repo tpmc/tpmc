@@ -28,10 +28,10 @@ namespace Dune {
   public:
     sizeType getKey(const valueVector& vertex_values,
                     const sizeType vertex_count, const bool use_mc_33);
-    void getElements(const valueVector& vertexValues,
-                     const sizeType vertexCount, const sizeType key,
-                     std::vector<std::vector<point> >& elements,
-                     const bool codim_1_not_0);
+    void getElements(const valueVector& vertex_values,
+                     const sizeType vertex_count,        const sizeType key,
+                     const bool codim_1_not_0,
+                     std::vector<std::vector<point> >& elements);
 
   private:
     /*
@@ -53,9 +53,6 @@ namespace Dune {
 
     bool testAmbiguousCenter(const valueVector& vertex_values,
                              const sizeType vertex_count, const bool not_inverted) const;
-
-    sizeType getMc33case(const valueVector& vertexValues,
-                         const sizeType vertexCount, char number) const;
 
     void getCoordsFromNumber(const valueVector& vertex_values,
                              const sizeType vertex_count, const short number,

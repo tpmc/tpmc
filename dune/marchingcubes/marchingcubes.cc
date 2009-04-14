@@ -69,10 +69,18 @@ namespace Dune {
   };
 
   /*
-   * Calculate key to access cube2d_cases_offsets.
-   * Return value indicates a mc33 case.
+   * \brief Calculates the key in the marching cubes' case table
+   * for the given element.
    *
-   * \return True if the case is in the regular table, false if it's a MC33-only case.
+   * The key is necessary to calculate the offset only once, even if
+   * co-dimension 0 and co-dimension 1 will be requested.
+   *
+   * \param vertex_values Element's vertex values.
+   * \param vertex_count Number of vertices, same as length of <code>
+   *                     vertex_values</code>.
+   * \param use_mc_33 specifies whether marching cubes' 33 case table
+   *                  should be used. Marching cubes' 33 leads to more
+   *                  elements but they are topological correct.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   typename MarchingCubes33<valueType, dim, thresholdFunctor>::sizeType
@@ -168,18 +176,34 @@ namespace Dune {
   }
 
   /*
-   * Marching cubes' algorithm.
-   * vertex_values: pointer to an array containing vertices' values
-   * vertex_count: count of vertices (array length)
-   * threshold: value of the isosurface
-   * smaller_inside: whether smaller values are inside the isosurface
+   * \brief Calculates partition with marching cubes' algorithm for
+   * the given key which specifies base case and transformation.
+   *
+   * Result will be stored in <code>elements</code> which is a vector
+   * with an entry for every element; an element is represented by
+   * a vector of its points. The key specifies the offset for in
+   * the case table and must be generated from <code>getKey</code>.
+   * The key is necessary to calculate the offset only once, even if
+   * co-dimension 0 and co-dimension 1 will be requested. Co-dimension
+   * 1 is the isosurface, co-dimension 0 is the volumen inside the
+   * isosurface.
+   *
+   * \param vertex_values Element's vertex values.
+   * \param vertex_count Number of vertices, same as length of <code>
+   *                     vertex_values</code>.
+   * \param key specifies the offset for the case table and must be
+   *            generated from <code>getKey</code>.
+   * \param codim_1_not_0 defines whether elements of co-dimension 1
+   *                      (e.g. faces in 3D) will returned or of
+   *                      co-dimension 0 (e.g. volumes in 3D).
+   * \param elements where the resulting coordinates will be stored.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   void MarchingCubes33<valueType, dim, thresholdFunctor>::
   getElements(const valueVector& vertex_values,
               const sizeType vertex_count, const sizeType key,
-              std::vector<std::vector<point> >& elements,
-              const bool codim_1_not_0)
+              const bool codim_1_not_0,
+              std::vector<std::vector<point> >& elements)
   {
     if (dim == 0)
     {
@@ -195,6 +219,13 @@ namespace Dune {
     }
     else
     {
+      // Absolute vertex values made relative to the threshold value
+      for (sizeType i = 0; i < vertex_count; i++)
+      {
+        vertex_values[i] =
+          thresholdFunctor::getDistance(vertex_values[i]);
+      }
+
       sizeType element_count = all_case_offsets
                                [vertex_count + dim][key][INDEX_COUNT_CODIM_0];
       const short (* codim_index) = all_codim_0[vertex_count + dim]
@@ -231,26 +262,18 @@ namespace Dune {
     }
   }
 
-  /*
-   * TODO: Kommentar schreiben
-   */
-  /*TODO: folgende nutzlose(?) Methode entfernen*/
-  template <typename valueType, int dim, typename thresholdFunctor>
-  typename MarchingCubes33<valueType, dim, thresholdFunctor>::sizeType
-  MarchingCubes33<valueType, dim, thresholdFunctor>::
-  getMc33case(const valueVector& vertex_values,
-              const sizeType vertex_count, char number) const
-  {
-    return (sizeType) 0;
-  }
-
   /**
    * \brief Generates the coordinate for a point which is specified
    * by its vertex or edge number.
    *
-   * Result will be stored to <code>coords</code>.
-   * \param vertex_values array with all vertex values in it.
-   * \param vertex_count number of vertices in <code>vertex_values</code>.
+   * Result will be stored in <code>coords</code>. The coordinate for in
+   * the middle of an edge is interpolated with respect to both vertex
+   * values; the one for center point with respect to all eight vertex
+   * values. The center point must be used only for 3D-cubes.
+   *
+   * \param vertex_values Element's vertex values.
+   * \param vertex_count Number of vertices, same as length of <code>
+   *                     vertex_values</code>.
    * \param number specifies the point of which the coordinates should
    *               be generated; should be a <code>const</code> from
    *               \ref marchinglut.hh .
@@ -265,10 +288,38 @@ namespace Dune {
     // it's a center point
     if (number == EY)
     {
-      //TODO: Koordinaten für Mittelpunkt ausrechnen
+      //TODO: Testen
+
+      // Initialize point
       for (sizeType i = 0; i < dim; i++)
       {
-        coord[i] = 0.5;
+        coord[i] = 0.0;
+      }
+      // Mean from each threshold value on an edge
+      short vertex_1, vertex_2;
+      sizeType count = 0;
+      for (short i = EJ; i <= EU; i++)
+      {
+        vertex_1 = (i / FACTOR_FIRST_POINT) &
+                   (VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP);
+        vertex_2 = (i / FACTOR_SECOND_POINT) &
+                   (VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP);
+        if (thresholdFunctor::isInside(vertex_1) !=
+            thresholdFunctor::isInside(vertex_2))
+        {
+          point edge_point;
+          getCoordsFromEdgeNumber(vertex_values, vertex_count, i,
+                                  edge_point);
+          for (sizeType j = 0; j < dim; j++)
+          {
+            coord[j] += edge_point[j];
+          }
+          count++;
+        }
+      }
+      for (sizeType i = 0; i < dim; i++)
+      {
+        coord[i] /= count;
       }
     }
     // it's an edge
@@ -289,10 +340,8 @@ namespace Dune {
         index_b += (sizeType) point_b[i] * (1<<i);
       }
       // factor for interpolation
-      valueType interpol_factor =
-        thresholdFunctor::getDistance(vertex_values[index_a])
-        / (thresholdFunctor::getDistance(vertex_values[index_b])
-           - thresholdFunctor::getDistance(vertex_values[index_a]));
+      valueType interpol_factor = vertex_values[index_a]
+                                  / (vertex_values[index_b] - vertex_values[index_a]);
       //printf("     Kante: coords %1.3f %1.3f davor indexA %d  indexB %d // %d %d\n", coords[0], coords[1], indexA, indexB, NO_VERTEX^number, number);
       // calculate interpolation point
       for (sizeType i = 0; i < dim; i++)
@@ -314,8 +363,17 @@ namespace Dune {
    * \brief Generates the coordinate for a vertex which is specified
    * by its vertex number.
    *
-   * Result will be stored to \param coords.
+   * Result will be stored to <code>coord</code>. <code>number</code>
+   * must be an valid vertex number, otherwise the result of the method
+   * will be unspecified.
    *
+   * \param vertex_values Element's vertex values.
+   * \param vertex_count Number of vertices, same as length of <code>
+   *                     vertex_values</code>.
+   * \param number specifies the point of which the coordinates should
+   *               be generated; should be a <code>const</code> from
+   *               \ref marchinglut.hh .
+   * \param coord where the resulting coordinates will be stored.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   void MarchingCubes33<valueType, dim, thresholdFunctor>::
@@ -332,49 +390,71 @@ namespace Dune {
   }
 
   /*
-   * \brief Test if the face center is covered by the surface.
+   * \brief Tests whether vertices are connected by the middle of the face.
    *
-   * This test is needed to chose between ambiguous MC33 cases.
+   * This test is needed to chose between ambiguous MC33 cases. It checks
+   * whether two vertices are connected by the middle of the face or whether
+   * they are separated. This method is implemented according to the paper
+   * from Lewiner et al. It should be only applied on squares like 2D-cube
+   * (rectangles) or faces of 3D-cubes.
+   *
+   * \param corner_a Value of the first face vertex.
+   * \param corner_b Value of the second face vertex.
+   * \param corner_c Value of the third face vertex.
+   * \param corner_d Value of the forth face vertex.
+   * \param not_inverted Whether basic case is not inverted.
+   *
+   * \return <code>True</true> if vertices are connected.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   bool MarchingCubes33<valueType, dim, thresholdFunctor>::
-  testAmbiguousFace(const valueType corner_a, const valueType cornerB,
-                    const valueType cornerC, const valueType cornerD,
-                    const bool notInverted) const
+  testAmbiguousFace(const valueType corner_a, const valueType corner_b,
+                    const valueType corner_c, const valueType corner_d,
+                    const bool not_inverted) const
   {
     // Change naming scheme to jgt-paper ones
     double a = thresholdFunctor::getDistance(corner_a);
-    double b = thresholdFunctor::getDistance(cornerC);
-    double c = thresholdFunctor::getDistance(cornerD);
-    double d = thresholdFunctor::getDistance(cornerB);
+    double b = thresholdFunctor::getDistance(corner_c);
+    double c = thresholdFunctor::getDistance(corner_d);
+    double d = thresholdFunctor::getDistance(corner_b);
 
     // Check A*C == B*D
     if (FloatCmp::eq((a*c - b*d), 0.0))
     {
-      return notInverted;
+      return not_inverted;
     }
-    // notInverted and a may invert the sign
-    return ((notInverted*2 - 1) * a * (a*c - b*d) >= 0.0);
+    // not_inverted and a may invert the sign
+    return ((not_inverted*2 - 1) * a * (a*c - b*d) >= 0.0);
   }
 
   /*
-   * \brief Test if the face center is inside the isosurface.
+   * \brief Tests whether vertices are connected by the middle of the cube.
    *
-   * This test is needed to chose between ambiguous MC33 cases.
+   * This test is needed to chose between ambiguous MC33 cases. It checks
+   * whether two vertices are connected by the center of the cube or whether
+   * they are separated. This method is implemented according to the paper
+   * from Lewiner et al. It should be only applied on 3D-cubes.
+   *
+   * \param vertex_values Cube's vertex values.
+   * \param vertex_count Number of vertices, should be eight.
+   * \param not_inverted Whether basic case is not inverted.
+   *
+   * \return <code>True</true> if vertices are connected.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   bool MarchingCubes33<valueType, dim, thresholdFunctor>::
   testAmbiguousCenter(const valueVector& vertex_values,
                       const sizeType vertex_count, const bool not_inverted) const
   {
-    const double a0 = vertex_values[0];
-    const double b0 = vertex_values[2];
-    const double c0 = vertex_values[3];
-    const double d0 = vertex_values[1];
-    const double a1 = vertex_values[5];
-    const double b1 = vertex_values[7];
-    const double c1 = vertex_values[8];
-    const double d1 = vertex_values[6];
+    // TODO: mit Lewiner vergleichen. Testen!
+    const double a0 = thresholdFunctor::getDistance(vertex_values[0]);
+    const double b0 = thresholdFunctor::getDistance(vertex_values[2]);
+    const double c0 = thresholdFunctor::getDistance(vertex_values[3]);
+    const double d0 = thresholdFunctor::getDistance(vertex_values[1]);
+    const double a1 = thresholdFunctor::getDistance(vertex_values[5]);
+    const double b1 = thresholdFunctor::getDistance(vertex_values[7]);
+    const double c1 = thresholdFunctor::getDistance(vertex_values[8]);
+    const double d1 = thresholdFunctor::getDistance(vertex_values[6]);
 
     const double a =  (a1 - a0) * (c1 - c0) - (b1 - b0) * (d1 - d0);
     if (a >= 0.0)

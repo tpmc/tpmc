@@ -110,7 +110,7 @@ template <int dim> bool TestMarchingCubes33::assertEquals(sizeType expect,
     // Perform second part of MC 33 algorithm
     typedef Dune::FieldVector<double, dim> dim_point;
     std::vector<std::vector<dim_point> > codim0;
-    mc.getElements(vertices, vertex_count, key, codim0, false);
+    mc.getElements(vertices, vertex_count, key, false, codim0);
     std::cout << "   Codim 0 elements: ";
     for(typename std::vector<std::vector<dim_point> >::iterator i =
           codim0.begin(); i != codim0.end(); ++i)
@@ -126,7 +126,7 @@ template <int dim> bool TestMarchingCubes33::assertEquals(sizeType expect,
     std::cout << std::endl;
     // Perform second part of MC 33 algorithm for codim 1 elements
     std::vector<std::vector<dim_point> > codim1;
-    mc.getElements(vertices, vertex_count, key, codim1, true);
+    mc.getElements(vertices, vertex_count, key, true, codim1);
     std::cout << "   Codim 1 elements: ";
     for(typename std::vector<std::vector<dim_point> >::iterator i =
           codim1.begin(); i != codim1.end(); ++i)
