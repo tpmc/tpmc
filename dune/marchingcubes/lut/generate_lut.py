@@ -112,10 +112,10 @@ cube3d.mc33_tests = [[] for x in range(len(cube3d.base_cases))]
 
 
 # 0,1,1,0,0,0,0,0 -> 00000110 # MC33 Case 3.2
-cube3d.mc33_cases[2].append(BaseCase(cube3d.base_cases[2].dim, cube3d.base_cases[2].case))
-cube3d.mc33_cases[2][0].faces = [[(1, 5), (1, 3), (0, 1)], [(2, 3), (0, 2), (2, 6)]]
-cube3d.mc33_cases[2][0].cells = [[(1, 5), (1, 3), (0, 1), 5, 7, 4], [(0, 2), (2, 3), (2, 6), 4, 7, 6], [(1, 3), (0, 1), 3, 7], [(0, 2), (2, 3), 0, 4], [(0, 1), 0, (2, 3), 4], [3, 7, (2, 3), (0, 1)], [(0, 1), 4, (2, 3), 7]]
-cube3d.mc33_tests[2] = [TEST_FACE_4, CASE_IS_REGULAR, 0]
+cube3d.mc33_cases[3].append(BaseCase(cube3d.base_cases[3].dim, cube3d.base_cases[3].case))
+cube3d.mc33_cases[3][0].faces = [[(1, 5), (1, 3), (0, 1)], [(2, 3), (0, 2), (2, 6)]]
+cube3d.mc33_cases[3][0].cells = [[(1, 5), (1, 3), (0, 1), 5, 7, 4], [(0, 2), (2, 3), (2, 6), 4, 7, 6], [(1, 3), (0, 1), 3, 7], [(0, 2), (2, 3), 0, 4], [(0, 1), 0, (2, 3), 4], [3, 7, (2, 3), (0, 1)], [(0, 1), 4, (2, 3), 7]]
+cube3d.mc33_tests[3] = [TEST_FACE_4, CASE_IS_REGULAR, 0]
 
 #cube3d_mc33 = LookupGenerator(3, "cube3d")
 ## base cases cube 3D for marching cubes 33:

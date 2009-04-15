@@ -193,7 +193,6 @@ int main(int arg_count, char ** arg_array)
   passed &= testmc33.testSimplex3d(13, verbose, 0.7, 0.3, 0.8, 0.8);
   passed &= testmc33.testSimplex3d(14, verbose, 0.2, 0.9, 0.8, 0.8);
   passed &= testmc33.testSimplex3d(15, verbose, 0.8, 0.7, 0.9, 0.8);
-  verbose = true;
   // Test cube 2d
   passed &= testmc33.testCube2d(0, verbose, 0.1, 0.4, 0.5, 0.3);
   passed &= testmc33.testCube2d(1, verbose, 0.7, 0.4, 0.5, 0.3);
@@ -213,6 +212,8 @@ int main(int arg_count, char ** arg_array)
   passed &= testmc33.testCube2d(15, verbose, 0.9, 0.8, 0.7, 0.8);
   passed &= testmc33.testCube2d(16, verbose, 0.1, 0.8, 0.9, 0.2);
   passed &= testmc33.testCube2d(17, verbose, 0.9, 0.1, 0.2, 0.8);
+  // Test cube 3d
+  verbose = true;
 
   if (!passed)
   {

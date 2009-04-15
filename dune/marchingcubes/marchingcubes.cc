@@ -219,13 +219,6 @@ namespace Dune {
     }
     else
     {
-      // Absolute vertex values made relative to the threshold value
-      for (sizeType i = 0; i < vertex_count; i++)
-      {
-        vertex_values[i] =
-          thresholdFunctor::getDistance(vertex_values[i]);
-      }
-
       sizeType element_count = all_case_offsets
                                [vertex_count + dim][key][INDEX_COUNT_CODIM_0];
       const short (* codim_index) = all_codim_0[vertex_count + dim]
@@ -340,8 +333,10 @@ namespace Dune {
         index_b += (sizeType) point_b[i] * (1<<i);
       }
       // factor for interpolation
-      valueType interpol_factor = vertex_values[index_a]
-                                  / (vertex_values[index_b] - vertex_values[index_a]);
+      valueType interpol_factor =
+        thresholdFunctor::getDistance(vertex_values[index_a])
+        / (thresholdFunctor::getDistance(vertex_values[index_b])
+           - thresholdFunctor::getDistance(vertex_values[index_a]));
       //printf("     Kante: coords %1.3f %1.3f davor indexA %d  indexB %d // %d %d\n", coords[0], coords[1], indexA, indexB, NO_VERTEX^number, number);
       // calculate interpolation point
       for (sizeType i = 0; i < dim; i++)
