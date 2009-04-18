@@ -116,8 +116,8 @@ namespace Dune {
     }
 
     // Is it a marching cubes' 33 case?
-    bool ambiguous_case = (CASE_AMBIGUOUS_MC33 ==
-                           table_case_offsets[case_number][4] & CASE_AMBIGUOUS_MC33);
+    bool ambiguous_case = (CASE_AMBIGUOUS_MC33 == CASE_AMBIGUOUS_MC33 &
+                           table_case_offsets[case_number][INDEX_UNIQUE_CASE]);
     // if it's not unique get the correct one
     if (use_mc_33 && ambiguous_case)
     {
@@ -143,9 +143,9 @@ namespace Dune {
           // face tests are stored inverted and face 0 is stored as -6
           int test_face = (-1 * face) % 6;
           corner_a = vertex_values[ref_element.subEntity(test_face, 1, 0, dim)];
-          corner_b = vertex_values[ref_element.subEntity(test_face, 1, 2, dim)];
-          corner_c = vertex_values[ref_element.subEntity(test_face, 1, 3, dim)];
-          corner_d = vertex_values[ref_element.subEntity(test_face, 1, 4, dim)];
+          corner_b = vertex_values[ref_element.subEntity(test_face, 1, 1, dim)];
+          corner_c = vertex_values[ref_element.subEntity(test_face, 1, 2, dim)];
+          corner_d = vertex_values[ref_element.subEntity(test_face, 1, 3, dim)];
         }
         else if (dim == 2)
         {

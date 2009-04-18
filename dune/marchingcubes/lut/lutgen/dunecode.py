@@ -242,8 +242,6 @@ class DuneCode:
                             (7, 5, 6, 4): [3, 2, 1, 0, 5, 4], \
                             (7, 5, 3, 1): [3, 2, 5, 4, 1, 0], \
                             (7, 6, 3, 2): [1, 0, 5, 4, 3, 2]};
-            print permutation
-            print face
             return permutations[permutation[0:4]][face]
         
         # Start output with table definitions
