@@ -239,54 +239,55 @@ int main(int arg_count, char ** arg_array)
                                 0.5, 0.5, 0.5, 0.5); // Basic case 2
   passed &= testmc33.testCube3d(33, verbose, 0.9, 0.5, 0.5, 0.5,
                                 0.5, 0.9, 0.5, 0.5); // Basic case 3
-  passed &= testmc33.testCube3d(129, verbose, 0.7, 0.2, 0.2, 0.2,
-                                0.2, 0.2, 0.2, 0.7); // Basic case 4
-  passed &= testmc33.testCube3d(14, verbose, 0.2, 0.7, 0.7, 0.7,
-                                0.2, 0.2, 0.2, 0.2); // Basic case 5
-  passed &= testmc33.testCube3d(131, verbose, 0.7, 0.7, 0.2, 0.2,
-                                0.2, 0.2, 0.2, 0.7); // Basic case 6
-  passed &= testmc33.testCube3d(162, verbose, 0.2, 0.7, 0.2, 0.2,
-                                0.2, 0.7, 0.2, 0.7); // Basic case 7
-  passed &= testmc33.testCube3d(240, verbose, 0.2, 0.2, 0.2, 0.2,
-                                0.7, 0.7, 0.7, 0.7); // Basic case 8
-  passed &= testmc33.testCube3d(77, verbose, 0.7, 0.2, 0.7, 0.7,
-                                0.2, 0.2, 0.7, 0.2); // Basic case 9
-  passed &= testmc33.testCube3d(153, verbose, 0.7, 0.2, 0.2, 0.7,
-                                0.7, 0.2, 0.2, 0.7); // Basic case 10
-  passed &= testmc33.testCube3d(141, verbose, 0.7, 0.2, 0.7, 0.7,
-                                0.2, 0.2, 0.2, 0.7); // Basic case 11
-  passed &= testmc33.testCube3d(30, verbose, 0.2, 0.7, 0.7, 0.7,
-                                0.7, 0.2, 0.2, 0.2); // Basic case 12
-  passed &= testmc33.testCube3d(105, verbose, 0.7, 0.2, 0.2, 0.7,
-                                0.2, 0.7, 0.7, 0.2); // Basic case 13
-  passed &= testmc33.testCube3d(78, verbose, 0.2, 0.7, 0.7, 0.7,
-                                0.2, 0.2, 0.7, 0.2); // Basic case 14
-  passed &= testmc33.testCube3d(255, verbose, 0.7, 0.7, 0.7, 0.7,
-                                0.7, 0.7, 0.7, 0.7); // Inverted basic case 0
-  passed &= testmc33.testCube3d(255-1, verbose, 0.2, 0.7, 0.7, 0.7,
-                                0.7, 0.7, 0.7, 0.7); // Inverted basic case 1
-  passed &= testmc33.testCube3d(255-3, verbose, 0.2, 0.2, 0.7, 0.7,
-                                0.7, 0.7, 0.7, 0.7); // Inverted basic case 2
-  passed &= testmc33.testCube3d(255-33, verbose, 0.2, 0.7, 0.7, 0.7,
-                                0.7, 0.2, 0.7, 0.7); // Inverted basic case 3
-  passed &= testmc33.testCube3d(255-129, verbose, 0.2, 0.7, 0.7, 0.7,
-                                0.7, 0.7, 0.7, 0.2); // Inverted basic case 4
-  passed &= testmc33.testCube3d(255-14, verbose, 0.7, 0.2, 0.2, 0.2,
-                                0.7, 0.7, 0.7, 0.7); // Inverted basic case 5
-  passed &= testmc33.testCube3d(255-131, verbose, 0.2, 0.2, 0.7, 0.7,
-                                0.7, 0.7, 0.7, 0.2); // Inverted basic case 6
-  passed &= testmc33.testCube3d(255-162, verbose, 0.7, 0.2, 0.7, 0.7,
-                                0.7, 0.2, 0.7, 0.2); // Inverted basic case 7
+  passed &= testmc33.testCube3d(129, verbose, 0.9, 0.5, 0.5, 0.5,
+                                0.5, 0.5, 0.5, 0.9); // Basic case 4
+  passed &= testmc33.testCube3d(14, verbose, 0.5, 0.9, 0.9, 0.9,
+                                0.5, 0.5, 0.5, 0.5); // Basic case 5
+  passed &= testmc33.testCube3d(131, verbose, 0.9, 0.9, 0.5, 0.5,
+                                0.5, 0.5, 0.5, 0.9); // Basic case 6
+  passed &= testmc33.testCube3d(162, verbose, 0.5, 0.9, 0.5, 0.5,
+                                0.5, 0.9, 0.5, 0.9); // Basic case 7
+  passed &= testmc33.testCube3d(240, verbose, 0.5, 0.5, 0.5, 0.5,
+                                0.9, 0.9, 0.9, 0.9); // Basic case 8
+  passed &= testmc33.testCube3d(77, verbose, 0.9, 0.5, 0.9, 0.9,
+                                0.5, 0.5, 0.9, 0.5); // Basic case 9
+  passed &= testmc33.testCube3d(153, verbose, 0.9, 0.5, 0.5, 0.9,
+                                0.9, 0.5, 0.5, 0.9); // Basic case 10
+  passed &= testmc33.testCube3d(141, verbose, 0.9, 0.5, 0.9, 0.9,
+                                0.5, 0.5, 0.5, 0.9); // Basic case 11
+  passed &= testmc33.testCube3d(30, verbose, 0.5, 0.9, 0.9, 0.9,
+                                0.9, 0.5, 0.5, 0.5); // Basic case 12
+  passed &= testmc33.testCube3d(105, verbose, 0.9, 0.5, 0.5, 0.9,
+                                0.5, 0.9, 0.9, 0.5); // Basic case 13
+  passed &= testmc33.testCube3d(78, verbose, 0.5, 0.9, 0.9, 0.9,
+                                0.5, 0.5, 0.9, 0.5); // Basic case 14
+  passed &= testmc33.testCube3d(255, verbose, 0.9, 0.9, 0.9, 0.9,
+                                0.9, 0.9, 0.9, 0.9); // Inverted basic case 0
+  passed &= testmc33.testCube3d(255-1, verbose, 0.5, 0.9, 0.9, 0.9,
+                                0.9, 0.9, 0.9, 0.9); // Inverted basic case 1
+  passed &= testmc33.testCube3d(255-3, verbose, 0.5, 0.5, 0.9, 0.9,
+                                0.9, 0.9, 0.9, 0.9); // Inverted basic case 2
+  passed &= testmc33.testCube3d(255-33, verbose, 0.5, 0.9, 0.9, 0.9,
+                                0.9, 0.5, 0.9, 0.9); // Inverted basic case 3
+  passed &= testmc33.testCube3d(255-129, verbose, 0.5, 0.9, 0.9, 0.9,
+                                0.9, 0.9, 0.9, 0.5); // Inverted basic case 4
+  passed &= testmc33.testCube3d(255-14, verbose, 0.9, 0.5, 0.5, 0.5,
+                                0.9, 0.9, 0.9, 0.9); // Inverted basic case 5
+  passed &= testmc33.testCube3d(255-131, verbose, 0.5, 0.5, 0.9, 0.9,
+                                0.9, 0.9, 0.9, 0.5); // Inverted basic case 6
+  passed &= testmc33.testCube3d(255-162, verbose, 0.9, 0.5, 0.9, 0.9,
+                                0.9, 0.5, 0.9, 0.5); // Inverted basic case 7
   // Test Marching cubes' 33 cases
-  passed &= testmc33.testCube3d(33, verbose, 0.9, 0.5, 0.5, 0.5,
-                                0.5, 0.9, 0.5, 0.5); // Basic case 3 / MC33 case 3.1
-  passed &= testmc33.testCube3d(260, verbose, 0.7, 0.2, 0.2, 0.2,
-                                0.2, 0.7, 0.2, 0.2); // MC33 case 3.2
-  verbose = true;
-  passed &= testmc33.testCube3d(255-129, verbose, 0.9, 0.9, 0.9, 0.9,
-                                0.5, 0.9, 0.9, 0.5); // Inverse of Basic case 3 / Inv. MC33 case 3.1
-  passed &= testmc33.testCube3d(260, verbose, 0.7, 0.7, 0.7, 0.7,
-                                0.2, 0.7, 0.7, 0.2); // Inverse of MC33 case 3.2
+  /*passed &= testmc33.testCube3d(33, verbose, 0.9, 0.5, 0.5, 0.5,
+      0.5, 0.9, 0.5, 0.5); // Basic case 3 / MC33 case 3.1
+     passed &= testmc33.testCube3d(260, verbose, 0.7, 0.2, 0.2, 0.2,
+      0.2, 0.7, 0.2, 0.2); // MC33 case 3.2
+     verbose = true;
+     passed &= testmc33.testCube3d(255-129, verbose, 0.9, 0.9, 0.9, 0.9,
+      0.5, 0.9, 0.9, 0.5); // Inverse of Basic case 3 / Inv. MC33 case 3.1
+     passed &= testmc33.testCube3d(260, verbose, 0.7, 0.7, 0.7, 0.7,
+      0.2, 0.7, 0.7, 0.2); // Inverse of MC33 case 3.2
+   */
 
 
   if (!passed)

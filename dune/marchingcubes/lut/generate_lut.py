@@ -67,7 +67,7 @@ cube3d.base_cases[12].cells = [[(4, 5), 5, (1, 5), (4, 6), 6, (2, 6)], [6, 5, 7,
 cube3d.base_cases[13].faces = [[(0, 2), (1, 3), (2, 6), (3, 7)], [(0, 4), (1, 5), (4, 6), (5, 7)]]
 cube3d.base_cases[13].cells = [[(0, 2), 0, (2, 6), 6, (1, 3), 1, (3, 7), 7], [6, 0, (4, 6), (0, 4), 7, 1, (5, 7), (1, 5)]]
 # 1,0,1,1,1,1,0,0 -> 00111101 # Inverse of Basic Case 6
-cube3d.base_cases[14].faces = [[(2, 6), (4, 6), (3, 7), (5, 7)], [(0, 1), (1, 3), (1, 5)]]
+cube3d.base_cases[14].faces = [[(3, 7), (5, 7), (2, 6), (4, 6)], [(0, 1), (1, 3), (1, 5)]]
 cube3d.base_cases[14].cells = [[6, (2, 6), (4, 6), 7, (3, 7), (5, 7)], [(0, 1), (1, 5), (1, 3), 1]]
 # 1,1,1,1,1,1,0,0 -> 00111111 # Inverse of Basic Case 2
 cube3d.base_cases[15].faces = [[(3, 7), (2, 6), (5, 7), (4, 6)]]
@@ -118,10 +118,18 @@ cube3d.mc33_cases[3][0].cells = [[0, (0, 1), (0, 2), 4, 5, 6], [5, (1, 5), (0, 1
 cube3d.mc33_tests[3] = [TEST_FACE_4, CASE_IS_REGULAR, 0]
 # 0,0,0,1,1,0,0,0 -> 00011000 # MC Case 4.2
 cube3d.mc33_cases[8].append(BaseCase(cube3d.base_cases[8].dim, cube3d.base_cases[8].case))
-cube3d.mc33_cases[8][0].faces = [[(4, 5), (4, 6), (1, 3), (3, 7)], [(0, 4), (4, 5), (2, 3), (1, 3)], [(4, 6), (0, 4), (3, 7), (2, 3)]]
-cube3d.mc33_cases[8][0].cells = []
+cube3d.mc33_cases[8][0].faces = [[(4, 5), (6, 7), (0, 4), (2, 3)], [(4, 5), (3, 7), (4, 5), (6, 7)], [(0, 4), (2, 3), (4, 5), (3, 7)]]
+cube3d.mc33_cases[8][0].cells = [[(4, 5), (3, 7), (1, 3), 5], [(4, 6), (4, 5), (3, 7), 7], [5, 7, (4, 5), (3, 7)], [6, (4, 5), (3, 7), (2, 3)], [2, (0, 4), (4, 5), (2, 3)], [0, (0, 4), 2, (2, 3)], [(4, 6), 6, 7, (3, 7)], [(4, 6), 6, (2, 3), 2], [1, (1, 3), 5, (4, 5)], [1, (1, 3), (0, 4), (4, 5)], [1, (1, 3), (0, 4), 0], [(1, 3), (2, 3), (0, 4), 0]]
 cube3d.mc33_tests[8] = [TEST_FACE_3, CASE_IS_REGULAR, 0]
- 
+# 1,0,0,1,1,0,0,0 -> 00011001 # MC33 Case 6.1.2
+cube3d.mc33_cases[9].append(BaseCase(cube3d.base_cases[9].dim, cube3d.base_cases[9].case))
+cube3d.mc33_cases[9][0].faces = [[(1, 3), (1, 5), (3, 7), (5, 7)], [(0, 4), (5, 7), (1, 5)], [(0, 2), (0, 4), (3, 7), (6, 7)], [(0, 2), (3, 7), (1, 3)]]
+cube3d.mc33_cases[9][0].cells = [[1, (0, 1), (1, 3), 5, (4, 5), (3, 7)], [5, (4, 5), (3, 7), 7], [(4, 5), (3, 7), 7, (4, 6)], [(3, 7), 7, (4, 6), (2, 3)], [(2, 3), (0, 2), 2, (6, 7), (4, 6), 6]]
+# 1,0,0,1,1,0,0,0 -> 00011001 # MC33 Case 6.2
+cube3d.mc33_cases[9].append(BaseCase(cube3d.base_cases[9].dim, cube3d.base_cases[9].case))
+cube3d.mc33_cases[9][1].faces = [[(0, 4), (5, 7), (1, 5)], [(0, 2), (0, 4), (3, 7), (6, 7)], [(0, 2), (3, 7), (1, 3)]]
+cube3d.mc33_cases[9][1].cells = cube3d.mc33_cases[9][0].cells
+cube3d.mc33_tests[9] = [TEST_FACE_1, 1, TEST_CENTER, 1, 1, 0, CASE_IS_REGULAR]
 
 # 1,1,1,1,0,1,1,0 -> 01101111 # Inverse of MC33 Case 3.2
 cube3d.mc33_cases[18].append(BaseCase(cube3d.base_cases[18].dim, cube3d.base_cases[18].case))
@@ -130,9 +138,18 @@ cube3d.mc33_cases[18][0].cells = [[4, (0, 4), (4, 5), (4, 6)], [(0, 4), (4, 5), 
 cube3d.mc33_tests[18] = [TEST_FACE_5, CASE_IS_REGULAR, 0]
 # 0,1,1,1,1,1,1,0 -> 01111110 # Inverse of MC Case 4.2
 cube3d.mc33_cases[19].append(BaseCase(cube3d.base_cases[19].dim, cube3d.base_cases[19].case))
-cube3d.mc33_cases[19][0].faces = [[(0, 4), (0, 1), (5, 7), (3, 7)], [(0, 1), (0, 2), (3, 7), (6, 7)], [(0, 2), (0, 4), (6, 7), (5, 7)]]
-cube3d.mc33_cases[19][0].cells = [[(0, 1), (3, 7), (5, 7), 1], [(0, 2), (0, 1), (3, 7), 3], [1, 3, (0, 1), (3, 7)], [2, (0, 1), (3, 7), (6, 7)], [6, (0, 4), (0, 1), (6, 7)], [4, (0, 4), 6, (6, 7)], [(0, 2), 2, 3, (3, 7)], [(0, 2), 2, (6, 7), 6], [5, (5, 7), 1, (0, 1)], [5, (5, 7), (0, 4), (0, 1)], [5, (5, 7), (0, 4), 4], [(5, 7), (6, 7), (0, 4), 4]]
+cube3d.mc33_cases[19][0].faces = [[(0, 1), (3, 7), (0, 4), (5, 7)], [(0, 4), (5, 7), (0, 2), (6, 7)], [(0, 2), (6, 7), (0, 1), (3, 7)]]
+cube3d.mc33_cases[19][0].cells = [[0, (0, 1), (0, 2), (0, 4)], [(0, 1), (0, 2), (0, 4), (3, 7), (6, 7), (5, 7)], [7, (3, 7), (5, 7), (6, 7)]]
 cube3d.mc33_tests[19] = [TEST_FACE_2, CASE_IS_REGULAR, 0]
+# 1,0,1,1,1,1,0,0 -> 00111101 # Inverse of MC33 Case 6.1.2
+cube3d.mc33_cases[14].append(BaseCase(cube3d.base_cases[14].dim, cube3d.base_cases[14].case))
+cube3d.mc33_cases[14][0].faces = [[(1, 5), (1, 3), (5, 7), (3, 7)], [(2, 6), (3, 7), (1, 3)], [(1, 3), (0, 1), (2, 6), (4, 6)], [(3, 5), (5, 7), (4, 6)]]
+cube3d.mc33_cases[14][0].cells = [[6, (2, 6), (4, 6), 7, (3, 7), (5, 7)], [(2, 6), (4, 6), (3, 7), (5, 7), (0, 1), 1, (1, 3), (1, 5)]]
+# 1,0,1,1,1,1,0,0 -> 00111101 # Inverse of MC33 Case 6.2
+cube3d.mc33_cases[14].append(BaseCase(cube3d.base_cases[14].dim, cube3d.base_cases[14].case))
+cube3d.mc33_cases[14][1].faces = [[(2, 6), (3, 7), (1, 3)], [(1, 3), (0, 1), (2, 6), (4, 6)], [(3, 5), (5, 7), (4, 6)]]
+cube3d.mc33_cases[14][1].cells = cube3d.mc33_cases[14][0].cells
+cube3d.mc33_tests[14] = [TEST_FACE_1, 1, TEST_CENTER, 1, 1, 0, CASE_IS_REGULAR]
 
 #cube3d_mc33 = LookupGenerator(3, "cube3d")
 ## base cases cube 3D for marching cubes 33:
