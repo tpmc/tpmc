@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <iostream>
+#include <fstream>
 
 #include <dune/common/fvector.hh>
 
@@ -19,69 +20,79 @@ typedef size_t sizeType;
 class TestMarchingCubes33
 {
 public:
-  bool testAny0d(sizeType expect, bool verbose,
-                 double vertex_0);
-  bool testAny1d(sizeType expect, bool verbose,
-                 double vertex_0, double vertex_1);
-  bool testSimplex2d(sizeType expect, bool verbose,
-                     double vertex_0, double vertex_1, double vertex_2);
-  bool testCube2d(sizeType expect, bool verbose,
-                  double vertex_0, double vertex_1, double vertex_2, double vertex_3);
-  bool testSimplex3d(sizeType expect, bool verbose,
-                     double vertex_0, double vertex_1, double vertex_2, double vertex_3);
-  bool testCube3d(sizeType expect, bool verbose,
+  bool verbose;
+  bool write_vtk;
+  bool testAny0d(sizeType expect, double vertex_0, std::string name);
+  bool testAny1d(sizeType expect, double vertex_0, double vertex_1,
+                 std::string name);
+  bool testSimplex2d(sizeType expect,
+                     double vertex_0, double vertex_1, double vertex_2, std::string name);
+  bool testCube2d(sizeType expect,
                   double vertex_0, double vertex_1, double vertex_2, double vertex_3,
-                  double vertex_4, double vertex_5, double vertex_6, double vertex_7);
+                  std::string name);
+  bool testSimplex3d(sizeType expect,
+                     double vertex_0, double vertex_1, double vertex_2, double vertex_3,
+                     std::string name);
+  bool testCube3d(sizeType expect,
+                  double vertex_0, double vertex_1, double vertex_2, double vertex_3,
+                  double vertex_4, double vertex_5, double vertex_6, double vertex_7,
+                  std::string name);
   template <int dim> bool assertEquals(sizeType expect,
-                                       sizeType vertex_count, double * vertices, bool verbose);
+                                       sizeType vertex_count, double * vertices, std::string name);
+  template <int dim> void writeVtkFile(std::vector<std::vector<
+                                               Dune::FieldVector <double, dim> > > elements, int element_dim,
+                                       std::string name);
 };
 
-bool TestMarchingCubes33::testAny0d(sizeType expect, bool verbose,
-                                    double vertex_0)
+bool TestMarchingCubes33::testAny0d(sizeType expect,
+                                    double vertex_0, std::string name)
 {
   double vertices[] = {vertex_0};
-  return this->assertEquals<0>(expect, 1, vertices, verbose);
+  return this->assertEquals<0>(expect, 1, vertices, name);
 }
 
-bool TestMarchingCubes33::testAny1d(sizeType expect, bool verbose,
-                                    double vertex_0, double vertex_1)
+bool TestMarchingCubes33::testAny1d(sizeType expect,
+                                    double vertex_0, double vertex_1, std::string name)
 {
   double vertices[] = {vertex_0, vertex_1};
-  return this->assertEquals<1>(expect, 2, vertices, verbose);
+  return this->assertEquals<1>(expect, 2, vertices, name);
 }
 
-bool TestMarchingCubes33::testSimplex2d(sizeType expect, bool verbose,
-                                        double vertex_0, double vertex_1, double vertex_2)
+bool TestMarchingCubes33::testSimplex2d(sizeType expect,
+                                        double vertex_0, double vertex_1, double vertex_2, std::string name)
 {
   double vertices[] = {vertex_0, vertex_1, vertex_2};
-  return this->assertEquals<2>(expect, 3, vertices, verbose);
+  return this->assertEquals<2>(expect, 3, vertices, name);
 }
 
-bool TestMarchingCubes33::testCube2d(sizeType expect, bool verbose,
-                                     double vertex_0, double vertex_1, double vertex_2, double vertex_3)
-{
-  double vertices[] = {vertex_0, vertex_1, vertex_2, vertex_3};
-  return this->assertEquals<2>(expect, 4, vertices, verbose);
-}
-
-bool TestMarchingCubes33::testSimplex3d(sizeType expect, bool verbose,
-                                        double vertex_0, double vertex_1, double vertex_2, double vertex_3)
-{
-  double vertices[] = {vertex_0, vertex_1, vertex_2, vertex_3};
-  return this->assertEquals<3>(expect, 4, vertices, verbose);
-}
-
-bool TestMarchingCubes33::testCube3d(sizeType expect, bool verbose,
+bool TestMarchingCubes33::testCube2d(sizeType expect,
                                      double vertex_0, double vertex_1, double vertex_2, double vertex_3,
-                                     double vertex_4, double vertex_5, double vertex_6, double vertex_7)
+                                     std::string name)
+{
+  double vertices[] = {vertex_0, vertex_1, vertex_2, vertex_3};
+  return this->assertEquals<2>(expect, 4, vertices, name);
+}
+
+bool TestMarchingCubes33::testSimplex3d(sizeType expect,
+                                        double vertex_0, double vertex_1, double vertex_2, double vertex_3,
+                                        std::string name)
+{
+  double vertices[] = {vertex_0, vertex_1, vertex_2, vertex_3};
+  return this->assertEquals<3>(expect, 4, vertices, name);
+}
+
+bool TestMarchingCubes33::testCube3d(sizeType expect,
+                                     double vertex_0, double vertex_1, double vertex_2, double vertex_3,
+                                     double vertex_4, double vertex_5, double vertex_6, double vertex_7,
+                                     std::string name)
 {
   double vertices[] = {vertex_0, vertex_1, vertex_2, vertex_3, vertex_4,
                        vertex_5, vertex_6, vertex_7};
-  return this->assertEquals<3>(expect, 8, vertices, verbose);
+  return this->assertEquals<3>(expect, 8, vertices, name);
 }
 
 template <int dim> bool TestMarchingCubes33::assertEquals(sizeType expect,
-                                                          sizeType vertex_count, double * vertices, bool verbose)
+                                                          sizeType vertex_count, double * vertices, std::string name)
 {
   if (verbose)
   {
@@ -141,14 +152,156 @@ template <int dim> bool TestMarchingCubes33::assertEquals(sizeType expect,
     }
     std::cout << std::endl;
   }
+  // write vtk file
+  else if(write_vtk)
+  {
+    // Perform second part of MC 33 algorithm
+    typedef Dune::FieldVector<double, dim> dim_point;
+    std::vector<std::vector<dim_point> > codim0;
+    mc.getElements(vertices, vertex_count, key, false, codim0);
+    writeVtkFile<dim>(codim0, dim, name);
+    // Perform second part of MC 33 algorithm for codim 1 elements
+    std::vector<std::vector<dim_point> > codim1;
+    mc.getElements(vertices, vertex_count, key, true, codim1);
+    writeVtkFile<dim>(codim1, dim - 1, name);
+  }
   return (key == expect);
 }
 
+/*
+ * Write Vtk file containing the given elements.
+ */
+template <int dim> void TestMarchingCubes33::writeVtkFile(std::vector<std::vector<Dune::FieldVector
+                                                                  <double, dim> > > elements, int element_dim, std::string name)
+{
+  typedef Dune::FieldVector<double, dim> dim_point;
+  std::string file_name = "vtk/" + name + "_" +
+                          (dim == element_dim ? "cells" : "faces") + ".vtk";
+  std::ofstream vtk_file(file_name.c_str(), std::ios::out);
+  // Write vtk header
+  vtk_file << "# vtk DataFile Version 3.0" << std::endl <<
+  "test case " << name << std::endl <<
+  "ASCII" << std::endl <<
+  "DATASET UNSTRUCTURED_GRID" << std::endl;
+  // Write occuring points
+  int number_points = 0;
+  for(typename std::vector<std::vector<dim_point> >::iterator
+      i = elements.begin(); i != elements.end(); ++i)
+  {
+    number_points += i->size();
+  }
+  vtk_file << "POINTS " << number_points << " float" << std::endl;
+  for(typename std::vector<std::vector<dim_point> >::iterator
+      i = elements.begin(); i != elements.end(); ++i)
+  {
+    for(typename std::vector<dim_point>::iterator j = i->begin();
+        j != i->end(); ++j)
+    {
+      for (typename dim_point::iterator k = j->begin();
+           k != j->end(); ++k)
+      {
+        vtk_file << *k << " ";
+      }
+      // fill with zero until three coordinates are given
+      for (sizeType n = dim; n < 3; n++)
+      {
+        vtk_file << "0 ";
+      }
+      vtk_file << std::endl;
+    }
+    vtk_file << std::endl;
+  }
+  // Write cells
+  vtk_file << "CELLS " << elements.size() << " " <<
+  (elements.size() + number_points) << std::endl;
+  int point_index = 0;
+  for(typename std::vector<std::vector<dim_point> >::iterator
+      i = elements.begin(); i != elements.end(); ++i)
+  {
+    vtk_file << i->size();
+    for (sizeType j = 0; j < i->size(); j++)
+    {
+      vtk_file << " " << point_index;
+      point_index++;
+    }
+    vtk_file << std::endl;
+  }
+  vtk_file << std::endl;
+  // Write cell types
+  vtk_file << "CELL_TYPES " << elements.size() << std::endl;
+  for(typename std::vector<std::vector<dim_point> >::iterator
+      i = elements.begin(); i != elements.end(); ++i)
+  {
+    int cell_type = 0;
+    switch (element_dim)
+    {
+    case 0 :
+      cell_type = 1;
+      break;
+    case 1 :
+      cell_type = 3;
+      break;
+    case 2 :
+      if (i->size() == 3)
+      {
+        cell_type = 5;
+      }
+      else
+      {
+        cell_type = 9;
+      }
+      break;
+    case 3 :
+      if (i->size() == 4)
+      {
+        cell_type = 10;
+      }
+      else if (i->size() == 8)
+      {
+        cell_type = 12;
+      }
+      else if (i->size() == 6)
+      {
+        cell_type = 13;
+      }
+      else
+      {
+        cell_type = 14;
+      }
+      break;
+    }
+    vtk_file << cell_type << std::endl;
+  }
+  vtk_file << std::endl;
+  // Write point data
+  vtk_file << "POINT_DATA " << number_points << std::endl <<
+  "SCALARS ElementID int 1" << std::endl <<
+  "LOOKUP_TABLE default" << std::endl;
+  int point_id = 0;
+  for(typename std::vector<std::vector<dim_point> >::iterator
+      i = elements.begin(); i != elements.end(); ++i)
+  {
+    for(typename std::vector<dim_point>::iterator j = i->begin();
+        j != i->end(); ++j)
+    {
+      vtk_file << point_id << " ";
+    }
+    point_id++;
+    vtk_file << std::endl;
+  }
+  vtk_file.close();
+  std::cout << "File written " << file_name << "\n";
+}
+
+/*
+ * Main method containing all test cases.
+ */
 int main(int arg_count, char ** arg_array)
 {
   TestMarchingCubes33 testmc33;
   bool passed = true;
-  bool verbose = false;
+  testmc33.verbose = false;
+  testmc33.write_vtk = true;
 
   /*sizeType vertexCount = argCount - 1;
      double* vertices = new double[vertexCount];
@@ -160,133 +313,130 @@ int main(int arg_count, char ** arg_array)
      }*/
 
   // Test any 0d (point)
-  passed &= testmc33.testAny0d(0, verbose, 0.4);
-  passed &= testmc33.testAny0d(0, verbose, 0.8);
+  passed &= testmc33.testAny0d(0, 0.4, "any0d_0");
+  passed &= testmc33.testAny0d(0, 0.8, "any0d_1");
   // Test any 1d (line)
-  passed &= testmc33.testAny1d(0, verbose, 0.4, 0.2);
-  passed &= testmc33.testAny1d(1, verbose, 0.7, 0.1);
-  passed &= testmc33.testAny1d(2, verbose, 0.3, 0.7);
-  passed &= testmc33.testAny1d(3, verbose, 0.8, 0.7);
+  passed &= testmc33.testAny1d(0, 0.4, 0.2, "any1d_0");
+  passed &= testmc33.testAny1d(1, 0.7, 0.1, "any1d_1");
+  passed &= testmc33.testAny1d(2, 0.3, 0.7, "any1d_2");
+  passed &= testmc33.testAny1d(3, 0.8, 0.7, "any1d_3");
   // Test simplex 2d
-  passed &= testmc33.testSimplex2d(0, verbose, 0.2, 0.3, 0.4);
-  passed &= testmc33.testSimplex2d(1, verbose, 0.8, 0.2, 0.4);
-  passed &= testmc33.testSimplex2d(2, verbose, 0.1, 0.7, 0.5);
-  passed &= testmc33.testSimplex2d(3, verbose, 0.8, 0.8, 0.4);
-  passed &= testmc33.testSimplex2d(4, verbose, 0.0, 0.2, 0.8);
-  passed &= testmc33.testSimplex2d(5, verbose, 0.8, 0.2, 0.9);
-  passed &= testmc33.testSimplex2d(6, verbose, 0.3, 0.7, 0.8);
-  passed &= testmc33.testSimplex2d(7, verbose, 0.9, 0.7, 0.8);
+  passed &= testmc33.testSimplex2d(0, 0.2, 0.3, 0.4, "simplex2d_0");
+  passed &= testmc33.testSimplex2d(1, 0.8, 0.2, 0.4, "simplex2d_1");
+  passed &= testmc33.testSimplex2d(2, 0.1, 0.7, 0.5, "simplex2d_2");
+  passed &= testmc33.testSimplex2d(3, 0.8, 0.8, 0.4, "simplex2d_3");
+  passed &= testmc33.testSimplex2d(6, 0.3, 0.7, 0.8, "simplex2d_4");
   // Test simplex 3d
-  passed &= testmc33.testSimplex3d(0, verbose, 0.2, 0.3, 0.4, 0.5);
-  passed &= testmc33.testSimplex3d(1, verbose, 0.8, 0.3, 0.4, 0.5);
-  passed &= testmc33.testSimplex3d(2, verbose, 0.2, 1.0, 0.4, 0.5);
-  passed &= testmc33.testSimplex3d(3, verbose, 0.9, 0.7, 0.4, 0.5);
-  passed &= testmc33.testSimplex3d(4, verbose, 0.2, 0.3, 0.8, 0.4);
-  passed &= testmc33.testSimplex3d(5, verbose, 0.7, 0.3, 0.8, 0.4);
-  passed &= testmc33.testSimplex3d(6, verbose, 0.2, 0.9, 0.8, 0.4);
-  passed &= testmc33.testSimplex3d(7, verbose, 0.8, 0.7, 0.9, 0.2);
-  passed &= testmc33.testSimplex3d(8, verbose, 0.2, 0.3, 0.4, 0.8);
-  passed &= testmc33.testSimplex3d(9, verbose, 0.8, 0.3, 0.4, 0.8);
-  passed &= testmc33.testSimplex3d(10, verbose, 0.2, 1.0, 0.4, 0.8);
-  passed &= testmc33.testSimplex3d(11, verbose, 0.9, 0.7, 0.4, 0.8);
-  passed &= testmc33.testSimplex3d(12, verbose, 0.2, 0.3, 0.8, 0.8);
-  passed &= testmc33.testSimplex3d(13, verbose, 0.7, 0.3, 0.8, 0.8);
-  passed &= testmc33.testSimplex3d(14, verbose, 0.2, 0.9, 0.8, 0.8);
-  passed &= testmc33.testSimplex3d(15, verbose, 0.8, 0.7, 0.9, 0.8);
+  passed &= testmc33.testSimplex3d(0, 0.2, 0.3, 0.4, 0.5, "simplex3d_0");
+  passed &= testmc33.testSimplex3d(1, 0.8, 0.3, 0.4, 0.5, "simplex3d_1");
+  passed &= testmc33.testSimplex3d(2, 0.2, 1.0, 0.4, 0.5, "simplex3d_2");
+  passed &= testmc33.testSimplex3d(3, 0.9, 0.7, 0.4, 0.5, "simplex3d_3");
+  passed &= testmc33.testSimplex3d(4, 0.2, 0.3, 0.8, 0.4, "simplex3d_4");
+  passed &= testmc33.testSimplex3d(5, 0.7, 0.3, 0.8, 0.4, "simplex3d_5");
+  passed &= testmc33.testSimplex3d(6, 0.2, 0.9, 0.8, 0.4, "simplex3d_6");
+  passed &= testmc33.testSimplex3d(7, 0.8, 0.7, 0.9, 0.2, "simplex3d_7");
+  passed &= testmc33.testSimplex3d(8, 0.2, 0.3, 0.4, 0.8, "simplex3d_8");
+  passed &= testmc33.testSimplex3d(9, 0.8, 0.3, 0.4, 0.8, "simplex3d_9");
+  passed &= testmc33.testSimplex3d(10, 0.2, 1.0, 0.4, 0.8, "simplex3d_10");
+  passed &= testmc33.testSimplex3d(11, 0.9, 0.7, 0.4, 0.8, "simplex3d_11");
+  passed &= testmc33.testSimplex3d(12, 0.2, 0.3, 0.8, 0.8, "simplex3d_12");
+  passed &= testmc33.testSimplex3d(13, 0.7, 0.3, 0.8, 0.8, "simplex3d_13");
+  passed &= testmc33.testSimplex3d(14, 0.2, 0.9, 0.8, 0.8, "simplex3d_14");
+  passed &= testmc33.testSimplex3d(15, 0.8, 0.7, 0.9, 0.8, "simplex3d_15");
   // Test cube 2d
-  passed &= testmc33.testCube2d(0, verbose, 0.1, 0.4, 0.5, 0.3);
-  passed &= testmc33.testCube2d(1, verbose, 0.7, 0.4, 0.5, 0.3);
-  passed &= testmc33.testCube2d(2, verbose, 0.2, 0.8, 0.5, 0.3);
-  passed &= testmc33.testCube2d(3, verbose, 0.7, 0.8, 0.5, 0.3);
-  passed &= testmc33.testCube2d(4, verbose, 0.1, 0.4, 0.9, 0.3);
-  passed &= testmc33.testCube2d(5, verbose, 0.7, 0.4, 0.9, 0.3);
-  passed &= testmc33.testCube2d(6, verbose, 0.5, 0.8, 0.7, 0.4);
-  passed &= testmc33.testCube2d(7, verbose, 0.9, 0.8, 0.7, 0.3);
-  passed &= testmc33.testCube2d(8, verbose, 0.1, 0.4, 0.5, 0.8);
-  passed &= testmc33.testCube2d(9, verbose, 0.7, 0.5, 0.4, 0.8);
-  passed &= testmc33.testCube2d(10, verbose, 0.1, 0.8, 0.4, 0.8);
-  passed &= testmc33.testCube2d(11, verbose, 0.7, 0.8, 0.5, 0.8);
-  passed &= testmc33.testCube2d(12, verbose, 0.1, 0.4, 0.9, 0.8);
-  passed &= testmc33.testCube2d(13, verbose, 0.7, 0.4, 0.9, 0.8);
-  passed &= testmc33.testCube2d(14, verbose, 0.5, 0.8, 0.7, 0.8);
-  passed &= testmc33.testCube2d(15, verbose, 0.9, 0.8, 0.7, 0.8);
-  passed &= testmc33.testCube2d(16, verbose, 0.1, 0.8, 0.9, 0.2);
-  passed &= testmc33.testCube2d(17, verbose, 0.9, 0.1, 0.2, 0.8);
+  passed &= testmc33.testCube2d(0, 0.1, 0.4, 0.5, 0.3, "cube2d_0");
+  passed &= testmc33.testCube2d(1, 0.7, 0.4, 0.5, 0.3, "cube2d_1");
+  passed &= testmc33.testCube2d(2, 0.2, 0.8, 0.5, 0.3, "cube2d_2");
+  passed &= testmc33.testCube2d(3, 0.7, 0.8, 0.5, 0.3, "cube2d_3");
+  passed &= testmc33.testCube2d(4, 0.1, 0.4, 0.9, 0.3, "cube2d_4");
+  passed &= testmc33.testCube2d(5, 0.7, 0.4, 0.9, 0.3, "cube2d_5");
+  passed &= testmc33.testCube2d(6, 0.5, 0.8, 0.7, 0.4, "cube2d_6");
+  passed &= testmc33.testCube2d(7, 0.9, 0.8, 0.7, 0.3, "cube2d_7");
+  passed &= testmc33.testCube2d(8, 0.1, 0.4, 0.5, 0.8, "cube2d_8");
+  passed &= testmc33.testCube2d(9, 0.7, 0.5, 0.4, 0.8, "cube2d_9");
+  passed &= testmc33.testCube2d(10, 0.1, 0.8, 0.4, 0.8, "cube2d_10");
+  passed &= testmc33.testCube2d(11, 0.7, 0.8, 0.5, 0.8, "cube2d_11");
+  passed &= testmc33.testCube2d(12, 0.1, 0.4, 0.9, 0.8, "cube2d_12");
+  passed &= testmc33.testCube2d(13, 0.7, 0.4, 0.9, 0.8, "cube2d_13");
+  passed &= testmc33.testCube2d(14, 0.5, 0.8, 0.7, 0.8, "cube2d_14");
+  passed &= testmc33.testCube2d(15, 0.9, 0.8, 0.7, 0.8, "cube2d_15");
+  passed &= testmc33.testCube2d(16, 0.1, 0.8, 0.9, 0.2, "cube2d_16");
+  passed &= testmc33.testCube2d(17, 0.9, 0.1, 0.2, 0.8, "cube2d_17");
   // Test cube 3d
   // Test all transformations of a basic case
-  passed &= testmc33.testCube3d(255-1, verbose, 0.4, 0.8, 0.8, 0.8,
-                                0.8, 0.8, 0.8, 0.8);
-  passed &= testmc33.testCube3d(255-2, verbose, 0.8, 0.4, 0.8, 0.8,
-                                0.8, 0.8, 0.8, 0.8);
-  passed &= testmc33.testCube3d(255-4, verbose, 0.8, 0.8, 0.4, 0.8,
-                                0.8, 0.8, 0.8, 0.8);
-  passed &= testmc33.testCube3d(255-8, verbose, 0.8, 0.8, 0.8, 0.4,
-                                0.8, 0.8, 0.8, 0.8);
-  passed &= testmc33.testCube3d(255-16, verbose, 0.8, 0.8, 0.8, 0.8,
-                                0.4, 0.8, 0.8, 0.8);
-  passed &= testmc33.testCube3d(255-32, verbose, 0.8, 0.8, 0.8, 0.8,
-                                0.8, 0.4, 0.8, 0.8);
-  passed &= testmc33.testCube3d(255-64, verbose, 0.8, 0.8, 0.8, 0.8,
-                                0.8, 0.8, 0.4, 0.8);
-  passed &= testmc33.testCube3d(255-128, verbose, 0.8, 0.8, 0.8, 0.8,
-                                0.8, 0.8, 0.8, 0.4);
+  passed &= testmc33.testCube3d(255-1, 0.4, 0.8, 0.8, 0.8,
+                                0.8, 0.8, 0.8, 0.8, "cube3d_transf_0");
+  passed &= testmc33.testCube3d(255-2, 0.8, 0.4, 0.8, 0.8,
+                                0.8, 0.8, 0.8, 0.8, "cube3d_transf_1");
+  passed &= testmc33.testCube3d(255-4, 0.8, 0.8, 0.4, 0.8,
+                                0.8, 0.8, 0.8, 0.8, "cube3d_transf_2");
+  passed &= testmc33.testCube3d(255-8, 0.8, 0.8, 0.8, 0.4,
+                                0.8, 0.8, 0.8, 0.8, "cube3d_transf_3");
+  passed &= testmc33.testCube3d(255-16, 0.8, 0.8, 0.8, 0.8,
+                                0.4, 0.8, 0.8, 0.8, "cube3d_transf_4");
+  passed &= testmc33.testCube3d(255-32, 0.8, 0.8, 0.8, 0.8,
+                                0.8, 0.4, 0.8, 0.8, "cube3d_transf_5");
+  passed &= testmc33.testCube3d(255-64, 0.8, 0.8, 0.8, 0.8,
+                                0.8, 0.8, 0.4, 0.8, "cube3d_transf_6");
+  passed &= testmc33.testCube3d(255-128, 0.8, 0.8, 0.8, 0.8,
+                                0.8, 0.8, 0.8, 0.4, "cube3d_transf_7");
   // Test every non MC 33 basic case
-  passed &= testmc33.testCube3d(0, verbose, 0.5, 0.5, 0.5, 0.5,
-                                0.5, 0.5, 0.5, 0.5); // Basic case 0
-  passed &= testmc33.testCube3d(1, verbose, 0.9, 0.5, 0.5, 0.5,
-                                0.5, 0.5, 0.5, 0.5); // Basic case 1
-  passed &= testmc33.testCube3d(3, verbose, 0.9, 0.9, 0.5, 0.5,
-                                0.5, 0.5, 0.5, 0.5); // Basic case 2
-  passed &= testmc33.testCube3d(33, verbose, 0.9, 0.5, 0.5, 0.5,
-                                0.5, 0.9, 0.5, 0.5); // Basic case 3
-  passed &= testmc33.testCube3d(129, verbose, 0.9, 0.5, 0.5, 0.5,
-                                0.5, 0.5, 0.5, 0.9); // Basic case 4
-  passed &= testmc33.testCube3d(14, verbose, 0.5, 0.9, 0.9, 0.9,
-                                0.5, 0.5, 0.5, 0.5); // Basic case 5
-  passed &= testmc33.testCube3d(131, verbose, 0.9, 0.9, 0.5, 0.5,
-                                0.5, 0.5, 0.5, 0.9); // Basic case 6
-  passed &= testmc33.testCube3d(162, verbose, 0.5, 0.9, 0.5, 0.5,
-                                0.5, 0.9, 0.5, 0.9); // Basic case 7
-  passed &= testmc33.testCube3d(240, verbose, 0.5, 0.5, 0.5, 0.5,
-                                0.9, 0.9, 0.9, 0.9); // Basic case 8
-  passed &= testmc33.testCube3d(77, verbose, 0.9, 0.5, 0.9, 0.9,
-                                0.5, 0.5, 0.9, 0.5); // Basic case 9
-  passed &= testmc33.testCube3d(153, verbose, 0.9, 0.5, 0.5, 0.9,
-                                0.9, 0.5, 0.5, 0.9); // Basic case 10
-  passed &= testmc33.testCube3d(141, verbose, 0.9, 0.5, 0.9, 0.9,
-                                0.5, 0.5, 0.5, 0.9); // Basic case 11
-  passed &= testmc33.testCube3d(30, verbose, 0.5, 0.9, 0.9, 0.9,
-                                0.9, 0.5, 0.5, 0.5); // Basic case 12
-  passed &= testmc33.testCube3d(105, verbose, 0.9, 0.5, 0.5, 0.9,
-                                0.5, 0.9, 0.9, 0.5); // Basic case 13
-  passed &= testmc33.testCube3d(78, verbose, 0.5, 0.9, 0.9, 0.9,
-                                0.5, 0.5, 0.9, 0.5); // Basic case 14
-  passed &= testmc33.testCube3d(255, verbose, 0.9, 0.9, 0.9, 0.9,
-                                0.9, 0.9, 0.9, 0.9); // Inverted basic case 0
-  passed &= testmc33.testCube3d(255-1, verbose, 0.5, 0.9, 0.9, 0.9,
-                                0.9, 0.9, 0.9, 0.9); // Inverted basic case 1
-  passed &= testmc33.testCube3d(255-3, verbose, 0.5, 0.5, 0.9, 0.9,
-                                0.9, 0.9, 0.9, 0.9); // Inverted basic case 2
-  passed &= testmc33.testCube3d(255-33, verbose, 0.5, 0.9, 0.9, 0.9,
-                                0.9, 0.5, 0.9, 0.9); // Inverted basic case 3
-  passed &= testmc33.testCube3d(255-129, verbose, 0.5, 0.9, 0.9, 0.9,
-                                0.9, 0.9, 0.9, 0.5); // Inverted basic case 4
-  passed &= testmc33.testCube3d(255-14, verbose, 0.9, 0.5, 0.5, 0.5,
-                                0.9, 0.9, 0.9, 0.9); // Inverted basic case 5
-  passed &= testmc33.testCube3d(255-131, verbose, 0.5, 0.5, 0.9, 0.9,
-                                0.9, 0.9, 0.9, 0.5); // Inverted basic case 6
-  passed &= testmc33.testCube3d(255-162, verbose, 0.9, 0.5, 0.9, 0.9,
-                                0.9, 0.5, 0.9, 0.5); // Inverted basic case 7
+  passed &= testmc33.testCube3d(0, 0.5, 0.5, 0.5, 0.5,
+                                0.5, 0.5, 0.5, 0.5, "cube3d_basic_0"); // Basic case 0
+  passed &= testmc33.testCube3d(1, 0.9, 0.5, 0.5, 0.5,
+                                0.5, 0.5, 0.5, 0.5, "cube3d_basic_1"); // Basic case 1
+  passed &= testmc33.testCube3d(3, 0.9, 0.9, 0.5, 0.5,
+                                0.5, 0.5, 0.5, 0.5, "cube3d_basic_2"); // Basic case 2
+  passed &= testmc33.testCube3d(33, 0.9, 0.5, 0.5, 0.5,
+                                0.5, 0.9, 0.5, 0.5, "cube3d_basic_3"); // Basic case 3
+  passed &= testmc33.testCube3d(129, 0.9, 0.5, 0.5, 0.5,
+                                0.5, 0.5, 0.5, 0.9, "cube3d_basic_4"); // Basic case 4
+  passed &= testmc33.testCube3d(14, 0.5, 0.9, 0.9, 0.9,
+                                0.5, 0.5, 0.5, 0.5, "cube3d_basic_5"); // Basic case 5
+  passed &= testmc33.testCube3d(131, 0.9, 0.9, 0.5, 0.5,
+                                0.5, 0.5, 0.5, 0.9, "cube3d_basic_6"); // Basic case 6
+  passed &= testmc33.testCube3d(162, 0.5, 0.9, 0.5, 0.5,
+                                0.5, 0.9, 0.5, 0.9, "cube3d_basic_7"); // Basic case 7
+  passed &= testmc33.testCube3d(240, 0.5, 0.5, 0.5, 0.5,
+                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_8"); // Basic case 8
+  passed &= testmc33.testCube3d(77, 0.9, 0.5, 0.9, 0.9,
+                                0.5, 0.5, 0.9, 0.5, "aa_cube3d_basic_9"); // Basic case 9
+  passed &= testmc33.testCube3d(153, 0.9, 0.5, 0.5, 0.9,
+                                0.9, 0.5, 0.5, 0.9, "cube3d_basic_basic_10"); // Basic case 10
+  passed &= testmc33.testCube3d(141, 0.9, 0.5, 0.9, 0.9,
+                                0.5, 0.5, 0.5, 0.9, "cube3d_basic_11"); // Basic case 11
+  passed &= testmc33.testCube3d(30, 0.5, 0.9, 0.9, 0.9,
+                                0.9, 0.5, 0.5, 0.5, "cube3d_basic_12"); // Basic case 12
+  passed &= testmc33.testCube3d(105, 0.9, 0.5, 0.5, 0.9,
+                                0.5, 0.9, 0.9, 0.5, "cube3d_basic_13"); // Basic case 13
+  passed &= testmc33.testCube3d(78, 0.5, 0.9, 0.9, 0.9,
+                                0.5, 0.5, 0.9, 0.5, "cube3d_basic_14"); // Basic case 14
+  passed &= testmc33.testCube3d(255, 0.9, 0.9, 0.9, 0.9,
+                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_15"); // Inverted basic case 0
+  passed &= testmc33.testCube3d(255-1, 0.5, 0.9, 0.9, 0.9,
+                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_16"); // Inverted basic case 1
+  passed &= testmc33.testCube3d(255-3, 0.5, 0.5, 0.9, 0.9,
+                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_17"); // Inverted basic case 2
+  passed &= testmc33.testCube3d(255-33, 0.5, 0.9, 0.9, 0.9,
+                                0.9, 0.5, 0.9, 0.9, "cube3d_basic_18"); // Inverted basic case 3
+  passed &= testmc33.testCube3d(255-129, 0.5, 0.9, 0.9, 0.9,
+                                0.9, 0.9, 0.9, 0.5, "cube3d_basic_19"); // Inverted basic case 4
+  passed &= testmc33.testCube3d(255-14, 0.9, 0.5, 0.5, 0.5,
+                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_20"); // Inverted basic case 5
+  passed &= testmc33.testCube3d(255-131, 0.5, 0.5, 0.9, 0.9,
+                                0.9, 0.9, 0.9, 0.5, "cube3d_basic_21"); // Inverted basic case 6
+  passed &= testmc33.testCube3d(255-162, 0.9, 0.5, 0.9, 0.9,
+                                0.9, 0.5, 0.9, 0.5, "cube3d_basic_22"); // Inverted basic case 7
   // Test Marching cubes' 33 cases
-  /*passed &= testmc33.testCube3d(33, verbose, 0.9, 0.5, 0.5, 0.5,
-      0.5, 0.9, 0.5, 0.5); // Basic case 3 / MC33 case 3.1
-     passed &= testmc33.testCube3d(260, verbose, 0.7, 0.2, 0.2, 0.2,
-      0.2, 0.7, 0.2, 0.2); // MC33 case 3.2
+  /*passed &= testmc33.testCube3d(33, 0.9, 0.5, 0.5, 0.5,
+      0.5, 0.9, 0.5, 0.5, "cube3d_"); // Basic case 3 / MC33 case 3.1
+     passed &= testmc33.testCube3d(260, 0.7, 0.2, 0.2, 0.2,
+      0.2, 0.7, 0.2, 0.2, "cube3d_"); // MC33 case 3.2
      verbose = true;
-     passed &= testmc33.testCube3d(255-129, verbose, 0.9, 0.9, 0.9, 0.9,
-      0.5, 0.9, 0.9, 0.5); // Inverse of Basic case 3 / Inv. MC33 case 3.1
-     passed &= testmc33.testCube3d(260, verbose, 0.7, 0.7, 0.7, 0.7,
-      0.2, 0.7, 0.7, 0.2); // Inverse of MC33 case 3.2
+     passed &= testmc33.testCube3d(255-129, 0.9, 0.9, 0.9, 0.9,
+      0.5, 0.9, 0.9, 0.5, "cube3d_"); // Inverse of Basic case 3 / Inv. MC33 case 3.1
+     passed &= testmc33.testCube3d(260, 0.7, 0.7, 0.7, 0.7,
+      0.2, 0.7, 0.7, 0.2, "cube3d_"); // Inverse of MC33 case 3.2
    */
 
 
