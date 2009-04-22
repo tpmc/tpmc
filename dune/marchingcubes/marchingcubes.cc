@@ -164,6 +164,7 @@ namespace Dune {
         bool test_result = (face == TEST_CENTER) ?
                            testAmbiguousCenter(vertex_values, vertex_count, not_inverted) :
                            testAmbiguousFace(corner_a, corner_b, corner_c, corner_d, not_inverted);
+        //printf("test_result: %d\n", test_result);
         tree_offset += (1 - test_result);
         face = table_mc33_face_test_order[test_index + tree_offset];
       }

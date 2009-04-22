@@ -167,6 +167,8 @@ class DuneCode:
                     mc33_offsets.append("%i,\n" \
                         % (mc33_tests.offset), 1)
                     # Generate tests table
+                    mc33_tests.append("\n      /* %i / %s */" \
+                        % (mc33_tests.offset, entry.case), 0)
                     i = 0
                     for test in self.lg.mc33_tests[base_case_number]:
                         i = i + 1
@@ -190,7 +192,6 @@ class DuneCode:
                         # case number otherwise
                         else:
                             mc33_tests.append(str(offsets.offset + test) + ", ", 1)
-                    mc33_tests.append("\n      ", 0)
                     # Case tables for mc 33 cases
                     for mc33_case in self.lg.mc33_cases[base_case_number]:
                         offsets.append("      /* %d test index:%d */ " \

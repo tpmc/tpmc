@@ -96,8 +96,8 @@ template <int dim> bool TestMarchingCubes33::assertEquals(sizeType expect,
 {
   if (verbose)
   {
-    std::cout << " Test data (dim: " << dim << ", vertices: " <<
-    vertex_count << "): ";
+    std::cout << " Test data for \"" << name << "\" (dim: " << dim <<
+    ", vertices: " << vertex_count << "): ";
     for (sizeType i = 0; i < vertex_count; i++)
     {
       std::cout << vertices[i] << " ";
@@ -110,8 +110,8 @@ template <int dim> bool TestMarchingCubes33::assertEquals(sizeType expect,
   // Print failed test cases
   if (key != expect)
   {
-    std::cout << "  FAILED: Expected key " << expect <<
-    " but " << key << " found. (Dimension: " << dim <<
+    std::cout << "  FAILED: \""  << name << "\" Expected key " <<
+    expect << " but " << key << " found. (Dimension: " << dim <<
     " Number of vertices: " << vertex_count << ")." << std::endl;
   }
   // Print result
@@ -290,7 +290,10 @@ template <int dim> void TestMarchingCubes33::writeVtkFile(std::vector<std::vecto
     vtk_file << std::endl;
   }
   vtk_file.close();
-  std::cout << "File written " << file_name << "\n";
+  if (verbose)
+  {
+    std::cout << "File written: " << file_name << std::endl;
+  }
 }
 
 /*
@@ -389,14 +392,14 @@ int main(int arg_count, char ** arg_array)
                                 0.5, 0.5, 0.5, 0.5, "cube3d_basic_2"); // Basic case 2
   passed &= testmc33.testCube3d(33, 0.9, 0.5, 0.5, 0.5,
                                 0.5, 0.9, 0.5, 0.5, "cube3d_basic_3"); // Basic case 3
-  passed &= testmc33.testCube3d(129, 0.9, 0.5, 0.5, 0.5,
-                                0.5, 0.5, 0.5, 0.9, "cube3d_basic_4"); // Basic case 4
+  passed &= testmc33.testCube3d(129, 0.62, 0.2, 0.2, 0.2,
+                                0.2, 0.2, 0.2, 0.62, "cube3d_basic_4"); // Basic case 4
   passed &= testmc33.testCube3d(14, 0.5, 0.9, 0.9, 0.9,
                                 0.5, 0.5, 0.5, 0.5, "cube3d_basic_5"); // Basic case 5
-  passed &= testmc33.testCube3d(131, 0.9, 0.9, 0.5, 0.5,
-                                0.5, 0.5, 0.5, 0.9, "cube3d_basic_6"); // Basic case 6
-  passed &= testmc33.testCube3d(162, 0.5, 0.9, 0.5, 0.5,
-                                0.5, 0.9, 0.5, 0.9, "cube3d_basic_7"); // Basic case 7
+  passed &= testmc33.testCube3d(131, 0.7, 0.7, 0.2, 0.2,
+                                0.2, 0.2, 0.2, 0.7, "cube3d_basic_6"); // Basic case 6
+  passed &= testmc33.testCube3d(162, -0.2, 0.62, -0.2, -0.2,
+                                -0.2, 0.62, -0.2, 0.62, "cube3d_basic_7"); // Basic case 7
   passed &= testmc33.testCube3d(240, 0.5, 0.5, 0.5, 0.5,
                                 0.9, 0.9, 0.9, 0.9, "cube3d_basic_8"); // Basic case 8
   passed &= testmc33.testCube3d(77, 0.9, 0.5, 0.9, 0.9,
