@@ -5,7 +5,8 @@
 
 namespace Dune {
   /*
-   * TODO: Comment
+   * Case offset tables (e.g. table_cube2d_cases offsets) for different
+   * types of elements and dimensions.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   typename MarchingCubes33<valueType, dim, thresholdFunctor>::
@@ -19,7 +20,8 @@ namespace Dune {
   };
 
   /*
-   * TODO: Comment
+   * Codimension 0 element tables (e.g. table_cube2d_codim_0) for different
+   * types of elements and dimensions.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   const short * const
@@ -32,7 +34,8 @@ namespace Dune {
   };
 
   /*
-   * TODO: Comment
+   * Codimension 1 elment tables (e.g. table_cube2d_codim_1) for different
+   * types of elements and dimensions.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   const short * const
@@ -45,7 +48,8 @@ namespace Dune {
   };
 
   /*
-   * TODO: Comment
+   * MC33 offset tables (e.g. table_cube2d_mc33_offsets) for
+   * different types of elements and dimensions.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   const short * const
@@ -57,7 +61,8 @@ namespace Dune {
   };
 
   /*
-   * TODO: Comment
+   * Test face tables (e.g. table_cube2d_mc33_face_test_order) for
+   * different types of elements and dimensions.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   const short * const
@@ -134,7 +139,7 @@ namespace Dune {
       geo_type.makeQuadrilateral();
       ReferenceElementContainer<ctype, dim> rec;
       const ReferenceElement<ctype, dim> & ref_element = rec(geo_type);
-      valueType corner_a, corner_b, corner_c, corner_d;
+      valueType corner_a, corner_b, corner_c, corner_d; printf("drin\n");
       // tests are negative, non-negativ values are offsets
       while ((face < 0) && (face != CASE_IS_REGULAR))
       {
@@ -160,13 +165,16 @@ namespace Dune {
                      << " occur with dimension 2 or 3, not " << dim << ".");
         }
         // calculate index position (if test is true: 2*index, otherwise: 2*index+1)
+        printf("face: %d\n", face);
         tree_offset *= 2;
         bool test_result = (face == TEST_CENTER) ?
                            testAmbiguousCenter(vertex_values, vertex_count, not_inverted) :
                            testAmbiguousFace(corner_a, corner_b, corner_c, corner_d, not_inverted);
         //printf("test_result: %d\n", test_result);
         tree_offset += (1 - test_result);
+        printf("test_result: %d\n", test_result);
         face = table_mc33_face_test_order[test_index + tree_offset];
+        printf("face schluss: %d\n", face);
       }
       if (face != CASE_IS_REGULAR)
       {
@@ -455,13 +463,13 @@ namespace Dune {
     const double a =  (a1 - a0) * (c1 - c0) - (b1 - b0) * (d1 - d0);
     if (a >= 0.0)
     {
-      return !not_inverted;
+      return not_inverted;
     }
     const double b =  c0*(a1 - a0) + a0*(c1 - c0) - d0*(b1 - b0) - b0*(d1 - d0);
     const double t_max = -0.5 * b / a;
     if ((0.0 >= t_max) || (1.0 <= t_max))
     {
-      return !not_inverted;
+      return not_inverted;
     }
     //const double c =  (a0 * c0) - (b0 * d0);
     const double at = a0 + (a1 - a0) * t_max;
@@ -471,7 +479,7 @@ namespace Dune {
     const bool inequation_4 = (at*ct - bt*dt > 0.0);
     const bool corner_signs = (at*ct > 0.0) && (bt*dt > 0.0)
                               && (at*bt < 0.0);
-    return (inequation_4 && corner_signs) == not_inverted;
+    return (inequation_4 && corner_signs) != not_inverted;
   }
 
 } // end namespace Dune

@@ -46,9 +46,10 @@ const_names = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", \
 # Constants indicating whether case special treatment when marching cubes' 33 is used.
 CASE_UNIQUE_MC33 = 0
 CASE_AMIGUOUS_MC33 = 1
-# Constants indication whether basic case is inverted.
-CASE_NOT_INVERTED = 0
+# Constant indicates whether basic case is inverted.
 CASE_INVERTED = 2
+# Constant indicates whether basic case was flipped.
+CASE_FLIPPED = 4
 # Face tests
 face_tests = {-1:"TEST_FACE_1", -2:"TEST_FACE_2", -3:"TEST_FACE_3", \
               -4:"TEST_FACE_4", -5:"TEST_FACE_5", -6:"TEST_FACE_0", \
@@ -141,9 +142,11 @@ class DuneCode:
         def create_tables(self, offsets, codim0, codim1):
             for entry in self.lg.all_cases:
                 # Constant whether unique MC33 case and whether inverted
-                unique_case = CASE_NOT_INVERTED + CASE_UNIQUE_MC33
+                unique_case = CASE_UNIQUE_MC33
                 if entry.permutation.orientation == -1:
-                    unique_case += CASE_INVERTED
+                    unique_case += CASE_FLIPPED
+                #if : #TODO: inverted implementieren
+                #    unique_case += CASE_INVERTED
                 if self.lg.basicType == "cube" and self.lg.mc33_tests[
                     self.lg.base_case_numbers[entry.base_case.case]] != []:
                     unique_case += CASE_AMIGUOUS_MC33

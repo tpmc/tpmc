@@ -167,7 +167,7 @@ template <int dim> bool TestMarchingCubes33::assertEquals(int expect,
     mc.getElements(vertices, vertex_count, key, true, codim1);
     writeVtkFile<dim>(codim1, dim - 1, name);
   }
-  return ((int)key == expect);
+  return (((int)key == expect) || ((int)key == NO_KEY));
 }
 
 /*
@@ -182,7 +182,8 @@ template <int dim> void TestMarchingCubes33::writeVtkFile(std::vector<std::vecto
   std::ofstream vtk_file(file_name.c_str(), std::ios::out);
   // Write vtk header
   vtk_file << "# vtk DataFile Version 3.0" << std::endl <<
-  "test case " << name << std::endl <<
+  "test case " << name <<
+  (dim == element_dim ? " cells" : " faces") << std::endl <<
   "ASCII" << std::endl <<
   "DATASET UNSTRUCTURED_GRID" << std::endl;
   // Write occuring points
@@ -222,7 +223,7 @@ template <int dim> void TestMarchingCubes33::writeVtkFile(std::vector<std::vecto
   {
     vtk_file << i->size();
     // Change numbering scheme for squares (VTK_QUAD = 9)
-    if (dim == 2 && i->size() == 4)
+    if (element_dim == 2 && i->size() == 4)
     {
       vtk_file << " " << point_index;
       vtk_file << " " << (point_index + 1);
@@ -231,7 +232,7 @@ template <int dim> void TestMarchingCubes33::writeVtkFile(std::vector<std::vecto
       point_index += 4;
     }
     // Change numbering scheme for cubes (VTK_HEXAHEDRON = 12)
-    else if (dim == 3 && i->size() == 8)
+    else if (element_dim == 3 && i->size() == 8)
     {
       vtk_file << " " << point_index;
       vtk_file << " " << (point_index + 1);
@@ -244,7 +245,7 @@ template <int dim> void TestMarchingCubes33::writeVtkFile(std::vector<std::vecto
       point_index += 8;
     }
     // Change numbering scheme for pyramids (VTK_PYRAMID = 14)
-    else if (dim == 3 && i->size() == 5)
+    else if (element_dim == 3 && i->size() == 5)
     {
       vtk_file << " " << point_index;
       vtk_file << " " << (point_index + 1);
@@ -429,14 +430,14 @@ int main(int arg_count, char ** arg_array)
                                 0.5, 0.5, 0.5, 0.5, "cube3d_basic_2"); // Basic case 2
   passed &= testmc33.testCube3d(33, 0.9, 0.5, 0.5, 0.5,
                                 0.5, 0.9, 0.5, 0.5, "cube3d_basic_3"); // Basic case 3
-  passed &= testmc33.testCube3d(/*129*/ testmc33.NO_KEY, 0.62, 0.2, 0.2, 0.2,   //TODO: Key wieder einsetzen
-                                        0.2, 0.2, 0.2, 0.62, "cube3d_basic_4"); // Basic case 4
+  passed &= testmc33.testCube3d(129, 0.7, 0.2, 0.2, 0.2,
+                                0.2, 0.2, 0.2, 0.7, "cube3d_basic_4"); // Basic case 4
   passed &= testmc33.testCube3d(14, 0.5, 0.9, 0.9, 0.9,
                                 0.5, 0.5, 0.5, 0.5, "cube3d_basic_5"); // Basic case 5
-  passed &= testmc33.testCube3d(131, 0.7, 0.7, 0.2, 0.2,
-                                0.2, 0.2, 0.2, 0.7, "cube3d_basic_6"); // Basic case 6
-  passed &= testmc33.testCube3d(162, -0.2, 0.62, -0.2, -0.2,
-                                -0.2, 0.62, -0.2, 0.62, "cube3d_basic_7"); // Basic case 7
+  passed &= testmc33.testCube3d(131, 0.9, 0.9, 0.5, 0.5,
+                                0.5, 0.5, 0.5, 0.9, "cube3d_basic_6"); // Basic case 6
+  passed &= testmc33.testCube3d(146, 0.5, 0.9, 0.5, 0.5,
+                                0.9, 0.5, 0.5, 0.9, "cube3d_basic_7"); // Basic case 7
   passed &= testmc33.testCube3d(240, 0.5, 0.5, 0.5, 0.5,
                                 0.9, 0.9, 0.9, 0.9, "cube3d_basic_8"); // Basic case 8
   passed &= testmc33.testCube3d(77, 0.9, 0.5, 0.9, 0.9,
@@ -452,33 +453,29 @@ int main(int arg_count, char ** arg_array)
   passed &= testmc33.testCube3d(78, 0.5, 0.9, 0.9, 0.9,
                                 0.5, 0.5, 0.9, 0.5, "cube3d_basic_14"); // Basic case 14
   passed &= testmc33.testCube3d(255, 0.9, 0.9, 0.9, 0.9,
-                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_15"); // Inverted basic case 0
+                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_0_inv"); // Inverted basic case 0
   passed &= testmc33.testCube3d(255-1, 0.5, 0.9, 0.9, 0.9,
-                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_16"); // Inverted basic case 1
+                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_1_inv"); // Inverted basic case 1
   passed &= testmc33.testCube3d(255-3, 0.5, 0.5, 0.9, 0.9,
-                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_17"); // Inverted basic case 2
+                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_2_inv"); // Inverted basic case 2
   passed &= testmc33.testCube3d(255-33, 0.5, 0.9, 0.9, 0.9,
-                                0.9, 0.5, 0.9, 0.9, "cube3d_basic_18"); // Inverted basic case 3
+                                0.9, 0.5, 0.9, 0.9, "cube3d_basic_3inv"); // Inverted basic case 3
   passed &= testmc33.testCube3d(255-129, 0.5, 0.9, 0.9, 0.9,
-                                0.9, 0.9, 0.9, 0.5, "cube3d_basic_19"); // Inverted basic case 4
+                                0.9, 0.9, 0.9, 0.5, "cube3d_basic_4_inv"); // Inverted basic case 4
   passed &= testmc33.testCube3d(255-14, 0.9, 0.5, 0.5, 0.5,
-                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_20"); // Inverted basic case 5
+                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_5_inv"); // Inverted basic case 5
   passed &= testmc33.testCube3d(255-131, 0.5, 0.5, 0.9, 0.9,
-                                0.9, 0.9, 0.9, 0.5, "cube3d_basic_21"); // Inverted basic case 6
-  passed &= testmc33.testCube3d(255-162, 0.9, 0.5, 0.9, 0.9,
-                                0.9, 0.5, 0.9, 0.5, "cube3d_basic_22"); // Inverted basic case 7
+                                0.9, 0.9, 0.9, 0.5, "cube3d_basic_6_inv"); // Inverted basic case 6
+  passed &= testmc33.testCube3d(255-146, 0.9, 0.5, 0.9, 0.9,
+                                0.5, 0.9, 0.9, 0.5, "cube3d_basic_7_inv"); // Inverted basic case 7
   // Test Marching cubes' 33 cases
-  /*passed &= testmc33.testCube3d(33, 0.9, 0.5, 0.5, 0.5,
-      0.5, 0.9, 0.5, 0.5, "cube3d_"); // Basic case 3 / MC33 case 3.1
-     passed &= testmc33.testCube3d(260, 0.7, 0.2, 0.2, 0.2,
-      0.2, 0.7, 0.2, 0.2, "cube3d_"); // MC33 case 3.2
-     verbose = true;
-     passed &= testmc33.testCube3d(255-129, 0.9, 0.9, 0.9, 0.9,
-      0.5, 0.9, 0.9, 0.5, "cube3d_"); // Inverse of Basic case 3 / Inv. MC33 case 3.1
-     passed &= testmc33.testCube3d(260, 0.7, 0.7, 0.7, 0.7,
-      0.2, 0.7, 0.7, 0.2, "cube3d_"); // Inverse of MC33 case 3.2
+  passed &= testmc33.testCube3d(testmc33.NO_KEY, 0.7, 0.2, 0.2, 0.2,
+                                0.2, 0.7, 0.2, 0.2, "cube3d_mc33_3.2"); // MC33 case 3.2
+  passed &= testmc33.testCube3d(testmc33.NO_KEY, 1.7, 0.5, 0.5, 0.5,
+                                0.5, 0.5, 0.5, 1.7, "cube3d_mc33_4.2"); // MC33 case 3.2
+  /*passed &= testmc33.testCube3d(testmc33.NO_KEY, 0.5, 0.9, 0.5, 0.5,
+      0.9, 0.5, 0.5, 0.9, "cube3d_mc33_7.2"); // MC33 case 7
    */
-
 
   if (!passed)
   {
