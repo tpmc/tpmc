@@ -121,8 +121,9 @@ namespace Dune {
     }
 
     // Is it a marching cubes' 33 case?
-    bool ambiguous_case = (CASE_AMBIGUOUS_MC33 == CASE_AMBIGUOUS_MC33 &
-                           table_case_offsets[case_number][INDEX_UNIQUE_CASE]);
+    bool ambiguous_case =
+      (CASE_AMBIGUOUS_MC33 ==
+       (CASE_AMBIGUOUS_MC33 & table_case_offsets[case_number][INDEX_UNIQUE_CASE]));
     // if it's not unique get the correct one
     if (use_mc_33 && ambiguous_case)
     {
@@ -450,6 +451,7 @@ namespace Dune {
   testAmbiguousCenter(const valueVector& vertex_values,
                       const sizeType vertex_count, const bool not_inverted) const
   {
+    assert(dim==3);
     // TODO: mit Lewiner vergleichen. Testen!
     const double a0 = thresholdFunctor::getDistance(vertex_values[0]);
     const double b0 = thresholdFunctor::getDistance(vertex_values[2]);
