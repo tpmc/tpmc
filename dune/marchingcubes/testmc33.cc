@@ -20,7 +20,7 @@ typedef size_t sizeType;
 class TestMarchingCubes33
 {
 public:
-  static int NO_KEY;
+  static const int NO_KEY;
   bool verbose;
   bool write_vtk;
   bool testAny0d(int expect, double vertex_0, std::string name);
@@ -44,7 +44,7 @@ public:
                                                Dune::FieldVector <double, dim> > > elements, int element_dim,
                                        std::string name);
 };
-int TestMarchingCubes33::NO_KEY = -1;
+const int TestMarchingCubes33::NO_KEY = -1;
 
 bool TestMarchingCubes33::testAny0d(int expect,
                                     double vertex_0, std::string name)
@@ -171,11 +171,7 @@ template <int dim> bool TestMarchingCubes33::assertEquals(int expect,
       writeVtkFile<dim>(codim1, dim - 1, name);
     }
   }
-  if ((int)key != expect)
-  {
-    std::cout << name << " FAILED : expected " << (int)expect << " got " << (int)key << "\n";
-  }
-  return (((int)key == expect) || ((int)key == NO_KEY));
+  return (((int)key == expect) || ((int)expect == NO_KEY));
 }
 
 /*
