@@ -136,9 +136,6 @@ namespace Dune {
       sizeType tree_offset = 1;
       // perform tests and find case number
       short test = table_mc33_face_test_order[test_index + tree_offset];
-      bool not_inverted =
-        (CASE_INVERTED !=
-         (CASE_INVERTED & table_case_offsets[case_number][(sizeType) INDEX_UNIQUE_CASE]));
 
       GeometryType geo_type;
       geo_type.makeQuadrilateral();
@@ -175,8 +172,8 @@ namespace Dune {
         // calculate index position (if test is true: 2*index, otherwise: 2*index+1)
         tree_offset *= 2;
         bool test_result = (test == TEST_CENTER) ?
-                           testAmbiguousCenter(vertex_values, vertex_count, not_inverted) :
-                           testAmbiguousFace(corner_a, corner_b, corner_c, corner_d, not_inverted);
+                           testAmbiguousCenter(vertex_values, vertex_count) :
+                           testAmbiguousFace(corner_a, corner_b, corner_c, corner_d);
         //DEBUG("test_result: %d\n", test_result);
         tree_offset += (1 - test_result);
         DEBUG("test result: %d\n", test_result);
@@ -247,11 +244,6 @@ namespace Dune {
         codim_index = all_codim_1[vertex_count + dim]
                       + all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_1];
       }
-      /*DEBUG(">>> %i Daten: %p\n %p %p\n %p %p\n %p %p\n", (int)key,
-              (codim_index - all_case_offsets[vertex_count + dim][key][codim_1_not_0?INDEX_OFFSET_CODIM_1:INDEX_OFFSET_CODIM_0]),
-              table_any1d_codim_0, table_any1d_codim_1,
-              table_simplex2d_codim_0, table_simplex2d_codim_1,
-              table_cube2d_codim_0, table_cube2d_codim_1);*/
       elements.resize(element_count);
       // DEBUG("Anzahl Elemente: %d \n", (int)caseCountElements);
       for (sizeType i = 0; i < element_count; i++)
@@ -259,12 +251,9 @@ namespace Dune {
         sizeType point_count = (sizeType) codim_index[0];
         // Vector for storing the element points
         elements[i].resize(point_count);
-        //DEBUG(" Debug vectorsize: %d %d\n", (int)numberOfPoints, (int)offsets[INDEX_OFFSET_CODIM_1]);
-        // Read points from table and store them
         for (sizeType j = 0; j < point_count; j++)
         {
           getCoordsFromNumber(vertex_values, vertex_count, codim_index[j+1], elements[i][j]);
-          //DEBUG("   Loop debug output: j %d / vertex number %d / results: %1.1f %1.1f\n", (int)j, (int)index[j+1], elements[i][j][0], elements[i][j][1]);
         }
         // increase index for pointing to the next element
         codim_index += point_count + 1;
@@ -414,51 +403,34 @@ namespace Dune {
    * \param corner_b Value of the second face vertex.
    * \param corner_c Value of the third face vertex.
    * \param corner_d Value of the forth face vertex.
-   * \param not_inverted Whether basic case is not inverted.
    *
-   * \return <code>True</true> if vertices are connected.
+   * \return <code>True</true> if face center is inside.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   bool MarchingCubes33<valueType, dim, thresholdFunctor>::
   testAmbiguousFace(const valueType corner_a, const valueType corner_b,
-                    const valueType corner_c, const valueType corner_d,
-                    const bool not_inverted) const
+                    const valueType corner_c, const valueType corner_d) const
   {
         #warning DEBUGCODE
-    assert(not_inverted == true);
     // Change naming scheme to jgt-paper ones
     double a = thresholdFunctor::getDistance(corner_a);
     double b = thresholdFunctor::getDistance(corner_c);
     double c = thresholdFunctor::getDistance(corner_d);
     double d = thresholdFunctor::getDistance(corner_b);
 
-    bool result_orig = false;
-    // Check A*C == B*D
-        #warning WARUM?
-    if ((a*c - b*d) == 0.0)
+    bool result_lewiner = ! thresholdFunctor::isLower(a * (a*c - b*d));     // >= 0.0;
+    bool result_other = ! thresholdFunctor::isLower((a*c-b*d)/(c+a-d-b));
+    if (result_lewiner != result_other)
     {
-      result_orig = not_inverted;
-    }
-    else
-    {
-      // not_inverted and a may invert the sign
-      result_orig = ((not_inverted*2 - 1) * a * (a*c - b*d) >= 0.0);
-    }
-    // Cb Dc
-    // Aa Bd
-    bool result_other = ((a*c-b*d)/(c+a-d-b) >= 0.0);
-    if (result_other != result_orig)
-    {
-      std::cout << "not_inverted " << not_inverted << "\n";
       std::cout << "WARNING: unexpected result " << (a*c - b*d) << " FACETEST "
                 << a << " "
                 << d << " "
                 << b << " "
                 << c << " "
-                << " : " << result_orig << " != " << result_other << "\n";
+                << " : " << result_lewiner << " != " << result_other << "\n";
     }
     return result_other;
-    return result_orig;
+    return result_lewiner;
   }
 
   /*
@@ -471,14 +443,13 @@ namespace Dune {
    *
    * \param vertex_values Cube's vertex values.
    * \param vertex_count Number of vertices, should be eight.
-   * \param not_inverted Whether basic case is not inverted.
    *
-   * \return <code>True</true> if vertices are connected.
+   * \return <code>True</true> if cell center is inside.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   bool MarchingCubes33<valueType, dim, thresholdFunctor>::
   testAmbiguousCenter(const valueVector& vertex_values,
-                      const sizeType vertex_count, const bool not_inverted) const
+                      const sizeType vertex_count) const
   {
     DEBUG("testCenter\n");
     assert(dim==3);
@@ -495,23 +466,24 @@ namespace Dune {
     const double a =  (a1 - a0) * (c1 - c0) - (b1 - b0) * (d1 - d0);
     if (a >= 0.0)
     {
-      return not_inverted;
+      return true;
     }
     const double b =  c0*(a1 - a0) + a0*(c1 - c0) - d0*(b1 - b0) - b0*(d1 - d0);
     const double t_max = -0.5 * b / a;
     if ((0.0 >= t_max) || (1.0 <= t_max))
     {
-      return not_inverted;
+      return true;
     }
     //const double c =  (a0 * c0) - (b0 * d0);
     const double at = a0 + (a1 - a0) * t_max;
     const double bt = b0 + (b1 - b0) * t_max;
     const double ct = c0 + (c1 - c0) * t_max;
     const double dt = d0 + (d1 - d0) * t_max;
-    const bool inequation_4 = (at*ct - bt*dt > 0.0);
-    const bool corner_signs = (at*ct > 0.0) && (bt*dt > 0.0)
-                              && (at*bt < 0.0);
-    return (inequation_4 && corner_signs) != not_inverted;
+    const bool inequation_4 = !thresholdFunctor::isLower(at*ct - bt*dt);
+    const bool corner_signs = !thresholdFunctor::isLower(at*ct)
+                              && !thresholdFunctor::isLower(bt*dt)
+                              && !thresholdFunctor::isLower(at*bt);
+    return (inequation_4 && corner_signs) != true;
   }
 
 } // end namespace Dune

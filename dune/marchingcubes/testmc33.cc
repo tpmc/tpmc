@@ -40,9 +40,9 @@ public:
                   std::string name);
   template <int dim> bool assertEquals(int expect,
                                        sizeType vertex_count, double * vertices, std::string name);
-  template <int dim> void writeVtkFile(std::vector<std::vector<
-                                               Dune::FieldVector <double, dim> > > elements, int element_dim,
-                                       std::string name);
+  template <int dim> void writeVtkFile(
+    const std::vector<std::vector<Dune::FieldVector <double, dim> > > & elements, int element_dim,
+    std::string name);
 };
 const int TestMarchingCubes33::NO_KEY = -1;
 
@@ -164,12 +164,8 @@ template <int dim> bool TestMarchingCubes33::assertEquals(int expect,
     writeVtkFile<dim>(codim0, dim, name);
     // Perform second part of MC 33 algorithm for codim 1 elements
     std::vector<std::vector<dim_point> > codim1;
-        #warning 0D broken!
-    if (dim > 0)
-    {
-      mc.getElements(vertices, vertex_count, key, true, codim1);
-      writeVtkFile<dim>(codim1, dim - 1, name);
-    }
+    mc.getElements(vertices, vertex_count, key, true, codim1);
+    writeVtkFile<dim>(codim1, dim - 1, name);
   }
   return (((int)key == expect) || ((int)expect == NO_KEY));
 }
@@ -177,8 +173,9 @@ template <int dim> bool TestMarchingCubes33::assertEquals(int expect,
 /*
  * Write Vtk file containing the given elements.
  */
-template <int dim> void TestMarchingCubes33::writeVtkFile(std::vector<std::vector<Dune::FieldVector
-                                                                  <double, dim> > > elements, int element_dim, std::string name)
+template <int dim> void TestMarchingCubes33::writeVtkFile(
+  const std::vector<std::vector<Dune::FieldVector <double, dim> > > & elements,
+  int element_dim, std::string name)
 {
   typedef Dune::FieldVector<double, dim> dim_point;
   std::string file_name = "vtk/" + name + "_" +
@@ -192,19 +189,19 @@ template <int dim> void TestMarchingCubes33::writeVtkFile(std::vector<std::vecto
   "DATASET UNSTRUCTURED_GRID" << std::endl;
   // Write occuring points
   int number_points = 0;
-  for(typename std::vector<std::vector<dim_point> >::iterator
+  for(typename std::vector<std::vector<dim_point> >::const_iterator
       i = elements.begin(); i != elements.end(); ++i)
   {
     number_points += i->size();
   }
   vtk_file << "POINTS " << number_points << " float" << std::endl;
-  for(typename std::vector<std::vector<dim_point> >::iterator
+  for(typename std::vector<std::vector<dim_point> >::const_iterator
       i = elements.begin(); i != elements.end(); ++i)
   {
-    for(typename std::vector<dim_point>::iterator j = i->begin();
+    for(typename std::vector<dim_point>::const_iterator j = i->begin();
         j != i->end(); ++j)
     {
-      for (typename dim_point::iterator k = j->begin();
+      for (typename dim_point::const_iterator k = j->begin();
            k != j->end(); ++k)
       {
         vtk_file << *k << " ";
@@ -222,7 +219,7 @@ template <int dim> void TestMarchingCubes33::writeVtkFile(std::vector<std::vecto
   vtk_file << "CELLS " << elements.size() << " " <<
   (elements.size() + number_points) << std::endl;
   int point_index = 0;
-  for(typename std::vector<std::vector<dim_point> >::iterator
+  for(typename std::vector<std::vector<dim_point> >::const_iterator
       i = elements.begin(); i != elements.end(); ++i)
   {
     vtk_file << i->size();
@@ -271,7 +268,7 @@ template <int dim> void TestMarchingCubes33::writeVtkFile(std::vector<std::vecto
   vtk_file << std::endl;
   // Write cell types
   vtk_file << "CELL_TYPES " << elements.size() << std::endl;
-  for(typename std::vector<std::vector<dim_point> >::iterator
+  for(typename std::vector<std::vector<dim_point> >::const_iterator
       i = elements.begin(); i != elements.end(); ++i)
   {
     int cell_type = 0;
@@ -320,10 +317,10 @@ template <int dim> void TestMarchingCubes33::writeVtkFile(std::vector<std::vecto
   "SCALARS ElementID int 1" << std::endl <<
   "LOOKUP_TABLE default" << std::endl;
   int point_id = 0;
-  for(typename std::vector<std::vector<dim_point> >::iterator
+  for(typename std::vector<std::vector<dim_point> >::const_iterator
       i = elements.begin(); i != elements.end(); ++i)
   {
-    for(typename std::vector<dim_point>::iterator j = i->begin();
+    for(typename std::vector<dim_point>::const_iterator j = i->begin();
         j != i->end(); ++j)
     {
       vtk_file << point_id << " ";
@@ -347,7 +344,7 @@ int main(int argc, char ** argv)
   int passed = 0;
   int count = 0;
   testmc33.verbose = false;
-  testmc33.write_vtk = false;
+  testmc33.write_vtk = true;
 
   if (argc > 1)
     testmc33.verbose = (std::string("-verbose") == argv[1] || std::string("-v") == argv[1]);

@@ -20,6 +20,11 @@ namespace Dune {
       return value - threshold;
     }
 
+    bool ThresholdFunctor::isLower(double dist)
+    {
+      return dist < 0;
+    }
+
     const double ThresholdFunctor::threshold = 0.6;
 
   } // end namespace MarchingCubes

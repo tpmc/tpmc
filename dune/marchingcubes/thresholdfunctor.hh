@@ -13,17 +13,15 @@ namespace Dune {
 
     class ThresholdFunctor {
     public:
-      /*
-       * Function to test whether a point is inside the isosurface.
-       */
+      //! Function to test whether a point is inside the isosurface.
       static bool isInside(double testValue);
-
+      //! distance to iso surface
       static double getDistance(double value);
+      //! isInside for distance value
+      static bool isLower(double distance);
 
     private:
-      /*
-       * Defines the isosurface.
-       */
+      //! Defines the isosurface.
       const static double threshold;
     };
 
