@@ -1,8 +1,10 @@
 # $Id: duneproject 5370 2008-11-15 17:43:24Z christi $
 
-# SUBDIRS = lut
+SUBDIRS = lut
+
 check_PROGRAMS=testmc33
-testmc33_SOURCES=testmc33.cc marchingcubes.hh marchinglut.cc thresholdfunctor.cc
+testmc33_SOURCES=testmc33.cc marchingcubes.hh thresholdfunctor.cc
+testmc33_LDFLAGS=-Llut -lmclut
 
 TESTS=$(check_PROGRAMS)
 

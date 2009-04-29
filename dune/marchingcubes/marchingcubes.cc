@@ -1,5 +1,6 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
+#include "lut/marchinglut.hh"
 #include <fstream>
 #include <iostream> // FIXME TODO: Debug only, entferne mich!
 
@@ -133,8 +134,9 @@ namespace Dune {
       sizeType tree_offset = 1;
       // perform tests and find case number
       short face = table_mc33_face_test_order[test_index + tree_offset];
-      bool not_inverted = (CASE_INVERTED == CASE_INVERTED &
-                           table_case_offsets[case_number][(sizeType) INDEX_UNIQUE_CASE]);
+      bool not_inverted =
+        (CASE_INVERTED ==
+         (CASE_INVERTED & table_case_offsets[case_number][(sizeType) INDEX_UNIQUE_CASE]));
 
       GeometryType geo_type;
       geo_type.makeQuadrilateral();

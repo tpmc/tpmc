@@ -6,6 +6,7 @@ from lutgen.generator import LookupGenerator
 from lutgen.generator import BaseCase
 from lutgen.consistencycheck import Consistency
 from lutgen.dunecode import DuneCode
+from lutgen.sk import Sk
 
 # Constants for mc 33 test order
 TEST_FACE_1 = -1
@@ -481,6 +482,11 @@ DuneCode(cube3d).write(ccfile)
 ccfile.write("}\n")
 ccfile.close()
 
+#Vtk(cube3d).write()
+#Vtk(simplex3d).write()
+#Vtk(cube2d).write()
+#Vtk(simplex2d).write()
+
 generators = {
     (1, "any"): lut1d,
 	(2, "simplex"): simplex2d,
@@ -493,3 +499,6 @@ generators = {
 
 #Consistency(generators).check(3, "simplex")
 # Consistency(generators).check(3, "cube")
+
+Sk(cube3d).write("lutgen/sk")
+Sk(simplex3d).write("lutgen/sk")

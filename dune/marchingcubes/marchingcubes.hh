@@ -3,7 +3,6 @@
 #ifndef MARCHING_CUBES_HH_
 #define MARCHING_CUBES_HH_
 
-#include "marchinglut.hh"
 #include <dune/common/fvector.hh>
 #include <dune/common/float_cmp.hh>
 #include <dune/common/exceptions.hh>

@@ -164,8 +164,12 @@ template <int dim> bool TestMarchingCubes33::assertEquals(int expect,
     writeVtkFile<dim>(codim0, dim, name);
     // Perform second part of MC 33 algorithm for codim 1 elements
     std::vector<std::vector<dim_point> > codim1;
-    mc.getElements(vertices, vertex_count, key, true, codim1);
-    writeVtkFile<dim>(codim1, dim - 1, name);
+        #warning 0D broken!
+    if (dim > 0)
+    {
+      mc.getElements(vertices, vertex_count, key, true, codim1);
+      writeVtkFile<dim>(codim1, dim - 1, name);
+    }
   }
   return (((int)key == expect) || ((int)key == NO_KEY));
 }
@@ -337,21 +341,15 @@ template <int dim> void TestMarchingCubes33::writeVtkFile(std::vector<std::vecto
 /*
  * Main method containing all test cases.
  */
-int main(int arg_count, char ** arg_array)
+int main(int argc, char ** argv)
 {
   TestMarchingCubes33 testmc33;
   bool passed = true;
   testmc33.verbose = false;
   testmc33.write_vtk = true;
 
-  /*sizeType vertexCount = argCount - 1;
-     double* vertices = new double[vertexCount];
-
-     for (sizeType i = 0; i < vertexCount; i++)
-     {
-      vertices[i] = atof(argArray[i + 1]);
-      std::cout << vertices[i] << std::endl;
-     }*/
+  if (argc > 1)
+    testmc33.verbose = (std::string("-verbose") == argv[1] || std::string("-v") == argv[1]);
 
   // Test any 0d (point)
   passed &= testmc33.testAny0d(0, 0.4, "any0d_0");
