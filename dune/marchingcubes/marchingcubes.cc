@@ -4,6 +4,8 @@
 #include <fstream>
 #include <iostream> // FIXME TODO: Debug only, entferne mich!
 
+#define DEBUG printf
+
 namespace Dune {
   /*
    * Case offset tables (e.g. table_cube2d_cases offsets) for different
@@ -135,14 +137,15 @@ namespace Dune {
       // perform tests and find case number
       short face = table_mc33_face_test_order[test_index + tree_offset];
       bool not_inverted =
-        (CASE_INVERTED ==
+        (CASE_INVERTED !=
          (CASE_INVERTED & table_case_offsets[case_number][(sizeType) INDEX_UNIQUE_CASE]));
 
       GeometryType geo_type;
       geo_type.makeQuadrilateral();
       ReferenceElementContainer<ctype, dim> rec;
       const ReferenceElement<ctype, dim> & ref_element = rec(geo_type);
-      valueType corner_a, corner_b, corner_c, corner_d; printf("drin\n");
+      valueType corner_a, corner_b, corner_c, corner_d;
+      DEBUG("drin\n");
       // tests are negative, non-negativ values are offsets
       while ((face < 0) && (face != CASE_IS_REGULAR))
       {
@@ -168,16 +171,16 @@ namespace Dune {
                      << " occur with dimension 2 or 3, not " << dim << ".");
         }
         // calculate index position (if test is true: 2*index, otherwise: 2*index+1)
-        printf("face: %d\n", face);
+        DEBUG("face: %d\n", face);
         tree_offset *= 2;
         bool test_result = (face == TEST_CENTER) ?
                            testAmbiguousCenter(vertex_values, vertex_count, not_inverted) :
                            testAmbiguousFace(corner_a, corner_b, corner_c, corner_d, not_inverted);
-        //printf("test_result: %d\n", test_result);
+        //DEBUG("test_result: %d\n", test_result);
         tree_offset += (1 - test_result);
-        printf("test_result: %d\n", test_result);
+        DEBUG("test_result: %d\n", test_result);
         face = table_mc33_face_test_order[test_index + tree_offset];
-        printf("face schluss: %d\n", face);
+        DEBUG("face schluss: %d\n", face);
       }
       if (face != CASE_IS_REGULAR)
       {
@@ -242,24 +245,24 @@ namespace Dune {
         codim_index = all_codim_1[vertex_count + dim]
                       + all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_1];
       }
-      /*printf(">>> %i Daten: %p\n %p %p\n %p %p\n %p %p\n", (int)key,
+      /*DEBUG(">>> %i Daten: %p\n %p %p\n %p %p\n %p %p\n", (int)key,
               (codim_index - all_case_offsets[vertex_count + dim][key][codim_1_not_0?INDEX_OFFSET_CODIM_1:INDEX_OFFSET_CODIM_0]),
               table_any1d_codim_0, table_any1d_codim_1,
               table_simplex2d_codim_0, table_simplex2d_codim_1,
               table_cube2d_codim_0, table_cube2d_codim_1);*/
       elements.resize(element_count);
-      // printf("Anzahl Elemente: %d \n", (int)caseCountElements);
+      // DEBUG("Anzahl Elemente: %d \n", (int)caseCountElements);
       for (sizeType i = 0; i < element_count; i++)
       {
         sizeType point_count = (sizeType) codim_index[0];
         // Vector for storing the element points
         elements[i].resize(point_count);
-        //printf(" Debug vectorsize: %d %d\n", (int)numberOfPoints, (int)offsets[INDEX_OFFSET_CODIM_1]);
+        //DEBUG(" Debug vectorsize: %d %d\n", (int)numberOfPoints, (int)offsets[INDEX_OFFSET_CODIM_1]);
         // Read points from table and store them
         for (sizeType j = 0; j < point_count; j++)
         {
           getCoordsFromNumber(vertex_values, vertex_count, codim_index[j+1], elements[i][j]);
-          //printf("   Loop debug output: j %d / vertex number %d / results: %1.1f %1.1f\n", (int)j, (int)index[j+1], elements[i][j][0], elements[i][j][1]);
+          //DEBUG("   Loop debug output: j %d / vertex number %d / results: %1.1f %1.1f\n", (int)j, (int)index[j+1], elements[i][j][0], elements[i][j][1]);
         }
         // increase index for pointing to the next element
         codim_index += point_count + 1;
@@ -349,13 +352,13 @@ namespace Dune {
         thresholdFunctor::getDistance(vertex_values[index_a])
         / (thresholdFunctor::getDistance(vertex_values[index_b])
            - thresholdFunctor::getDistance(vertex_values[index_a]));
-      //printf("     Kante: coords %1.3f %1.3f davor indexA %d  indexB %d // %d %d\n", coords[0], coords[1], indexA, indexB, NO_VERTEX^number, number);
+      //DEBUG("     Kante: coords %1.3f %1.3f davor indexA %d  indexB %d // %d %d\n", coords[0], coords[1], indexA, indexB, NO_VERTEX^number, number);
       // calculate interpolation point
       for (sizeType i = 0; i < dim; i++)
       {
         coord[i] = point_a[i] - interpol_factor * (point_b[i] - point_a[i]);
       }
-      //   printf("     Kante: coords %1.3f %1.3f / A` %1.3f B` %1.3f \n", coords[0], coords[1], thresholdFunctor::getDistance(vertexValues[indexA]), thresholdFunctor::getDistance(vertexValues[indexB]));
+      //   DEBUG("     Kante: coords %1.3f %1.3f / A` %1.3f B` %1.3f \n", coords[0], coords[1], thresholdFunctor::getDistance(vertexValues[indexA]), thresholdFunctor::getDistance(vertexValues[indexB]));
 
     }
     // it's a vertex
@@ -419,19 +422,41 @@ namespace Dune {
                     const valueType corner_c, const valueType corner_d,
                     const bool not_inverted) const
   {
+        #warning DEBUGCODE
+    assert(not_inverted == true);
     // Change naming scheme to jgt-paper ones
     double a = thresholdFunctor::getDistance(corner_a);
     double b = thresholdFunctor::getDistance(corner_c);
     double c = thresholdFunctor::getDistance(corner_d);
     double d = thresholdFunctor::getDistance(corner_b);
 
+    bool result_orig = false;
     // Check A*C == B*D
-    if (FloatCmp::eq((a*c - b*d), 0.0))
+        #warning WARUM?
+    if ((a*c - b*d) == 0.0)
     {
-      return not_inverted;
+      result_orig = not_inverted;
     }
-    // not_inverted and a may invert the sign
-    return ((not_inverted*2 - 1) * a * (a*c - b*d) >= 0.0);
+    else
+    {
+      // not_inverted and a may invert the sign
+      result_orig = ((not_inverted*2 - 1) * a * (a*c - b*d) >= 0.0);
+    }
+    // Cb Dc
+    // Aa Bd
+    bool result_other = ((a*c-b*d)/(c+a-d-b) >= 0.0);
+    if (result_other != result_orig)
+    {
+      std::cout << "not_inverted " << not_inverted << "\n";
+      std::cout << "WARNING: unexpected result " << (a*c - b*d) << " FACETEST "
+                << a << " "
+                << d << " "
+                << b << " "
+                << c << " "
+                << " : " << result_orig << " != " << result_other << "\n";
+    }
+    return result_other;
+    return result_orig;
   }
 
   /*
