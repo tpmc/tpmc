@@ -135,7 +135,7 @@ namespace Dune {
       // offsets to have a binary tree like behavior
       sizeType tree_offset = 1;
       // perform tests and find case number
-      short face = table_mc33_face_test_order[test_index + tree_offset];
+      short test = table_mc33_face_test_order[test_index + tree_offset];
       bool not_inverted =
         (CASE_INVERTED !=
          (CASE_INVERTED & table_case_offsets[case_number][(sizeType) INDEX_UNIQUE_CASE]));
@@ -145,18 +145,20 @@ namespace Dune {
       ReferenceElementContainer<ctype, dim> rec;
       const ReferenceElement<ctype, dim> & ref_element = rec(geo_type);
       valueType corner_a, corner_b, corner_c, corner_d;
-      DEBUG("drin\n");
+      DEBUG("---- AMBIGUOUS\n");
       // tests are negative, non-negativ values are offsets
-      while ((face < 0) && (face != CASE_IS_REGULAR))
+      while ((test < 0) && (test != CASE_IS_REGULAR))
       {
+        DEBUG("++++ test: %d\n", test);
         if (dim == 3)
         {
           // face tests are stored inverted and face 0 is stored as -6
-          int test_face = (-1 * face) % 6;
-          corner_a = vertex_values[ref_element.subEntity(test_face, 1, 0, dim)];
-          corner_b = vertex_values[ref_element.subEntity(test_face, 1, 1, dim)];
-          corner_c = vertex_values[ref_element.subEntity(test_face, 1, 2, dim)];
-          corner_d = vertex_values[ref_element.subEntity(test_face, 1, 3, dim)];
+          int face = (-1 * test) % 6;
+          DEBUG("test face: %i\n", face);
+          corner_a = vertex_values[ref_element.subEntity(face, 1, 0, dim)];
+          corner_b = vertex_values[ref_element.subEntity(face, 1, 1, dim)];
+          corner_c = vertex_values[ref_element.subEntity(face, 1, 2, dim)];
+          corner_d = vertex_values[ref_element.subEntity(face, 1, 3, dim)];
         }
         else if (dim == 2)
         {
@@ -171,20 +173,20 @@ namespace Dune {
                      << " occur with dimension 2 or 3, not " << dim << ".");
         }
         // calculate index position (if test is true: 2*index, otherwise: 2*index+1)
-        DEBUG("face: %d\n", face);
         tree_offset *= 2;
-        bool test_result = (face == TEST_CENTER) ?
+        bool test_result = (test == TEST_CENTER) ?
                            testAmbiguousCenter(vertex_values, vertex_count, not_inverted) :
                            testAmbiguousFace(corner_a, corner_b, corner_c, corner_d, not_inverted);
         //DEBUG("test_result: %d\n", test_result);
         tree_offset += (1 - test_result);
-        DEBUG("test_result: %d\n", test_result);
-        face = table_mc33_face_test_order[test_index + tree_offset];
-        DEBUG("face schluss: %d\n", face);
+        DEBUG("test result: %d\n", test_result);
+        test = table_mc33_face_test_order[test_index + tree_offset];
+        DEBUG("next test: %d\n", test);
+        DEBUG("regular is: %d\n", CASE_IS_REGULAR);
       }
-      if (face != CASE_IS_REGULAR)
+      if (test != CASE_IS_REGULAR)
       {
-        case_number = face;
+        case_number = test;
       }
     }
     return case_number;
@@ -478,6 +480,7 @@ namespace Dune {
   testAmbiguousCenter(const valueVector& vertex_values,
                       const sizeType vertex_count, const bool not_inverted) const
   {
+    DEBUG("testCenter\n");
     assert(dim==3);
     // TODO: mit Lewiner vergleichen. Testen!
     const double a0 = thresholdFunctor::getDistance(vertex_values[0]);
