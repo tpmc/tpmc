@@ -7,6 +7,7 @@ from lutgen.generator import BaseCase
 from lutgen.consistencycheck import Consistency
 from lutgen.dunecode import DuneCode
 from lutgen.sk import Sk
+from lutgen.binaryheap import *
 
 # Constants for mc 33 test order
 TEST_FACE_1 = -1
@@ -128,6 +129,11 @@ cube3d.mc33_cases[9].append(BaseCase(cube3d.base_cases[9].dim, cube3d.base_cases
 cube3d.mc33_cases[9][1].faces = [[(0, 4), (5, 7), (1, 5)], [(0, 2), (0, 4), (3, 7), (6, 7)], [(0, 2), (3, 7), (1, 3)]]
 cube3d.mc33_cases[9][1].cells = cube3d.mc33_cases[9][0].cells
 cube3d.mc33_tests[9] = [TEST_FACE_4, TEST_CENTER, 1, CASE_IS_REGULAR, 0, 1, 1]
+# alternative definition:
+cube3d.mc33_tests[9] = binaryheap((TEST_FACE_4,
+								   (TEST_CENTER, CASE_IS_REGULAR, 0),
+								   CASE_IS_REGULAR
+								   ))
 ## 0,1,1,0,1,0,0,0 -> 00010110 # MC33 Case 7.2 (face 0 connection)
 #cube3d.mc33_cases[6].append(BaseCase(cube3d.base_cases[6].dim, cube3d.base_cases[6].case))
 #cube3d.mc33_cases[6][0].faces = [[(0, 1), (1, 3), (1, 5)], [(4, 5), (5, 7), (0, 4), (3, 7)], [(0, 4), (3, 7), (4, 6), (6, 7)]]
