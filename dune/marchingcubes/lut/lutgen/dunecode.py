@@ -42,7 +42,7 @@ EY = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
 const_names = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", \
     VF:"VF", VG:"VG", VH:"VH", EJ:"EJ", EK:"EK", EL:"EL", \
     EM:"EM", EN:"EN", EO:"EO", EP:"EP", EQ:"EQ", ER:"ER", \
-    ES:"ES", ET:"ET", EU:"EU", EV:"EV", EW:"EW", EX:"EX"}
+    ES:"ES", ET:"ET", EU:"EU", EV:"EV", EW:"EW", EX:"EX", EY:"EY"}
 # Constants indicating whether case special treatment when marching cubes' 33 is used.
 CASE_UNIQUE_MC33 = 0
 CASE_AMIGUOUS_MC33 = 1
@@ -91,9 +91,10 @@ class DuneCode:
                 a = b
                 b = t
             # get center points
-            if a == VA and b == VH:
+            if a == VA and b == VH or a == VB and b == VG \
+                or a == VC and b == VF or a == VD and b == VE:
                 return EY
-            # points on an edge
+            # points on an edge"
             try:
                 # check whether edge exists, excpect 3D simplex because of changed numering
                 if self.lg.basicType != "simplex" or self.lg.dim != 3:
@@ -200,8 +201,8 @@ class DuneCode:
                         offsets.append("      /* %d test index:%d */ " \
                             % (base_case_number, i)
                             +"{%i, %i, %i, %i, 0},\n" \
-                            % (codim0.offset, len(entry.cells), \
-                               codim1.offset, len(entry.faces)), 1)
+                            % (codim0.offset, len(mc33_case.cells), \
+                               codim1.offset, len(mc33_case.faces)), 1)
                         create_codim_line(codim0, entry, mc33_case.permute_cells(entry.permutation))
                         create_codim_line(codim1, entry, mc33_case.permute_faces(entry.permutation))
                 else:
