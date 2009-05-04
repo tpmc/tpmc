@@ -251,19 +251,6 @@ cube3d.mc33_tests[14] = binaryheap((TEST_FACE_1,
 #cube3d.mc33_cases[17][0].cells = []
 #cube3d.mc33_tests[17] = [TEST_FACE_1, 1, TEST_CENTER, 1, 1, 0, CASE_IS_REGULAR]
 
-print "r 3 "
-print cube3d.mc33_tests[3]
-print "r 11 "
-print cube3d.mc33_tests[11]
-binaryheap((0, 1, 2))
-print "r 13 "
-print cube3d.mc33_tests[13]
-print "r 14 "
-print cube3d.mc33_tests[14]
-print "r 18 "
-print cube3d.mc33_tests[18]
-print "Beispiel, dass binaryheap Nebenwirkung (side effekt) unterliegt"
-
 ###########################################################
 # OLD, INVALID CODE! ######################################
 ###########################################################
