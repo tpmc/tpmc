@@ -24,4 +24,4 @@ def binaryheap(entry, heap=[], index=0):
 			binaryheap(entry[2], heap, 2*index)
 	else:
 		heap[index]=entry
-	return heap
+	return list(heap)
