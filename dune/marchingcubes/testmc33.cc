@@ -496,6 +496,9 @@ int main(int argc, char ** argv)
   passed += testmc33.testCube3d(131, 0.7, 0.7, 0.2, 0.2,
                                 0.2, 0.2, 0.2, 0.7, "cube3d_basic_6"); // Basic case 6
   count++;
+  passed += testmc33.testCube3d(67, 0.7, 0.7, 0.2, 0.2,
+                                0.2, 0.2, 0.7, 0.2, "cube3d_basic_6_mirror"); // Basic case 6, key 01000011
+  count++;
   passed += testmc33.testCube3d(146, 0.5, 0.9, 0.5, 0.5,
                                 0.9, 0.5, 0.5, 0.9, "cube3d_basic_7"); // Basic case 7
   count++;
@@ -541,6 +544,9 @@ int main(int argc, char ** argv)
   passed += testmc33.testCube3d(255-131, 0.5, 0.5, 0.9, 0.9,
                                 0.9, 0.9, 0.9, 0.5, "cube3d_basic_6_inv"); // Inverted basic case 6
   count++;
+  passed += testmc33.testCube3d(255-67, 0.5, 0.5, 0.9, 0.9,
+                                0.9, 0.9, 0.5, 0.9, "cube3d_basic_6_mirror_inv"); // Inverted basic case 6
+  count++;
   passed += testmc33.testCube3d(255-146, 0.9, 0.5, 0.9, 0.9,
                                 0.5, 0.9, 0.9, 0.5, "cube3d_basic_7_inv"); // Inverted basic case 7
   // Test Marching cubes' 33 cases
@@ -550,6 +556,15 @@ int main(int argc, char ** argv)
   count++;
   passed += testmc33.testCube3d(testmc33.NO_KEY, 1.7, 0.5, 0.5, 0.5,
                                 0.5, 0.5, 0.5, 1.7, "cube3d_mc33_4.2"); // MC33 case 3.2
+  count++;
+  passed += testmc33.testCube3d(testmc33.NO_KEY, 1.6, 1.6, -0.3, -0.3,
+                                -0.3, -0.3, -0.3, 1.6, "cube3d_mc33_6.2"); // MC33 case 6.2
+  count++;
+  passed += testmc33.testCube3d(testmc33.NO_KEY, 1.5, .7, .2, .2, .2, .2, .2, 1.5,
+                                "cube3d_mc33_6.1.2"); // MC33 case 6.1.2
+  count++;
+  passed += testmc33.testCube3d(testmc33.NO_KEY, .2, .2, 1.5, .7, .2, 1.5, .2, .2,
+                                "cube3d_mc33_6.1.2_mirror"); // MC33 case 6.1.2 other mirror
   count++; passed += testmc33.testCube3d(testmc33.NO_KEY, 0.5, 0.9, 0.5, 0.5,
                                          0.9, 0.5, 0.5, 0.9, "cube3d_mc33_7.2"); // MC33 case 7
   count++;
