@@ -173,7 +173,7 @@ class DuneCode:
                             mc33_tests.append(str(offsets.offset + test) + ", ", 1)
                         elif type(test) is TestInterior:
                             testnumber = test.refv
-                            test2 = TestInterior(entry.permutation[testnumber])
+                            test2 = TestInterior(entry.permutation[testnumber]%4)
                             mc33_tests.append(repr(test2) + ", ", 1)
                         elif type(test) is TestFace:
 #                            testnumber = test * entry.permutation

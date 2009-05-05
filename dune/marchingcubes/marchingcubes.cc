@@ -147,6 +147,7 @@ namespace Dune {
       // tests are negative, non-negativ values are offsets
       while ((test < 0) && (test != -CASE_IS_REGULAR))
       {
+        assert(test != TEST_INVALID);
                 #if NDEBUG
         if (dim < 2 || dim > 3)
         {

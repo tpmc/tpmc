@@ -93,6 +93,7 @@ static const short CASE_AMBIGUOUS_MC33 = 1;
 static const short CASE_IS_REGULAR = (1<<8);
 static const short TEST_FACE = (1<<9);
 static const short TEST_INTERIOR = (1<<10);
+static const short TEST_INVALID = (1<<11);
 static const short TEST_FACE_0 = -(TEST_FACE | 0);
 static const short TEST_FACE_1 = -(TEST_FACE | 1);
 static const short TEST_FACE_2 = -(TEST_FACE | 2);
