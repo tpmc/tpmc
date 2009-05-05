@@ -184,7 +184,7 @@ namespace Dune {
           //DEBUG("TEST_INTERIOR %d\n", TEST_INTERIOR);
           size_t refCorner = -test - TEST_INTERIOR;
           //DEBUG("revCorner: %i\n", refCorner);
-          testAmbiguousCenter(vertex_values, vertex_count, refCorner);
+          test_result = testAmbiguousCenter(vertex_values, vertex_count, refCorner);
         }
         else
         {
@@ -450,7 +450,7 @@ namespace Dune {
    * \param vertex_values Cube's vertex values.
    * \param vertex_count Number of vertices, should be eight.
    *
-   * \return <code>True</true> if cell center is not connected to refCorner and the opposite corner.
+   * \return <code>True</true> if cell center is connected to refCorner and the opposite corner.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   bool MarchingCubes33<valueType, dim, thresholdFunctor>::
@@ -483,7 +483,7 @@ namespace Dune {
     if (a >= 0.0)
     {
       DEBUG("a >= 0\nresult: false\n");
-      return true;
+      return false;
     }
     // check that the maximum-plane is inside the cube
     const double b =  c0*(a1 - a0) + a0*(c1 - c0) - d0*(b1 - b0) - b0*(d1 - d0);
@@ -491,7 +491,7 @@ namespace Dune {
     if ((0.0 >= t_max) || (1.0 <= t_max))
     {
       DEBUG("t_max not in [0,1]\nresult: false\n");
-      return true;
+      return false;
     }
     // check that the
     const double at = a0 + (a1 - a0) * t_max;
@@ -508,7 +508,7 @@ namespace Dune {
           inequation_4, corner_signs, corner_signs_x,
           (result ? "true" : false));
     DEBUG("corners: %f %f %f %f\n", at, bt, ct, dt);
-    return ! result;
+    return result;
   }
 
 } // end namespace Dune
