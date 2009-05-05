@@ -4,7 +4,7 @@ CLEANFILES = marchinglut.cc
 
 lib_LTLIBRARIES = libmclut.la
 
-libmclut_la_SOURCES = marchinglut.cc
+libmclut_la_SOURCES = marchinglut.cc marchinglut.hh
 
 marchinglut.cc: generate_lut.py
 	./generate_lut.py

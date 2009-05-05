@@ -142,42 +142,59 @@ namespace Dune {
       ReferenceElementContainer<ctype, dim> rec;
       const ReferenceElement<ctype, dim> & ref_element = rec(geo_type);
       valueType corner_a, corner_b, corner_c, corner_d;
-      DEBUG("---- AMBIGUOUS\n");
+      //DEBUG("---- AMBIGUOUS\n");
       // tests are negative, non-negativ values are offsets
       while ((test < 0) && (test != -CASE_IS_REGULAR))
       {
-        DEBUG("++++ test: %d\n", test);
-        if (dim == 3)
-        {
-          // face tests are stored inverted as (TEST_FACE | id)
-          int face = -test - TEST_FACE;
-          DEBUG("test face: %i\n", face);
-          corner_a = vertex_values[ref_element.subEntity(face, 1, 0, dim)];
-          corner_b = vertex_values[ref_element.subEntity(face, 1, 1, dim)];
-          corner_c = vertex_values[ref_element.subEntity(face, 1, 2, dim)];
-          corner_d = vertex_values[ref_element.subEntity(face, 1, 3, dim)];
-        }
-        else if (dim == 2)
-        {
-          corner_a = vertex_values[0];
-          corner_b = vertex_values[1];
-          corner_c = vertex_values[2];
-          corner_d = vertex_values[3];
-        }
-        else
+                #if NDEBUG
+        if (dim < 2 || dim > 3)
         {
           DUNE_THROW(IllegalArgumentException, "MC 33 cases should"
                      << " occur with dimension 2 or 3, not " << dim << ".");
         }
-        // calculate index position (if test is true: 2*index, otherwise: 2*index+1)
+                #endif
+
+        bool test_result = false;
+
+        DEBUG("++++ test: %d\n", test);
+        if ((-test) & TEST_FACE)
+        {
+          if (dim == 3)
+          {
+            //DEBUG("TEST_FACE %d\n", TEST_FACE);
+            // face tests are stored inverted as (TEST_FACE | id)
+            size_t face = -test - TEST_FACE;
+            //DEBUG("test face: %i\n", face);
+            corner_a = vertex_values[ref_element.subEntity(face, 1, 0, dim)];
+            corner_b = vertex_values[ref_element.subEntity(face, 1, 1, dim)];
+            corner_c = vertex_values[ref_element.subEntity(face, 1, 2, dim)];
+            corner_d = vertex_values[ref_element.subEntity(face, 1, 3, dim)];
+          }
+          else if (dim == 2)
+          {
+            corner_a = vertex_values[0];
+            corner_b = vertex_values[1];
+            corner_c = vertex_values[2];
+            corner_d = vertex_values[3];
+          }
+          test_result = testAmbiguousFace(corner_a, corner_b, corner_c, corner_d);
+        }
+        else if ((-test) & TEST_INTERIOR)
+        {
+          //DEBUG("TEST_INTERIOR %d\n", TEST_INTERIOR);
+          size_t refCorner = -test - TEST_INTERIOR;
+          //DEBUG("revCorner: %i\n", refCorner);
+          testAmbiguousCenter(vertex_values, vertex_count, refCorner);
+        }
+        else
+        {
+          DUNE_THROW(IllegalArgumentException, "MC 33 test must be either"
+                     "TEST_FACE or TEST_INTERIOR.");
+        }
+        DEBUG("test_result: %d\n", test_result);
+        // calculate next index position (if test is true: 2*index, otherwise: 2*index+1)
         tree_offset *= 2;
-        bool test_result = ((-test) & TEST_INTERIOR) ?
-                           testAmbiguousCenter(vertex_values, vertex_count,
-                                               -test - TEST_INTERIOR) :
-                           testAmbiguousFace(corner_a, corner_b, corner_c, corner_d);
-        //DEBUG("test_result: %d\n", test_result);
         tree_offset += (1 - test_result);
-        DEBUG("test result: %d\n", test_result);
         test = table_mc33_face_test_order[test_index + tree_offset];
         DEBUG("next test: %d\n", test);
         DEBUG("regular is: %d\n", CASE_IS_REGULAR);
@@ -405,33 +422,21 @@ namespace Dune {
    * \param corner_c Value of the third face vertex.
    * \param corner_d Value of the forth face vertex.
    *
-   * \return <code>True</true> if face center is inside.
+   * \return <code>True</true> if face center is not inside
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   bool MarchingCubes33<valueType, dim, thresholdFunctor>::
   testAmbiguousFace(const valueType corner_a, const valueType corner_b,
                     const valueType corner_c, const valueType corner_d) const
   {
-        #warning DEBUGCODE
     // Change naming scheme to jgt-paper ones
     double a = thresholdFunctor::getDistance(corner_a);
     double b = thresholdFunctor::getDistance(corner_c);
     double c = thresholdFunctor::getDistance(corner_d);
     double d = thresholdFunctor::getDistance(corner_b);
 
-    bool result_lewiner = (a*(a*c - b*d) >= 0.0);    //! thresholdFunctor::isLower(a * (a*c - b*d)); // >= 0.0;
-    bool result_other = thresholdFunctor::isLower((a*c-b*d));    ///(c+a-d-b));
-    if (result_lewiner != result_other)
-    {
-      std::cout << "WARNING: unexpected result " << (a*c - b*d) << " FACETEST "
-                << a << " "
-                << d << " "
-                << b << " "
-                << c << " "
-                << " : " << result_lewiner << " != " << result_other << "\n";
-    }
-    return result_other;
-    return result_lewiner;
+    bool result = ! thresholdFunctor::isLower(a*(a*c-b*d));
+    return result;
   }
 
   /*
@@ -445,41 +450,39 @@ namespace Dune {
    * \param vertex_values Cube's vertex values.
    * \param vertex_count Number of vertices, should be eight.
    *
-   * \return <code>True</true> if cell center is inside.
-
-     \todo TODO : TEST CODE!!!
-
+   * \return <code>True</true> if cell center is not connected to refCorner and the opposite corner.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   bool MarchingCubes33<valueType, dim, thresholdFunctor>::
   testAmbiguousCenter(const valueVector& vertex_values,
                       const sizeType vertex_count, size_t refCorner) const
   {
-    DEBUG("testCenter\n");
     assert(dim==3);
+    DEBUG("---------------------------\ntestAmbiguousCenter %i\n", refCorner);
     // permute vertices according to refCorner
     // rotate arounf z-axis such that refCorner is a0
     assert (refCorner < 4);
-    static size_t pemutation[][] = {
+    static size_t permutation[4][8] = {
       {0, 1, 2, 3, 4, 5, 6, 7},
       {1, 3, 0, 2, 5, 7, 4, 6},
       {2, 0, 3, 1, 6, 4, 7, 5},
       {3, 2, 1, 0, 7, 6, 5, 4}
     };
     // get vertex values
-    const double a0 = thresholdFunctor::getDistance(vertex_values[permutation[0]]);
-    const double b0 = thresholdFunctor::getDistance(vertex_values[permutation[2]]);
-    const double c0 = thresholdFunctor::getDistance(vertex_values[permutation[3]]);
-    const double d0 = thresholdFunctor::getDistance(vertex_values[permutation[1]]);
-    const double a1 = thresholdFunctor::getDistance(vertex_values[permutation[5]]);
-    const double b1 = thresholdFunctor::getDistance(vertex_values[permutation[7]]);
-    const double c1 = thresholdFunctor::getDistance(vertex_values[permutation[8]]);
-    const double d1 = thresholdFunctor::getDistance(vertex_values[permutation[6]]);
+    const double a0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][0]]);
+    const double b0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][2]]);
+    const double c0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][3]]);
+    const double d0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][1]]);
+    const double a1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][5]]);
+    const double b1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][7]]);
+    const double c1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][8]]);
+    const double d1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][6]]);
 
     // check that there is maximum
     const double a =  (a1 - a0) * (c1 - c0) - (b1 - b0) * (d1 - d0);
     if (a >= 0.0)
     {
+      DEBUG("a >= 0\nresult: false\n");
       return true;
     }
     // check that the maximum-plane is inside the cube
@@ -487,6 +490,7 @@ namespace Dune {
     const double t_max = -0.5 * b / a;
     if ((0.0 >= t_max) || (1.0 <= t_max))
     {
+      DEBUG("t_max not in [0,1]\nresult: false\n");
       return true;
     }
     // check that the
@@ -496,10 +500,15 @@ namespace Dune {
     const double dt = d0 + (d1 - d0) * t_max;
     const bool inequation_4 = !thresholdFunctor::isLower(at*ct - bt*dt);
     // check sign(a0) = sign(at) = sign(ct) = sign(c1)
-    // const bool corner_signs = (at*ct >= 0)
-    //     && (bt*dt >= 0) && (at*bt >= 0);
+    const bool corner_signs_x = (at*ct >= 0)
+                                && (bt*dt >= 0) && (at*bt >= 0);
     const bool corner_signs = (a0*ct >= 0) && (at*ct >= 0) && (ct*c1 >= 0);
-    return (inequation_4 && corner_signs) != true;
+    bool result = (inequation_4 && corner_signs);
+    DEBUG("ineq %d ::: corner %d ::: cornerX %d\nresult: %s\n",
+          inequation_4, corner_signs, corner_signs_x,
+          (result ? "true" : false));
+    DEBUG("corners: %f %f %f %f\n", at, bt, ct, dt);
+    return ! result;
   }
 
 } // end namespace Dune

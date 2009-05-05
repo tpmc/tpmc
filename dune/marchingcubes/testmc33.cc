@@ -98,6 +98,7 @@ template <int dim> bool TestMarchingCubes33::assertEquals(int expect,
 {
   if (verbose)
   {
+    std::cout << "======================================\n";
     std::cout << " Test data for \"" << name << "\" (dim: " << dim <<
     ", vertices: " << vertex_count << "): ";
     for (sizeType i = 0; i < vertex_count; i++)
@@ -351,208 +352,206 @@ int main(int argc, char ** argv)
 
   if (argc > 1)
     testmc33.verbose = (std::string("-verbose") == argv[1] || std::string("-v") == argv[1]);
-  /*
-     // Test any 0d (point)
-     count++;
-     passed += testmc33.testAny0d(0, 0.4, "any0d_0");
-     count++;
-     passed += testmc33.testAny0d(0, 0.8, "any0d_1");
-     // Test any 1d (line)
-     count++;
-     passed += testmc33.testAny1d(0, 0.4, 0.2, "any1d_0");
-     count++;
-     passed += testmc33.testAny1d(1, 0.7, 0.1, "any1d_1");
-     count++;
-     passed += testmc33.testAny1d(2, 0.3, 0.7, "any1d_2");
-     count++;
-     passed += testmc33.testAny1d(3, 0.8, 0.7, "any1d_3");
-     // Test simplex 2d
-     count++;
-     passed += testmc33.testSimplex2d(0, 0.2, 0.3, 0.4, "simplex2d_0");
-     count++;
-     passed += testmc33.testSimplex2d(1, 0.8, 0.2, 0.4, "simplex2d_1");
-     count++;
-     passed += testmc33.testSimplex2d(2, 0.1, 0.7, 0.5, "simplex2d_2");
-     count++;
-     passed += testmc33.testSimplex2d(3, 0.8, 0.8, 0.4, "simplex2d_3");
-     count++;
-     passed += testmc33.testSimplex2d(6, 0.3, 0.7, 0.8, "simplex2d_4");
-     // Test simplex 3d
-     count++;
-     passed += testmc33.testSimplex3d(0, 0.2, 0.3, 0.4, 0.5, "simplex3d_0");
-     count++;
-     passed += testmc33.testSimplex3d(1, 0.8, 0.3, 0.4, 0.5, "simplex3d_1");
-     count++;
-     passed += testmc33.testSimplex3d(2, 0.2, 1.0, 0.4, 0.5, "simplex3d_2");
-     count++;
-     passed += testmc33.testSimplex3d(3, 0.9, 0.7, 0.4, 0.5, "simplex3d_3");
-     count++;
-     passed += testmc33.testSimplex3d(4, 0.2, 0.3, 0.8, 0.4, "simplex3d_4");
-     count++;
-     passed += testmc33.testSimplex3d(5, 0.7, 0.3, 0.8, 0.4, "simplex3d_5");
-     count++;
-     passed += testmc33.testSimplex3d(6, 0.2, 0.9, 0.8, 0.4, "simplex3d_6");
-     count++;
-     passed += testmc33.testSimplex3d(7, 0.8, 0.7, 0.9, 0.2, "simplex3d_7");
-     count++;
-     passed += testmc33.testSimplex3d(8, 0.2, 0.3, 0.4, 0.8, "simplex3d_8");
-     count++;
-     passed += testmc33.testSimplex3d(9, 0.8, 0.3, 0.4, 0.8, "simplex3d_9");
-     count++;
-     passed += testmc33.testSimplex3d(10, 0.2, 1.0, 0.4, 0.8, "simplex3d_10");
-     count++;
-     passed += testmc33.testSimplex3d(11, 0.9, 0.7, 0.4, 0.8, "simplex3d_11");
-     count++;
-     passed += testmc33.testSimplex3d(12, 0.2, 0.3, 0.8, 0.8, "simplex3d_12");
-     count++;
-     passed += testmc33.testSimplex3d(13, 0.7, 0.3, 0.8, 0.8, "simplex3d_13");
-     count++;
-     passed += testmc33.testSimplex3d(14, 0.2, 0.9, 0.8, 0.8, "simplex3d_14");
-     count++;
-     passed += testmc33.testSimplex3d(15, 0.8, 0.7, 0.9, 0.8, "simplex3d_15");
-     // Test cube 2d
-     count++;
-     passed += testmc33.testCube2d(0, 0.1, 0.4, 0.5, 0.3, "cube2d_0");
-     count++;
-     passed += testmc33.testCube2d(1, 0.7, 0.4, 0.5, 0.3, "cube2d_1");
-     count++;
-     passed += testmc33.testCube2d(2, 0.2, 0.8, 0.5, 0.3, "cube2d_2");
-     count++;
-     passed += testmc33.testCube2d(3, 0.7, 0.8, 0.5, 0.3, "cube2d_3");
-     count++;
-     passed += testmc33.testCube2d(4, 0.1, 0.4, 0.9, 0.3, "cube2d_4");
-     count++;
-     passed += testmc33.testCube2d(5, 0.7, 0.4, 0.9, 0.3, "cube2d_5");
-     count++;
-     passed += testmc33.testCube2d(6, 0.5, 0.8, 0.7, 0.4, "cube2d_6");
-     count++;
-     passed += testmc33.testCube2d(7, 0.9, 0.8, 0.7, 0.3, "cube2d_7");
-     count++;
-     passed += testmc33.testCube2d(8, 0.1, 0.4, 0.5, 0.8, "cube2d_8");
-     count++;
-     passed += testmc33.testCube2d(9, 0.7, 0.5, 0.4, 0.8, "cube2d_9");
-     count++;
-     passed += testmc33.testCube2d(10, 0.1, 0.8, 0.4, 0.8, "cube2d_10");
-     count++;
-     passed += testmc33.testCube2d(11, 0.7, 0.8, 0.5, 0.8, "cube2d_11");
-     count++;
-     passed += testmc33.testCube2d(12, 0.1, 0.4, 0.9, 0.8, "cube2d_12");
-     count++;
-     passed += testmc33.testCube2d(13, 0.7, 0.4, 0.9, 0.8, "cube2d_13");
-     count++;
-     passed += testmc33.testCube2d(14, 0.5, 0.8, 0.7, 0.8, "cube2d_14");
-     count++;
-     passed += testmc33.testCube2d(15, 0.9, 0.8, 0.7, 0.8, "cube2d_15");
-     count++;
-     passed += testmc33.testCube2d(16, 0.1, 0.8, 0.9, 0.2, "cube2d_16");
-     count++;
-     passed += testmc33.testCube2d(17, 0.9, 0.1, 0.2, 0.8, "cube2d_17");
-     // Test cube 3d
-      // Test all transformations of a basic case
-     count++;
-     passed += testmc33.testCube3d(255-1, 0.4, 0.8, 0.8, 0.8,
-      0.8, 0.8, 0.8, 0.8, "cube3d_transf_0");
-     count++;
-     passed += testmc33.testCube3d(255-2, 0.8, 0.4, 0.8, 0.8,
-      0.8, 0.8, 0.8, 0.8, "cube3d_transf_1");
-     count++;
-     passed += testmc33.testCube3d(255-4, 0.8, 0.8, 0.4, 0.8,
-      0.8, 0.8, 0.8, 0.8, "cube3d_transf_2");
-     count++;
-     passed += testmc33.testCube3d(255-8, 0.8, 0.8, 0.8, 0.4,
-      0.8, 0.8, 0.8, 0.8, "cube3d_transf_3");
-     count++;
-     passed += testmc33.testCube3d(255-16, 0.8, 0.8, 0.8, 0.8,
-      0.4, 0.8, 0.8, 0.8, "cube3d_transf_4");
-     count++;
-     passed += testmc33.testCube3d(255-32, 0.8, 0.8, 0.8, 0.8,
-      0.8, 0.4, 0.8, 0.8, "cube3d_transf_5");
-     count++;
-     passed += testmc33.testCube3d(255-64, 0.8, 0.8, 0.8, 0.8,
-      0.8, 0.8, 0.4, 0.8, "cube3d_transf_6");
-     count++;
-     passed += testmc33.testCube3d(255-128, 0.8, 0.8, 0.8, 0.8,
-      0.8, 0.8, 0.8, 0.4, "cube3d_transf_7");
-      // Test every non MC 33 basic case
-     count++;*/ /*
-     passed += testmc33.testCube3d(0, 0.5, 0.5, 0.5, 0.5,
-      0.5, 0.5, 0.5, 0.5, "cube3d_basic_0"); // Basic case 0
-     count++;
-     passed += testmc33.testCube3d(1, 0.9, 0.5, 0.5, 0.5,
-      0.5, 0.5, 0.5, 0.5, "cube3d_basic_1"); // Basic case 1
-     count++;
-     passed += testmc33.testCube3d(3, 0.9, 0.9, 0.5, 0.5,
-      0.5, 0.5, 0.5, 0.5, "cube3d_basic_2"); // Basic case 2
-   */count++;
+  // Test any 0d (point)
+  // count++;
+  // passed += testmc33.testAny0d(0, 0.4, "any0d_0");
+  // count++;
+  // passed += testmc33.testAny0d(0, 0.8, "any0d_1");
+  // Test any 1d (line)
+  count++;
+  passed += testmc33.testAny1d(0, 0.4, 0.2, "any1d_0");
+  count++;
+  passed += testmc33.testAny1d(1, 0.7, 0.1, "any1d_1");
+  count++;
+  passed += testmc33.testAny1d(2, 0.3, 0.7, "any1d_2");
+  count++;
+  passed += testmc33.testAny1d(3, 0.8, 0.7, "any1d_3");
+  // Test simplex 2d
+  count++;
+  passed += testmc33.testSimplex2d(0, 0.2, 0.3, 0.4, "simplex2d_0");
+  count++;
+  passed += testmc33.testSimplex2d(1, 0.8, 0.2, 0.4, "simplex2d_1");
+  count++;
+  passed += testmc33.testSimplex2d(2, 0.1, 0.7, 0.5, "simplex2d_2");
+  count++;
+  passed += testmc33.testSimplex2d(3, 0.8, 0.8, 0.4, "simplex2d_3");
+  count++;
+  passed += testmc33.testSimplex2d(6, 0.3, 0.7, 0.8, "simplex2d_4");
+  // Test simplex 3d
+  count++;
+  passed += testmc33.testSimplex3d(0, 0.2, 0.3, 0.4, 0.5, "simplex3d_0");
+  count++;
+  passed += testmc33.testSimplex3d(1, 0.8, 0.3, 0.4, 0.5, "simplex3d_1");
+  count++;
+  passed += testmc33.testSimplex3d(2, 0.2, 1.0, 0.4, 0.5, "simplex3d_2");
+  count++;
+  passed += testmc33.testSimplex3d(3, 0.9, 0.7, 0.4, 0.5, "simplex3d_3");
+  count++;
+  passed += testmc33.testSimplex3d(4, 0.2, 0.3, 0.8, 0.4, "simplex3d_4");
+  count++;
+  passed += testmc33.testSimplex3d(5, 0.7, 0.3, 0.8, 0.4, "simplex3d_5");
+  count++;
+  passed += testmc33.testSimplex3d(6, 0.2, 0.9, 0.8, 0.4, "simplex3d_6");
+  count++;
+  passed += testmc33.testSimplex3d(7, 0.8, 0.7, 0.9, 0.2, "simplex3d_7");
+  count++;
+  passed += testmc33.testSimplex3d(8, 0.2, 0.3, 0.4, 0.8, "simplex3d_8");
+  count++;
+  passed += testmc33.testSimplex3d(9, 0.8, 0.3, 0.4, 0.8, "simplex3d_9");
+  count++;
+  passed += testmc33.testSimplex3d(10, 0.2, 1.0, 0.4, 0.8, "simplex3d_10");
+  count++;
+  passed += testmc33.testSimplex3d(11, 0.9, 0.7, 0.4, 0.8, "simplex3d_11");
+  count++;
+  passed += testmc33.testSimplex3d(12, 0.2, 0.3, 0.8, 0.8, "simplex3d_12");
+  count++;
+  passed += testmc33.testSimplex3d(13, 0.7, 0.3, 0.8, 0.8, "simplex3d_13");
+  count++;
+  passed += testmc33.testSimplex3d(14, 0.2, 0.9, 0.8, 0.8, "simplex3d_14");
+  count++;
+  passed += testmc33.testSimplex3d(15, 0.8, 0.7, 0.9, 0.8, "simplex3d_15");
+  // Test cube 2d
+  count++;
+  passed += testmc33.testCube2d(0, 0.1, 0.4, 0.5, 0.3, "cube2d_0");
+  count++;
+  passed += testmc33.testCube2d(1, 0.7, 0.4, 0.5, 0.3, "cube2d_1");
+  count++;
+  passed += testmc33.testCube2d(2, 0.2, 0.8, 0.5, 0.3, "cube2d_2");
+  count++;
+  passed += testmc33.testCube2d(3, 0.7, 0.8, 0.5, 0.3, "cube2d_3");
+  count++;
+  passed += testmc33.testCube2d(4, 0.1, 0.4, 0.9, 0.3, "cube2d_4");
+  count++;
+  passed += testmc33.testCube2d(5, 0.7, 0.4, 0.9, 0.3, "cube2d_5");
+  count++;
+  passed += testmc33.testCube2d(6, 0.5, 0.8, 0.7, 0.4, "cube2d_6");
+  count++;
+  passed += testmc33.testCube2d(7, 0.9, 0.8, 0.7, 0.3, "cube2d_7");
+  count++;
+  passed += testmc33.testCube2d(8, 0.1, 0.4, 0.5, 0.8, "cube2d_8");
+  count++;
+  passed += testmc33.testCube2d(9, 0.7, 0.5, 0.4, 0.8, "cube2d_9");
+  count++;
+  passed += testmc33.testCube2d(10, 0.1, 0.8, 0.4, 0.8, "cube2d_10");
+  count++;
+  passed += testmc33.testCube2d(11, 0.7, 0.8, 0.5, 0.8, "cube2d_11");
+  count++;
+  passed += testmc33.testCube2d(12, 0.1, 0.4, 0.9, 0.8, "cube2d_12");
+  count++;
+  passed += testmc33.testCube2d(13, 0.7, 0.4, 0.9, 0.8, "cube2d_13");
+  count++;
+  passed += testmc33.testCube2d(14, 0.5, 0.8, 0.7, 0.8, "cube2d_14");
+  count++;
+  passed += testmc33.testCube2d(15, 0.9, 0.8, 0.7, 0.8, "cube2d_15");
+  count++;
+  passed += testmc33.testCube2d(16, 0.1, 0.8, 0.9, 0.2, "cube2d_16");
+  count++;
+  passed += testmc33.testCube2d(17, 0.9, 0.1, 0.2, 0.8, "cube2d_17");
+  // Test cube 3d
+  // Test all transformations of a basic case
+  count++;
+  passed += testmc33.testCube3d(255-1, 0.4, 0.8, 0.8, 0.8,
+                                0.8, 0.8, 0.8, 0.8, "cube3d_transf_0");
+  count++;
+  passed += testmc33.testCube3d(255-2, 0.8, 0.4, 0.8, 0.8,
+                                0.8, 0.8, 0.8, 0.8, "cube3d_transf_1");
+  count++;
+  passed += testmc33.testCube3d(255-4, 0.8, 0.8, 0.4, 0.8,
+                                0.8, 0.8, 0.8, 0.8, "cube3d_transf_2");
+  count++;
+  passed += testmc33.testCube3d(255-8, 0.8, 0.8, 0.8, 0.4,
+                                0.8, 0.8, 0.8, 0.8, "cube3d_transf_3");
+  count++;
+  passed += testmc33.testCube3d(255-16, 0.8, 0.8, 0.8, 0.8,
+                                0.4, 0.8, 0.8, 0.8, "cube3d_transf_4");
+  count++;
+  passed += testmc33.testCube3d(255-32, 0.8, 0.8, 0.8, 0.8,
+                                0.8, 0.4, 0.8, 0.8, "cube3d_transf_5");
+  count++;
+  passed += testmc33.testCube3d(255-64, 0.8, 0.8, 0.8, 0.8,
+                                0.8, 0.8, 0.4, 0.8, "cube3d_transf_6");
+  count++;
+  passed += testmc33.testCube3d(255-128, 0.8, 0.8, 0.8, 0.8,
+                                0.8, 0.8, 0.8, 0.4, "cube3d_transf_7");
+  // Test every non MC 33 basic case
+  count++;
+  passed += testmc33.testCube3d(0, 0.5, 0.5, 0.5, 0.5,
+                                0.5, 0.5, 0.5, 0.5, "cube3d_basic_0"); // Basic case 0
+  count++;
+  passed += testmc33.testCube3d(1, 0.9, 0.5, 0.5, 0.5,
+                                0.5, 0.5, 0.5, 0.5, "cube3d_basic_1"); // Basic case 1
+  count++;
+  passed += testmc33.testCube3d(3, 0.9, 0.9, 0.5, 0.5,
+                                0.5, 0.5, 0.5, 0.5, "cube3d_basic_2"); // Basic case 2
+  count++;
   passed += testmc33.testCube3d(33, 0.9, 0.5, 0.5, 0.5,
                                 0.5, 0.9, 0.5, 0.5, "cube3d_basic_3"); // Basic case 3
-  /*count++;
-     passed += testmc33.testCube3d(129, 0.7, 0.2, 0.2, 0.2,
-      0.2, 0.2, 0.2, 0.7, "cube3d_basic_4"); // Basic case 4
-     count++;
-     passed += testmc33.testCube3d(14, 0.5, 0.9, 0.9, 0.9,
-      0.5, 0.5, 0.5, 0.5, "cube3d_basic_5"); // Basic case 5
-     count++;
-     passed += testmc33.testCube3d(131, 0.9, 0.9, 0.5, 0.5,
-      0.5, 0.5, 0.5, 0.9, "cube3d_basic_6"); // Basic case 6
-     count++;
-     passed += testmc33.testCube3d(146, 0.5, 0.9, 0.5, 0.5,
-      0.9, 0.5, 0.5, 0.9, "cube3d_basic_7"); // Basic case 7
-     count++;
-     passed += testmc33.testCube3d(240, 0.5, 0.5, 0.5, 0.5,
-      0.9, 0.9, 0.9, 0.9, "cube3d_basic_8"); // Basic case 8
-     count++;
-     passed += testmc33.testCube3d(77, 0.9, 0.5, 0.9, 0.9,
-      0.5, 0.5, 0.9, 0.5, "cube3d_basic_9"); // Basic case 9
-   */count++;
+  count++;
+  passed += testmc33.testCube3d(129, 0.7, 0.2, 0.2, 0.2,
+                                0.2, 0.2, 0.2, 0.7, "cube3d_basic_4"); // Basic case 4
+  count++;
+  passed += testmc33.testCube3d(14, 0.5, 0.9, 0.9, 0.9,
+                                0.5, 0.5, 0.5, 0.5, "cube3d_basic_5"); // Basic case 5
+  count++;
+  passed += testmc33.testCube3d(131, 0.7, 0.7, 0.2, 0.2,
+                                0.2, 0.2, 0.2, 0.7, "cube3d_basic_6"); // Basic case 6
+  count++;
+  passed += testmc33.testCube3d(146, 0.5, 0.9, 0.5, 0.5,
+                                0.9, 0.5, 0.5, 0.9, "cube3d_basic_7"); // Basic case 7
+  count++;
+  passed += testmc33.testCube3d(240, 0.5, 0.5, 0.5, 0.5,
+                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_8"); // Basic case 8
+  count++;
+  passed += testmc33.testCube3d(77, 0.9, 0.5, 0.9, 0.9,
+                                0.5, 0.5, 0.9, 0.5, "cube3d_basic_9"); // Basic case 9
+  count++;
   passed += testmc33.testCube3d(153, 0.9, 0.5, 0.5, 0.9,
                                 0.9, 0.5, 0.5, 0.9, "cube3d_basic_10"); // Basic case 10
-  /*count++;
-     passed += testmc33.testCube3d(141, 0.9, 0.5, 0.9, 0.9,
-      0.5, 0.5, 0.5, 0.9, "cube3d_basic_11"); // Basic case 11
-     count++;
-     passed += testmc33.testCube3d(30, 0.5, 0.9, 0.9, 0.9,
-      0.9, 0.5, 0.5, 0.5, "cube3d_basic_12"); // Basic case 12
-     count++;
-     passed += testmc33.testCube3d(105, 0.9, 0.5, 0.5, 0.9,
-      0.5, 0.9, 0.9, 0.5, "cube3d_basic_13"); // Basic case 13
-     count++;
-     passed += testmc33.testCube3d(78, 0.5, 0.9, 0.9, 0.9,
-      0.5, 0.5, 0.9, 0.5, "cube3d_basic_14"); // Basic case 14
-     count++;
-     passed += testmc33.testCube3d(255, 0.9, 0.9, 0.9, 0.9,
-      0.9, 0.9, 0.9, 0.9, "cube3d_basic_0_inv"); // Inverted basic case 0
-     count++;
-     passed += testmc33.testCube3d(255-1, 0.5, 0.9, 0.9, 0.9,
-      0.9, 0.9, 0.9, 0.9, "cube3d_basic_1_inv"); // Inverted basic case 1
-     count++;
-     passed += testmc33.testCube3d(255-3, 0.5, 0.5, 0.9, 0.9,
-      0.9, 0.9, 0.9, 0.9, "cube3d_basic_2_inv"); // Inverted basic case 2
-     count++;
-     passed += testmc33.testCube3d(255-33, 0.5, 0.9, 0.9, 0.9,
-      0.9, 0.5, 0.9, 0.9, "cube3d_basic_3inv"); // Inverted basic case 3
-     count++;
-     passed += testmc33.testCube3d(255-129, 0.5, 0.9, 0.9, 0.9,
-      0.9, 0.9, 0.9, 0.5, "cube3d_basic_4_inv"); // Inverted basic case 4
-     count++;
-     passed += testmc33.testCube3d(255-14, 0.9, 0.5, 0.5, 0.5,
-      0.9, 0.9, 0.9, 0.9, "cube3d_basic_5_inv"); // Inverted basic case 5
-     count++;
-     passed += testmc33.testCube3d(255-131, 0.5, 0.5, 0.9, 0.9,
-      0.9, 0.9, 0.9, 0.5, "cube3d_basic_6_inv"); // Inverted basic case 6
-     count++;
-     passed += testmc33.testCube3d(255-146, 0.9, 0.5, 0.9, 0.9,
-      0.5, 0.9, 0.9, 0.5, "cube3d_basic_7_inv"); // Inverted basic case 7
-      // Test Marching cubes' 33 cases
-   */count++;
+  count++;
+  passed += testmc33.testCube3d(141, 0.9, 0.5, 0.9, 0.9,
+                                0.5, 0.5, 0.5, 0.9, "cube3d_basic_11"); // Basic case 11
+  count++;
+  passed += testmc33.testCube3d(30, 0.5, 0.9, 0.9, 0.9,
+                                0.9, 0.5, 0.5, 0.5, "cube3d_basic_12"); // Basic case 12
+  count++;
+  passed += testmc33.testCube3d(105, 0.9, 0.5, 0.5, 0.9,
+                                0.5, 0.9, 0.9, 0.5, "cube3d_basic_13"); // Basic case 13
+  count++;
+  passed += testmc33.testCube3d(78, 0.5, 0.9, 0.9, 0.9,
+                                0.5, 0.5, 0.9, 0.5, "cube3d_basic_14"); // Basic case 14
+  count++;
+  passed += testmc33.testCube3d(255, 0.9, 0.9, 0.9, 0.9,
+                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_0_inv"); // Inverted basic case 0
+  count++;
+  passed += testmc33.testCube3d(255-1, 0.5, 0.9, 0.9, 0.9,
+                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_1_inv"); // Inverted basic case 1
+  count++;
+  passed += testmc33.testCube3d(255-3, 0.5, 0.5, 0.9, 0.9,
+                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_2_inv"); // Inverted basic case 2
+  count++;
+  passed += testmc33.testCube3d(255-33, 0.5, 0.9, 0.9, 0.9,
+                                0.9, 0.5, 0.9, 0.9, "cube3d_basic_3inv"); // Inverted basic case 3
+  count++;
+  passed += testmc33.testCube3d(255-129, 0.5, 0.9, 0.9, 0.9,
+                                0.9, 0.9, 0.9, 0.5, "cube3d_basic_4_inv"); // Inverted basic case 4
+  count++;
+  passed += testmc33.testCube3d(255-14, 0.9, 0.5, 0.5, 0.5,
+                                0.9, 0.9, 0.9, 0.9, "cube3d_basic_5_inv"); // Inverted basic case 5
+  count++;
+  passed += testmc33.testCube3d(255-131, 0.5, 0.5, 0.9, 0.9,
+                                0.9, 0.9, 0.9, 0.5, "cube3d_basic_6_inv"); // Inverted basic case 6
+  count++;
+  passed += testmc33.testCube3d(255-146, 0.9, 0.5, 0.9, 0.9,
+                                0.5, 0.9, 0.9, 0.5, "cube3d_basic_7_inv"); // Inverted basic case 7
+  // Test Marching cubes' 33 cases
+  count++;
   passed += testmc33.testCube3d(testmc33.NO_KEY, 0.7, 0.2, 0.2, 0.2,
                                 0.2, 0.7, 0.2, 0.2, "cube3d_mc33_3.2"); // MC33 case 3.2
-  /*count++;
-     passed += testmc33.testCube3d(testmc33.NO_KEY, 1.7, 0.5, 0.5, 0.5,
-      0.5, 0.5, 0.5, 1.7, "cube3d_mc33_4.2"); // MC33 case 3.2
-     count++; passed += testmc33.testCube3d(testmc33.NO_KEY, 0.5, 0.9, 0.5, 0.5,
-      0.9, 0.5, 0.5, 0.9, "cube3d_mc33_7.2"); // MC33 case 7
-   */
+  count++;
+  passed += testmc33.testCube3d(testmc33.NO_KEY, 1.7, 0.5, 0.5, 0.5,
+                                0.5, 0.5, 0.5, 1.7, "cube3d_mc33_4.2"); // MC33 case 3.2
+  count++; passed += testmc33.testCube3d(testmc33.NO_KEY, 0.5, 0.9, 0.5, 0.5,
+                                         0.9, 0.5, 0.5, 0.9, "cube3d_mc33_7.2"); // MC33 case 7
   count++;
   passed += testmc33.testCube3d(testmc33.NO_KEY, 0.7, 0.2, 0.2, 0.7,
                                 0.7, 0.2, 0.2, 0.7, "cube3d_mc33_10.1.2"); // MC case 10.1.2
@@ -567,7 +566,7 @@ int main(int argc, char ** argv)
               << std::endl;
     return 1;
   }
-  std::cout << "All marching cubes 33 tests passed. Congratulations."
+  std::cout << "All " << count << " marching cubes 33 tests passed. Congratulations."
             << std::endl;
   return 0;
 }
