@@ -51,7 +51,7 @@ namespace Dune {
                            const valueType cornerC, const valueType cornerD) const;
 
     bool testAmbiguousCenter(const valueVector& vertex_values,
-                             const sizeType vertex_count) const;
+                             const sizeType vertex_count, size_t refCorner) const;
 
     void getCoordsFromNumber(const valueVector& vertex_values,
                              const sizeType vertex_count, const short number,

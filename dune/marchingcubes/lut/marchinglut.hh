@@ -89,18 +89,21 @@ static const short EY = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_
 /* Constants indicating whether case special treatment when marching cubes' 33 is used. */
 static const short CASE_UNIQUE_MC33 = 0;
 static const short CASE_AMBIGUOUS_MC33 = 1;
-/* Constants indication whether basic case is inverted. */
-static const short CASE_NOT_INVERTED = 0;
-static const short CASE_INVERTED = 2;
 /* Face tests */
-static const short TEST_FACE_0 = -6;
-static const short TEST_FACE_1 = -1;
-static const short TEST_FACE_2 = -2;
-static const short TEST_FACE_3 = -3;
-static const short TEST_FACE_4 = -4;
-static const short TEST_FACE_5 = -5;
-static const short TEST_CENTER = -7;
-static const short CASE_IS_REGULAR = -8;
+static const short CASE_IS_REGULAR = (1<<8);
+static const short TEST_FACE = (1<<9);
+static const short TEST_INTERIOR = (1<<10);
+static const short TEST_FACE_0 = -(TEST_FACE | 0);
+static const short TEST_FACE_1 = -(TEST_FACE | 1);
+static const short TEST_FACE_2 = -(TEST_FACE | 2);
+static const short TEST_FACE_3 = -(TEST_FACE | 3);
+static const short TEST_FACE_4 = -(TEST_FACE | 4);
+static const short TEST_FACE_5 = -(TEST_FACE | 5);
+static const short TEST_CENTER = -(TEST_INTERIOR | 0); // DEPRECATED
+static const short TEST_INTERIOR_0 = -(TEST_INTERIOR | 0);
+static const short TEST_INTERIOR_1 = -(TEST_INTERIOR | 1);
+static const short TEST_INTERIOR_2 = -(TEST_INTERIOR | 2);
+static const short TEST_INTERIOR_3 = -(TEST_INTERIOR | 3);
 
 /* Indices for access to cube2d_case_offsets */
 static const int INDEX_OFFSET_CODIM_0 = 0;

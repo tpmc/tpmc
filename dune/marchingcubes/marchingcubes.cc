@@ -144,13 +144,13 @@ namespace Dune {
       valueType corner_a, corner_b, corner_c, corner_d;
       DEBUG("---- AMBIGUOUS\n");
       // tests are negative, non-negativ values are offsets
-      while ((test < 0) && (test != CASE_IS_REGULAR))
+      while ((test < 0) && (test != -CASE_IS_REGULAR))
       {
         DEBUG("++++ test: %d\n", test);
         if (dim == 3)
         {
-          // face tests are stored inverted and face 0 is stored as -6
-          int face = (-1 * test) % 6;
+          // face tests are stored inverted as (TEST_FACE | id)
+          int face = -test - TEST_FACE;
           DEBUG("test face: %i\n", face);
           corner_a = vertex_values[ref_element.subEntity(face, 1, 0, dim)];
           corner_b = vertex_values[ref_element.subEntity(face, 1, 1, dim)];
@@ -171,8 +171,9 @@ namespace Dune {
         }
         // calculate index position (if test is true: 2*index, otherwise: 2*index+1)
         tree_offset *= 2;
-        bool test_result = (test == TEST_CENTER) ?
-                           testAmbiguousCenter(vertex_values, vertex_count) :
+        bool test_result = ((-test) & TEST_INTERIOR) ?
+                           testAmbiguousCenter(vertex_values, vertex_count,
+                                               -test - TEST_INTERIOR) :
                            testAmbiguousFace(corner_a, corner_b, corner_c, corner_d);
         //DEBUG("test_result: %d\n", test_result);
         tree_offset += (1 - test_result);
@@ -418,8 +419,8 @@ namespace Dune {
     double c = thresholdFunctor::getDistance(corner_d);
     double d = thresholdFunctor::getDistance(corner_b);
 
-    bool result_lewiner = ! thresholdFunctor::isLower(a * (a*c - b*d));     // >= 0.0;
-    bool result_other = ! thresholdFunctor::isLower((a*c-b*d)/(c+a-d-b));
+    bool result_lewiner = (a*(a*c - b*d) >= 0.0);    //! thresholdFunctor::isLower(a * (a*c - b*d)); // >= 0.0;
+    bool result_other = thresholdFunctor::isLower((a*c-b*d));    ///(c+a-d-b));
     if (result_lewiner != result_other)
     {
       std::cout << "WARNING: unexpected result " << (a*c - b*d) << " FACETEST "
@@ -445,44 +446,59 @@ namespace Dune {
    * \param vertex_count Number of vertices, should be eight.
    *
    * \return <code>True</true> if cell center is inside.
+
+     \todo TODO : TEST CODE!!!
+
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   bool MarchingCubes33<valueType, dim, thresholdFunctor>::
   testAmbiguousCenter(const valueVector& vertex_values,
-                      const sizeType vertex_count) const
+                      const sizeType vertex_count, size_t refCorner) const
   {
     DEBUG("testCenter\n");
     assert(dim==3);
-    // TODO: mit Lewiner vergleichen. Testen!
-    const double a0 = thresholdFunctor::getDistance(vertex_values[0]);
-    const double b0 = thresholdFunctor::getDistance(vertex_values[2]);
-    const double c0 = thresholdFunctor::getDistance(vertex_values[3]);
-    const double d0 = thresholdFunctor::getDistance(vertex_values[1]);
-    const double a1 = thresholdFunctor::getDistance(vertex_values[5]);
-    const double b1 = thresholdFunctor::getDistance(vertex_values[7]);
-    const double c1 = thresholdFunctor::getDistance(vertex_values[8]);
-    const double d1 = thresholdFunctor::getDistance(vertex_values[6]);
+    // permute vertices according to refCorner
+    // rotate arounf z-axis such that refCorner is a0
+    assert (refCorner < 4);
+    static size_t pemutation[][] = {
+      {0, 1, 2, 3, 4, 5, 6, 7},
+      {1, 3, 0, 2, 5, 7, 4, 6},
+      {2, 0, 3, 1, 6, 4, 7, 5},
+      {3, 2, 1, 0, 7, 6, 5, 4}
+    };
+    // get vertex values
+    const double a0 = thresholdFunctor::getDistance(vertex_values[permutation[0]]);
+    const double b0 = thresholdFunctor::getDistance(vertex_values[permutation[2]]);
+    const double c0 = thresholdFunctor::getDistance(vertex_values[permutation[3]]);
+    const double d0 = thresholdFunctor::getDistance(vertex_values[permutation[1]]);
+    const double a1 = thresholdFunctor::getDistance(vertex_values[permutation[5]]);
+    const double b1 = thresholdFunctor::getDistance(vertex_values[permutation[7]]);
+    const double c1 = thresholdFunctor::getDistance(vertex_values[permutation[8]]);
+    const double d1 = thresholdFunctor::getDistance(vertex_values[permutation[6]]);
 
+    // check that there is maximum
     const double a =  (a1 - a0) * (c1 - c0) - (b1 - b0) * (d1 - d0);
     if (a >= 0.0)
     {
       return true;
     }
+    // check that the maximum-plane is inside the cube
     const double b =  c0*(a1 - a0) + a0*(c1 - c0) - d0*(b1 - b0) - b0*(d1 - d0);
     const double t_max = -0.5 * b / a;
     if ((0.0 >= t_max) || (1.0 <= t_max))
     {
       return true;
     }
-    //const double c =  (a0 * c0) - (b0 * d0);
+    // check that the
     const double at = a0 + (a1 - a0) * t_max;
     const double bt = b0 + (b1 - b0) * t_max;
     const double ct = c0 + (c1 - c0) * t_max;
     const double dt = d0 + (d1 - d0) * t_max;
     const bool inequation_4 = !thresholdFunctor::isLower(at*ct - bt*dt);
-    const bool corner_signs = !thresholdFunctor::isLower(at*ct)
-                              && !thresholdFunctor::isLower(bt*dt)
-                              && !thresholdFunctor::isLower(at*bt);
+    // check sign(a0) = sign(at) = sign(ct) = sign(c1)
+    // const bool corner_signs = (at*ct >= 0)
+    //     && (bt*dt >= 0) && (at*bt >= 0);
+    const bool corner_signs = (a0*ct >= 0) && (at*ct >= 0) && (ct*c1 >= 0);
     return (inequation_4 && corner_signs) != true;
   }
 
