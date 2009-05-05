@@ -1,77 +1,6 @@
 from pprint import pprint
-
-class Permutation(tuple):
-    def __new__ (cls, o, t):
-        return tuple.__new__(cls, t)
-    def __init__(self, o, t):
-        # Indicates the orientation, 1: normal 0:mirrored
-        self.orientation = o
-        tuple.__init__(self, t)
-    def __mul__ (self, other):
-        if type(other) is Permutation:
-            return Permutation(self.orientation*other.orientation, (other[x] for x in self))
-        return type(other)(other[x] for x in self)
-    def __repr__ (self):
-        return ['?','+','-'][self.orientation] + tuple.__repr__(self)
-
-class Case(object):
-    def __init__(self, x):
-        self.case = x
-        self.permutation = None
-        self.base_case = None
-        self.faces = [[]]
-        self.cells = [[]]
-    def __repr__(self):
-        return "%s, %s, %s, %s" % (repr(self.case), repr(self.permutation),
-                                   repr(self.faces), repr(self.cells))
-        
-class BaseCase(object):
-    def __init__(self, dim, x):
-        self.dim = dim
-        self.case = x
-        self.faces = [[]]
-        self.cells = [[]]
-    def __repr__(self):
-        return "%s, %s, %s" % (repr(self.case), repr(self.faces),
-                               repr(self.cells))
-    def __eq__(self, other):
-        return self.case == other.case
-    def get_flip(self, dim, len):
-        if (dim, len) == (1, 2):
-            return Permutation(1, (0,1))
-        if (dim, len) == (2, 3):
-            return Permutation(-1, (2,1,0))
-        if (dim, len) == (2, 4):
-            return Permutation(-1, (1,0,3,2))
-        if (dim, len) == (3, 4):
-            return Permutation(-1, (3,0,2,1))
-        if (dim, len) == (3, 5):
-            return Permutation(-1, (1,0,3,2,4))
-        if (dim, len) == (3, 6):
-            return Permutation(-1, (3,4,5,0,1,2))
-        if (dim, len) == (3, 8):
-            return Permutation(-1, (4,5,6,7,0,1,2,3))
-        assert 0
-    def permute_entity(self,entity,p,dim):
-        def f(x):
-            if type(x) is int:
-                return p[x]
-            return (p[x[0]], p[x[1]])
-        def flip(e):
-            p2 = self.get_flip(dim, len(e))
-            return p2*e
-        if len(entity) == 0:
-            return []
-        if p.orientation == 1:
-            return [ f(vertex) for vertex in  entity ]
-        else:
-            return [ f(vertex) for vertex in flip(entity) ]
-    def permute_faces(self,p):
-        return [ self.permute_entity(face,p,self.dim-1)
-                 for face in self.faces ]
-    def permute_cells(self,p):
-        return [ self.permute_entity(cell,p,self.dim)
-                 for cell in self.cells ]
+from permutation import Permutation
+from cases import *
 
 class LookupGenerator(object):
     def __init__(self, dim, basicType, verbose=False):
@@ -146,9 +75,6 @@ class LookupGenerator(object):
         elif self.geometryType == (2,"simplex"):
             return [Permutation(1, (1,2,0))]
         elif self.geometryType == (2,"cube"):
-            # this is the old version causing flipped normal vectors
-##            return [Permutation(1, (1,3,0,2)),
-##                    Permutation(-1, (1,0,3,2))]
             return [Permutation(1, (1,3,0,2))]
         elif self.geometryType == (3,"simplex"):
             return [Permutation(1, (3,1,0,2)),
@@ -171,8 +97,7 @@ class LookupGenerator(object):
     def generate(self):
         # Generate lookup entries from base cases
         for entry in self.all_cases:
-            entry.faces = entry.base_case.permute_faces(entry.permutation)
-            entry.cells = entry.base_case.permute_cells(entry.permutation)
+            entry.update()
 
     def print_base(self, foo="lut", f=0, c=0):
         print "# base cases %s %iD:" % (self.basicType, self.dim)
@@ -201,5 +126,3 @@ class LookupGenerator(object):
 
         print len(self.all_cases)
         pprint(self.all_cases)
-
-#class GeneratorContainer(dict):

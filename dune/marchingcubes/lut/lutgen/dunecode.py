@@ -1,6 +1,7 @@
 import math
 from referenceelements import ReferenceElements
 from sys import exit
+from disambiguate import *
 
 # Following constants are copied from marchinglut.hh
 # constants for vertex and edge numbering
@@ -50,19 +51,6 @@ CASE_AMIGUOUS_MC33 = 1
 CASE_INVERTED = 2
 # Constant indicates whether basic case was flipped.
 CASE_FLIPPED = 4
-# Face tests
-face_tests = {-1:"TEST_FACE_1", -2:"TEST_FACE_2", -3:"TEST_FACE_3", \
-              -4:"TEST_FACE_4", -5:"TEST_FACE_5", -6:"TEST_FACE_0", \
-              -7:"TEST_CENTER", -8:"CASE_IS_REGULAR"}
-# Constants for mc 33 test order
-TEST_FACE_1 = -1
-TEST_FACE_2 = -2
-TEST_FACE_3 = -3
-TEST_FACE_4 = -4
-TEST_FACE_5 = -5
-TEST_FACE_0 = -6
-TEST_CENTER = -7
-CASE_IS_REGULAR = -8
 
 # Stores a table as C-Code string for marchinglut.cc
 class TableStorage:
@@ -179,23 +167,27 @@ class DuneCode:
                         if math.log(i)/math.log(2.0) == round(math.log(i)/math.log(2.0)):
                             mc33_tests.append("\n      ", 0)
                         # regular (non mc 33) case or test center
-                        if test == CASE_IS_REGULAR or test == TEST_CENTER:
-                            mc33_tests.append(face_tests[test] + ", ", 1)
-                        # all other negative tests are face tests
-                        elif test < 0:
-                            testnumber = test
+                        #if test == CASE_IS_REGULAR or test == TEST_CENTER or test == TEST_INVALID:
+                        # case number
+                        if type(test) is int:
+                            mc33_tests.append(str(offsets.offset + test) + ", ", 1)
+                        elif type(test) is TestInterior:
+                            testnumber = test.refv
+                            test2 = TestInterior(entry.permutation[testnumber])
+                            mc33_tests.append(repr(test2) + ", ", 1)
+                        elif type(test) is TestFace:
+#                            testnumber = test * entry.permutation
+#                            mc33_tests.append(repr(testnumber) + ", ", 1)
                             # permute faces for cube 3D
+                            test2 = test
                             if self.lg.basicType == "cube" and self.lg.dim == 3:
                                 # Regain face numbers, face 0 is stored as -6
-                                testnumber = (-1 * testnumber) % 6;
-                                testnumber = -1 * get_cube3d_face(self, testnumber, entry.permutation)
-                                # store face 0 again as -6
-                                if testnumber == 0:
-                                    testnumber = -6
-                            mc33_tests.append(face_tests[testnumber] + ", ", 1)
-                        # case number otherwise
+                                testnumber = test.idx
+                                test2 = TestFace(get_cube3d_face(self, testnumber, entry.permutation))
+                            mc33_tests.append(repr(test2) + ", ", 1)
                         else:
-                            mc33_tests.append(str(offsets.offset + test) + ", ", 1)
+                            assert type(test) in (TestInvalid, TestRegular)
+                            mc33_tests.append(repr(test) + ", ", 1)
                     # Case tables for mc 33 cases
                     for mc33_case in self.lg.mc33_cases[base_case_number]:
                         offsets.append("      /* %d test index:%d */ " \

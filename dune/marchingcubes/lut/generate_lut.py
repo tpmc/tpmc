@@ -8,21 +8,11 @@ from lutgen.generator import Permutation
 from lutgen.consistencycheck import Consistency
 from lutgen.dunecode import DuneCode
 from lutgen.sk import Sk
-from lutgen.binaryheap import *
-
-# Constants for mc 33 test order
-TEST_FACE_1 = -1
-TEST_FACE_2 = -2
-TEST_FACE_3 = -3
-TEST_FACE_4 = -4
-TEST_FACE_5 = -5
-TEST_FACE_0 = -6
-TEST_CENTER = -7
-CASE_IS_REGULAR = -8
+from lutgen.disambiguate import *
 
 # Constants for permutate mc 33 cases
-MIRROR_FACES_0_TO_1 = Permutation(0, (3, 1, 7, 5, 2, 0, 6, 4))
-MIRROR_FACES_0_TO_2 = Permutation(0, (0, 2, 1, 3, 4, 6, 5, 7))
+MIRROR_FACES_0_TO_1 = Permutation(-1, (3, 1, 7, 5, 2, 0, 6, 4))
+MIRROR_FACES_0_TO_2 = Permutation(-1, (0, 2, 1, 3, 4, 6, 5, 7))
 
 ################################################################################
 ## 3D Cube                                                                    ##
@@ -140,7 +130,7 @@ cube3d.mc33_tests[9] = binaryheap((TEST_FACE_4,
 								   1,
 								   (TEST_CENTER, 0, CASE_IS_REGULAR)
 								   ))
-## 0,1,1,0,1,0,0,0 -> 00010110 # MC33 Case 7.2 (face 0 connection)
+## 0,1,1,0,1,0,0,dun0 -> 00010110 # MC33 Case 7.2 (face 0 connection)
 #cube3d.mc33_cases[6].append(BaseCase(cube3d.base_cases[6].dim, cube3d.base_cases[6].case))
 #cube3d.mc33_cases[6][0].faces = [[(0, 1), (1, 3), (1, 5)], [(4, 5), (5, 7), (0, 4), (3, 7)], [(0, 4), (3, 7), (4, 6), (6, 7)]]
 #cube3d.mc33_cases[6][0].cells = [[3, 0, 2, (6, 7), (4, 6), 6], [(4, 6), (0, 4), 0, (6, 7), (3, 7), 6], [0, (0,4), (4, 5), 3, (3, 7), (5, 7)], [0, (0,4), (4, 5), 3, (1, 3), (5, 7)], [5, (5, 7), (4, 5), (1, 5), (1, 3), (0, 1)]]
