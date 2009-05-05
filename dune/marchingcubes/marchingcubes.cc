@@ -2,6 +2,7 @@
 // vi: set et ts=4 sw=2 sts=2:
 #include "lut/marchinglut.hh"
 #include <fstream>
+#include <cmath>
 #include <iostream> // FIXME TODO: Debug only, entferne mich!
 
 #define DEBUG printf
@@ -306,7 +307,6 @@ namespace Dune {
     if (number == EY)
     {
       //TODO: Testen
-
       // Initialize point
       for (sizeType i = 0; i < dim; i++)
       {
@@ -361,14 +361,13 @@ namespace Dune {
         thresholdFunctor::getDistance(vertex_values[index_a])
         / (thresholdFunctor::getDistance(vertex_values[index_b])
            - thresholdFunctor::getDistance(vertex_values[index_a]));
-      //DEBUG("     Kante: coords %1.3f %1.3f davor indexA %d  indexB %d // %d %d\n", coords[0], coords[1], indexA, indexB, NO_VERTEX^number, number);
+      DEBUG("     Kante: coords %1.3f %1.3f davor indexA %d  indexB %d // %d %d\n", coord[0], coord[1], index_a, index_b, NO_VERTEX^number, number);
       // calculate interpolation point
       for (sizeType i = 0; i < dim; i++)
       {
         coord[i] = point_a[i] - interpol_factor * (point_b[i] - point_a[i]);
       }
-      //   DEBUG("     Kante: coords %1.3f %1.3f / A` %1.3f B` %1.3f \n", coords[0], coords[1], thresholdFunctor::getDistance(vertexValues[indexA]), thresholdFunctor::getDistance(vertexValues[indexB]));
-
+      DEBUG("     Kante: coords %1.3f %1.3f / A` %1.3f B` %1.3f \n", coord[0], coord[1], thresholdFunctor::getDistance(vertex_values[index_a]), thresholdFunctor::getDistance(vertex_values[index_b]));
     }
     // it's a vertex
     else
@@ -376,6 +375,8 @@ namespace Dune {
       getCoordsFromEdgeNumber(vertex_values, vertex_count,
                               number, coord);
     }
+    if (! std::isfinite(coord[0]))
+      assert(false);
   }
 
   /**
@@ -473,16 +474,27 @@ namespace Dune {
     const double b0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][2]]);
     const double c0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][3]]);
     const double d0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][1]]);
-    const double a1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][5]]);
-    const double b1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][7]]);
-    const double c1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][8]]);
-    const double d1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][6]]);
+    const double a1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][4]]);
+    const double b1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][6]]);
+    const double c1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][7]]);
+    const double d1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][5]]);
+
+    DEBUG("%f ::: %f ::: %f ::: %f ::: %f ::: %f ::: %f ::: %f\n",
+          vertex_values[0],
+          vertex_values[1],
+          vertex_values[2],
+          vertex_values[3],
+          vertex_values[4],
+          vertex_values[5],
+          vertex_values[6],
+          vertex_values[7]);
+    DEBUG("%f ::: %f ::: %f ::: %f ::: %f ::: %f ::: %f ::: %f\n",a0,d0,b0,c0,a1,d1,b1,c1);
 
     // check that there is maximum
     const double a =  (a1 - a0) * (c1 - c0) - (b1 - b0) * (d1 - d0);
     if (a >= 0.0)
     {
-      DEBUG("a >= 0\nresult: false\n");
+      DEBUG("a >= 0 (%f)\nresult: false\n", a);
       return false;
     }
     // check that the maximum-plane is inside the cube
