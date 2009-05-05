@@ -126,7 +126,7 @@ cube3d.mc33_cases[8].append(BaseCase(cube3d.base_cases[8].dim, cube3d.base_cases
 cube3d.mc33_cases[8][0].faces = [[(4, 5), (6, 7), (0, 4), (2, 3)], [(4, 5), (3, 7), (4, 5), (6, 7)], [(0, 4), (2, 3), (4, 5), (3, 7)]]
 cube3d.mc33_cases[8][0].cells = [[(4, 5), (3, 7), (1, 3), 5], [(4, 6), (4, 5), (3, 7), 7], [5, 7, (4, 5), (3, 7)], [6, (4, 5), (3, 7), (2, 3)], [2, (0, 4), (4, 5), (2, 3)], [0, (0, 4), 2, (2, 3)], [(4, 6), 6, 7, (3, 7)], [(4, 6), 6, (2, 3), 2], [1, (1, 3), 5, (4, 5)], [1, (1, 3), (0, 4), (4, 5)], [1, (1, 3), (0, 4), 0], [(1, 3), (2, 3), (0, 4), 0]]
 #cube3d.mc33_tests[8] = [TEST_CENTER, CASE_IS_REGULAR, 0]
-cube3d.mc33_tests[8] = binaryheap((TEST_CENTER, CASE_IS_REGULAR, 0))
+cube3d.mc33_tests[8] = binaryheap((TEST_CENTER, 0, CASE_IS_REGULAR))
 # 1,0,0,1,1,0,0,0 -> 00011001 # MC33 Case 6.1.2
 cube3d.mc33_cases[9].append(BaseCase(cube3d.base_cases[9].dim, cube3d.base_cases[9].case))
 cube3d.mc33_cases[9][0].faces = [[(1, 3), (1, 5), (3, 7), (5, 7)], [(0, 4), (5, 7), (1, 5)], [(0, 2), (0, 4), (3, 7), (6, 7)], [(0, 2), (3, 7), (1, 3)]]
@@ -137,8 +137,8 @@ cube3d.mc33_cases[9][1].faces = [[(0, 4), (5, 7), (1, 5)], [(0, 2), (0, 4), (3, 
 cube3d.mc33_cases[9][1].cells = cube3d.mc33_cases[9][0].cells
 #cube3d.mc33_tests[9] = [TEST_FACE_4, TEST_CENTER, 1, CASE_IS_REGULAR, 0, 1, 1]
 cube3d.mc33_tests[9] = binaryheap((TEST_FACE_4,
-								   (TEST_CENTER, CASE_IS_REGULAR, 0),
-								   1
+								   1,
+								   (TEST_CENTER, 0, CASE_IS_REGULAR)
 								   ))
 ## 0,1,1,0,1,0,0,0 -> 00010110 # MC33 Case 7.2 (face 0 connection)
 #cube3d.mc33_cases[6].append(BaseCase(cube3d.base_cases[6].dim, cube3d.base_cases[6].case))
@@ -220,7 +220,7 @@ cube3d.mc33_tests[18] = binaryheap((TEST_FACE_5, CASE_IS_REGULAR, 0))
 cube3d.mc33_cases[19].append(BaseCase(cube3d.base_cases[19].dim, cube3d.base_cases[19].case))
 cube3d.mc33_cases[19][0].faces = [[(0, 1), (3, 7), (0, 4), (5, 7)], [(0, 4), (5, 7), (0, 2), (6, 7)], [(0, 2), (6, 7), (0, 1), (3, 7)]]
 cube3d.mc33_cases[19][0].cells = [[0, (0, 1), (0, 2), (0, 4)], [(0, 1), (0, 2), (0, 4), (3, 7), (6, 7), (5, 7)], [7, (3, 7), (5, 7), (6, 7)]]
-cube3d.mc33_tests[19] = binaryheap((TEST_CENTER, CASE_IS_REGULAR, 0))
+cube3d.mc33_tests[19] = binaryheap((TEST_CENTER, 0, CASE_IS_REGULAR))
 # 1,0,1,1,1,1,0,0 -> 00111101 # Inverse of MC33 Case 6.1.2
 cube3d.mc33_cases[14].append(BaseCase(cube3d.base_cases[14].dim, cube3d.base_cases[14].case))
 cube3d.mc33_cases[14][0].faces = [[(1, 5), (1, 3), (5, 7), (3, 7)], [(2, 6), (3, 7), (1, 3)], [(1, 3), (0, 1), (2, 6), (4, 6)], [(3, 7), (5, 7), (4, 6)]]
@@ -230,7 +230,7 @@ cube3d.mc33_cases[14].append(BaseCase(cube3d.base_cases[14].dim, cube3d.base_cas
 cube3d.mc33_cases[14][1].faces = [[(2, 6), (3, 7), (1, 3)], [(1, 3), (0, 1), (2, 6), (4, 6)], [(3, 7), (5, 7), (4, 6)]]
 cube3d.mc33_cases[14][1].cells = cube3d.mc33_cases[14][0].cells
 cube3d.mc33_tests[14] = binaryheap((TEST_FACE_1,
-                                    (TEST_CENTER, CASE_IS_REGULAR, 0),
+                                    (TEST_CENTER, 0, CASE_IS_REGULAR),
                                     1
                                     ))
 ## 1,1,0,1,0,1,1,0 -> 01101011 # Inverse of MC33 Case 7.2
