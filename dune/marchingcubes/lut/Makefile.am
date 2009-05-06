@@ -6,7 +6,10 @@ lib_LTLIBRARIES = libmclut.la
 
 libmclut_la_SOURCES = marchinglut.cc marchinglut.hh
 
-marchinglut.cc: generate_lut.py
+LUTGEN_py = lutgen/consistencycheck.py lutgen/cases.py lutgen/generator.py lutgen/disambiguate.py \
+	lutgen/__init__.py lutgen/referenceelements.py lutgen/output.py lutgen/sk.py lutgen/permutation.py \
+	lutgen/geomobj.py lutgen/dunecode.py lutgen/vtk.py
+marchinglut.cc: generate_lut.py $(LUTGEN_py)
 	./generate_lut.py
 
 include $(top_srcdir)/am/global-rules

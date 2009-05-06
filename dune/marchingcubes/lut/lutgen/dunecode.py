@@ -99,7 +99,7 @@ class DuneCode:
         # create a table line for codimX tables
         def create_codim_line(table, entry, new_elements):
             # change 3D simplex numbering scheme to 3D cube's one
-            if self.lg.basicType == "simplex" and self.lg.dim == 3:
+            if self.lg.geometryType == (3,"simplex"):
                 for i in range(len(new_elements)):
                     for j in range(len(new_elements[i])):
                         if type(new_elements[i][j]) is int:

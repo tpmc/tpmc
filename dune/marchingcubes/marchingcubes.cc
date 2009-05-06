@@ -161,12 +161,15 @@ namespace Dune {
         DEBUG("++++ test: %d\n", test);
         if ((-test) & TEST_FACE)
         {
+          int sign = 1;
           if (dim == 3)
           {
             //DEBUG("TEST_FACE %d\n", TEST_FACE);
             // face tests are stored inverted as (TEST_FACE | id)
-            size_t face = -test - TEST_FACE;
-            //DEBUG("test face: %i\n", face);
+            size_t face = (-test - TEST_FACE) & ~TEST_FACE_FLIP;
+            bool inverse = (-test - TEST_FACE) & TEST_FACE_FLIP;
+            sign = -1 + 2*inverse;
+            DEBUG("test face: %i\n", face);
             corner_a = vertex_values[ref_element.subEntity(face, 1, 0, dim)];
             corner_b = vertex_values[ref_element.subEntity(face, 1, 1, dim)];
             corner_c = vertex_values[ref_element.subEntity(face, 1, 2, dim)];
@@ -178,8 +181,9 @@ namespace Dune {
             corner_b = vertex_values[1];
             corner_c = vertex_values[2];
             corner_d = vertex_values[3];
+            sign = 1 - 2*thresholdFunctor::isInside(corner_a);
           }
-          test_result = testAmbiguousFace(corner_a, corner_b, corner_c, corner_d);
+          test_result = testAmbiguousFace(corner_a, corner_b, corner_c, corner_d, sign);
         }
         else if ((-test) & TEST_INTERIOR)
         {
@@ -359,20 +363,20 @@ namespace Dune {
       }
       // factor for interpolation
             #ifndef NDEBUG
-      assert(thresholdFunctor::isInside(vertex_values[index_a]) !=
-             thresholdFunctor::isInside(vertex_values[index_b]));
+      // assert(thresholdFunctor::isInside(vertex_values[index_a]) !=
+      //     thresholdFunctor::isInside(vertex_values[index_b]));
             #endif
       valueType interpol_factor =
         thresholdFunctor::getDistance(vertex_values[index_a])
         / (thresholdFunctor::getDistance(vertex_values[index_b])
            - thresholdFunctor::getDistance(vertex_values[index_a]));
-      DEBUG("     Kante: coords %1.3f %1.3f davor indexA %d  indexB %d // %d %d\n", coord[0], coord[1], index_a, index_b, NO_VERTEX^number, number);
+      //            DEBUG("     Kante: coords %1.3f %1.3f davor indexA %d  indexB %d // %d %d\n", coord[0], coord[1], index_a, index_b, NO_VERTEX^number, number);
       // calculate interpolation point
       for (sizeType i = 0; i < dim; i++)
       {
         coord[i] = point_a[i] - interpol_factor * (point_b[i] - point_a[i]);
       }
-      DEBUG("     Kante: coords %1.3f %1.3f / A` %1.3f B` %1.3f \n", coord[0], coord[1], thresholdFunctor::getDistance(vertex_values[index_a]), thresholdFunctor::getDistance(vertex_values[index_b]));
+      //            DEBUG("     Kante: coords %1.3f %1.3f / A` %1.3f B` %1.3f \n", coord[0], coord[1], thresholdFunctor::getDistance(vertex_values[index_a]), thresholdFunctor::getDistance(vertex_values[index_b]));
     }
     // it's a vertex
     else
@@ -433,7 +437,7 @@ namespace Dune {
   template <typename valueType, int dim, typename thresholdFunctor>
   bool MarchingCubes33<valueType, dim, thresholdFunctor>::
   testAmbiguousFace(const valueType corner_a, const valueType corner_b,
-                    const valueType corner_c, const valueType corner_d) const
+                    const valueType corner_c, const valueType corner_d, int sign) const
   {
     // Change naming scheme to jgt-paper ones
     ctype a = thresholdFunctor::getDistance(corner_a);
@@ -441,7 +445,7 @@ namespace Dune {
     ctype c = thresholdFunctor::getDistance(corner_d);
     ctype d = thresholdFunctor::getDistance(corner_b);
 
-    bool result = ! thresholdFunctor::isLower(a*(a*c-b*d));
+    bool result = ! thresholdFunctor::isLower(sign * (a*c-b*d));
     return result;
   }
 

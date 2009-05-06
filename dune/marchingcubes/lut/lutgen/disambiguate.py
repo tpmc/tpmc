@@ -55,12 +55,12 @@ class TestFace(object):
         refidx = faces[self.idx][self.refv]
         vertices = p * range(len(ReferenceElements[(3,"cube")]))
         refidx2 = vertices[refidx]
-        refv = face.index(refidx2)
+        refv = face.index(refidx2)%2
         ## print "face %i -> %i" % (self.idx, newidx)
         ## print "refv %i -> refidx %i -> %i -> refv %i" % (self.refv, refidx, refidx2, refv)
         return TestFace(newidx, refv)
     def __repr__(self):
-        return "TEST_FACE_" + repr(self.idx)
+        return "TEST_FACE_" + repr(self.idx) + "_" + repr(self.refv)
 
 class TestInterior(object):
     def __init__(self, v):
