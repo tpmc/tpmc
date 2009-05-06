@@ -390,7 +390,7 @@ cube2d.base_cases[0].faces = []
 cube2d.base_cases[0].cells = [[0, 1, 2, 3]]
 # 1,0,0,0 -> 0001
 cube2d.base_cases[1].faces = [[(0, 1), (0, 2)]]
-cube2d.base_cases[1].cells = [[1, 2, 3], [1, (0, 1), (0, 2), 2]]
+cube2d.base_cases[1].cells = [[1, 2, 3], [(0, 1), 1, (0, 2), 2]]
 # 1,1,0,0 -> 0011
 cube2d.base_cases[2].faces = [[(1, 3), (0, 2)]]
 cube2d.base_cases[2].cells = [[(0, 2), (1, 3), 2, 3]]
