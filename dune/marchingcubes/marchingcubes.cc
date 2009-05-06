@@ -148,7 +148,7 @@ namespace Dune {
       while ((test < 0) && (test != -CASE_IS_REGULAR))
       {
         assert(test != TEST_INVALID);
-                #if NDEBUG
+                #ifndef NDEBUG
         if (dim < 2 || dim > 3)
         {
           DUNE_THROW(IllegalArgumentException, "MC 33 cases should"
@@ -358,6 +358,10 @@ namespace Dune {
         index_b += (sizeType) point_b[i] * (1<<i);
       }
       // factor for interpolation
+            #ifndef NDEBUG
+      assert(thresholdFunctor::isInside(vertex_values[index_a]) !=
+             thresholdFunctor::isInside(vertex_values[index_b]));
+            #endif
       valueType interpol_factor =
         thresholdFunctor::getDistance(vertex_values[index_a])
         / (thresholdFunctor::getDistance(vertex_values[index_b])
@@ -432,10 +436,10 @@ namespace Dune {
                     const valueType corner_c, const valueType corner_d) const
   {
     // Change naming scheme to jgt-paper ones
-    double a = thresholdFunctor::getDistance(corner_a);
-    double b = thresholdFunctor::getDistance(corner_c);
-    double c = thresholdFunctor::getDistance(corner_d);
-    double d = thresholdFunctor::getDistance(corner_b);
+    ctype a = thresholdFunctor::getDistance(corner_a);
+    ctype b = thresholdFunctor::getDistance(corner_c);
+    ctype c = thresholdFunctor::getDistance(corner_d);
+    ctype d = thresholdFunctor::getDistance(corner_b);
 
     bool result = ! thresholdFunctor::isLower(a*(a*c-b*d));
     return result;
@@ -471,14 +475,14 @@ namespace Dune {
       {3, 2, 1, 0, 7, 6, 5, 4}
     };
     // get vertex values
-    const double a0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][0]]);
-    const double b0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][2]]);
-    const double c0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][3]]);
-    const double d0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][1]]);
-    const double a1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][4]]);
-    const double b1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][6]]);
-    const double c1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][7]]);
-    const double d1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][5]]);
+    const ctype a0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][0]]);
+    const ctype b0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][2]]);
+    const ctype c0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][3]]);
+    const ctype d0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][1]]);
+    const ctype a1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][4]]);
+    const ctype b1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][6]]);
+    const ctype c1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][7]]);
+    const ctype d1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][5]]);
 
     DEBUG("%f ::: %f ::: %f ::: %f ::: %f ::: %f ::: %f ::: %f\n",
           vertex_values[0],
@@ -492,25 +496,25 @@ namespace Dune {
     DEBUG("%f ::: %f ::: %f ::: %f ::: %f ::: %f ::: %f ::: %f\n",a0,d0,b0,c0,a1,d1,b1,c1);
 
     // check that there is maximum
-    const double a =  (a1 - a0) * (c1 - c0) - (b1 - b0) * (d1 - d0);
+    const ctype a =  (a1 - a0) * (c1 - c0) - (b1 - b0) * (d1 - d0);
     if (a >= 0.0)
     {
       DEBUG("a >= 0 (%f)\nresult: false\n", a);
       return false;
     }
     // check that the maximum-plane is inside the cube
-    const double b =  c0*(a1 - a0) + a0*(c1 - c0) - d0*(b1 - b0) - b0*(d1 - d0);
-    const double t_max = -0.5 * b / a;
+    const ctype b =  c0*(a1 - a0) + a0*(c1 - c0) - d0*(b1 - b0) - b0*(d1 - d0);
+    const ctype t_max = -0.5 * b / a;
     if ((0.0 >= t_max) || (1.0 <= t_max))
     {
       DEBUG("t_max not in [0,1]\nresult: false\n");
       return false;
     }
     // check that the
-    const double at = a0 + (a1 - a0) * t_max;
-    const double bt = b0 + (b1 - b0) * t_max;
-    const double ct = c0 + (c1 - c0) * t_max;
-    const double dt = d0 + (d1 - d0) * t_max;
+    const ctype at = a0 + (a1 - a0) * t_max;
+    const ctype bt = b0 + (b1 - b0) * t_max;
+    const ctype ct = c0 + (c1 - c0) * t_max;
+    const ctype dt = d0 + (d1 - d0) * t_max;
     const bool inequation_4 = !thresholdFunctor::isLower(at*ct - bt*dt);
     // check sign(a0) = sign(at) = sign(ct) = sign(c1)
     const bool corner_signs_x = (at*ct >= 0)
