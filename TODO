@@ -3,3 +3,4 @@
 * avoid/detect renumbering of base_cases due to changes in the
    reference elements or generators
 * handle different test mapping for 2d and 3d
+* traits einbauen
