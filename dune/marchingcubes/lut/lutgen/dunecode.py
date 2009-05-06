@@ -149,8 +149,6 @@ class DuneCode:
         def create_mc33_tables(self, offsets, codim0, codim1, mc33_offsets, mc33_tests):
             offsets.append("      /* MC 33 cases follow */\n", 0)
             for entry in self.lg.all_cases:
-                # TODO get rid of multiply tables
-                base_case_number = self.lg.base_cases.index(entry.base_case)
                 # above code should be obsolete
                 assert len(entry.base_case.tests) == len(entry.tests)
                 if entry.tests != []:
@@ -171,14 +169,15 @@ class DuneCode:
                         else:
                             mc33_tests.append(repr(test) + ", ", 1)
                     # Case tables for mc 33 cases
-                    for mc33_case in self.lg.mc33_cases[base_case_number]:
+                    for mc33_case in entry.mc33:
+                        base_case_number = self.lg.base_cases.index(entry.base_case)
                         offsets.append("      /* %d test index:%d */ " \
                             % (base_case_number, i)
                             +"{%i, %i, %i, %i, 0},\n" \
                             % (codim0.offset, len(mc33_case.cells), \
                                codim1.offset, len(mc33_case.faces)), 1)
-                        create_codim_line(codim0, entry, mc33_case.permute_cells(entry.permutation))
-                        create_codim_line(codim1, entry, mc33_case.permute_faces(entry.permutation))
+                        create_codim_line(codim0, entry, mc33_case.cells)
+                        create_codim_line(codim1, entry, mc33_case.faces)
                 else:
                     mc33_offsets.append("    /* %s / %i */ " \
                         % (entry.case, mc33_offsets.offset), 0)

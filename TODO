@@ -1,2 +1,4 @@
-* remove additional tables (mc33_cases)
-* move all transformation computations to generate()
+* disambiguate.py: newidx uebers ReferenzElement berechnen
+* fix face vertices in ReferenceElements
+* avoid renumbering of base_cases due to changes in the reference
+   elements or generators

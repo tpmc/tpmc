@@ -36,7 +36,6 @@ class LookupGenerator(object):
         self.all_cases = [Case(tuple((i >> x) & 1 for x in range(self.p_size)))
                           for i in range(1<<self.p_size)]
         self.base_cases = []
-        self.mc33_cases = []
 
         for entry in self.all_cases:
             found = False

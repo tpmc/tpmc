@@ -21,6 +21,7 @@ class GeomObject(object):
             return Permutation(-1, (3,4,5,0,1,2))
         if (dim, l) == (3, 8):
             return Permutation(-1, (4,5,6,7,0,1,2,3))
+        print "error: unkown geom obj %id, %i vertices" % (dim, l)
         assert 0
     def __mul__ (self, p):
         assert type(p) is Permutation
@@ -36,3 +37,7 @@ class GeomObject(object):
             entity = self.get_flip() * entity
         return [ f(vertex) for vertex in entity ]
 
+def permute_geom_list(dim, entities, p):
+    assert type(p) is Permutation
+    return [ GeomObject(dim, e) * p
+             for e in entities ]

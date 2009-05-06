@@ -1,6 +1,13 @@
 from permutation import Permutation
-from geomobj import GeomObject
+from geomobj import *
 from disambiguate import *
+
+class Triangulation(object):
+    def __init__(self, f = [[]], c = [[]]):
+        self.faces = f
+        self.cells = c
+    def __repr__(self):
+        return repr(self.faces) + "::" + repr(self.cells)
 
 class Case(object):
     def __init__(self, x):
@@ -10,14 +17,27 @@ class Case(object):
         self.faces = [[]]
         self.cells = [[]]
         self.tests = []
+        self.mc33 = []
     def __repr__(self):
         return "%s, %s, %s, %s" % (repr(self.case), repr(self.permutation),
                                    repr(self.faces), repr(self.cells))
     def update(self):
-        self.faces = self.base_case.permute_faces(self.permutation)
-        self.cells = self.base_case.permute_cells(self.permutation)
-        self.tests = self.base_case.permute_tests(self.permutation)
-        
+        dim = self.base_case.dim
+        def permute_single_test(test,p):
+            if type(test) in (TestInvalid, TestRegular, TestInterior, TestFace):
+                if dim == 3 and len(self.case) == 8:
+                    return test * p
+                else:
+                    return test
+            else:
+                return test
+        self.faces = permute_geom_list(dim-1, self.base_case.faces, self.permutation)
+        self.cells = permute_geom_list(dim, self.base_case.cells, self.permutation)
+        self.tests = [ permute_single_test(test,self.permutation) for test in self.base_case.tests ]
+        self.mc33 = [ Triangulation(permute_geom_list(dim-1, t.faces, self.permutation),
+                                    permute_geom_list(dim, t.cells, self.permutation))
+                      for t in self.base_case.mc33 ]
+
 class BaseCase(object):
     def __init__(self, dim, x):
         self.dim = dim
@@ -25,27 +45,9 @@ class BaseCase(object):
         self.faces = [[]]
         self.cells = [[]]
         self.tests = []
+        self.mc33 = []
     def __repr__(self):
         return "%s, %s, %s" % (repr(self.case), repr(self.faces),
                                repr(self.cells))
     def __eq__(self, other):
         return self.case == other.case
-    def permute_faces(self,p):
-        return [ GeomObject(self.dim-1, face) * p
-                 for face in self.faces ]
-    def permute_cells(self,p):
-        return [ GeomObject(self.dim, cell) * p
-                 for cell in self.cells ]
-    def permute_single_test(self,test,p):
-        if type(test) in (TestInvalid, TestRegular, TestInterior, TestFace):
-            if self.dim == 3 and len(self.case) == 8:
-                return test * p
-            else:
-                return test
-        else:
-            return test
-        
-    def permute_tests(self,p):
-        return [ self.permute_single_test(test,p)
-                 for test in self.tests ]
-
