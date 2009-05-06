@@ -1,5 +1,7 @@
 from math import log, floor
 from permutation import Permutation
+from geomobj import GeomObject
+from referenceelements import ReferenceElements
 
 class TestFace(object):
     def __init__(self, i, v=0):
@@ -45,8 +47,18 @@ class TestFace(object):
         return permutations[permutation[0:4]][face]
     def __mul__(self, p):
         assert type(p) is Permutation
-        # TODO refv funktioniert noch nicht
-        return TestFace(self.permute_faceid(self.idx,p), p[self.refv])
+        dim = 3
+        newidx = self.permute_faceid(self.idx,p)
+        # TODO newidx uebers ReferenzElement berechnen
+        faces = ReferenceElements[(dim,"cube")].faces
+        face = faces[newidx]
+        refidx = faces[self.idx][self.refv]
+        vertices = p * range(len(ReferenceElements[(3,"cube")]))
+        refidx2 = vertices[refidx]
+        refv = face.index(refidx2)
+        ## print "face %i -> %i" % (self.idx, newidx)
+        ## print "refv %i -> refidx %i -> %i -> refv %i" % (self.refv, refidx, refidx2, refv)
+        return TestFace(newidx, refv)
     def __repr__(self):
         return "TEST_FACE_" + repr(self.idx)
 

@@ -1,5 +1,6 @@
 from pprint import pprint
 from permutation import Permutation
+from referenceelements import ReferenceElements
 from cases import *
 
 class LookupGenerator(object):
@@ -7,7 +8,8 @@ class LookupGenerator(object):
         self.dim = dim
         self.basicType = basicType
         self.geometryType = (dim,basicType)
-        self.p_size = self.get_p_size()
+        self.refElem = ReferenceElements[self.geometryType]
+        self.p_size = len(self.refElem)
         if verbose:
             print "dim = %i\np_size = %i\ng_size = \n" \
                   % (self.dim, self.p_size)
@@ -34,9 +36,7 @@ class LookupGenerator(object):
         self.all_cases = [Case(tuple((i >> x) & 1 for x in range(self.p_size)))
                           for i in range(1<<self.p_size)]
         self.base_cases = []
-        self.base_case_numbers = {}
         self.mc33_cases = []
-        self.mc33_tests = []
 
         for entry in self.all_cases:
             found = False
@@ -51,21 +51,6 @@ class LookupGenerator(object):
                 self.base_cases.append(BaseCase(dim, entry.case))
                 entry.permutation = Permutation(1,range(self.p_size))
                 entry.base_case = self.base_cases[-1]
-
-    def get_p_size(self):
-        if self.dim == 0:
-            return 1
-        elif self.dim == 1:
-            return 2
-        elif self.basicType == "cube":
-            return 1<<self.dim
-        elif self.basicType == "simplex":
-            return self.dim + 1
-        elif self.basicType == "prism":
-            return 6
-        elif self.basicType == "pyramid":
-            return 5
-        assert 0
 
     def get_generators(self):
         if self.dim == 0:

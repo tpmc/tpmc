@@ -13,7 +13,9 @@ class Permutation(tuple):
             return tuple(other[x] for x in self)
         if type(other) is list:
             return list(other[x] for x in self)
-        return other * self
+        assert 0
+    def map(self, other):
+        return type(other)(self[x] for x in other)
     def __repr__ (self):
         return ['?','+','-'][self.orientation] + tuple.__repr__(self)
 

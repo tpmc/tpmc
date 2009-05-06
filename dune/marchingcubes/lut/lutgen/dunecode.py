@@ -47,8 +47,6 @@ const_names = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", \
 # Constants indicating whether case special treatment when marching cubes' 33 is used.
 CASE_UNIQUE_MC33 = 0
 CASE_AMIGUOUS_MC33 = 1
-# Constant indicates whether basic case is inverted.
-CASE_INVERTED = 2
 # Constant indicates whether basic case was flipped.
 CASE_FLIPPED = 4
 
@@ -113,9 +111,10 @@ class DuneCode:
                             if new_elements[i][j][1] == 3:
                                 new_elements[i][j] = (new_elements[i][j][0], 4)
             # write comment in front of data
+            assert entry.base_case in self.lg.base_cases
+            base_case_number = self.lg.base_cases.index(entry.base_case)
             table.append("      /* %s / %i / %s / %i */ " \
-                % (entry.case, entry.permutation.orientation * \
-                   self.lg.base_case_numbers[entry.base_case.case], \
+                % (entry.case, entry.permutation.orientation * base_case_number, \
                    ", ".join(map((str), map(len, new_elements))), \
                    table.offset), 0)
             if len(new_elements) > 0:
@@ -134,15 +133,13 @@ class DuneCode:
                 unique_case = CASE_UNIQUE_MC33
                 if entry.permutation.orientation == -1:
                     unique_case += CASE_FLIPPED
-                #if : #TODO: inverted implementieren
-                #    unique_case += CASE_INVERTED
-                if self.lg.basicType == "cube" and self.lg.mc33_tests[
-                    self.lg.base_case_numbers[entry.base_case.case]] != []:
+                if entry.base_case.tests != []:
                     unique_case += CASE_AMIGUOUS_MC33
                 # write offsets to offsets table
+                assert entry.base_case in self.lg.base_cases
+                base_case_number = self.lg.base_cases.index(entry.base_case)
                 offsets.append("      /* %s / %i */ " \
-                    % (entry.case, entry.permutation.orientation * \
-                       self.lg.base_case_numbers[entry.base_case.case])
+                    % (entry.case, entry.permutation.orientation * base_case_number)
                     + "{%i, %i, %i, %i, %i},\n" \
                     % (codim0.offset, len(entry.cells), \
                        codim1.offset, len(entry.faces), unique_case), 1)
@@ -152,8 +149,11 @@ class DuneCode:
         def create_mc33_tables(self, offsets, codim0, codim1, mc33_offsets, mc33_tests):
             offsets.append("      /* MC 33 cases follow */\n", 0)
             for entry in self.lg.all_cases:
-                base_case_number = self.lg.base_case_numbers[entry.base_case.case]
-                if self.lg.mc33_tests[base_case_number] != []:
+                # TODO get rid of multiply tables
+                base_case_number = self.lg.base_cases.index(entry.base_case)
+                # above code should be obsolete
+                assert len(entry.base_case.tests) == len(entry.tests)
+                if entry.tests != []:
                     mc33_offsets.append("    /* %s / %i */ " \
                         % (entry.case, mc33_offsets.offset), 0)
                     mc33_offsets.append("%i,\n" \
@@ -162,21 +162,14 @@ class DuneCode:
                     mc33_tests.append("\n      /* %i / %s */" \
                         % (mc33_tests.offset, entry.case), 0)
                     i = 0
-                    for test in self.lg.mc33_tests[base_case_number]:
+                    for test in entry.tests:
                         i = i + 1
                         if math.log(i)/math.log(2.0) == round(math.log(i)/math.log(2.0)):
                             mc33_tests.append("\n      ", 0)
-                        # regular (non mc 33) case or test center
-                        #if test == CASE_IS_REGULAR or test == TEST_CENTER or test == TEST_INVALID:
-                        # case number
                         if type(test) is int:
                             mc33_tests.append(str(offsets.offset + test) + ", ", 1)
                         else:
-                            assert type(test) in (TestInvalid, TestRegular, TestInterior, TestFace)
-                            if self.lg.basicType == "cube" and self.lg.dim == 3:
-                                mc33_tests.append(repr(test * entry.permutation) + ", ", 1)
-                            else:
-                                mc33_tests.append(repr(test) + ", ", 1)
+                            mc33_tests.append(repr(test) + ", ", 1)
                     # Case tables for mc 33 cases
                     for mc33_case in self.lg.mc33_cases[base_case_number]:
                         offsets.append("      /* %d test index:%d */ " \

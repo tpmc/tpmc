@@ -14,11 +14,11 @@ class GeometryType(tuple):
 		return self[0]
 	def basicType(self):
 		return self[1]
-	def Type(dim, vertizes):
-		if type(vertizes) is int:
-			v = vertizes
+	def Type(dim, vertices):
+		if type(vertices) is int:
+			v = vertices
 		else:
-			v = len(vertizes)
+			v = len(vertices)
 		t = None
 		if dim == 0:
 			assert v == 1
@@ -85,8 +85,8 @@ ReferenceElements = {(0,"any"): ReferenceElement((0,"any"), [[]], [], []),
 					 ReferenceElement((3,"cube"),
 									  [[0,0,0],[1,0,0],[0,1,0],[1,1,0],
 									   [0,0,1],[1,0,1],[0,1,1],[1,1,1]],
-									  [[0,2,4,6],[3,1,7,5],[1,0,5,4],
-									   [2,3,6,7],[0,1,2,3],[5,4,6,7]],
+                                      [[0,2,4,6],[1,3,5,7],[0,1,4,5],
+                                       [2,3,6,7],[0,1,2,3],[4,5,6,7]],
 									  [[0,4],[1,5],[2,6],[3,7],
 									   [0,2],[1,3],[4,6],[5,7],
 									   [0,1],[2,3],[4,5],[6,7]])}
