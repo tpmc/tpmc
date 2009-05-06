@@ -153,10 +153,8 @@ cube3d.mc33_cases[13][1].cells = [[0, (0, 2), (0, 4), 1, (1, 3), (1, 5)], [(0, 2
 # 0,0,1,1,1,1,0,0 -> 00111100 # MC33 Case 10.2 and its inverse (face 1 connection) 
 cube3d.mc33_cases[13].append(BaseCase(cube3d.base_cases[13].dim, cube3d.base_cases[13].case))
 # TODO: Mirror faces, face 0 and face 1 have to change places (4, 5, 6, 7, 8, 0, 1, 2, 3, 4)
-cube3d.mc33_cases[13][2].faces = [[(1, 3), (1, 5), (0, 7)], [(1, 5), (0, 7), (0, 4)], [(0, 7), (0, 4), (4, 6)], [(0, 7), (4, 6), (5, 7)], [(0, 7), (5, 7), (3, 7)], [(0, 7), (3, 7), (2, 6)], [(0, 7), (2, 6), (0, 2)], [(0, 7), (0, 2), (1, 3)]]
-cube3d.mc33_cases[13][2].faces = cube3d.mc33_cases[13][2].permute_faces(MIRROR_FACES_0_TO_1)
-cube3d.mc33_cases[13][2].cells = [[0, (0, 2), (0, 4), 1, (1, 3), (1, 5)], [(0, 2), (0, 4), (1, 3), (1, 5), (0, 7)], [(0, 2), (0, 4), (2, 6), (4, 6), (0, 7)], [(2, 6), (4, 6), (3, 7), (5, 7), (0, 7)], [6, (2, 6), (4, 6), 7, (3, 7), (5, 7)]]
-cube3d.mc33_cases[13][2].cells = cube3d.mc33_cases[13][2].permute_cells(MIRROR_FACES_0_TO_1)
+cube3d.mc33_cases[13][2].faces = cube3d.mc33_cases[13][1].permute_faces(MIRROR_FACES_0_TO_1)
+cube3d.mc33_cases[13][2].cells = cube3d.mc33_cases[13][1].permute_cells(MIRROR_FACES_0_TO_1)
 cube3d.base_cases[13].tests = binaryheap((TEST_FACE_0,
                                     (TEST_FACE_1, CASE_IS_REGULAR, 2),
                                     (TEST_FACE_0,
@@ -177,10 +175,8 @@ cube3d.mc33_cases[11][2].faces = [[(0, 1), (0, 2), (0, 7), (2, 6)], [(0, 7), (2,
 cube3d.mc33_cases[11][2].cells = [[(2, 6), (1, 5), (3, 7), 6, 5, 7], [(0, 7), (2, 6), (1, 5), (3, 7)], [(1, 5), (4, 5), (0, 7), (4, 6), 5], [5, 6, (0, 7), (2, 6), (4, 6)], [(2, 6), (4, 6), (0, 7), (0, 2), (0, 4), (0, 1)]]
 # 0,1,1,1,1,0,0,0 -> 00011110 # MC33 Case 12.2 and its inverse (face 2 connection) 
 cube3d.mc33_cases[11].append(BaseCase(cube3d.base_cases[13].dim, cube3d.base_cases[13].case))
-cube3d.mc33_cases[11][3].faces = [[(0, 1), (0, 2), (0, 7), (2, 6)], [(0, 7), (2, 6), (3, 7)], [(0, 7), (1, 5), (3, 7)], [(1, 5), (0, 7), (4, 5), (4, 6)], [(4, 6), (0, 7), (0, 4), (0, 1)]]
-cube3d.mc33_cases[11][3].faces = cube3d.mc33_cases[11][3].permute_faces(MIRROR_FACES_0_TO_2)
-cube3d.mc33_cases[11][3].cells = [[(2, 6), (1, 5), (3, 7), 6, 5, 7], [(0, 7), (2, 6), (1, 5), (3, 7)], [(1, 5), (4, 5), (0, 7), (4, 6), 5], [5, 6, (0, 7), (2, 6), (4, 6)], [(2, 6), (4, 6), (0, 7), (0, 2), (0, 4), (0, 1)]]
-cube3d.mc33_cases[11][3].cells = cube3d.mc33_cases[11][3].permute_cells(MIRROR_FACES_0_TO_2)
+cube3d.mc33_cases[11][3].faces = cube3d.mc33_cases[11][2].permute_faces(MIRROR_FACES_0_TO_2)
+cube3d.mc33_cases[11][3].cells = cube3d.mc33_cases[11][2].permute_cells(MIRROR_FACES_0_TO_2)
 cube3d.base_cases[11].tests = binaryheap((TEST_FACE_0,
                                     (TEST_FACE_2, CASE_IS_REGULAR, 2),
                                     (TEST_FACE_2,
