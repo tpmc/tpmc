@@ -92,6 +92,7 @@ namespace Dune {
    *                  elements but they are topological correct.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueVector>
   typename MarchingCubes33<valueType, dim, thresholdFunctor>::sizeType
   MarchingCubes33<valueType, dim, thresholdFunctor>::
   getKey(const valueVector& vertex_values, const sizeType vertex_count,
@@ -237,6 +238,7 @@ namespace Dune {
    * \param elements where the resulting coordinates will be stored.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueVector>
   void MarchingCubes33<valueType, dim, thresholdFunctor>::
   getElements(const valueVector& vertex_values,
               const sizeType vertex_count, const sizeType key,
@@ -303,6 +305,7 @@ namespace Dune {
    * \param coord where the resulting coordinates will be stored.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueVector>
   void MarchingCubes33<valueType, dim, thresholdFunctor>::
   getCoordsFromNumber(const valueVector& vertex_values,
                       const sizeType vertex_count, const short number,
@@ -405,6 +408,7 @@ namespace Dune {
    * \param coord where the resulting coordinates will be stored.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueVector>
   void MarchingCubes33<valueType, dim, thresholdFunctor>::
   getCoordsFromEdgeNumber(const valueVector& vertex_values,
                           const sizeType vertex_count, char number,
@@ -463,6 +467,7 @@ namespace Dune {
    * \return <code>True</true> if cell center is connected to refCorner and the opposite corner.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueVector>
   bool MarchingCubes33<valueType, dim, thresholdFunctor>::
   testAmbiguousCenter(const valueVector& vertex_values,
                       const sizeType vertex_count, size_t refCorner) const

@@ -21,12 +21,13 @@ namespace Dune {
   template <typename valueType, int dim, typename thresholdFunctor>
   class MarchingCubes33 {
     typedef size_t sizeType;
-    typedef valueType* valueVector;
     typedef double ctype;
     typedef Dune::FieldVector<ctype, dim> point;
   public:
+    template <typename valueVector>
     sizeType getKey(const valueVector& vertex_values,
                     const sizeType vertex_count, const bool use_mc_33);
+    template <typename valueVector>
     void getElements(const valueVector& vertex_values,
                      const sizeType vertex_count,        const sizeType key,
                      const bool codim_1_not_0,
@@ -50,13 +51,16 @@ namespace Dune {
     bool testAmbiguousFace(const valueType corner_a, const valueType cornerB,
                            const valueType cornerC, const valueType cornerD, int sign) const;
 
+    template <typename valueVector>
     bool testAmbiguousCenter(const valueVector& vertex_values,
                              const sizeType vertex_count, size_t refCorner) const;
 
+    template <typename valueVector>
     void getCoordsFromNumber(const valueVector& vertex_values,
                              const sizeType vertex_count, const short number,
                              point& coord) const;
 
+    template <typename valueVector>
     void getCoordsFromEdgeNumber(const valueVector& vertexValues,
                                  const sizeType vertexCount, char number,
                                  point& coord) const;
