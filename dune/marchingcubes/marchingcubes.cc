@@ -366,6 +366,10 @@ namespace Dune {
       }
       // factor for interpolation
             #ifndef NDEBUG
+      if (thresholdFunctor::isInside(vertex_values[index_a]) ==
+          thresholdFunctor::isInside(vertex_values[index_b]))
+        DUNE_THROW(Dune::Exception,
+                   "No intersection on edge " << index_a << "/" << index_b << ".");
       // assert(thresholdFunctor::isInside(vertex_values[index_a]) !=
       //     thresholdFunctor::isInside(vertex_values[index_b]));
             #endif

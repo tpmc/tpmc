@@ -95,6 +95,7 @@ bool TestMarchingCubes33::testCube3d(int expect,
 
 template <int dim> bool TestMarchingCubes33::assertEquals(int expect,
                                                           sizeType vertex_count, double * vertices, std::string name)
+try
 {
   if (verbose)
   {
@@ -172,6 +173,10 @@ template <int dim> bool TestMarchingCubes33::assertEquals(int expect,
     }
   }
   return (((int)key == expect) || ((int)expect == NO_KEY));
+}
+catch (Dune::Exception & e) {
+  std::cerr << "FAILED: " << name << " => Dune Error: " << e.what() << std::endl;
+  return false;
 }
 
 /*
