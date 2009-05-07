@@ -429,7 +429,7 @@ int main(int argc, char ** argv)
   count++;
   passed += testmc33.testCube2d(5, 0.7, 0.4, 0.9, 0.3, "cube2d_5");
   count++;
-  passed += testmc33.testCube2d(6, 0.5, 0.8, 0.7, 0.4, "cube2d_6");
+  passed += testmc33.testCube2d(6, 0.5, 0.8, 0.7, 0.5, "cube2d_6");
   count++;
   passed += testmc33.testCube2d(7, 0.9, 0.8, 0.7, 0.3, "cube2d_7");
   count++;
@@ -449,9 +449,9 @@ int main(int argc, char ** argv)
   count++;
   passed += testmc33.testCube2d(15, 0.9, 0.8, 0.7, 0.8, "cube2d_15");
   count++;
-  passed += testmc33.testCube2d(16, 0.1, 0.8, 0.9, 0.2, "cube2d_16");
+  passed += testmc33.testCube2d(16, 0.5, 0.7, 0.7, 0.4, "cube2d_6.2");
   count++;
-  passed += testmc33.testCube2d(17, 0.9, 0.1, 0.2, 0.8, "cube2d_17");
+  passed += testmc33.testCube2d(17, 0.9, 0.1, 0.2, 0.8, "cube2d_9.2");
   // Test cube 3d
   // Test all transformations of a basic case
   count++;
