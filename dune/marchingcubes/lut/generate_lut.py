@@ -390,29 +390,25 @@ cube2d.base_cases[0].faces = []
 cube2d.base_cases[0].cells = [[0, 1, 2, 3]]
 # 1,0,0,0 -> 0001
 cube2d.base_cases[1].faces = [[(0, 1), (0, 2)]]
-cube2d.base_cases[1].cells = [[1, 2, 3], [(0, 1), 1, (0, 2), 2]]
+cube2d.base_cases[1].cells = [[1, 3, 2], [(0, 1), 1, (0, 2), 2]]
 # 1,1,0,0 -> 0011
 cube2d.base_cases[2].faces = [[(1, 3), (0, 2)]]
 cube2d.base_cases[2].cells = [[(0, 2), (1, 3), 2, 3]]
 # 0,1,1,0 -> 0110
-cube2d.base_cases[3].faces = [[(0, 1), (1, 3)], [(0, 2), (2, 3)]]
-cube2d.base_cases[3].cells = [[0, 3, (0, 2), (2, 3)], [(0, 1), (1, 3), 0, 3]]
+cube2d.base_cases[3].faces = [[(0, 1), (0, 2)], [(2, 3), (1, 3)]]
+cube2d.base_cases[3].cells = [[0, (0, 1), (0, 2)], [(2, 3), (1, 3), 3]]
+
+cube2d.base_cases[3].mc33.append(Triangulation())
+cube2d.base_cases[3].mc33[0].faces = [[(0, 1), (1, 3)], [(0, 2), (2, 3)]]
+cube2d.base_cases[3].mc33[0].cells = [[0, 3, (0, 2), (2, 3)], [(0, 1), (1, 3), 0, 3]]
+
+cube2d.base_cases[3].tests = [TEST_FACE_0, CASE_IS_REGULAR, 0]
 # 1,1,1,0 -> 0111
 cube2d.base_cases[4].faces = [[(2, 3), (1, 3)]]
 cube2d.base_cases[4].cells = [[3, (2, 3), (1, 3)]]
 # 1,1,1,1 -> 1111
 cube2d.base_cases[5].faces = []
 cube2d.base_cases[5].cells = []
-
-################################################################################
-## MC 33 cases and MC 33 face test table for 2D Cube                          ##
-################################################################################
-
-# 0,1,1,0 -> 0110
-cube2d.base_cases[3].mc33.append(BaseCase(cube2d.base_cases[3].dim, cube2d.base_cases[3].case))
-cube2d.base_cases[3].mc33[0].faces = [[(1, 3), (0, 1)], [(2, 3), (0, 2)]]
-cube2d.base_cases[3].mc33[0].cells = [[2, (2, 3), (0, 2)], [1, (1, 3), (0, 1)]]
-cube2d.base_cases[3].tests = [TEST_FACE_0, CASE_IS_REGULAR, 0]
 
 # generate code
 cube2d.generate()
