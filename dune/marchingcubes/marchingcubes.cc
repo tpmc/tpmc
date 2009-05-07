@@ -1,6 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
 #include "lut/marchinglut.hh"
+#include "isdegenerated.hh"
 #include <fstream>
 #include <cmath>
 #include <iostream> // FIXME TODO: Debug only, entferne mich!
@@ -162,35 +163,18 @@ namespace Dune {
         DEBUG("++++ test: %d\n", test);
         if ((-test) & TEST_FACE)
         {
-          int sign = 1;
-          if (dim == 3)
-          {
-            //DEBUG("TEST_FACE %d\n", TEST_FACE);
-            // face tests are stored inverted as (TEST_FACE | id)
-            size_t face = (-test - TEST_FACE) & ~TEST_FACE_FLIP;
-            bool inverse = (-test - TEST_FACE) & TEST_FACE_FLIP;
-            sign = -1 + 2*inverse;
-            DEBUG("test face: %i\n", face);
-            corner_a = vertex_values[ref_element.subEntity(face, 1, 0, dim)];
-            corner_b = vertex_values[ref_element.subEntity(face, 1, 1, dim)];
-            corner_c = vertex_values[ref_element.subEntity(face, 1, 2, dim)];
-            corner_d = vertex_values[ref_element.subEntity(face, 1, 3, dim)];
-          }
-          else if (dim == 2)
-          {
-            corner_a = vertex_values[0];
-            corner_b = vertex_values[1];
-            corner_c = vertex_values[2];
-            corner_d = vertex_values[3];
-            sign = 1 - 2*thresholdFunctor::isInside(corner_a);
-          }
-          test_result = testAmbiguousFace(corner_a, corner_b, corner_c, corner_d, sign);
+          size_t face = (-test - TEST_FACE) & ~TEST_FACE_FLIP;
+          corner_a = vertex_values[ref_element.subEntity(face, dim-2, 0, dim)];
+          corner_b = vertex_values[ref_element.subEntity(face, dim-2, 1, dim)];
+          corner_c = vertex_values[ref_element.subEntity(face, dim-2, 2, dim)];
+          corner_d = vertex_values[ref_element.subEntity(face, dim-2, 3, dim)];
+          std::cout << "vertices " << corner_a << " "  << corner_b << " "  << corner_c << " "  << corner_d << "\n";
+          bool inverse = (-test - TEST_FACE) & TEST_FACE_FLIP;
+          test_result = testAmbiguousFace(corner_a, corner_b, corner_c, corner_d, inverse);
         }
         else if ((-test) & TEST_INTERIOR)
         {
-          //DEBUG("TEST_INTERIOR %d\n", TEST_INTERIOR);
           size_t refCorner = -test - TEST_INTERIOR;
-          //DEBUG("revCorner: %i\n", refCorner);
           test_result = testAmbiguousCenter(vertex_values, vertex_count, refCorner);
         }
         else
@@ -210,6 +194,7 @@ namespace Dune {
       {
         case_number = test;
       }
+      DEBUG("mc33: case is: %d\n", case_number);
     }
     return case_number;
   }
@@ -270,16 +255,27 @@ namespace Dune {
         codim_index = all_codim_1[vertex_count + dim]
                       + all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_1];
       }
-      elements.resize(element_count);
+      elements.reserve(element_count);
       // DEBUG("Anzahl Elemente: %d \n", (int)caseCountElements);
       for (sizeType i = 0; i < element_count; i++)
       {
         sizeType point_count = (sizeType) codim_index[0];
         // Vector for storing the element points
-        elements[i].resize(point_count);
+        std::vector<point> element;
+        element.resize(point_count);
         for (sizeType j = 0; j < point_count; j++)
         {
-          getCoordsFromNumber(vertex_values, vertex_count, codim_index[j+1], elements[i][j]);
+          getCoordsFromNumber(vertex_values, vertex_count, codim_index[j+1], element[j]);
+        }
+        if (codim_1_not_0)
+        {
+          if (! IsDegenerated<ctype,dim-1>::check(element))
+            elements.push_back(element);
+        }
+        else
+        {
+          if (! IsDegenerated<ctype,dim>::check(element))
+            elements.push_back(element);
         }
         // increase index for pointing to the next element
         codim_index += point_count + 1;
@@ -445,15 +441,23 @@ namespace Dune {
   template <typename valueType, int dim, typename thresholdFunctor>
   bool MarchingCubes33<valueType, dim, thresholdFunctor>::
   testAmbiguousFace(const valueType corner_a, const valueType corner_b,
-                    const valueType corner_c, const valueType corner_d, int sign) const
+                    const valueType corner_c, const valueType corner_d, bool inverse) const
   {
     // Change naming scheme to jgt-paper ones
     ctype a = thresholdFunctor::getDistance(corner_a);
-    ctype b = thresholdFunctor::getDistance(corner_c);
+    ctype b = thresholdFunctor::getDistance(corner_b);
     ctype c = thresholdFunctor::getDistance(corner_d);
-    ctype d = thresholdFunctor::getDistance(corner_b);
+    ctype d = thresholdFunctor::getDistance(corner_c);
 
-    bool result = ! thresholdFunctor::isLower(sign * (a*c-b*d));
+
+    assert(a*c >= 0);
+    assert(b*d >= 0);
+
+    ctype f = inverse ? a : b;
+
+    std::cout << "testFace " << inverse << " => " << (a*c-b*d) << std::endl;
+
+    bool result = thresholdFunctor::isLower(f*(a*c-b*d));
     return result;
   }
 

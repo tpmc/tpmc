@@ -49,7 +49,7 @@ namespace Dune {
      * This test is needed to chose between ambiguous MC33 cases.
      */
     bool testAmbiguousFace(const valueType corner_a, const valueType cornerB,
-                           const valueType cornerC, const valueType cornerD, int sign) const;
+                           const valueType cornerC, const valueType cornerD, bool inverse) const;
 
     template <typename valueVector>
     bool testAmbiguousCenter(const valueVector& vertex_values,

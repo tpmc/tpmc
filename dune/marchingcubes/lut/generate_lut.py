@@ -184,7 +184,7 @@ cube3d.base_cases[11].tests = binaryheap((TEST_FACE_0,
 cube3d.base_cases[18].mc33.append(Triangulation())
 cube3d.base_cases[18].mc33[0].faces = [[(4, 5), (0, 4), (5, 7), (3, 7)], [(0, 4), (4, 6), (3, 7), (6, 7)]]
 cube3d.base_cases[18].mc33[0].cells = [[4, (0, 4), (4, 5), (4, 6)], [(0, 4), (4, 5), (4, 6), (3, 7), (5, 7), (6, 7)], [7, (3, 7), (5, 7), (6, 7)]]
-cube3d.base_cases[18].tests = binaryheap((TEST_FACE_5, CASE_IS_REGULAR, 0))
+cube3d.base_cases[18].tests = binaryheap((TEST_FACE_5, 0, CASE_IS_REGULAR))
 # 0,1,1,1,1,1,1,0 -> 01111110 # Inverse of MC Case 4.2
 cube3d.base_cases[19].mc33.append(Triangulation())
 cube3d.base_cases[19].mc33[0].faces = [[(0, 1), (3, 7), (0, 4), (5, 7)], [(0, 4), (5, 7), (0, 2), (6, 7)], [(0, 2), (6, 7), (0, 1), (3, 7)]]
@@ -199,8 +199,8 @@ cube3d.base_cases[14].mc33.append(Triangulation())
 cube3d.base_cases[14].mc33[1].faces = [[(2, 6), (3, 7), (1, 3)], [(1, 3), (0, 1), (2, 6), (4, 6)], [(3, 7), (5, 7), (4, 6)]]
 cube3d.base_cases[14].mc33[1].cells = cube3d.base_cases[14].mc33[0].cells
 cube3d.base_cases[14].tests = binaryheap((TEST_FACE_1,
-                                    1,
-                                    (TEST_CENTER, 0, CASE_IS_REGULAR)
+                                    (TEST_CENTER, 0, CASE_IS_REGULAR),
+                                    1
                                     ))
 ## 1,1,0,1,0,1,1,0 -> 01101011 # Inverse of MC33 Case 7.2
 #cube3d.base_cases[17].mc33.append(Triangulation())

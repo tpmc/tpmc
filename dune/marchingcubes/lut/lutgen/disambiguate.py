@@ -47,18 +47,22 @@ class TestFace(object):
         return permutations[permutation[0:4]][face]
     def __mul__(self, p):
         assert type(p) is Permutation
-        dim = 3
-        newidx = self.permute_faceid(self.idx,p)
-        # TODO newidx uebers ReferenzElement berechnen
-        faces = ReferenceElements[(dim,"cube")].faces
-        face = faces[newidx]
-        refidx = faces[self.idx][self.refv]
-        vertices = p * range(len(ReferenceElements[(3,"cube")]))
-        refidx2 = vertices[refidx]
-        refv = face.index(refidx2)%2
-        ## print "face %i -> %i" % (self.idx, newidx)
-        ## print "refv %i -> refidx %i -> %i -> refv %i" % (self.refv, refidx, refidx2, refv)
-        return TestFace(newidx, refv)
+        assert len(p) == 4 or len(p) == 8
+        if len(p) == 8:
+            dim = 3
+            newidx = self.permute_faceid(self.idx,p)
+            # TODO newidx uebers ReferenzElement berechnen
+            faces = ReferenceElements[(dim,"cube")].faces
+            face = faces[newidx]
+            refidx = faces[self.idx][self.refv]
+            vertices = p * range(len(ReferenceElements[(3,"cube")]))
+            refidx2 = vertices[refidx]
+            refv = face.index(refidx2)&1^1
+            return TestFace(newidx, refv)
+        elif len(p) == 4:
+            vertices = p * range(4)
+            refv = vertices[0]&1^1
+            refidx = 0
     def __repr__(self):
         return "TEST_FACE_" + repr(self.idx) + "_" + repr(self.refv)
 
