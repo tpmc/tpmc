@@ -13,6 +13,7 @@ MIRROR_FACES_0_TO_1 = Permutation(-1, (3, 1, 7, 5, 2, 0, 6, 4))
 MIRROR_FACES_0_TO_2 = Permutation(-1, (0, 2, 1, 3, 4, 6, 5, 7))
 MIRROR_FACES_0_TO_4 = Permutation(-1, (0, 4, 2, 6, 1, 5, 3, 7))
 ROTATE_FACES_0_2_4 = Permutation(1, (0, 2, 4, 6, 1, 3, 5, 7))
+ROTATE_FACES_0_3_5 = Permutation(1, (5, 1, 4, 0, 7, 3, 6, 2))
 
 ################################################################################
 ## 3D Cube                                                                    ##
@@ -157,7 +158,6 @@ cube3d.base_cases[6].tests = binaryheap((TEST_FACE_0,
                                            5,
                                            (TEST_CENTER, 7, 6)))
                                          ))
-
 # 0,0,1,1,1,1,0,0 -> 00111100 # MC33 Case 10.1.2 and its inverse
 cube3d.base_cases[13].mc33.append(Triangulation())
 cube3d.base_cases[13].mc33[0].faces = [[(0, 2), (0, 4), (1, 3), (1, 5)], [(2, 6), (4, 6), (3, 7), (5, 7)], [(0, 2), (0, 4), (2, 6), (4, 6)], [(1, 3), (1, 5), (3, 7), (5, 7)]]
@@ -221,23 +221,47 @@ cube3d.base_cases[14].tests = binaryheap((TEST_FACE_1,
                                     1,
                                     (TEST_CENTER, 0, CASE_IS_REGULAR)
                                     ))
-## 1,1,0,1,0,1,1,0 -> 01101011 # Inverse of MC33 Case 7.2
-#cube3d.base_cases[17].mc33.append(Triangulation())
-#cube3d.base_cases[17].mc33[0].faces = []
-#cube3d.base_cases[17].mc33[0].cells = []
-# 1,1,0,1,0,1,1,0 -> 01101011 # Inverse of MC33 Case 7.3 (face 0 and face 4 connection)
-#cube3d.base_cases[6].mc33.append(Triangulation())
-#cube3d.base_cases[6].mc33[3].faces = [[(0, 2), (2, 3), (0, 7)]] #TODO: vier Vierecke hinzufuegen
-#cube3d.base_cases[6].mc33[3].cells = [[4, (0, 4), (4, 5), (4, 6)], [(0, 4), (4, 5), (4, 6), (0, 1), (1, 5), (0, 7)], [1, (0, 1), (1, 3), (1, 5)], [(0, 7), (0, 1), (1, 3), (1, 5)], [(0, 1), (1, 3), (0, 7), (0, 2), (2, 3), (2, 6)],  [2, (0, 2), (2, 3), (2, 6)]]
-## 1,1,0,1,0,1,1,0 -> 01101011 # Inverse of MC33 Case 7.4.1
-#cube3d.base_cases[17].mc33.append(Triangulation())
-#cube3d.base_cases[17].mc33[0].faces = []
-#cube3d.base_cases[17].mc33[0].cells = []
-## 1,1,0,1,0,1,1,0 -> 01101011 # Inverse of MC33 Case 7.4.2
-#cube3d.base_cases[17].mc33.append(Triangulation())
-#cube3d.base_cases[17].mc33[0].faces = []
-#cube3d.base_cases[17].mc33[0].cells = []
-#cube3d.base_cases[17].tests = [TEST_FACE_1, 1, TEST_CENTER, 1, 1, 0, CASE_IS_REGULAR]
+# 1,1,0,1,0,1,1,0 -> 01101011 # Inverse of MC33 Case 7.2 (face 0 connection)
+cube3d.base_cases[17].mc33.append(Triangulation())
+cube3d.base_cases[17].mc33[0].faces = [[(3, 7), (5, 7), (6, 7)], [(2, 3), (4, 5), (0, 2), (0, 4)], [(2, 6), (4, 6), (2, 3), (4, 5)]]
+cube3d.base_cases[17].mc33[0].cells = [[(2, 3), 2, (0, 2), (2, 6)], [(4, 5), (4, 6), (0, 4), 4], [(3, 7), (6, 7), (5, 7), 7], [(0, 2), (2, 3), (2, 6), (0, 4), (4, 5), (4, 6)]]
+# 1,1,0,1,0,1,1,0 -> 01101011 # Inverse of MC33 Case 7.2 (face 3 connection)
+cube3d.base_cases[17].mc33.append(Triangulation())
+cube3d.base_cases[17].mc33[1].faces = permute_geom_list(2, cube3d.base_cases[17].mc33[0].faces, ROTATE_FACES_0_3_5)
+cube3d.base_cases[17].mc33[1].cells = permute_geom_list(3, cube3d.base_cases[17].mc33[0].cells, ROTATE_FACES_0_3_5)
+# 1,1,0,1,0,1,1,0 -> 01101011 # Inverse of MC33 Case 7.2 (face 5 connection)
+cube3d.base_cases[17].mc33.append(Triangulation())
+cube3d.base_cases[17].mc33[2].faces = permute_geom_list(2, cube3d.base_cases[17].mc33[1].faces, ROTATE_FACES_0_3_5)
+cube3d.base_cases[17].mc33[2].cells = permute_geom_list(3, cube3d.base_cases[17].mc33[1].cells, ROTATE_FACES_0_3_5)
+# 1,1,0,1,0,1,1,0 -> 01101011 # Inverse of MC33 Case 7.3 (face 0 and face 3 connection)
+cube3d.base_cases[17].mc33.append(Triangulation())
+cube3d.base_cases[17].mc33[3].faces = [[(0, 2), (2, 3), (0, 7)], [(2, 3), (0, 7), (3, 7), (5, 7)], [(0, 7), (0, 2), (4, 5), (0, 4)], [(2, 6), (6, 7), (0, 7), (5, 7)], [(4, 6), (2, 6), (4, 5), (0, 7)]]
+cube3d.base_cases[17].mc33[3].cells = [[(7, 5), 7, (7, 3), (6, 7)], [(6, 2), (2, 3), (6, 1), (6, 7), (7, 3), (7, 5)], [(2, 3), 2, (2, 0), (6, 2)], [(2, 3), (6, 1), (2, 0), (6, 2)], [(6, 4), (4, 0), (4, 5), (6, 2), (2, 0), (6, 1)], [(4, 5), 4, (4, 0), (6, 4)]]
+# 1,1,0,1,0,1,1,0 -> 01101011 # Inverse of MC33 Case 7.3 (face 3 and face 5 connection)
+cube3d.base_cases[17].mc33.append(Triangulation())
+cube3d.base_cases[17].mc33[4].faces = permute_geom_list(2, cube3d.base_cases[17].mc33[3].faces, ROTATE_FACES_0_3_5)
+cube3d.base_cases[17].mc33[4].cells = permute_geom_list(3, cube3d.base_cases[17].mc33[3].cells, ROTATE_FACES_0_3_5)
+# 1,1,0,1,0,1,1,0 -> 01101011 # Inverse of MC33 Case 7.3 (face 0 and face 5 connection)
+cube3d.base_cases[17].mc33.append(Triangulation())
+cube3d.base_cases[17].mc33[5].faces = permute_geom_list(2, cube3d.base_cases[17].mc33[4].faces, ROTATE_FACES_0_3_5)
+cube3d.base_cases[17].mc33[5].cells = permute_geom_list(3, cube3d.base_cases[17].mc33[4].cells, ROTATE_FACES_0_3_5)
+# 1,1,0,1,0,1,1,0 -> 01101011 # Inverse of MC33 Case 7.4.1
+cube3d.base_cases[17].mc33.append(Triangulation())
+cube3d.base_cases[17].mc33[6].faces = [[(7, 3), (2, 3), (7, 5), (2, 0)], [(7, 5), (2, 0), (4, 5), (4, 0)], [(6, 4), (6, 2), (6, 7)]]
+cube3d.base_cases[17].mc33[6].cells = [[(2, 3), 2, (0, 2), (2, 6)], [(4, 5), (4, 6), (0, 4), 4], [(3, 7), (6, 7), (5, 7), 7], [(0, 2), (2, 3), (2, 6), (0, 4), (4, 5), (4, 6)], [(3, 7), (2, 3), (2, 6), (5, 7), (4, 5), (4, 6)], [(6, 7), (5, 7), (3, 7), (4, 6)], [(6, 7), (5, 7), (3, 7), (2, 6)], [(6, 7), (5, 7), (4, 6), (2, 6)]]
+# 1,1,0,1,0,1,1,0 -> 01101011 # Inverse of MC33 Case 7.4.2
+cube3d.base_cases[17].mc33.append(Triangulation())
+cube3d.base_cases[17].mc33[7].faces = [[(7, 5), (7, 3), (6, 7)], [(6, 2), (6, 7), (2, 3), (7, 3)], [(2, 3), (2, 0), (6, 2)], [(6, 4), (6, 2), (4, 0), (2, 0)], [(4, 0), (4, 5), (6, 4)], [(6, 4), (6, 7), (4, 5), (7, 5)]]
+cube3d.base_cases[17].mc33[7].cells = cube3d.base_cases[17].cells
+cube3d.base_cases[17].tests = binaryheap((TEST_FACE_0,
+                                          (TEST_FACE_3,
+                                           (TEST_FACE_5,
+                                            (TEST_CENTER, 6, 7),
+                                            3),
+                                           (TEST_FACE_5, 5, 0)),
+                                          (TEST_FACE_3,
+                                           (TEST_FACE_5, 4, 1),
+                                           (TEST_FACE_5, CASE_IS_REGULAR, 2))))
 
 ###########################################################
 # OLD, INVALID CODE! ######################################
