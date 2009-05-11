@@ -241,8 +241,8 @@ cube3d.base_cases[16].mc33[9].faces = permute_geom_list(2, cube3d.base_cases[16]
 cube3d.base_cases[16].mc33[9].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[0].cells, Permutation(-1, (2, 3, 0, 1, 6, 7, 4, 5)))
 # 1,0,0,1,0,1,1,0 -> 01101001 # MC33 Case 13.3 (face 1, 2, 3, 5 connection; 0, 4 missing)
 cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[10].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[0].faces, Permutation(1, (4, 6, 5, 7, 1, 2, 5, 3)))
-cube3d.base_cases[16].mc33[10].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[0].cells, Permutation(1, (4, 6, 5, 7, 1, 2, 5, 3)))
+cube3d.base_cases[16].mc33[10].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[0].faces, Permutation(1, (4, 6, 5, 7, 0, 2, 1, 3)))
+cube3d.base_cases[16].mc33[10].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[0].cells, Permutation(1, (4, 6, 5, 7, 0, 2, 1, 3)))
 # 1,0,0,1,0,1,1,0 -> 01101001 # MC33 Case 13.3 (face 0, 2, 3, 5 connection; 1, 4 missing)
 cube3d.base_cases[16].mc33.append(Triangulation())
 cube3d.base_cases[16].mc33[11].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[0].faces, Permutation(1, (7, 5, 6, 4, 3, 1, 2, 0)))
@@ -271,7 +271,16 @@ cube3d.base_cases[16].mc33[16].cells = permute_geom_list(3, cube3d.base_cases[16
 cube3d.base_cases[16].mc33.append(Triangulation())
 cube3d.base_cases[16].mc33[17].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[0].faces, Permutation(-1, (5, 1, 7, 3, 4, 0, 6, 2)))
 cube3d.base_cases[16].mc33[17].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[0].cells, Permutation(-1, (5, 1, 7, 3, 4, 0, 6, 2)))
-#cube3d.base_cases[16].tests = [6]
+# 1,0,0,1,0,1,1,0 -> 01101001 # MC33 Case 13.4 (face 0, 2, 5 connection; 1, 3, 4 missing)
+#cube3d.base_cases[16].mc33.append(Triangulation())
+#cube3d.base_cases[16].mc33[4].faces = permute_geom_list(2, [[(0, 7), (4, 6), (0, 1), (0, 4)], [(0, 7), (0, 1), (2, 6), (0, 2)], [(0, 7), (4, 6), (1, 5), (4, 5)], [(0, 7), (6, 7), (1, 5), (5, 7)], [(0, 7), (1, 3), (6, 7), (3, 7)], [(0, 7), (1, 3), (2, 6), (2, 3)]], Permutation(1, (0,1,2,3,4,5,6,7)))
+#cube3d.base_cases[16].mc33[4].cells = permute_geom_list(3, [[5, (4, 5), (1, 5), (5, 7), (4, 6), (0, 7)], [(5, 7), (4, 6), (0, 7), (6, 7), 6, (2, 6)], [(0, 7), (4, 6), (2, 6), 6], [(4, 6), (2, 6), (0, 7), (0, 4), (0, 2), (0, 1)], [0, (0, 4), (0, 2), (0, 1)], [(2, 6), (0, 7), (4, 6), (2, 3), (1, 3), (3, 7)], [3, (2, 3), (1, 3), (3, 7)]], Permutation(1, (0,1,2,3,4,5,6,7)))
+#print cube3d.base_cases[16].mc33[18].faces
+#print cube3d.base_cases[16].mc33[18].cells 
+
+#cube3d_mc33.base_cases[20].faces = [[(0, 7), (4, 6), (0, 1), (0, 4)], [(0, 7), (0, 1), (2, 6), (0, 2)], [(0, 7), (4, 6), (1, 5), (4, 5)], [(0, 7), (6, 7), (1, 5), (5, 7)], [(0, 7), (1, 3), (6, 7), (3, 7)], [(0, 7), (1, 3), (2, 6), (2, 3)]]
+#cube3d_mc33.base_cases[20].cells = [[5, (4, 5), (1, 5), (5, 7), (4, 6), (0, 7)], [(5, 7), (4, 6), (0, 7), (6, 7), 6, (2, 6)], [(0, 7), (4, 6), (2, 6), 6], [(4, 6), (2, 6), (0, 7), (0, 4), (0, 2), (0, 1)], [0, (0, 4), (0, 2), (0, 1)], [(2, 6), (0, 7), (4, 6), (2, 3), (1, 3), (3, 7)], [3, (2, 3), (1, 3), (3, 7)]]
+#cube3d.base_cases[16].tests = [4]
 
 
 
