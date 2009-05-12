@@ -395,11 +395,71 @@ cube3d.base_cases[16].mc33[47].cells = permute_geom_list(3, cube3d.base_cases[16
 cube3d.base_cases[16].mc33.append(Triangulation())
 cube3d.base_cases[16].mc33[48].faces = [[(0, 1), (1, 3), (1, 5)], [(0, 2), (2, 3), (2, 6)], [(0, 4), (4, 5), (4, 6)], [(3, 7), (5, 7), (6, 7)]]
 cube3d.base_cases[16].mc33[48].cells = [[1, (0, 1), (1, 3), (1, 5)], [2, (0, 2), (2, 3), (2, 6)], [4, (0, 4), (4, 5), (4, 6)], [7, (3, 7), (5, 7), (6, 7)]]
-
-
-
-#cube3d.base_cases[16].tests = [48]
-
+x=3
+cube3d.base_cases[16].tests = binaryheap((TEST_FACE_0,
+                                          (TEST_FACE_1,
+                                           (TEST_FACE_2,
+                                            (TEST_FACE_3,
+                                             (TEST_FACE_4,
+                                              (TEST_FACE_5, CASE_IS_REGULAR, 4),
+                                              3),
+                                             (TEST_FACE_4,
+                                              (TEST_FACE_5, 2, 9),
+                                              13)),
+                                            (TEST_FACE_3,
+                                             (TEST_FACE_4,
+                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, x, x)),
+                                             (TEST_FACE_4,
+                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, x, x)))),
+                                           (TEST_FACE_2,
+                                            (TEST_FACE_3,
+                                             (TEST_FACE_4,
+                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, x, x)),
+                                             (TEST_FACE_4,
+                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, x, x))),
+                                            (TEST_FACE_3,
+                                             (TEST_FACE_4,
+                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, x, x)),
+                                             (TEST_FACE_4,
+                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, x, x))))),
+                                          (TEST_FACE_1,
+                                           (TEST_FACE_2,
+                                            (TEST_FACE_3,
+                                             (TEST_FACE_4,
+                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, x, x)),
+                                             (TEST_FACE_4,
+                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, x, x))),
+                                            (TEST_FACE_3,
+                                             (TEST_FACE_4,
+                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, x, x)),
+                                             (TEST_FACE_4,
+                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, x, x)))),
+                                           (TEST_FACE_2,
+                                            (TEST_FACE_3,
+                                             (TEST_FACE_4,
+                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, x, x)),
+                                             (TEST_FACE_4,
+                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, x, x))),
+                                            (TEST_FACE_3,
+                                             (TEST_FACE_4,
+                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, x, x)),
+                                             (TEST_FACE_4,
+                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, x, x)))))))
+cube3d.base_cases[16].tests =[]
 
 
 # 1,1,1,1,0,1,1,0 -> 01101111 # Inverse of MC33 Case 3.2
