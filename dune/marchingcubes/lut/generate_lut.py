@@ -177,7 +177,7 @@ cube3d.base_cases[13].tests = binaryheap((TEST_FACE_0,
                                      1,
                                      (TEST_CENTER, 0, CASE_IS_REGULAR))
                                     ))
-# 0,1,1,1,1,0,0,0 -> 00011110 # Inverse of MC33 Case 12.1.1 (12.1.1 without center connection)
+# 0,1,1,1,1,0,0,0 -> 00011110 # Inverse of MC33 Case 12.1.2 (12.1.1 without center connection, no face missing)
 cube3d.base_cases[11].mc33.append(Triangulation())
 cube3d.base_cases[11].mc33[0].faces = [[(0, 1), (0, 2), (0, 4)], [(4, 5), (4, 6), (1, 5), (2, 6)], [(1, 5), (2, 6), (3, 7)]]
 cube3d.base_cases[11].mc33[0].cells = [[0, (0, 1), (0, 2), (0, 4)], [(4, 5), 5, (1, 5), (4, 6), 6, (2, 6)], [(1, 5), (2, 6), (3, 7), 5, 6, 7]]
@@ -396,58 +396,64 @@ cube3d.base_cases[16].mc33.append(Triangulation())
 cube3d.base_cases[16].mc33[48].faces = [[(0, 1), (1, 3), (1, 5)], [(0, 2), (2, 3), (2, 6)], [(0, 4), (4, 5), (4, 6)], [(3, 7), (5, 7), (6, 7)]]
 cube3d.base_cases[16].mc33[48].cells = [[1, (0, 1), (1, 3), (1, 5)], [2, (0, 2), (2, 3), (2, 6)], [4, (0, 4), (4, 5), (4, 6)], [7, (3, 7), (5, 7), (6, 7)]]
 x=3
+impossible = 0
 cube3d.base_cases[16].tests = binaryheap((TEST_FACE_0,
                                           (TEST_FACE_1,
                                            (TEST_FACE_2,
                                             (TEST_FACE_3,
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, CASE_IS_REGULAR, 4),
-                                              3),
+                                              (TEST_FACE_5, CASE_IS_REGULAR, 5),
+                                              (TEST_FACE_5, 4, impossible)),
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, 2, 9),
-                                              13)),
+                                              (TEST_FACE_5, 3, 9),
+                                              (TEST_FACE_5, 13, x))),
+                                             # Face 2 outside
                                             (TEST_FACE_3,
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, x, x),
-                                              (TEST_FACE_5, x, x)),
+                                              (TEST_FACE_5, 2, 6),
+                                              (TEST_FACE_5, 12, x)),
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, x, x),
-                                              (TEST_FACE_5, x, x)))),
+                                              (TEST_FACE_5, impossible, x), # Face 2 / 3 / 5 missing (case 13.4 fehlt)
+                                              (TEST_FACE_5, x, x)))), # Face 2 / 3 / 4 missing (case 13.5.1 / 13.5.2 fehlt)
+                                                                   # Face 2 / 3 / 4 / 5 missing (inverse case 13.3 fehlt)
+                                            # Face 1 outside
                                            (TEST_FACE_2,
                                             (TEST_FACE_3,
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, x, x),
-                                              (TEST_FACE_5, x, x)),
+                                              (TEST_FACE_5, 1, 8),
+                                              (TEST_FACE_5, 11, x)),
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, 15, x),
                                               (TEST_FACE_5, x, x))),
                                             (TEST_FACE_3,
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, 16, x),
                                               (TEST_FACE_5, x, x)),
                                              (TEST_FACE_4,
                                               (TEST_FACE_5, x, x),
                                               (TEST_FACE_5, x, x))))),
+                                           # Face 0 outside
                                           (TEST_FACE_1,
                                            (TEST_FACE_2,
                                             (TEST_FACE_3,
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, x, x),
-                                              (TEST_FACE_5, x, x)),
+                                              (TEST_FACE_5, 0, 7),
+                                              (TEST_FACE_5, 10, x)),
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, 14, x),
                                               (TEST_FACE_5, x, x))),
                                             (TEST_FACE_3,
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, 17, x),
                                               (TEST_FACE_5, x, x)),
                                              (TEST_FACE_4,
                                               (TEST_FACE_5, x, x),
                                               (TEST_FACE_5, x, x)))),
+                                            # Face 0, 1 outside
                                            (TEST_FACE_2,
                                             (TEST_FACE_3,
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, x, x),
+                                              (TEST_FACE_5, impossible, x),
                                               (TEST_FACE_5, x, x)),
                                              (TEST_FACE_4,
                                               (TEST_FACE_5, x, x),
@@ -459,7 +465,7 @@ cube3d.base_cases[16].tests = binaryheap((TEST_FACE_0,
                                              (TEST_FACE_4,
                                               (TEST_FACE_5, x, x),
                                               (TEST_FACE_5, x, x)))))))
-cube3d.base_cases[16].tests =[]
+cube3d.base_cases[16].tests = []
 
 
 # 1,1,1,1,0,1,1,0 -> 01101111 # Inverse of MC33 Case 3.2
