@@ -319,78 +319,78 @@ cube3d.base_cases[16].mc33[28].cells = permute_geom_list(3, cube3d.base_cases[16
 cube3d.base_cases[16].mc33.append(Triangulation())
 cube3d.base_cases[16].mc33[29].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[26].faces, Permutation(-1, (3, 1, 2, 0, 7, 5, 6, 4)))
 cube3d.base_cases[16].mc33[29].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[26].cells, Permutation(-1, (3, 1, 2, 0, 7, 5, 6, 4)))
+# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 2, 5 connection; 0, 1, 3, 4 missing)
+cube3d.base_cases[16].mc33.append(Triangulation())
+cube3d.base_cases[16].mc33[30].faces = [[(2, 3), (0, 2), (2, 6)], [(0, 7), (4, 6), (0, 4)], [(0, 7), (4, 6), (3, 7), (6, 7)], [(0, 4), (0, 7), (0, 1), (1, 3)], [(5, 7), (4, 5), (3, 7), (0, 7)], [(4, 5), (1, 5), (0, 7), (1, 3)]]
+cube3d.base_cases[16].mc33[30].cells = [[2, (2, 3), (0, 2), (2, 6)], [(5, 7), (7, 3), (7, 6), 7], [(5, 7), (7, 6), (7, 3), (5, 4), (4, 6), (5, 2)], [(5, 4), (4, 6), (4, 0), 4], [(5, 4), (4, 6), (4, 0), (5, 2)], [(5, 4), (4, 0), (5, 2), (5, 1), (1, 0), (1, 3)], [(5, 1), (1, 3), (1, 0), 1]]
+# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 0, 5 connection; 1, 2, 3, 4 missing)
+cube3d.base_cases[16].mc33.append(Triangulation())
+cube3d.base_cases[16].mc33[31].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[30].faces, Permutation(-1, (0, 2, 1, 6, 4, 5, 3, 7)))
+cube3d.base_cases[16].mc33[31].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[30].cells, Permutation(-1, (0, 2, 1, 6, 4, 5, 3, 7)))
+# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 1, 5 connection; 0, 2, 3, 4 missing)
+cube3d.base_cases[16].mc33.append(Triangulation())
+cube3d.base_cases[16].mc33[32].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[30].faces, Permutation(1, (3, 2, 1, 0, 7, 6, 5, 4)))
+cube3d.base_cases[16].mc33[32].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[30].cells, Permutation(1, (3, 2, 1, 0, 7, 6, 5, 4)))
+# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 3, 5 connection; 0, 1, 2, 4 missing)
+cube3d.base_cases[16].mc33.append(Triangulation())
+cube3d.base_cases[16].mc33[33].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[30].faces, Permutation(-1, (2, 3, 0, 1, 6, 7, 4, 5)))
+cube3d.base_cases[16].mc33[33].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[30].cells, Permutation(-1, (2, 3, 0, 1, 6, 7, 4, 5)))
+# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 0, 4 connection; 1, 2, 3, 5 missing)
+cube3d.base_cases[16].mc33.append(Triangulation())
+cube3d.base_cases[16].mc33[34].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[30].faces, Permutation(1, (4, 6, 5, 7, 0, 2, 1, 3)))
+cube3d.base_cases[16].mc33[34].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[30].cells, Permutation(1, (4, 6, 5, 7, 0, 2, 1, 3)))
+# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 1, 4 connection; 0, 2, 3, 5 missing)
+cube3d.base_cases[16].mc33.append(Triangulation())
+cube3d.base_cases[16].mc33[35].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[30].faces, Permutation(1, (7, 5, 6, 4, 3, 1, 2, 0)))
+cube3d.base_cases[16].mc33[35].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[30].cells, Permutation(1, (7, 5, 6, 4, 3, 1, 2, 0)))
+# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 2, 4 connection; 0, 1, 3, 5 missing)
+cube3d.base_cases[16].mc33.append(Triangulation())
+cube3d.base_cases[16].mc33[36].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[30].faces, Permutation(-1, (4, 5, 6, 7, 0, 1, 2, 3)))
+cube3d.base_cases[16].mc33[36].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[30].cells, Permutation(-1, (4, 5, 6, 7, 0, 1, 2, 3)))
+# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 3, 4 connection; 0, 1, 2, 5 missing)
+cube3d.base_cases[16].mc33.append(Triangulation())
+cube3d.base_cases[16].mc33[37].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[30].faces, Permutation(1, (6, 7, 4, 5, 2, 3, 0, 1)))
+cube3d.base_cases[16].mc33[37].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[30].cells, Permutation(1, (6, 7, 4, 5, 2, 3, 0, 1)))
+# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 0, 3 connection; 1, 2, 4, 5 missing)
+cube3d.base_cases[16].mc33.append(Triangulation())
+cube3d.base_cases[16].mc33[38].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[30].faces, Permutation(1, (7, 3, 5, 1, 6, 2, 4, 0)))
+cube3d.base_cases[16].mc33[38].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[30].cells, Permutation(1, (7, 3, 5, 1, 6, 2, 4, 0)))
+# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 1, 3 connection; 0, 2, 4, 5 missing)
+cube3d.base_cases[16].mc33.append(Triangulation())
+cube3d.base_cases[16].mc33[39].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[30].faces, Permutation(1, (2, 6, 0, 4, 3, 7, 1, 5)))
+cube3d.base_cases[16].mc33[39].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[30].cells, Permutation(1, (2, 6, 0, 4, 3, 7, 1, 5)))
+# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 1, 2 connection; 0, 3, 4, 5 missing)
+cube3d.base_cases[16].mc33.append(Triangulation())
+cube3d.base_cases[16].mc33[40].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[30].faces, Permutation(-1, (0, 4, 2, 6, 1, 5, 3, 7)))
+cube3d.base_cases[16].mc33[40].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[30].cells, Permutation(-1, (0, 4, 2, 6, 1, 5, 3, 7)))
+# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 0, 2 connection; 1, 3, 4, 5 missing)
+cube3d.base_cases[16].mc33.append(Triangulation())
+cube3d.base_cases[16].mc33[41].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[30].faces, Permutation(-1, (5, 1, 7, 3, 4, 0, 6, 2)))
+cube3d.base_cases[16].mc33[41].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[30].cells, Permutation(-1, (5, 1, 7, 3, 4, 0, 6, 2)))
 # 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.2 (face 0 connection; 1, 2, 3, 4, 5 missing)
 cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[30].faces = [[(1, 0), (1, 3), (1, 5)], [(7, 6), (5, 7), (3, 7)], [(0, 4), (0, 2), (5, 4), (3, 2)], [(5, 4), (3, 2), (4, 6), (2, 6)]]
-cube3d.base_cases[16].mc33[30].cells = [[(1, 0), 1, (1, 3), (1, 5)], [(7, 6), 7, (5, 7), (3, 7)], [(4, 0), 4, (4, 6), (4, 5)], [(2, 3), 2, (0, 2), (6, 2)], [(6, 2), (0, 2), (2, 3), (4, 6), (4, 0), (4, 5)]]
+cube3d.base_cases[16].mc33[42].faces = [[(1, 0), (1, 3), (1, 5)], [(7, 6), (5, 7), (3, 7)], [(0, 4), (0, 2), (5, 4), (3, 2)], [(5, 4), (3, 2), (4, 6), (2, 6)]]
+cube3d.base_cases[16].mc33[42].cells = [[(1, 0), 1, (1, 3), (1, 5)], [(7, 6), 7, (5, 7), (3, 7)], [(4, 0), 4, (4, 6), (4, 5)], [(2, 3), 2, (0, 2), (6, 2)], [(6, 2), (0, 2), (2, 3), (4, 6), (4, 0), (4, 5)]]
 # 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.2 (face 1 connection; 0, 2, 3, 4, 5 missing)
 cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[31].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[30].faces, ROTATE_FACES_0_2_4 * ROTATE_FACES_0_3_5)
-cube3d.base_cases[16].mc33[31].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[30].cells, ROTATE_FACES_0_2_4 * ROTATE_FACES_0_3_5)
+cube3d.base_cases[16].mc33[43].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[42].faces, ROTATE_FACES_0_2_4 * ROTATE_FACES_0_3_5)
+cube3d.base_cases[16].mc33[43].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[42].cells, ROTATE_FACES_0_2_4 * ROTATE_FACES_0_3_5)
 # 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.2 (face 2 connection; 0, 1, 3, 4, 5 missing)
 cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[32].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[30].faces, MIRROR_FACES_0_TO_2)
-cube3d.base_cases[16].mc33[32].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[30].cells, MIRROR_FACES_0_TO_2)
+cube3d.base_cases[16].mc33[44].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[42].faces, MIRROR_FACES_0_TO_2)
+cube3d.base_cases[16].mc33[44].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[42].cells, MIRROR_FACES_0_TO_2)
 # 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.2 (face 3 connection; 0, 1, 2, 4, 5 missing)
 cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[33].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[30].faces, ROTATE_FACES_0_3_5)
-cube3d.base_cases[16].mc33[33].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[30].cells, ROTATE_FACES_0_3_5)
+cube3d.base_cases[16].mc33[45].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[42].faces, ROTATE_FACES_0_3_5)
+cube3d.base_cases[16].mc33[45].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[42].cells, ROTATE_FACES_0_3_5)
 # 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.2 (face 4 connection; 0, 1, 2, 3, 5 missing)
 cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[34].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[30].faces, MIRROR_FACES_0_TO_4)
-cube3d.base_cases[16].mc33[34].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[30].cells, MIRROR_FACES_0_TO_4)
+cube3d.base_cases[16].mc33[46].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[42].faces, MIRROR_FACES_0_TO_4)
+cube3d.base_cases[16].mc33[46].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[42].cells, MIRROR_FACES_0_TO_4)
 # 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.2 (face 5 connection; 0, 1, 2, 3, 4 missing)
 cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[35].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[30].faces, ROTATE_FACES_0_3_5 * ROTATE_FACES_0_3_5)
-cube3d.base_cases[16].mc33[35].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[30].cells, ROTATE_FACES_0_3_5 * ROTATE_FACES_0_3_5)
-# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 0, 1, 3, 4 connection; 2, 5 missing)
-cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[36].faces = [[(2, 3), (0, 2), (2, 6)], [(0, 7), (4, 6), (0, 4)], [(0, 7), (4, 6), (3, 7), (6, 7)], [(0, 4), (0, 7), (0, 1), (1, 3)], [(5, 7), (4, 5), (3, 7), (0, 7)], [(4, 5), (1, 5), (0, 7), (1, 3)]]
-cube3d.base_cases[16].mc33[36].cells = [[2, (2, 3), (0, 2), (2, 6)], [(5, 7), (7, 3), (7, 6), 7], [(5, 7), (7, 6), (7, 3), (5, 4), (4, 6), (5, 2)], [(5, 4), (4, 6), (4, 0), 4], [(5, 4), (4, 6), (4, 0), (5, 2)], [(5, 4), (4, 0), (5, 2), (5, 1), (1, 0), (1, 3)], [(5, 1), (1, 3), (1, 0), 1]]
-# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 1, 2, 3, 4 connection; 0, 5 missing)
-cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[37].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[36].faces, Permutation(-1, (0, 2, 1, 6, 4, 5, 3, 7)))
-cube3d.base_cases[16].mc33[37].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[36].cells, Permutation(-1, (0, 2, 1, 6, 4, 5, 3, 7)))
-# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 0, 2, 3, 4 connection; 1, 5 missing)
-cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[38].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[36].faces, Permutation(1, (3, 2, 1, 0, 7, 6, 5, 4)))
-cube3d.base_cases[16].mc33[38].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[36].cells, Permutation(1, (3, 2, 1, 0, 7, 6, 5, 4)))
-# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 0, 1, 2, 4 connection; 3, 5 missing)
-cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[39].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[36].faces, Permutation(-1, (2, 3, 0, 1, 6, 7, 4, 5)))
-cube3d.base_cases[16].mc33[39].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[36].cells, Permutation(-1, (2, 3, 0, 1, 6, 7, 4, 5)))
-# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 1, 2, 3, 5 connection; 0, 4 missing)
-cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[40].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[36].faces, Permutation(1, (4, 6, 5, 7, 0, 2, 1, 3)))
-cube3d.base_cases[16].mc33[40].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[36].cells, Permutation(1, (4, 6, 5, 7, 0, 2, 1, 3)))
-# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 0, 2, 3, 5 connection; 1, 4 missing)
-cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[41].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[36].faces, Permutation(1, (7, 5, 6, 4, 3, 1, 2, 0)))
-cube3d.base_cases[16].mc33[41].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[36].cells, Permutation(1, (7, 5, 6, 4, 3, 1, 2, 0)))
-# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 0, 1, 3, 5 connection; 2, 4 missing)
-cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[42].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[36].faces, Permutation(-1, (4, 5, 6, 7, 0, 1, 2, 3)))
-cube3d.base_cases[16].mc33[42].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[36].cells, Permutation(-1, (4, 5, 6, 7, 0, 1, 2, 3)))
-# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 0, 1, 2, 5 connection; 3, 4 missing)
-cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[43].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[36].faces, Permutation(1, (6, 7, 4, 5, 2, 3, 0, 1)))
-cube3d.base_cases[16].mc33[43].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[36].cells, Permutation(1, (6, 7, 4, 5, 2, 3, 0, 1)))
-# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 1, 2, 4, 5 connection; 0, 3 missing)
-cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[44].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[36].faces, Permutation(1, (7, 3, 5, 1, 6, 2, 4, 0)))
-cube3d.base_cases[16].mc33[44].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[36].cells, Permutation(1, (7, 3, 5, 1, 6, 2, 4, 0)))
-# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 0, 2, 4, 5 connection; 1, 3 missing)
-cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[45].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[36].faces, Permutation(1, (2, 6, 0, 4, 3, 7, 1, 5)))
-cube3d.base_cases[16].mc33[45].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[36].cells, Permutation(1, (2, 6, 0, 4, 3, 7, 1, 5)))
-# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 0, 3, 4, 5 connection; 1, 2 missing)
-cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[46].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[36].faces, Permutation(-1, (0, 4, 2, 6, 1, 5, 3, 7)))
-cube3d.base_cases[16].mc33[46].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[36].cells, Permutation(-1, (0, 4, 2, 6, 1, 5, 3, 7)))
-# 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.3 (face 1, 3, 4, 5 connection; 0, 2 missing)
-cube3d.base_cases[16].mc33.append(Triangulation())
-cube3d.base_cases[16].mc33[47].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[36].faces, Permutation(-1, (5, 1, 7, 3, 4, 0, 6, 2)))
-cube3d.base_cases[16].mc33[47].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[36].cells, Permutation(-1, (5, 1, 7, 3, 4, 0, 6, 2)))
+cube3d.base_cases[16].mc33[47].faces = permute_geom_list(2, cube3d.base_cases[16].mc33[42].faces, ROTATE_FACES_0_3_5 * ROTATE_FACES_0_3_5)
+cube3d.base_cases[16].mc33[47].cells = permute_geom_list(3, cube3d.base_cases[16].mc33[42].cells, ROTATE_FACES_0_3_5 * ROTATE_FACES_0_3_5)
 # 1,0,0,1,0,1,1,0 -> 01101001 # Inverse of MC33 Case 13.1 (no face connection; 0, 1, 2, 3, 4, 5, 6, 7 missing)
 cube3d.base_cases[16].mc33.append(Triangulation())
 cube3d.base_cases[16].mc33[48].faces = [[(0, 1), (1, 3), (1, 5)], [(0, 2), (2, 3), (2, 6)], [(0, 4), (4, 5), (4, 6)], [(3, 7), (5, 7), (6, 7)]]
@@ -423,15 +423,19 @@ cube3d.base_cases[16].tests = binaryheap((TEST_FACE_0,
                                               (TEST_FACE_5, 1, 8),
                                               (TEST_FACE_5, 11, x)),
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, 15, x),
-                                              (TEST_FACE_5, x, x))),
+                                              (TEST_FACE_5,
+                                               15,
+                                               (TEST_CENTER, 22, 26)),
+                                              (TEST_FACE_5, 18, 41))),
                                             (TEST_FACE_3,
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, 16, x),
-                                              (TEST_FACE_5, x, x)),
+                                              (TEST_FACE_5, 16, 20),
+                                              (TEST_FACE_5,
+                                               (TEST_CENTER, 23, 27),
+                                               38)),
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, x, x),
-                                              (TEST_FACE_5, x, x))))),
+                                              (TEST_FACE_5, x, 34),
+                                              (TEST_FACE_5, 31, 42))))),
                                            # Face 0 outside
                                           (TEST_FACE_1,
                                            (TEST_FACE_2,
@@ -440,15 +444,19 @@ cube3d.base_cases[16].tests = binaryheap((TEST_FACE_0,
                                               (TEST_FACE_5, 0, 7),
                                               (TEST_FACE_5, 10, x)),
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, 14, x),
-                                              (TEST_FACE_5, x, x))),
+                                              (TEST_FACE_5, 14, 21),
+                                              (TEST_FACE_5,
+                                               (TEST_CENTER, 24, 28),
+                                               40))),
                                             (TEST_FACE_3,
                                              (TEST_FACE_4,
                                               (TEST_FACE_5, 17, x),
-                                              (TEST_FACE_5, x, x)),
+                                              (TEST_FACE_5,
+                                               (TEST_CENTER, 25, 29),
+                                               39)),
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, x, x),
-                                              (TEST_FACE_5, x, x)))),
+                                              (TEST_FACE_5, 19, 35),
+                                              (TEST_FACE_5, 32, 43)))),
                                             # Face 0, 1 outside
                                            (TEST_FACE_2,
                                             (TEST_FACE_3,
@@ -456,17 +464,16 @@ cube3d.base_cases[16].tests = binaryheap((TEST_FACE_0,
                                               (TEST_FACE_5, impossible, x),
                                               (TEST_FACE_5, x, x)),
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, x, x),
-                                              (TEST_FACE_5, x, x))),
+                                              (TEST_FACE_5, x, 36),
+                                              (TEST_FACE_5, 30, 44))),
                                             (TEST_FACE_3,
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, x, x),
-                                              (TEST_FACE_5, x, x)),
+                                              (TEST_FACE_5, x, 37),
+                                              (TEST_FACE_5, x, 45)),
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, x, x),
-                                              (TEST_FACE_5, x, x)))))))
+                                              (TEST_FACE_5, 33, 46),
+                                              (TEST_FACE_5, 47, 48)))))))
 cube3d.base_cases[16].tests = []
-
 
 # 1,1,1,1,0,1,1,0 -> 01101111 # Inverse of MC33 Case 3.2
 cube3d.base_cases[18].mc33.append(Triangulation())
