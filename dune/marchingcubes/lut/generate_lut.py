@@ -395,32 +395,27 @@ cube3d.base_cases[16].mc33[47].cells = permute_geom_list(3, cube3d.base_cases[16
 cube3d.base_cases[16].mc33.append(Triangulation())
 cube3d.base_cases[16].mc33[48].faces = [[(0, 1), (1, 3), (1, 5)], [(0, 2), (2, 3), (2, 6)], [(0, 4), (4, 5), (4, 6)], [(3, 7), (5, 7), (6, 7)]]
 cube3d.base_cases[16].mc33[48].cells = [[1, (0, 1), (1, 3), (1, 5)], [2, (0, 2), (2, 3), (2, 6)], [4, (0, 4), (4, 5), (4, 6)], [7, (3, 7), (5, 7), (6, 7)]]
-x=3
-impossible = 0
 cube3d.base_cases[16].tests = binaryheap((TEST_FACE_0,
                                           (TEST_FACE_1,
                                            (TEST_FACE_2,
                                             (TEST_FACE_3,
                                              (TEST_FACE_4,
                                               (TEST_FACE_5, CASE_IS_REGULAR, 5),
-                                              (TEST_FACE_5, 4, impossible)),
+                                              4), # 0,1,2,3 impossible
                                              (TEST_FACE_4,
                                               (TEST_FACE_5, 3, 9),
-                                              (TEST_FACE_5, 13, impossible))),
+                                              13)), # 0,1,2 impossible
                                              # Face 2 outside
-                                            (TEST_FACE_3,
-                                             (TEST_FACE_4,
-                                              (TEST_FACE_5, 2, 6),
-                                              (TEST_FACE_5, 12, impossible)),
-                                             (TEST_FACE_4,
-                                              (TEST_FACE_5, impossible, impossible),
-                                              (TEST_FACE_5, impossible, impossible)))),
+                                            (TEST_FACE_4,
+                                             (TEST_FACE_5, 2, 6),
+                                             12), # 0,1,3 impossible
+                                            ), # 0,2,3; 1,2,3; 2,3,4; 2,3,5 impossible
                                             # Face 1 outside
                                            (TEST_FACE_2,
                                             (TEST_FACE_3,
                                              (TEST_FACE_4,
                                               (TEST_FACE_5, 1, 8),
-                                              (TEST_FACE_5, 11, impossible)),
+                                              11), # 0,2,3 impossible
                                              (TEST_FACE_4,
                                               (TEST_FACE_5,
                                                15,
@@ -433,7 +428,7 @@ cube3d.base_cases[16].tests = binaryheap((TEST_FACE_0,
                                                (TEST_CENTER, 23, 27),
                                                38)),
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, impossible, 34),
+                                              34, # 0,4,5 impossible
                                               (TEST_FACE_5, 31, 42))))),
                                            # Face 0 outside
                                           (TEST_FACE_1,
@@ -441,7 +436,7 @@ cube3d.base_cases[16].tests = binaryheap((TEST_FACE_0,
                                             (TEST_FACE_3,
                                              (TEST_FACE_4,
                                               (TEST_FACE_5, 0, 7),
-                                              (TEST_FACE_5, 10, impossible)),
+                                              10), # 1,2,3 impossible
                                              (TEST_FACE_4,
                                               (TEST_FACE_5, 14, 21),
                                               (TEST_FACE_5,
@@ -454,25 +449,21 @@ cube3d.base_cases[16].tests = binaryheap((TEST_FACE_0,
                                                (TEST_CENTER, 25, 29)),
                                               (TEST_FACE_5, 19, 39)),
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, impossible, 35),
+                                              35, # 1,4,5 impossible
                                               (TEST_FACE_5, 32, 43)))),
                                             # Face 0, 1 outside
                                            (TEST_FACE_2,
+                                            # 2,3,4,5; 2,3,4; 2,3,5; 2,3 impossible
+                                            (TEST_FACE_4,
+                                             36, # 2,3,4 impossible
+                                             (TEST_FACE_5, 30, 44)),
                                             (TEST_FACE_3,
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, impossible, impossible),
-                                              (TEST_FACE_5, impossible, impossible)),
-                                             (TEST_FACE_4,
-                                              (TEST_FACE_5, impossible, 36),
-                                              (TEST_FACE_5, 30, 44))),
-                                            (TEST_FACE_3,
-                                             (TEST_FACE_4,
-                                              (TEST_FACE_5, impossible, 37),
+                                              37, # 3,4,5 impossible
                                               (TEST_FACE_5, 33, 45)),
                                              (TEST_FACE_4,
-                                              (TEST_FACE_5, impossible, 46),
+                                              46, # 4,5 impossible
                                               (TEST_FACE_5, 47, 48)))))))
-cube3d.base_cases[16].tests = []
 
 # 1,1,1,1,0,1,1,0 -> 01101111 # Inverse of MC33 Case 3.2
 cube3d.base_cases[18].mc33.append(Triangulation())
