@@ -29,7 +29,7 @@ namespace Dune {
                     const sizeType vertex_count, const bool use_mc_33);
     template <typename valueVector>
     void getElements(const valueVector& vertex_values,
-                     const sizeType vertex_count,        const sizeType key,
+                     const sizeType vertex_count,    const sizeType key,
                      const bool codim_1_not_0,
                      std::vector<std::vector<point> >& elements);
 
