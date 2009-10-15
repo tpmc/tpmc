@@ -22,6 +22,7 @@ AC_CONFIG_FILES([
   m4/Makefile
   dune/Makefile
   dune/marchingcubes/Makefile
+  dune/marchingcubes/test/Makefile
   dune/marchingcubes/lut/Makefile
   lib/Makefile
   dune-mc.pc

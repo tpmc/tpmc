@@ -11,8 +11,8 @@
 
 #include <dune/common/fvector.hh>
 
-#include "thresholdfunctor.hh"
-#include "marchingcubes.hh"
+#include <dune/marchingcubes/thresholdfunctor.hh>
+#include <dune/marchingcubes/marchingcubes.hh>
 
 
 typedef size_t sizeType;
