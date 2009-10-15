@@ -1,17 +1,24 @@
+from lutgen.output import Output
+
+from lutgen.referenceelements import GeometryType
 from lutgen.referenceelements import ReferenceElements
+
 from pyvtk import *
 
-class Vtk:
+class Vtk(Output):
 	def __init__(self, lg):
 		self.lg = lg
 		
-	def write_case(self, case, dim, element, fname):
+	def write_case(self, case, triang, dim, element, fname):
 		def vertex(v, points):
 			if type(v) is int:
 				return points[v] + [0]*(3-dim) # vtk assumes dim=3
 			else:
-				return [ (1.0*points[v[0]][i] + points[v[1]][i]) / 2.0
-						 for i in range(dim) ] + [0]*(3-dim) # vtk assumes dim=3
+				try:
+					return [ (1.0*points[v[0]][i] + points[v[1]][i]) / 2.0
+							 for i in range(dim) ] + [0]*(3-dim) # vtk assumes dim=3
+				except KeyError:
+					return [ 0.5 for i in range(dim) ] + [0]*(3-dim)
 
 		if dim == 3:
 			renumber = [ None, None, None, None,
@@ -36,7 +43,7 @@ class Vtk:
 		data = []
 		counter = 0
 		# create elements
-		for cell in case.cells:
+		for cell in triang.cells:
 			if len(cell) == 0:
 				continue
 			offset = len(points)
@@ -65,16 +72,3 @@ class Vtk:
 			fname
 			)
 		vtk.tofile(fname)
-
-	def write(self):
-		i = 0
-		self.write_case(self.lg.all_cases[0], self.lg.dim,
-						ReferenceElements[self.lg.geometryType],
-						"%s%id" % (self.lg.basicType,self.lg.dim))
-		for case in self.lg.all_cases:
-			if len(case.cells) > 0:
-				self.write_case(case, self.lg.dim,
-								ReferenceElements[self.lg.geometryType],
-									"%s%id-case%i" % (self.lg.basicType,
-													  self.lg.dim,i))
-				i += 1

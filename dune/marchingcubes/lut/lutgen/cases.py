@@ -4,6 +4,7 @@ from disambiguate import *
 
 class Triangulation(object):
     def __init__(self, f = [[]], c = [[]]):
+        self.name = ""
         self.faces = f
         self.cells = c
     def __repr__(self):
@@ -40,6 +41,7 @@ class Case(object):
 
 class BaseCase(object):
     def __init__(self, dim, x):
+        self.name = ""
         self.dim = dim
         self.case = x
         self.faces = [[]]

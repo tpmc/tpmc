@@ -8,7 +8,7 @@ class Sk(Output):
 		self.lg = lg
 		self.refSize = 10
 
-	def write_case(self, case, dim, element, fname):
+	def write_case(self, case, triang, dim, element, fname):
 		# vertex renumbering
 		renumber = [
 			None, None, None,
@@ -43,6 +43,7 @@ input{style.sk}
 			edges[tuple(edge)] = e
 			skfile.write("def e%i (%s)\n" % \
 						 (e, ",".join(map(str,c))))
+		skfile.write("def center (10, 10, 10)\n")
 		skfile.write("\n")
 		sub = 0
 		# define reference element
@@ -61,7 +62,7 @@ input{style.sk}
 			d = d+2
 		skfile.write("}\n\n")
 		# create elements
-		for cell in case.cells:
+		for cell in triang.cells:
 			if len(cell) == 0:
 				continue
 			subtype = GeometryType.type(element.type.dim(), cell)
@@ -74,8 +75,12 @@ input{style.sk}
 				if type(cell[v]) is int:
 					skfile.write("  def x%i (v%i)\n" % (v, cell[v]))
 				else:
-					key = tuple(set(cell[v]))
-					skfile.write("  def x%i (e%i)\n" % (v, edges[key]))
+					try:
+						key = tuple(set(cell[v]))
+						skfile.write("  def x%i (e%i)\n" % (v, edges[key]))
+					# QUICKHACK CUBE MC33
+					except KeyError:
+						skfile.write("  def x%i (center)\n" % v)
 			# define barycenter
 			skfile.write("  def s  (o)+((x" + \
 						 ")-(o)+(x".join(map(str,range(vs))) + \
@@ -107,7 +112,7 @@ def scene {
 		# invoke defined su elements
 		sub = 0
 		# create elements
-		for cell in case.cells:
+		for cell in triang.cells:
 			if len(cell) == 0:
 				continue
 			subtype = GeometryType.type(element.type.dim(), cell)
@@ -116,16 +121,20 @@ def scene {
 						 (subtype.basicType(),subtype.dim(),sub))
 			sub+=1
 		# print global rules
+		extra = ""
+		if element.type in [(3, "cube")]:
+			assert triang.name != ""
+			extra = "(" + triang.name + ")"
 		skfile.write("""
 }
 
-special | \\node[anchor=west] at #1 {case: %s} ; | (-2,-3)
+special | \\node[anchor=west] at #1 {case: %s %s} ; | (-2,-3)
 
 put { view((eye1), (look_at), [0,0,1]) then perspective(12) }
 {
   {scene}
 }
-""" % (",".join(map(str,case.case))))
+""" % (",".join(map(str,case.case)), extra))
 		if element.type in [(3, "cube")]:
 			skfile.write("""
 put { view((eye2), (look_at), [0,0,1]) then perspective(12)
