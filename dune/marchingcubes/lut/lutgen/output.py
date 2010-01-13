@@ -1,10 +1,13 @@
 from lutgen.referenceelements import ReferenceElements
+import os
 
 class Output:
 	def write(self, odir=None):
 		i = 0
 		if odir:
-			odir = odir + '/'
+			odir = os.path.expanduser(odir) + '/'
+			if not os.path.exists(odir):
+				os.makedirs(odir, 0755)
 		else:
 			odir = ""
 		for case in self.lg.base_cases:
