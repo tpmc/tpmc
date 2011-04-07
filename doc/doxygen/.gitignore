@@ -1,0 +1,10 @@
+html
+Makefile
+Makefile.in
+semantic.cache
+Doxyfile.in
+Doxyfile
+doxygen-tag
+doxygen.log
+doxyerr.log
+

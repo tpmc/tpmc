@@ -20,11 +20,14 @@ LIBS="$DUNE_LIBS"
 AC_CONFIG_FILES([
   Makefile
   m4/Makefile
+  doc/Makefile
+  doc/doxygen/Makefile
   dune/Makefile
   dune/marchingcubes/Makefile
   dune/marchingcubes/test/Makefile
   dune/marchingcubes/lut/Makefile
   lib/Makefile
+  doc/doxygen/Doxyfile
   dune-mc.pc
 ])
 AC_OUTPUT
