@@ -3,11 +3,17 @@
 #ifndef ISDEGENERATED_HH
 #define ISDEGENERATED_HH
 
+/** \file
+ * \brief Code to detect degenerate elements
+ */
+
 #include <dune/common/fvector.hh>
 
 namespace Dune {
   template <class ctype>
   struct IsDegeneratedBase {
+
+    /** \brief Return true if a and b differ by less than 1e-8 in the 1-norm */
     template<int dim>
     static bool eq(const FieldVector<ctype,dim> & a,
                    const FieldVector<ctype,dim> & b)
@@ -47,14 +53,22 @@ namespace Dune {
     }
   };
 
+  /** \brief Specialization for 2d elements */
   template <class ctype>
   struct IsDegenerated<ctype, 2> : IsDegeneratedBase<ctype> {
     enum { dim = 2 };
+
+    /** \brief Delete the entry with number 'pos' from the vector 'c'
+     * \todo Why not just call c.erase(c.begin()+pos) instead?
+     */
     template<int d>
     static void erase (int pos, std::vector< FieldVector<ctype,d> > & c) {
       for (size_t i=pos; i<c.size()-1; i++) c[i] = c[i+1];
       c.pop_back();
     }
+
+
+    /** \brief Return true if the triangle or quadrilateral with corners given by 'c' is degenerate */
     template<int d>
     static bool check (std::vector< FieldVector<ctype,d> > & c) {
       switch (c.size())
@@ -78,9 +92,12 @@ namespace Dune {
     }
   };
 
+  /** \brief Specialization for 3d elements */
   template <class ctype>
   struct IsDegenerated<ctype, 3> : IsDegeneratedBase<ctype> {
     enum { dim = 3 };
+
+    /** \brief Return true if the element with the corners given by 'c' is degenerate */
     template<int d>
     static bool check (std::vector< FieldVector<ctype,d> > & c) {
       switch (c.size())

@@ -39,7 +39,7 @@ namespace Dune {
   };
 
   /*
-   * Codimension 1 elment tables (e.g. table_cube2d_codim_1) for different
+   * Codimension 1 element tables (e.g. table_cube2d_codim_1) for different
    * types of elements and dimensions.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
@@ -78,8 +78,7 @@ namespace Dune {
     NULL, NULL, NULL, table_cube3d_mc33_face_test_order
   };
 
-  /*
-   * \brief Calculates the key in the marching cubes' case table
+  /** \brief Calculates the key in the marching cubes' case table
    * for the given element.
    *
    * The key is necessary to calculate the offset only once, even if
@@ -199,8 +198,7 @@ namespace Dune {
     return case_number;
   }
 
-  /*
-   * \brief Calculates partition with marching cubes' algorithm for
+  /** \brief Calculates partition with marching cubes' algorithm for
    * the given key which specifies base case and transformation.
    *
    * Result will be stored in <code>elements</code> which is a vector
@@ -209,7 +207,7 @@ namespace Dune {
    * the case table and must be generated from <code>getKey</code>.
    * The key is necessary to calculate the offset only once, even if
    * co-dimension 0 and co-dimension 1 will be requested. Co-dimension
-   * 1 is the isosurface, co-dimension 0 is the volumen inside the
+   * 1 is the isosurface, co-dimension 0 is the volume inside the
    * isosurface.
    *
    * \param vertex_values Element's vertex values.
@@ -422,8 +420,7 @@ namespace Dune {
     }
   }
 
-  /*
-   * \brief Tests whether vertices are connected by the middle of the face.
+  /** \brief Tests whether vertices are connected by the middle of the face.
    *
    * This test is needed to chose between ambiguous MC33 cases. It checks
    * whether two vertices are connected by the middle of the face or whether
@@ -436,7 +433,7 @@ namespace Dune {
    * \param corner_c Value of the third face vertex.
    * \param corner_d Value of the forth face vertex.
    *
-   * \return <code>True</true> if face center is not inside
+   * \return <code>True</code> if face center is not inside
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   bool MarchingCubes33<valueType, dim, thresholdFunctor>::

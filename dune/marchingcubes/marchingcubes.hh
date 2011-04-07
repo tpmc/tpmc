@@ -9,14 +9,12 @@
 #include <dune/grid/common/referenceelements.hh>
 
 namespace Dune {
-  /*
-   * Exception to signal user that he used a method in a
-   * not-intended way.
+
+  /** \brief Exception to signal user that he used a method in an unintended way
    */
   class IllegalArgumentException : public Dune::Exception {};
 
-  /*
-   * Contains marching cubes' 33 algorithm.
+  /** \brief The 'marching cubes 33' algorithm.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
   class MarchingCubes33 {
@@ -43,8 +41,8 @@ namespace Dune {
     static const short * const all_codim_1[];
     static const short * const all_mc33_offsets[];
     static const short * const all_face_tests[];
-    /*
-     * \brief Test if the face center is covered by the surface.
+
+    /** \brief Test if the face center is covered by the surface.
      *
      * This test is needed to chose between ambiguous MC33 cases.
      */
