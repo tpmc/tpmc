@@ -6,7 +6,6 @@
 #include <dune/common/fvector.hh>
 #include <dune/common/float_cmp.hh>
 #include <dune/common/exceptions.hh>
-#include <dune/grid/common/referenceelements.hh>
 
 namespace Dune {
 

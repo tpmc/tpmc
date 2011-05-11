@@ -1,7 +1,15 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
+#if HAVE_CONFIG
+#include <config.h>
+#endif
+
 #include "lut/marchinglut.hh"
 #include "isdegenerated.hh"
+
+#include <dune/common/geometrytype.hh>
+#include <dune/grid/common/genericreferenceelements.hh>
+
 #include <fstream>
 #include <cmath>
 #include <iostream> // FIXME TODO: Debug only, entferne mich!
@@ -139,10 +147,9 @@ namespace Dune {
       // perform tests and find case number
       short test = table_mc33_face_test_order[test_index + tree_offset];
 
-      GeometryType geo_type;
-      geo_type.makeQuadrilateral();
-      ReferenceElementContainer<ctype, dim> rec;
-      const ReferenceElement<ctype, dim> & ref_element = rec(geo_type);
+      GeometryType geo_type; geo_type.makeCube(dim);
+      const GenericReferenceElement<ctype, dim> & ref_element =
+        GenericReferenceElements<ctype, dim>::general(geo_type);
       valueType corner_a, corner_b, corner_c, corner_d;
       //DEBUG("---- AMBIGUOUS\n");
       // tests are negative, non-negativ values are offsets
@@ -478,7 +485,7 @@ namespace Dune {
                       const sizeType vertex_count, size_t refCorner) const
   {
     assert(dim==3);
-    DEBUG("---------------------------\ntestAmbiguousCenter %i\n", refCorner);
+    DEBUG("---------------------------\ntestAmbiguousCenter %i\n", (int)refCorner);
     // permute vertices according to refCorner
     // rotate arounf z-axis such that refCorner is a0
     assert (refCorner < 4);
