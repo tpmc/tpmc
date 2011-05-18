@@ -6,5 +6,6 @@ include $(top_srcdir)/am/global-rules
 
 marchingcubesincludedir = $(includedir)/dune/marchingcubes
 marchingcubesinclude_HEADERS = isdegenerated.hh marchingcubes.hh	\
+                               marchingcubesrefinement.hh \
 	thresholdfunctor.hh
 
