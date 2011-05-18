@@ -33,7 +33,7 @@ namespace Dune {
 
     private:
       //! Defines the isosurface.
-      const static double threshold = 0.6;
+      const static double threshold = 0.0;
     };
 
   } // end namespace MarchingCubes
