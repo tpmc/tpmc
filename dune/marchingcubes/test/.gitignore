@@ -2,4 +2,7 @@
 .deps
 Makefile.in
 Makefile
+
 testmc33
+testmarchingcubesrefinement
+
