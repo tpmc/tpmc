@@ -2,7 +2,7 @@
 
 CLEANFILES = marchinglut.cc
 
-lib_LTLIBRARIES = libmclut.la
+noinst_LTLIBRARIES = libmclut.la
 
 libmclut_la_SOURCES = marchinglut.cc marchinglut.hh
 
