@@ -11,7 +11,7 @@ class Output:
 		else:
 			odir = ""
 		for case in self.lg.base_cases:
-			if len(case.cells) > 0 or 1==1:
+			if len(case.interior) > 0 or len(case.exterior) > 0 or 1==1:
 				self.write_case(case, case, self.lg.dim,
 								ReferenceElements[self.lg.geometryType],
 									odir+"%s%id-case%02i" % (self.lg.basicType,

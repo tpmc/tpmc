@@ -1,5 +1,6 @@
 from math import log, floor
 from permutation import Permutation
+from transformation import Transformation
 from geomobj import GeomObject
 from referenceelements import ReferenceElements
 
@@ -7,61 +8,28 @@ class TestFace(object):
     def __init__(self, i, v=0):
         self.idx = int(i)
         self.refv = int(v)
-    # Calculate face number with respect to permutation
-    def permute_faceid(self, face, permutation):
-        permutations = {(0, 1, 2, 3): [0, 1, 2, 3, 4, 5], \
-                        (0, 2, 4, 6): [2, 3, 4, 5, 0, 1], \
-                        (0, 4, 1, 5): [4, 5, 0, 1, 2, 3], \
-                        (0, 4, 2, 6): [4, 5, 2, 3, 0, 1], \
-                        (1, 0, 3, 2): [1, 0, 2, 3, 4, 5], \
-                        (1, 3, 5, 7): [2, 3, 4, 5, 1, 0], \
-                        (1, 5, 0, 4): [4, 5, 1, 0, 2, 3], \
-                        (2, 0, 3, 1): [3, 2, 0, 1, 4, 5], \
-                        (2, 0, 6, 4): [3, 2, 4, 5, 0, 1], \
-                        (2, 3, 6, 7): [0, 1, 4, 5, 3, 2], \
-                        (2, 6, 0, 4): [4, 5, 3, 2, 0, 1], \
-                        (2, 6, 3, 7): [4, 5, 0, 1, 3, 2], \
-                        (3, 1, 2, 0): [3, 2, 1, 0, 4, 5], \
-                        (3, 1, 7, 5): [3, 2, 4, 5, 1, 0], \
-                        (3, 2, 1, 0): [1, 0, 2, 3, 4, 5], \
-                        (3, 2, 7, 6): [1, 0, 4, 5, 2, 3], \
-                        (3, 7, 2, 6): [4, 5, 1, 0, 3, 2], \
-                        (4, 0, 5, 1): [5, 4, 0, 1, 2, 3], \
-                        (4, 0, 6, 2): [5, 4, 2, 3, 0, 1], \
-                        (4, 5, 6, 7): [0, 1, 2, 3, 5, 4], \
-                        (4, 6, 0, 2): [2, 3, 5, 4, 0, 1], \
-                        (5, 1, 4, 0): [5, 4, 1, 0, 2, 3], \
-                        (5, 1, 7, 3): [5, 4, 2, 3, 1, 0], \
-                        (5, 4, 7, 6): [1, 0, 2, 3, 5, 4], \
-                        (5, 7, 1, 3): [2, 3, 5, 4, 1, 0], \
-                        (5, 7, 4, 6): [2, 3, 1, 0, 5, 4], \
-                        (6, 2, 7, 3): [5, 4, 0, 1, 3, 2], \
-                        (6, 4, 2, 0): [3, 2, 5, 4, 0, 1], \
-                        (6, 4, 7, 5): [3, 2, 0, 1, 5, 4], \
-                        (6, 7, 2, 3): [0, 1, 5, 4, 3, 2], \
-                        (6, 7, 4, 5): [0, 1, 3, 2, 5, 4], \
-                        (7, 3, 6, 2): [5, 4, 1, 0, 3, 2], \
-                        (7, 5, 6, 4): [3, 2, 1, 0, 5, 4], \
-                        (7, 5, 3, 1): [3, 2, 5, 4, 1, 0], \
-                        (7, 6, 3, 2): [1, 0, 5, 4, 3, 2]};
-        return permutations[permutation[0:4]][face]
+    def permute_faceid(self, faceid, p, faces):        
+        v = p*range(len(p))
+        facesets = [set(f) for f in faces]
+        permface = set([v.index(i) for i in facesets[faceid]])
+        return facesets.index(permface)
     def __mul__(self, p):
-        assert type(p) is Permutation
+        assert type(p) is Permutation or type(p) is Transformation
         assert len(p) == 4 or len(p) == 8
         if len(p) == 8:
             dim = 3
-            newidx = self.permute_faceid(self.idx,p)
-            # TODO newidx uebers ReferenzElement berechnen
             faces = ReferenceElements[(dim,"cube")].faces
+            # get id of the permutated face
+            newidx = self.permute_faceid(self.idx,p , faces)
             face = faces[newidx]
             refidx = faces[self.idx][self.refv]
             vertices = p * range(len(ReferenceElements[(3,"cube")]))
-            refidx2 = vertices[refidx]
-            refv = face.index(refidx2)&1^1
+            refidx2 = vertices.index(refidx)
+            refv = [0, 1, 1, 0][face.index(refidx2)]
             return TestFace(newidx, refv)
         elif len(p) == 4:
             vertices = p * range(4)
-            refv = vertices[0]&1^1
+            refv = [0, 1, 1, 0][vertices.index(refv)]
             refidx = 0
     def __repr__(self):
         return "TEST_FACE_" + repr(self.idx) + "_" + repr(self.refv)
@@ -70,7 +38,7 @@ class TestInterior(object):
     def __init__(self, v):
         self.refv = int(v)
     def __mul__(self, p):
-        assert type(p) is Permutation
+        assert type(p) is Permutation or type(p) is Transformation
         return TestInterior(p[self.refv]%4)
     def __repr__(self):
         return "TEST_INTERIOR_" + repr(self.refv)

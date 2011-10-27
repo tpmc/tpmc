@@ -1,5 +1,6 @@
 from pprint import pprint
 from permutation import Permutation
+from transformation import Transformation
 from referenceelements import ReferenceElements
 from cases import *
 
@@ -16,7 +17,7 @@ class LookupGenerator(object):
 
         # Generate Permutation Group from generators
         P = self.get_generators()
-        self.G = set([Permutation(1,range(self.p_size))])
+        self.G = set([Transformation(1,0,range(self.p_size)),Transformation(1,1,range(self.p_size))])
         i = 0
         g_size = 0
         while len(self.G) != g_size:
@@ -40,42 +41,42 @@ class LookupGenerator(object):
         for entry in self.all_cases:
             found = False
             for g in self.G:
-                bc = BaseCase(dim, g*entry.case)
+                bc = BaseCase(dim, g**entry.case)
                 if bc in self.base_cases:
                     found = True
-                    entry.permutation = g
+                    entry.transformation = g
                     entry.base_case = self.base_cases[self.base_cases.index(bc)]
                     break
             if not found:
                 self.base_cases.append(BaseCase(dim, entry.case))
-                entry.permutation = Permutation(1,range(self.p_size))
+                entry.transformation = Transformation(1,0,range(self.p_size))
                 entry.base_case = self.base_cases[-1]
 
     def get_generators(self):
         if self.dim == 0:
             return []
         elif self.dim == 1:
-            return [Permutation(1, (1,0))]
+            return [Transformation(1, 0, (1,0))]
         elif self.geometryType == (2,"simplex"):
-            return [Permutation(1, (1,2,0))]
+            return [Transformation(1, 0, (1,2,0))]
         elif self.geometryType == (2,"cube"):
-            return [Permutation(1, (1,3,0,2))]
+            return [Transformation(1, 0, (1,3,0,2))]
         elif self.geometryType == (3,"simplex"):
-            return [Permutation(1, (3,1,0,2)),
-                    Permutation(1, (3,0,2,1))]
+            return [Transformation(1, 0, (3,1,0,2)),
+                    Transformation(1, 0, (3,0,2,1))]
         elif self.geometryType == (3,"cube"):
-            return [Permutation(-1, (4,5,6,7,0,1,2,3)),
-                    Permutation(1, (1,5,3,7,0,4,2,6)),
-                    Permutation(1, (1,3,0,2,5,7,4,6))]
+            return [Transformation(-1, 0, (4,5,6,7,0,1,2,3)),
+                    Transformation(1, 0, (1,5,3,7,0,4,2,6)),
+                    Transformation(1, 0, (1,3,0,2,5,7,4,6))]
         elif self.geometryType == (3,"prism"):
             assert 0
         elif self.geometryType == (3,"pyramid"):
             assert 0
         elif self.geometryType == (4,"cube"):
-            return [Permutation(-1, (8,9,10,11,12,13,14,15,0,1,2,3,4,5,6,7)),
-                    Permutation(1, (2,3,6,7,10,11,14,15,0,1,4,5,8,9,12,13)),
-                    Permutation(1, (1,5,3,7,9,13,11,15,0,4,2,6,8,12,10,14)),
-                    Permutation(1, (1,3,9,11,5,7,13,15,0,2,8,10,4,6,12,14))]
+            return [Transformation(-1, 0, (8,9,10,11,12,13,14,15,0,1,2,3,4,5,6,7)),
+                    Transformation(1, 0, (2,3,6,7,10,11,14,15,0,1,4,5,8,9,12,13)),
+                    Transformation(1, 0, (1,5,3,7,9,13,11,15,0,4,2,6,8,12,10,14)),
+                    Transformation(1, 0, (1,3,9,11,5,7,13,15,0,2,8,10,4,6,12,14))]
         assert 0
 
     def generate(self):

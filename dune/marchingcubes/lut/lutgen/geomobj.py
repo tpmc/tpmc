@@ -1,4 +1,5 @@
 from permutation import Permutation
+from transformation import Transformation
 
 class GeomObject(object):
     def __init__(self, dim, vertices):
@@ -24,7 +25,7 @@ class GeomObject(object):
         print "error: unkown geom obj %id, %i vertices" % (dim, l)
         assert 0
     def __mul__ (self, p):
-        assert type(p) is Permutation
+        assert type(p) is Permutation or type(p) is Transformation
         def f(x):
             if type(x) is int:
                 return p[x]
@@ -38,6 +39,6 @@ class GeomObject(object):
         return [ f(vertex) for vertex in entity ]
 
 def permute_geom_list(dim, entities, p):
-    assert type(p) is Permutation
+    assert type(p) is Permutation or type(p) is Transformation
     return [ GeomObject(dim, e) * p
              for e in entities ]

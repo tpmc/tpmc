@@ -8,8 +8,7 @@ from pyvtk import *
 class Vtk(Output):
 	def __init__(self, lg):
 		self.lg = lg
-		
-	def write_case(self, case, triang, dim, element, fname):
+	def write_cells(self, cells, dim, element, fname):
 		def vertex(v, points):
 			if type(v) is int:
 				return points[v] + [0]*(3-dim) # vtk assumes dim=3
@@ -23,7 +22,7 @@ class Vtk(Output):
 		if dim == 3:
 			renumber = [ None, None, None, None,
 						 ("simplex", range(4)),
-						 ("pyramid", range(5)),
+						 ("pyramid", [0, 1, 3, 2, 4]),
 						 ("prism", [0,2,1,3,5,4]),
 						 None,
 						 ("cube", [0,1,3,2,4,5,7,6])]
@@ -43,7 +42,7 @@ class Vtk(Output):
 		data = []
 		counter = 0
 		# create elements
-		for cell in triang.cells:
+		for cell in cells:
 			if len(cell) == 0:
 				continue
 			offset = len(points)
@@ -72,3 +71,6 @@ class Vtk(Output):
 			fname
 			)
 		vtk.tofile(fname)
+	def write_case(self, case, triang, dim, element, fname):		
+		self.write_cells(triang.interior, dim, element, fname+'_interior');	
+		self.write_cells(triang.exterior, dim, element, fname+'_exterior');
