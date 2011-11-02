@@ -46,7 +46,8 @@ class Case(object):
             self.interior, self.exterior = self.exterior, self.interior
             for t in self.mc33:
                 t.interior, t.exterior = t.exterior, t.interior
-
+    def find_symmetries(self, group):        
+        return [p for p in group if p*self.case == self.case]
 class BaseCase(object):
     def __init__(self, dim, x):
         self.name = ""

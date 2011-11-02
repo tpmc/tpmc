@@ -78,7 +78,8 @@ class LookupGenerator(object):
                     Transformation(1, 0, (1,5,3,7,9,13,11,15,0,4,2,6,8,12,10,14)),
                     Transformation(1, 0, (1,3,9,11,5,7,13,15,0,2,8,10,4,6,12,14))]
         assert 0
-
+    def symmetric_group(self):
+        return [p for p in self.G if p.inverted == 0]
     def generate(self):
         # Generate lookup entries from base cases
         for entry in self.all_cases:
