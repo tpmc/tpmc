@@ -161,11 +161,13 @@ cube3d.base_cases[6].mc33[-1].exterior = [[(0, 4), (4, 5), (4, 6), 4], [(0, 1), 
 cube3d.base_cases[6].mc33[-1].interior = [[(0, 1), (1, 5), (0, 2), (2, 6), (4, 5), 5, (4, 6), 6], [0, (0, 1), (0, 2), (0, 4), (4, 5), (4, 6)], [(1, 5), (1, 3), (2, 6), (2, 3), 3], [(1, 5), 3, (2, 6), 5, 7, 6]]
 # 0,1,1,0,1,0,0,0 -> 00010110 # MC33 Case 7.2  (face 2 and face 4 connection)
 cube3d.base_cases[6].mc33.append(Triangulation())
+cube3d.base_cases[6].mc33[-1].name = "MC33 Case 7.2 face 2 and 4 connection"
 cube3d.base_cases[6].mc33[-1].faces = permute_geom_list(2, cube3d.base_cases[6].mc33[0].faces, MIRROR_FACES_0_TO_4)
 cube3d.base_cases[6].mc33[-1].exterior = permute_geom_list(3, cube3d.base_cases[6].mc33[0].exterior, MIRROR_FACES_0_TO_4)
 cube3d.base_cases[6].mc33[-1].interior = permute_geom_list(3, cube3d.base_cases[6].mc33[0].interior, MIRROR_FACES_0_TO_4)
 # 0,1,1,0,1,0,0,0 -> 00010110 # MC33 Case 7.2  (face 0 and face 4 connection)
 cube3d.base_cases[6].mc33.append(Triangulation())
+cube3d.base_cases[6].mc33[-1].name = "MC33 Case 7.2 face 0 and 4 connection"
 cube3d.base_cases[6].mc33[-1].faces = permute_geom_list(2, cube3d.base_cases[6].mc33[1].faces, MIRROR_FACES_0_TO_2)
 cube3d.base_cases[6].mc33[-1].exterior = permute_geom_list(3, cube3d.base_cases[6].mc33[1].exterior, MIRROR_FACES_0_TO_2)
 cube3d.base_cases[6].mc33[-1].interior = permute_geom_list(3, cube3d.base_cases[6].mc33[1].interior, MIRROR_FACES_0_TO_2)
@@ -177,11 +179,13 @@ cube3d.base_cases[6].mc33[-1].exterior = [[(1, 3), 1, (0, 7), (1, 5)], [1, (1, 3
 cube3d.base_cases[6].mc33[-1].interior = [[0, (0, 1), (0, 2), (0, 4)], [(0, 2), (0, 1), (0, 4), (2, 6), (0, 7), (4, 6)], [(1, 5), 5, (4, 5), (5, 7)], [(1, 5), (5, 7), (4, 5), (0, 7), (6, 7), (4, 6)], [(0, 7), (2, 6), (4, 6), (6, 7)], [(2, 6), (4, 6), 6, (6, 7)], [(1, 3), (2, 3), (0, 7), (2, 6), 3], [(1, 5), (0, 7), (1, 3), (3, 7)], [(1, 3), 3, (0, 7), (3, 7)], [3, (2, 6), (3, 7), (6, 7), (0, 7)], [(1, 5), (0, 7), (5, 7), (6, 7), (3, 7)], [(5, 7), (6, 7), (3, 7), 7]]
 # 0,1,1,0,1,0,0,0 -> 00010110 # MC33 Case 7.3 (face 2 connection)
 cube3d.base_cases[6].mc33.append(Triangulation())
+cube3d.base_cases[6].mc33[-1].name = "MC33 Case 7.3, face 2 connection"
 cube3d.base_cases[6].mc33[-1].faces = permute_geom_list(2, cube3d.base_cases[6].mc33[3].faces, ROTATE_FACES_0_2_4)
 cube3d.base_cases[6].mc33[-1].exterior = permute_geom_list(3, cube3d.base_cases[6].mc33[3].exterior, ROTATE_FACES_0_2_4)
 cube3d.base_cases[6].mc33[-1].interior = permute_geom_list(3, cube3d.base_cases[6].mc33[3].interior, ROTATE_FACES_0_2_4)
 # 0,1,1,0,1,0,0,0 -> 00010110 # MC33 Case 7.3 (face 4 connection)
 cube3d.base_cases[6].mc33.append(Triangulation())
+cube3d.base_cases[6].mc33[-1].name = "MC33 Case 7.3, face 4 connection"
 cube3d.base_cases[6].mc33[-1].faces = permute_geom_list(2, cube3d.base_cases[6].mc33[4].faces, ROTATE_FACES_0_2_4)
 cube3d.base_cases[6].mc33[-1].exterior = permute_geom_list(3, cube3d.base_cases[6].mc33[4].exterior, ROTATE_FACES_0_2_4)
 cube3d.base_cases[6].mc33[-1].interior = permute_geom_list(3, cube3d.base_cases[6].mc33[4].interior, ROTATE_FACES_0_2_4)
@@ -189,8 +193,8 @@ cube3d.base_cases[6].mc33[-1].interior = permute_geom_list(3, cube3d.base_cases[
 cube3d.base_cases[6].mc33.append(Triangulation())
 cube3d.base_cases[6].mc33[-1].name = "MC33 Case 7.4.1"
 cube3d.base_cases[6].mc33[-1].faces = [[(0, 1), (0, 2), (0, 4)], [(1, 3), (1, 5), (4, 5)], [(2, 3), (2, 6), (4, 6)], [(2, 3), (1, 3), (4, 6), (4, 5)]]
-cube3d.base_cases[6].mc33[-1].exterior = [[(2, 3), (1, 3), (4, 6), (4, 5), (0, 4)], [(0, 1), (0, 2), (1, 3), (2, 3), (0, 4)], [(1, 3), (4, 5), (1, 5), (0, 4)], [(1, 3), (1, 5), 1, (0, 1)], [(1, 3), (1, 5), (0, 1), (0, 4)], [(2, 6), (4, 6), (2, 3), (0, 4)], [2, (2, 3), (2, 6), (0, 2)], [(2, 3), (2, 6), (0, 4), (0, 2)]]
-cube3d.base_cases[6].mc33[-1].interior = [[0, (0, 1), (0, 2), (0, 4)], [(2, 3), (1, 3), (4, 6), (4, 5), 7], [(1, 3), (1, 5), (4, 5), 7], [(2, 3), (2, 6), (4, 6), 7], [(4, 5), (1, 5), 7, 5], [(4, 6), (2, 6), 6, 7]]
+cube3d.base_cases[6].mc33[-1].exterior = [[(2, 3), (1, 3), (4, 6), (4, 5), (0, 4)], [(0, 1), (0, 2), (1, 3), (2, 3), (0, 4)], [(1, 3), (4, 5), (1, 5), (0, 4)], [(1, 3), (1, 5), 1, (0, 1)], [(1, 3), (1, 5), (0, 1), (0, 4)], [(2, 6), (4, 6), (2, 3), (0, 4)], [2, (2, 3), (2, 6), (0, 2)], [(2, 3), (2, 6), (0, 4), (0, 2)], [(0, 4), (4, 5), (4, 6), 4]]
+cube3d.base_cases[6].mc33[-1].interior = [[0, (0, 1), (0, 2), (0, 4)], [(2, 3), (1, 3), (4, 6), (4, 5), 7], [(1, 3), (1, 5), (4, 5), 7], [(2, 3), (2, 6), (4, 6), 7], [(4, 5), (1, 5), 7, 5], [(4, 6), (2, 6), 6, 7], [(1, 3), (2, 3), 3, 7]]
 # 0,1,1,0,1,0,0,0 -> 00010110 # MC33 Case 7.4.2
 cube3d.base_cases[6].mc33.append(Triangulation())
 cube3d.base_cases[6].mc33[-1].name = "MC33 Case 7.4.2"
@@ -759,3 +763,5 @@ Vtk(simplex3d).write("lutgen/vtk")
 
 Test(cube2d,True).test()
 Test(cube3d,True).test()
+Test(simplex2d,True).test()
+Test(simplex3d,True).test()
