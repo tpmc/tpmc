@@ -22,10 +22,10 @@ class GeometryType(tuple):
 		t = None
 		if dim == 0:
 			assert v == 1
-			t = (dim,"any")
+			t = "any"
 		elif dim == 1:
 			assert v == 2
-			t = (dim,"any")
+			t = "any"
 		elif dim == 2:
 			t = [None, None, None,
 				 "simplex", "cube"][v]
@@ -46,6 +46,7 @@ class ReferenceElement(list):
 		self.faces = faces
 		self.edges = [ set(x) for x in edges ]
 
+# Reference Elements. Vertex-numbering follows the numbering in DUNE
 ReferenceElements = {(0,"any"): ReferenceElement((0,"any"), [[]], [], []),
 					 (1,"any"):
 					 ReferenceElement((1,"any"),
@@ -71,7 +72,7 @@ ReferenceElements = {(0,"any"): ReferenceElement((0,"any"), [[]], [], []),
 					 ReferenceElement((3,"pyramid"),
 									  [[0,0,0],[1,0,0],[0,1,0],[1,1,0],[0,0,1]],
 									  [[0,1,2,3],[0,1,4],[1,3,4],[3,2,4],[2,0,4]],
-									  [[0,1],[1,2],[2,3],[3,0],
+									  [[0,2],[3,1],[1,0],[2,3],
 									   [0,4],[1,4],[2,4],[3,4]]),
 					 (3,"prism")  :
 					 ReferenceElement((3,"prism"),
@@ -86,7 +87,7 @@ ReferenceElements = {(0,"any"): ReferenceElement((0,"any"), [[]], [], []),
 									  [[0,0,0],[1,0,0],[0,1,0],[1,1,0],
 									   [0,0,1],[1,0,1],[0,1,1],[1,1,1]],
 									  [[0,2,4,6],[3,1,7,5],[1,0,5,4],
-                                       [2,3,6,7],[0,1,2,3],[4,5,6,7]],
+									   [2,3,6,7],[0,1,2,3],[4,5,6,7]],
 									  [[0,4],[1,5],[2,6],[3,7],
 									   [0,2],[1,3],[4,6],[5,7],
 									   [0,1],[2,3],[4,5],[6,7]])}
