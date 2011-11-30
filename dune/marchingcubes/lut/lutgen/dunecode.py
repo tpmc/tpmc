@@ -114,7 +114,7 @@ class DuneCode:
             assert entry.base_case in self.lg.base_cases
             base_case_number = self.lg.base_cases.index(entry.base_case)
             table.append("      /* %s / %i / %s / %i */ " \
-                % (entry.case, entry.permutation.orientation * base_case_number, \
+                % (entry.case, entry.transformation.orientation * base_case_number, \
                    ", ".join(map((str), map(len, new_elements))), \
                    table.offset), 0)
             if len(new_elements) > 0:
@@ -131,7 +131,7 @@ class DuneCode:
             for entry in self.lg.all_cases:
                 # Constant whether unique MC33 case and whether inverted
                 unique_case = CASE_UNIQUE_MC33
-                if entry.permutation.orientation == -1:
+                if entry.transformation.orientation == -1:
                     unique_case += CASE_FLIPPED
                 if entry.base_case.tests != []:
                     unique_case += CASE_AMIGUOUS_MC33
@@ -139,11 +139,11 @@ class DuneCode:
                 assert entry.base_case in self.lg.base_cases
                 base_case_number = self.lg.base_cases.index(entry.base_case)
                 offsets.append("      /* %s / %i */ " \
-                    % (entry.case, entry.permutation.orientation * base_case_number)
+                    % (entry.case, entry.transformation.orientation * base_case_number)
                     + "{%i, %i, %i, %i, %i},\n" \
-                    % (codim0.offset, len(entry.cells), \
+                    % (codim0.offset, len(entry.interior), \
                        codim1.offset, len(entry.faces), unique_case), 1)
-                create_codim_line(codim0, entry, entry.cells)
+                create_codim_line(codim0, entry, entry.interior)
                 create_codim_line(codim1, entry, entry.faces)
         # creates mc33 caste table and mc33 test table and returns 
         def create_mc33_tables(self, offsets, codim0, codim1, mc33_offsets, mc33_tests):
@@ -174,9 +174,9 @@ class DuneCode:
                         offsets.append("      /* %d test index:%d */ " \
                             % (base_case_number, i)
                             +"{%i, %i, %i, %i, 0},\n" \
-                            % (codim0.offset, len(mc33_case.cells), \
+                            % (codim0.offset, len(mc33_case.interior), \
                                codim1.offset, len(mc33_case.faces)), 1)
-                        create_codim_line(codim0, entry, mc33_case.cells)
+                        create_codim_line(codim0, entry, mc33_case.interior)
                         create_codim_line(codim1, entry, mc33_case.faces)
                 else:
                     mc33_offsets.append("    /* %s / %i */ " \

@@ -6,6 +6,7 @@ from cases import *
 
 class LookupGenerator(object):
     def __init__(self, dim, basicType, verbose=False):
+        print "creating ", (dim,basicType)
         self.dim = dim
         self.basicType = basicType
         self.geometryType = (dim,basicType)
