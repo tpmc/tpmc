@@ -1,24 +1,21 @@
 #!/usr/bin/env python
+"""This script generates the lookup tables for the marching-cubes 33
+algorithm """
 
 import sys
 import os
 import time
-#from sys import exit
 
 sys.path.append(os.path.dirname(sys.argv[0]))
 
-#from lutgen.generator import *
-#from lutgen.consistencycheck import Consistency
 from lutgen.dunecode import DuneCode
-#from lutgen.sk import Sk
 from lutgen.vtk import Vtk
-#from lutgen.disambiguate import *
 from lutgen.test import Test
 from lutgen.base_case_triangulation import LookupGenerators
 
-# ################################################################################
-# ## 3D Cube                                                                    ##
-# ################################################################################
+################################################################################
+## 3D Cube                                                                    ##
+################################################################################
 cube3d = LookupGenerators[(3,"cube")]
 
 ################################################################################
@@ -101,14 +98,14 @@ Vtk(simplex2d).write("lutgen/vtk")
 Vtk(simplex3d).write("lutgen/vtk")
 
 start = time.time()
-Test(cube2d,True).test()
+Test(cube2d, True).test()
 print 'Time elapsed: ', time.time()-start,'s'
 start = time.time()
-Test(cube3d,True).test()
+Test(cube3d, True).test()
 print 'Time elapsed: ', time.time()-start,'s'
 start = time.time()
-Test(simplex2d,True).test()
+Test(simplex2d, True).test()
 print 'Time elapsed: ', time.time()-start,'s'
 start = time.time()
-Test(simplex3d,True).test()
+Test(simplex3d, True).test()
 print 'Time elapsed: ', time.time()-start,'s'

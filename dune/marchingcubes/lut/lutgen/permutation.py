@@ -14,6 +14,12 @@ class Permutation(tuple):
         if type(other) is list:
             return list(other[x] for x in self)
         assert 0
+    def __pow__(self, other):
+        assert type(other) is int
+        if other == 1:
+            return self
+        else:
+            return self*(self**(other-1))
     def map(self, other):
         return type(other)(self[x] for x in other)
     def __repr__ (self):

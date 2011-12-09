@@ -1,6 +1,33 @@
 from referenceelements import ReferenceElements, GeometryType
 from base_case_triangulation import LookupGenerators
 
+# returns -1 or 1
+def vertex_value(test, case_index, vertex):
+    return -1
+
+class Polygon(object):
+    def __init__(self, vertices):
+        self.vertices = vertices
+    def reverse(self):
+        t = type(self.vertices)
+        n = t(self.vertices)
+        n.reverse()
+        return Polygon(n)
+    def connected(self, other):
+        srev = self.reverse()
+    def __lshift__(self, a):
+        return Polygon(self.vertices[a:]+self.vertices[:a])
+    def __rshift__(self, a):
+        return self.__lshift__(-a)
+    def __eq__(self, other):        
+        if len(self.vertices)!=len(other.vertices):
+            return False
+        srev = self.reverse
+        for x in range(len(self.vertices)):
+            if (self >> x).vertices == other.vertices or (srev >> x).vertices == other.vertices:
+                return False
+        return True
+
 class Element(object):
     def __init__(self, dim, vertices):
         self.dim = dim
@@ -32,6 +59,11 @@ class Element(object):
                 print '## ', surface
             return False
         return True
+    def polygon(self):
+        assert(self.dim<2)
+        if self.reference.type == (2,'cube'):
+            return self.vertices[0,1,3,2]
+        return self.vertices
     def __contains__(self, other):
         # check if all vertices of other are inside self
         # number of intersecting points
@@ -53,45 +85,39 @@ class Test(object):
         self.generator = generator
         self.verbose = verbose
         self.reference_element = ReferenceElements[self.generator.geometryType]
-    def test_faces(self, bc, case):
-        def renumber(ind, l):
-            res = []
-            for item in l:
-                if type(item) == int:
-                    res.append(ind[item])
-                elif len(item)>0:                    
-                    t = (min(ind[item[0]],ind[item[1]]),max(ind[item[0]],ind[item[1]]))
-                    res.append(t)
-            return res
-        # check if the surface of the base-case decomposition matches the lower dimensional case
+    def test_faces(self, triangulation, case_number, test_results):
+        # check if the decomposition of the reference-faces based on the interior/exterior
+        # matches the decomposition in lower dimension
+        # test_results: face-number-->test-result
+        # 0 equals left, ie outside, 1 equals right, ie inside
         reference = Element(self.generator.dim, range(len(self.reference_element)))
-        elements_interior = (Element(self.generator.dim,x) for x in bc.interior if len(x)>0)
-        elements_exterior = (Element(self.generator.dim,x) for x in bc.exterior if len(x)>0)
-        faces_interior = [Element(element.dim-1,face) for element in elements_interior for face in element.faces()]
-        faces_exterior = [Element(element.dim-1,face) for element in elements_exterior for face in element.faces()]
-        for ref_face in (Element(reference.dim - 1, x) for x in reference.faces()):
-            intersecting_interior = set([frozenset(x.vertices) for x in faces_interior if x in ref_face])
-            intersecting_exterior = set([frozenset(x.vertices) for x in faces_exterior if x in ref_face])
-            generator = LookupGenerators[(ref_face.reference.type.dim(), ref_face.reference.type.basicType())]
-            local_case = tuple([case[i] for i in ref_face.vertices])
-            c = (x for x in generator.all_cases if x.case == local_case).next()
-            case_interior = set([frozenset(renumber(ref_face.vertices,x)) for x in c.interior if len(x)>0])
-            case_exterior = set([frozenset(renumber(ref_face.vertices,x)) for x in c.exterior if len(x)>0])
-            if intersecting_interior != case_interior:
-                if self.verbose:
-                    print '## reference_face ',ref_face,': interior does not match'
-                    print '#### should be ', case_interior, ' but is ', intersecting_interior
-                return 0
-            if intersecting_exterior != case_exterior:
-                if self.verbose:
-                    print '## reference_face ',ref_face,': exterior does not match'
-                    print '#### should be ', case_exterior, ' but is ', intersecting_exterior
-                return 0
+        interior_faces = [Element(self.generator.dim-1,x) for element in triangulation.interior for x in element]
+        exterior_faces = [Element(self.generator.dim-1,x) for element in triangulation.exterior for x in element]
+        reference_faces = reference.faces()
+        for ref_face in reference.faces():
+            ref_face_element = Element(reference.dim-1,ref_face)
+            # retrieve the decomposition of ref_face based on triangulation
+            intersecting_interior = [x for x in interior_faces if x in ref_face_element]
+            intersecting_exterior = [x for x in exterior_faces if x in ref_face_element]
+            # now get the dim-1 dimensional decomposition of ref_face
+            lower_case_number = [case_number[i] for i in ref_face.vertices]
+            lower_generator = LookupGenerators[ref_face.reference.type];
+            lower_case = next((case for case in lower_generator.all_cases if case.case == lower_case_number), None)
+            assert(lower_case!=None)
+            if len(lower_case.mc33) == 0:
+                lower_triangulation = lower_case
+            else:
+                faceid = reference_faces.index(ref_face)
+                test_result = test_results[faceid]
+                lower_triangulation = lower_case.mc33[2+test_result]
+            lower_interior = [Element(self.generator.dim-1, x) for x in lower_triangulation.interior]
+            lower_exterior = [Element(self.generator.dim-1, x) for x in lower_triangulation.exterior]
+            # compare intersecting_in/exterior with lower_in/exterior
         return 1
-    def test_interface(self, bc):        
+    def test_interface(self, triangulation):        
         def get_faces(reference, elements):
             faces = [Element(element.dim-1,face) for element in elements for face in element.faces()]
-            faces = [x for x in faces if faces.count(x) == 1]
+            faces = [x for x in faces if faces.count(x) != 2]
             for ref_face in (Element(reference.dim-1,x) for x in reference.faces()):
                 faces = [x for x in faces if x not in ref_face]
             return faces
@@ -99,27 +125,27 @@ class Test(object):
             return len(a) == len(b) and sum(1 for x in a if x in b) == len(a)
         # check if the interface between interior and exterior matches the faces of the
         # base case
-        interface_base = [Element(self.generator.dim-1,x) for x in bc.faces if len(x)>0]
+        interface_base = [Element(self.generator.dim-1,x) for x in triangulation.faces if len(x)>0]
         # remove those faces from interface_base intersecting reference element
         reference = Element(self.generator.dim, range(len(self.reference_element)))
         for ref_face in (Element(reference.dim-1,x) for x in reference.faces()):
             interface_base = [x for x in interface_base if x not in ref_face]
-        for data in (bc.interior, bc.exterior):
+        for data in (triangulation.interior, triangulation.exterior):
             elements = (Element(self.generator.dim,x) for x in data if len(x)>0)
             interface = get_faces(reference, elements)
             if not compare(interface, interface_base):
                 if self.verbose:
                     print 'interface: %r, base.faces: %r'%(interface, interface_base)
-                    if data == bc.interior:
-                        print '## interface of interior does not match bc interface'
+                    if data == triangulation.interior:
+                        print '## interface of interior does not match triangulation interface'
                     else:
-                        print '## interface of exterior does not match bc interface'
+                        print '## interface of exterior does not match triangulation interface'
                 return False
         return True
-    def test_surface(self, bc):
+    def test_surface(self, triangulation):
         # compare the surface of the union of interior and exterior with the surface of the reference
         # element    
-        elements = [Element(self.generator.dim,x) for x in bc.interior + bc.exterior if len(x)>0]
+        elements = [Element(self.generator.dim,x) for x in triangulation.interior + triangulation.exterior if len(x)>0]
         reference = Element(self.generator.dim, range(len(self.reference_element)))
         if not reference.matches(elements, self.verbose):
             if self.verbose:

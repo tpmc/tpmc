@@ -434,6 +434,7 @@ namespace Dune {
    * they are separated. This method is implemented according to the paper
    * from Lewiner et al. It should be only applied on squares like 2D-cube
    * (rectangles) or faces of 3D-cubes.
+   * parameter numbering is according to the dune-numbering scheme
    *
    * \param corner_a Value of the first face vertex.
    * \param corner_b Value of the second face vertex.
