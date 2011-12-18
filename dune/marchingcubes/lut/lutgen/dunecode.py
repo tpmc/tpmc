@@ -1,11 +1,13 @@
+"""
+Contains classes/constants for export to dune marchinglut.cc
+"""
+
 import math
 from referenceelements import ReferenceElements
-from sys import exit
-from disambiguate import *
 
 # Following constants are copied from marchinglut.hh
 # constants for vertex and edge numbering
-NO_VERTEX = 1<<6
+NO_VERTEX = 1 << 6
 VERTEX_GO_RIGHT = 1 # x1 = 1
 VERTEX_GO_DEPTH = 2 # x2 = 1
 VERTEX_GO_UP = 4 # x3 = 1
@@ -16,7 +18,7 @@ VA = 0
 VB = VERTEX_GO_RIGHT
 VC = VERTEX_GO_DEPTH
 VD = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH
-VE = VERTEX_GO_UP;
+VE = VERTEX_GO_UP
 VF = VERTEX_GO_RIGHT + VERTEX_GO_UP
 VG = VERTEX_GO_DEPTH + VERTEX_GO_UP
 VH = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP
@@ -40,66 +42,72 @@ EX = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
 # Center point is in the center of a cube or tetrahedron
 EY = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
 # dictionary to get constant names from integers
-const_names = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", \
+CONST_NAMES = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", \
     VF:"VF", VG:"VG", VH:"VH", EJ:"EJ", EK:"EK", EL:"EL", \
     EM:"EM", EN:"EN", EO:"EO", EP:"EP", EQ:"EQ", ER:"ER", \
     ES:"ES", ET:"ET", EU:"EU", EV:"EV", EW:"EW", EX:"EX", EY:"EY"}
-# Constants indicating whether case special treatment when marching cubes' 33 is used.
+# Constants indicating whether case special treatment when 
+# marching cubes' 33 is used.
 CASE_UNIQUE_MC33 = 0
 CASE_AMIGUOUS_MC33 = 1
 # Constant indicates whether basic case was flipped.
 CASE_FLIPPED = 4
 
-# Stores a table as C-Code string for marchinglut.cc
 class TableStorage:
+    """ Stores a table as C-Code string for marchinglut.cc """
     def __init__(self):
         # String contatining C-Code for the table
         self.tablestring = ""
-        # Integer indicating the number of entries, is used for indexing from other tables
+        # Integer indicating the number of entries, is used for 
+        # indexing from other tables
         self.offset = 0
-    # Adds some entries to the table
-    def append(self, toAppend, numberOfNewEntries):
-        self.tablestring += toAppend
-        self.offset += numberOfNewEntries
+    def append(self, to_append, count):
+        """ Adds some entries to the table """
+        self.tablestring += to_append
+        self.offset += count
 
-# Generates the tables, writes marchinglut.cc
 class DuneCode:
-    def __init__(self, lg):
-        self.lg = lg
-        self.referenceElement = ReferenceElements[self.lg.geometryType]
-    # Generate lookup table
-    def write(self, file):
-        # generate value for a point on a vertex or in the center
-        def edge(a, b):
-            # ensure a < b
-            if a > b:
-                t = a
-                a = b
-                b = t
+    """ Generates the tables, writes marchinglut.cc """
+    def __init__(self, generator):
+        self.generator = generator
+        self.ref_elem = ReferenceElements[self.generator.geometry_type]
+    def write(self, dune_file):
+        """ Generate lookup table """
+        def edge(first, second):
+            """ generate value for a point on a vertex or in the center """
+            # ensure first < second
+            if first > second:
+                first, second = second, first
             # get center points
-            if a == VA and b == VH or a == VB and b == VG \
-                or a == VC and b == VF or a == VD and b == VE:
+            if first == VA and second == VH or first == VB and second == VG \
+                or first == VC and second == VF or first == VD and second == VE:
                 return EY
             # points on an edge"
             try:
-                # check whether edge exists, excpect 3D simplex because of changed numering
-                if self.lg.basicType != "simplex" or self.lg.dim != 3:
-                    self.referenceElement.edges.index(set([a,b]))
-                return a * FACTOR_FIRST_POINT + b * FACTOR_SECOND_POINT + NO_VERTEX
+                # check whether edge exists, excpect 3D simplex because of 
+                # changed numering
+                if self.generator.basic_type != "simplex" \
+                        or self.generator.dim != 3:
+                    self.ref_elem.edges.index(set([first, second]))
+                return first * FACTOR_FIRST_POINT + \
+                    second * FACTOR_SECOND_POINT + NO_VERTEX
             except ValueError:
                 raise ValueError, "Edge (%i, %i) does not exist in %s" % \
-                    (a, b, repr(self.lg.geometryType))
-        # returns the constant name of the point as a string given by its number
-        def get_point_name(v):
+                    (first, second, repr(self.generator.geometry_type))
+        def get_point_name(vertex):
+            """ 
+            returns the constant name of the point as a string given by 
+            its number 
+            """
             # point is a vertex
-            if type(v) is int:
-                return const_names[v]
+            if type(vertex) is int:
+                return CONST_NAMES[vertex]
             # point is on a edge or in the center
-            return const_names[edge(v[0], v[1])]
-        # create a table line for codimX tables
+            return CONST_NAMES[edge(vertex[0], vertex[1])]
         def create_codim_line(table, entry, new_elements):
+            """ create a table line for codimX tables """
             # change 3D simplex numbering scheme to 3D cube's one
-            if self.lg.geometryType == (3,"simplex"):
+            if self.generator.geometry_type == (3,"simplex"):
                 for i in range(len(new_elements)):
                     for j in range(len(new_elements[i])):
                         if type(new_elements[i][j]) is int:
@@ -111,24 +119,27 @@ class DuneCode:
                             if new_elements[i][j][1] == 3:
                                 new_elements[i][j] = (new_elements[i][j][0], 4)
             # write comment in front of data
-            assert entry.base_case in self.lg.base_cases
-            base_case_number = self.lg.base_cases.index(entry.base_case)
+            assert entry.base_case in self.generator.base_cases
+            base_case_number = self.generator.base_cases.index(entry.base_case)
             table.append("      /* %s / %i / %s / %i */ " \
-                % (entry.case, entry.transformation.orientation * base_case_number, \
-                   ", ".join(map((str), map(len, new_elements))), \
+                % (entry.case, entry.transformation.orientation 
+                   * base_case_number, \
+                   ", ".join(str(len(x)) for x in new_elements), \
                    table.offset), 0)
             if len(new_elements) > 0:
                 # write all points of every element
                 for element in new_elements:
                     table.append("%i, " % len(element), 1)
-                    table.append("%s, " % ", ".join(map(get_point_name, element)), \
-                                 len(element))
+                    table.append("%s, " % 
+                                 ", ".join(get_point_name(x) for x in element)
+                                 , len(element))
             else:
                 table.append(" /* no elements */", 0)
             table.append("\n", 0)
-        # creates string tables out of case tables
+
         def create_tables(self, offsets, codim0, codim1):
-            for entry in self.lg.all_cases:
+            """ creates string tables out of case tables """
+            for entry in self.generator.all_cases:
                 # Constant whether unique MC33 case and whether inverted
                 unique_case = CASE_UNIQUE_MC33
                 if entry.transformation.orientation == -1:
@@ -136,19 +147,22 @@ class DuneCode:
                 if entry.base_case.tests != []:
                     unique_case += CASE_AMIGUOUS_MC33
                 # write offsets to offsets table
-                assert entry.base_case in self.lg.base_cases
-                base_case_number = self.lg.base_cases.index(entry.base_case)
+                assert entry.base_case in self.generator.base_cases
+                base_case_number = \
+                    self.generator.base_cases.index(entry.base_case)
                 offsets.append("      /* %s / %i */ " \
-                    % (entry.case, entry.transformation.orientation * base_case_number)
+                    % (entry.case, entry.transformation.orientation 
+                       * base_case_number)
                     + "{%i, %i, %i, %i, %i},\n" \
                     % (codim0.offset, len(entry.interior), \
                        codim1.offset, len(entry.faces), unique_case), 1)
                 create_codim_line(codim0, entry, entry.interior)
                 create_codim_line(codim1, entry, entry.faces)
-        # creates mc33 caste table and mc33 test table and returns 
-        def create_mc33_tables(self, offsets, codim0, codim1, mc33_offsets, mc33_tests):
+        def create_mc33_tables(self, offsets, codim0, codim1, mc33_offsets, 
+                               mc33_tests):
+            """ creates mc33 caste table and mc33 test table and returns  """
             offsets.append("      /* MC 33 cases follow */\n", 0)
-            for entry in self.lg.all_cases:
+            for entry in self.generator.all_cases:
                 # above code should be obsolete
                 assert len(entry.base_case.tests) == len(entry.tests)
                 if entry.tests != []:
@@ -162,15 +176,18 @@ class DuneCode:
                     i = 0
                     for test in entry.tests:
                         i = i + 1
-                        if math.log(i)/math.log(2.0) == round(math.log(i)/math.log(2.0)):
+                        if math.log(i)/math.log(2.0) == round(math.log(i)
+                                                              /math.log(2.0)):
                             mc33_tests.append("\n      ", 0)
                         if type(test) is int:
-                            mc33_tests.append(str(offsets.offset + test) + ", ", 1)
+                            mc33_tests.append(str(offsets.offset + test) 
+                                              + ", ", 1)
                         else:
                             mc33_tests.append(repr(test) + ", ", 1)
                     # Case tables for mc 33 cases
                     for mc33_case in entry.mc33:
-                        base_case_number = self.lg.base_cases.index(entry.base_case)
+                        base_case_number = \
+                            self.generator.base_cases.index(entry.base_case)
                         offsets.append("      /* %d test index:%d */ " \
                             % (base_case_number, i)
                             +"{%i, %i, %i, %i, 0},\n" \
@@ -188,7 +205,7 @@ class DuneCode:
         table_offsets = TableStorage()
         table_offsets.tablestring = "    " \
             "const short table_%(T)s%(D)id_cases_offsets[][5] = {\n" \
-            % { "D" : self.lg.dim, "T" : self.lg.basicType } \
+            % { "D" : self.generator.dim, "T" : self.generator.basic_type } \
             + "     /* vv: vertex values with 0=in, 1=out\n" \
             "      * cn: case number\n" \
             "      * bc: basic case, if negative it's inverted\n" \
@@ -201,7 +218,7 @@ class DuneCode:
         table_codim0 = TableStorage()
         table_codim0.tablestring = "    " \
             "const short table_%(T)s%(D)id_codim_0[] = {\n" \
-            % { "D" : self.lg.dim, "T" : self.lg.basicType } \
+            % { "D" : self.generator.dim, "T" : self.generator.basic_type } \
             + "     /* cn: case number\n" \
             "      * bc: basic case, if negative it's inverted\n" \
             "      * el: elements specified by number of vertices\n" \
@@ -210,7 +227,7 @@ class DuneCode:
         table_codim1 = TableStorage()
         table_codim1.tablestring = "    " \
             "const short table_%(T)s%(D)id_codim_1[] = {\n" \
-            % { "D" : self.lg.dim, "T" : self.lg.basicType } \
+            % { "D" : self.generator.dim, "T" : self.generator.basic_type } \
             + "     /* cn: case number\n" \
             "      * bc: basic case, if negative it's inverted\n" \
             "      * el: elements specified by number of vertices\n" \
@@ -220,28 +237,30 @@ class DuneCode:
         create_tables(self, table_offsets, table_codim0, table_codim1)
         
         # tables for mc 33
-        if self.lg.basicType == "cube":
-            table_mc33_offsets = TableStorage() #TODO: Typ der Tabelle von char auf int (?) aendern
+        if self.generator.basic_type == "cube":
+            table_mc33_offsets = TableStorage() 
+            # TODO: Typ der Tabelle von char auf int (?) aendern
             table_mc33_offsets.tablestring = "    " \
                 "const short table_%(T)s%(D)id_mc33_offsets[] = {\n" \
-                % { "D" : self.lg.dim, "T" : self.lg.basicType }
+                % {"D" : self.generator.dim, "T" : self.generator.basic_type }
             table_mc33_tests = TableStorage()
             table_mc33_tests.tablestring = "    " \
                 "const short table_%(T)s%(D)id_mc33_face_test_order[] = {\n" \
-                % { "D" : self.lg.dim, "T" : self.lg.basicType } \
+                % {"D" : self.generator.dim, "T" : self.generator.basic_type } \
                 + "      /* dummy entry/not used but the index has to start with 1*/\n" \
                 + "      1,\n"
-            create_mc33_tables(self, table_offsets, table_codim0, table_codim1, \
-                               table_mc33_offsets, table_mc33_tests)
+            create_mc33_tables(self, table_offsets, table_codim0, 
+                               table_codim1, table_mc33_offsets, 
+                               table_mc33_tests)
         # close the arrays and write them
         table_offsets.append("    };\n\n\n", 0)
         table_codim0.append("    };\n\n\n", 0)
         table_codim1.append("    };\n\n\n", 0)
-        file.write(table_offsets.tablestring)
-        file.write(table_codim0.tablestring)
-        file.write(table_codim1.tablestring)
-        if self.lg.basicType == "cube":
+        dune_file.write(table_offsets.tablestring)
+        dune_file.write(table_codim0.tablestring)
+        dune_file.write(table_codim1.tablestring)
+        if self.generator.basic_type == "cube":
             table_mc33_offsets.append("    };\n\n\n", 0)
             table_mc33_tests.append("    };\n\n\n", 0)
-            file.write(table_mc33_offsets.tablestring)
-            file.write(table_mc33_tests.tablestring)
+            dune_file.write(table_mc33_offsets.tablestring)
+            dune_file.write(table_mc33_tests.tablestring)
