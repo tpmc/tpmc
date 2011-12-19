@@ -1,0 +1,47 @@
+\documentclass[a4paper, 11pt]{scrartcl}
+
+\usepackage{amsmath}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+
+\newcommand{\file}[1]{\emph{\textless #1\textgreater}}
+
+\begin{document}
+\section*{Marching-Cube 33 Tests}
+
+Im Folgenden findet sich die Dokumentation der in \file{test.py} durchgeführten Tests. Es werden drei Tests zur Überprüfung der Korrektheit der Marching-Cube 33 Basis Fälle durchgeführt.
+\subsection*{Oberflächen-Test}
+\begin{itemize}
+\item Ziel: teste ob komplettes Element ausgefüllt wird
+\item $S=surface({\cal I}\cup{\cal E})$
+\item für jedes Face $f_{\cal R}$ von ${\cal R}$:
+  \begin{enumerate}
+  \item $F_{int}=\lbrace f\in S| f\subset f_{\cal R}\rbrace$
+  \item teste ob $F_{int}$ $f_{\cal R}$ ausfüllt
+  \end{enumerate}
+\end{itemize}
+\subsection*{Interface-Test}
+\begin{itemize}
+\item Ziel: teste ob das angegebene Interface mit dem Interface von interior und exterior übereinstimmt
+\end{itemize}
+\subsection*{Konsistenz-Test}
+\begin{itemize}
+\item Ziel: teste ob die durch Aufteilung in interior und exterior induzierte Zerlegung der Faces des Elements mit der niederdimensionalen Zerlegung des Faces übereinstimmt
+\item $S_{\cal I}:=surface({\cal I})$, $S_{\cal E}:=surface({\cal E})$
+\item für jedes Face $f_{\cal R}\in{\cal R}$:
+  \begin{enumerate}
+  \item $F_{\cal I}:=\lbrace f\in S_{\cal I} | f\subset f_{\cal R}\rbrace$, $F_{\cal E}:=\lbrace f\in S_{\cal E} | f\subset f_{\cal R}\rbrace$
+  \item ${\cal P}_{\cal I}:=faces\_to\_polygons(F_{\cal I})$, ${\cal P}_{\cal E}:=faces\_to\_polygons(F_{\cal E})$
+  \item bestimme Fallnummber von $f_{\cal R}$
+  \item wenn basis-fall mehrdeutig
+    \begin{enumerate}
+    \item finde index in mc33 test-baum
+    \item prüfe ob $f_{\cal R}$ in test-baum
+    \item prüfe test-ergebnis für face $f_{\cal R}$ in test-baum
+    \end{enumerate}
+  \item finde 2d-zerlegung von $f_{\cal R}$
+  \item bilde polygone von 2d-zerlegung
+  \item vergleiche 3d mit 2d zerlegung
+  \end{enumerate}
+\end{itemize}
+\end{document}

@@ -30,7 +30,7 @@ class GeomObject(object):
             if type(vertex) is int:
                 return perm[vertex]
             # return perm*vertex
-            return (perm[vertex[0]], perm[vertex[1]])
+            return tuple(sorted((perm[vertex[0]], perm[vertex[1]])))
         entity = self.vertices
         if len(self.vertices) == 0:
             return []

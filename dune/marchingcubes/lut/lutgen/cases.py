@@ -76,8 +76,8 @@ class Case(BaseCase):
         # update mc33 triangulations
         self.mc33 = [ Triangulation(\
                 permute_geom_list(dim-1, triang.faces, self.transformation),
-                permute_geom_list(dim, triang.interior, self.transformation),
-                permute_geom_list(dim, triang.exterior, self.transformation))
+                permute_geom_list(dim, triang.exterior, self.transformation),
+                permute_geom_list(dim, triang.interior, self.transformation))
                       for triang in self.base_case.mc33 ]
         # if necessary, invert the case, ie swap interior and exterior
         if self.transformation.inverted == 1:

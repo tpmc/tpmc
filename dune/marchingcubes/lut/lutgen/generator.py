@@ -111,7 +111,7 @@ class LookupGenerator(object):
         """
         call update method of every case to let it fetch its triangulation 
         from its base case.
-        """
+        """        
         for entry in self.all_cases:
             entry.update()
 
