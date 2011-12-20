@@ -9,39 +9,25 @@
 \begin{document}
 \section*{Marching-Cube 33 Tests}
 
-Im Folgenden findet sich die Dokumentation der in \file{test.py} durchgeführten Tests. Es werden drei Tests zur Überprüfung der Korrektheit der Marching-Cube 33 Basis Fälle durchgeführt.
-\subsection*{Oberflächen-Test}
-\begin{itemize}
-\item Ziel: teste ob komplettes Element ausgefüllt wird
-\item $S=surface({\cal I}\cup{\cal E})$
-\item für jedes Face $f_{\cal R}$ von ${\cal R}$:
+The following text contains the documentation of the marching cubes 33 tests performed by \file{test.py}. It contains four tests to evaluate the base case decomposition.
+\subsection*{Vertex test}
+The first test uses the case number and checks if all vertices are correctly assigned to interior/exterior. A vertex with $0$ in the case number should be contained in an interior element, one with $1$ in an exterior element.
+\subsection*{Surface test}
+The surface test checks if the reference element is completely filled by the decomposition. This is accomplished by the following recursive scheme:
+
+Let $I$ and $E$ denoted the interior and exterior elements respectively and $R$ the reference element. The surface $surface(M)$ of a set of elements $M$ can be obtained by taking the faces of all elements and removing the non-unique ones. A set of elements \emph{matches} a reference element, if its surface matches the surface of the reference element.
+\begin{enumerate}
+\item $S:=surface(I\cup E)$
+\item for every face $f_R$ of $R$:
   \begin{enumerate}
-  \item $F_{int}=\lbrace f\in S| f\subset f_{\cal R}\rbrace$
-  \item teste ob $F_{int}$ $f_{\cal R}$ ausfüllt
+  \item $F_{int}:=\lbrace f \in S | f\subset f_R\rbrace$
+  \item check if $F_{int}$ matches $f_R$
   \end{enumerate}
-\end{itemize}
-\subsection*{Interface-Test}
-\begin{itemize}
-\item Ziel: teste ob das angegebene Interface mit dem Interface von interior und exterior übereinstimmt
-\end{itemize}
-\subsection*{Konsistenz-Test}
-\begin{itemize}
-\item Ziel: teste ob die durch Aufteilung in interior und exterior induzierte Zerlegung der Faces des Elements mit der niederdimensionalen Zerlegung des Faces übereinstimmt
-\item $S_{\cal I}:=surface({\cal I})$, $S_{\cal E}:=surface({\cal E})$
-\item für jedes Face $f_{\cal R}\in{\cal R}$:
-  \begin{enumerate}
-  \item $F_{\cal I}:=\lbrace f\in S_{\cal I} | f\subset f_{\cal R}\rbrace$, $F_{\cal E}:=\lbrace f\in S_{\cal E} | f\subset f_{\cal R}\rbrace$
-  \item ${\cal P}_{\cal I}:=faces\_to\_polygons(F_{\cal I})$, ${\cal P}_{\cal E}:=faces\_to\_polygons(F_{\cal E})$
-  \item bestimme Fallnummber von $f_{\cal R}$
-  \item wenn basis-fall mehrdeutig
-    \begin{enumerate}
-    \item finde index in mc33 test-baum
-    \item prüfe ob $f_{\cal R}$ in test-baum
-    \item prüfe test-ergebnis für face $f_{\cal R}$ in test-baum
-    \end{enumerate}
-  \item finde 2d-zerlegung von $f_{\cal R}$
-  \item bilde polygone von 2d-zerlegung
-  \item vergleiche 3d mit 2d zerlegung
-  \end{enumerate}
-\end{itemize}
+\end{enumerate}
+the recursion ends on dimension $0$ where the vertices can be compared directly.
+\subsection*{Interface test}
+It is checked, if the interface provided by the base case decomposition is the same as the interface obtained by using the interior and exterior elements, ie \\
+$decomposition.faces \stackrel{?}{=} \lbrace f | f\text{ is face of interior element }\wedge f\text{ is face of exterior element}\rbrace$
+\subsection*{Consistency test}
+This test checks if the decomposition of a face of the reference element obtained by the decomposition of the element in interior and exterior is the same as the one obtained by the lower dimensional decomposition of the reference face.
 \end{document}
