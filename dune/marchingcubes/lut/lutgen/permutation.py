@@ -10,11 +10,7 @@ class Permutation(tuple):
         if type(other) is Permutation:
             return Permutation(self.orientation*other.orientation, 
                                (other[x] for x in self))
-        if type(other) is tuple:
-            return tuple(other[x] for x in self)
-        if type(other) is list:
-            return list(other[x] for x in self)
-        assert 0
+        return type(other)(other[x] for x in self)
     def __pow__(self, other):
         assert type(other) is int
         if other == 1:

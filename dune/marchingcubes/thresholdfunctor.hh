@@ -11,29 +11,30 @@
 namespace Dune {
   namespace MarchingCubes {
 
+    template <class vtype>
     class ThresholdFunctor {
     public:
       //! Function to test whether a point is inside the isosurface.
-      static bool isInside(double testValue)
+      static bool isInside(vtype testValue)
       {
         return (testValue < threshold);
       }
 
       //! distance to iso surface
-      static double getDistance(double value)
+      static vtype getDistance(vtype value)
       {
         return value - threshold;
       }
 
       //! isInside for distance value
-      static bool isLower(double distance)
+      static bool isLower(vtype distance)
       {
         return distance < 0;
       }
 
     private:
       //! Defines the isosurface.
-      const static double threshold = 0.0;
+      constexpr static vtype threshold = 0.0;
     };
 
   } // end namespace MarchingCubes

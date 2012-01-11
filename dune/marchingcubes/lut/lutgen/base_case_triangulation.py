@@ -15,7 +15,7 @@ from geomobj import permute_geom_list
 # test are according to:
 # test_faces: TEST | OUTSIDE | INSIDE
 # test_inter: TEST | ref connected | ref not connected
-# where test | true | false
+# where test | test true | test false
 
 # Constants for permutate mc 33 cases
 MIRROR_FACES_0_1 = Permutation(-1, (1, 0, 3, 2, 5, 4, 7, 6))
@@ -719,10 +719,9 @@ BCTany0d.base_cases[0].interior = []
 # generate code
 BCTany0d.generate()
 
-LookupGenerators = {}
-LookupGenerators[(3, "cube")] = BCTcube3d
-LookupGenerators[(3, "simplex")] = BCTsimplex3d
-LookupGenerators[(2, "cube")] = BCTcube2d
-LookupGenerators[(2, "simplex")] = BCTsimplex2d
-LookupGenerators[(1, "any")] = BCTany1d
-LookupGenerators[(0, "any")] = BCTany0d
+LookupGenerators = {(3, "cube") : BCTcube3d, 
+                    (3, "simplex") : BCTsimplex3d, 
+                    (2, "cube") : BCTcube2d,
+                    (2, "simplex") : BCTsimplex2d,
+                    (1, "any") : BCTany1d,
+                    (0, "any") : BCTany0d}

@@ -166,10 +166,11 @@ namespace Dune {
 
         bool test_result = false;
 
-        DEBUG("++++ test: %d\n", test);
+        DEBUG("++++ case-nr: %d, test: %d\n", case_number, test);
         if ((-test) & TEST_FACE)
         {
           size_t face = (-test - TEST_FACE) & ~TEST_FACE_FLIP;
+          DEBUG("++++ testing face %d\n", face);
           corner_a = vertex_values[ref_element.subEntity(face, dim-2, 0, dim)];
           corner_b = vertex_values[ref_element.subEntity(face, dim-2, 1, dim)];
           corner_c = vertex_values[ref_element.subEntity(face, dim-2, 2, dim)];
@@ -261,16 +262,21 @@ namespace Dune {
                       + all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_1];
       }
       elements.reserve(element_count);
+      //std::cout << "Anzahl Elemente: " << element_count << " offset = "<<all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_0]<< std::endl;
       // DEBUG("Anzahl Elemente: %d \n", (int)caseCountElements);
       for (sizeType i = 0; i < element_count; i++)
       {
         sizeType point_count = (sizeType) codim_index[0];
+        //std::cout << "element " << i << " contains " << point_count << " points" << std::endl;
         // Vector for storing the element points
         std::vector<point> element;
         element.resize(point_count);
         for (sizeType j = 0; j < point_count; j++)
         {
+          //std::cout << "trying to get coordinates of vertex " << (j+1) << std::endl;
+          //std::cout << "vertex index = " << codim_index[j+1] << std::endl;
           getCoordsFromNumber(vertex_values, vertex_count, codim_index[j+1], element[j]);
+          //std::cout << "done getting coordinates" << std::endl;
         }
         if (codim_1_not_0)
         {
@@ -312,9 +318,11 @@ namespace Dune {
                       const sizeType vertex_count, const short number,
                       point& coord) const
   {
+    //std::cout << "getting coords for " << number << std::endl;
     // it's a center point
     if (number == EY)
     {
+      //std::cout << "its a center point" << std::endl;
       //TODO: Testen
       // Initialize point
       for (sizeType i = 0; i < dim; i++)
@@ -324,18 +332,21 @@ namespace Dune {
       // Mean from each threshold value on an edge
       short vertex_1, vertex_2;
       sizeType count = 0;
-      for (short i = EJ; i <= EU; i++)
+      static short edges[] = {EJ, EK, EL, EM, EN, EO, EP, EQ, ER, ES, ET, EU};
+
+      for (short e_index = 0; e_index<12; ++e_index)
       {
+        int i = edges[e_index];
         vertex_1 = (i / FACTOR_FIRST_POINT) &
                    (VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP);
         vertex_2 = (i / FACTOR_SECOND_POINT) &
                    (VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP);
-        if (thresholdFunctor::isInside(vertex_1) !=
-            thresholdFunctor::isInside(vertex_2))
+        if (thresholdFunctor::isInside(vertex_values[vertex_1]) !=
+            thresholdFunctor::isInside(vertex_values[vertex_2]))
         {
           point edge_point;
-          getCoordsFromEdgeNumber(vertex_values, vertex_count, i,
-                                  edge_point);
+          getCoordsFromNumber(vertex_values, vertex_count, i,
+                              edge_point);
           for (sizeType j = 0; j < dim; j++)
           {
             coord[j] += edge_point[j];
@@ -343,6 +354,7 @@ namespace Dune {
           count++;
         }
       }
+      assert(count > 0);
       for (sizeType i = 0; i < dim; i++)
       {
         coord[i] /= count;
@@ -351,6 +363,7 @@ namespace Dune {
     // it's an edge
     else if ((number & NO_VERTEX) == NO_VERTEX)
     {
+      //std::cout << "its an edge" << std::endl;
       // get both vertices
       point point_a, point_b;
       getCoordsFromEdgeNumber(vertex_values, vertex_count,
@@ -366,18 +379,22 @@ namespace Dune {
         index_b += (sizeType) point_b[i] * (1<<i);
       }
       // factor for interpolation
-            #ifndef NDEBUG
-      if (thresholdFunctor::isInside(vertex_values[index_a]) ==
-          thresholdFunctor::isInside(vertex_values[index_b]))
-        DUNE_THROW(Dune::Exception,
-                   "No intersection on edge " << index_a << "/" << index_b << ".");
+      //#ifndef NDEBUG
+      //if (thresholdFunctor::isInside(vertex_values[index_a]) ==
+      //    thresholdFunctor::isInside(vertex_values[index_b]))
+      //    DUNE_THROW(Dune::Exception,
+      //    "No intersection on edge " << index_a << "/" << index_b << ", values: " << vertex_values[index_a] << "/" << vertex_values[index_b] << ".");
       // assert(thresholdFunctor::isInside(vertex_values[index_a]) !=
       //     thresholdFunctor::isInside(vertex_values[index_b]));
-            #endif
+      //#endif
       valueType interpol_factor =
         thresholdFunctor::getDistance(vertex_values[index_a])
         / (thresholdFunctor::getDistance(vertex_values[index_b])
            - thresholdFunctor::getDistance(vertex_values[index_a]));
+      // if we are at an egde with no intersecting, just take the edge-center
+      if (thresholdFunctor::isInside(vertex_values[index_a]) ==
+          thresholdFunctor::isInside(vertex_values[index_b]))
+        interpol_factor = -0.5;
       //            DEBUG("     Kante: coords %1.3f %1.3f davor indexA %d  indexB %d // %d %d\n", coord[0], coord[1], index_a, index_b, NO_VERTEX^number, number);
       // calculate interpolation point
       for (sizeType i = 0; i < dim; i++)
@@ -389,6 +406,7 @@ namespace Dune {
     // it's a vertex
     else
     {
+      //std::cout << "its a vertex" << std::endl;
       getCoordsFromEdgeNumber(vertex_values, vertex_count,
                               number, coord);
     }

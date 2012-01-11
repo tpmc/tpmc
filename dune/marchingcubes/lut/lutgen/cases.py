@@ -17,8 +17,7 @@ class Triangulation(object):
         self.exterior = exterior if exterior is not None else [[]]
         self.interior = interior if interior is not None else [[]]
     def __repr__(self):
-        return repr(self.faces) + "::" + repr(self.exterior) \
-            + "::" + repr(self.interior)
+        return "{0}::{1}::{2}".format(self.faces, self.exterior, self.interior)
 
 class BaseCase(Triangulation):
     """
@@ -33,8 +32,8 @@ class BaseCase(Triangulation):
         self.tests = []
         self.mc33 = []
     def __repr__(self):
-        return "".join(str(x) for x in self.case) + ": " + \
-            Triangulation.__repr__(self)
+        return "{0}: {1}".format("".join(str(x) for x in self.case), 
+                                 Triangulation.__repr__(self))
     def __eq__(self, other):
         return self.case == other.case
 
@@ -48,7 +47,7 @@ class Case(BaseCase):
         self.transformation = None
         self.base_case = None
     def __repr__(self):
-        return BaseCase.__repr__(self) + ", " + repr(self.transformation)
+        return "{0}, {1}".format(BaseCase.__repr__(self), self.transformation)
     def update(self):
         """
         updates itself according to its base case using the transformation
@@ -65,22 +64,24 @@ class Case(BaseCase):
             else:
                 return test
         # update the triangulation #
-        self.faces = permute_geom_list(dim-1, self.base_case.faces\
-                                           , self.transformation)
-        self.exterior = permute_geom_list(dim, self.base_case.exterior\
-                                              , self.transformation)
-        self.interior = permute_geom_list(dim, self.base_case.interior\
-                                              , self.transformation)
-        self.tests = [ permute_single_test(test, self.transformation) \
-                           for test in self.base_case.tests ]
+        self.faces = permute_geom_list(dim-1, self.base_case.faces, 
+                                       self.transformation)
+        self.exterior = permute_geom_list(dim, self.base_case.exterior, 
+                                          self.transformation)
+        self.interior = permute_geom_list(dim, self.base_case.interior, 
+                                          self.transformation)
+        self.tests = [ permute_single_test(test, self.transformation) 
+                       for test in self.base_case.tests ]
         # update mc33 triangulations
-        self.mc33 = [ Triangulation(\
-                permute_geom_list(dim-1, triang.faces, self.transformation),
-                permute_geom_list(dim, triang.exterior, self.transformation),
-                permute_geom_list(dim, triang.interior, self.transformation))
+        self.mc33 = [ Triangulation(permute_geom_list(dim-1, triang.faces, 
+                                                      self.transformation),
+                                    permute_geom_list(dim, triang.exterior, 
+                                                      self.transformation),
+                                    permute_geom_list(dim, triang.interior, 
+                                                      self.transformation))
                       for triang in self.base_case.mc33 ]
         # if necessary, invert the case, ie swap interior and exterior
         if self.transformation.inverted == 1:
             self.interior, self.exterior = self.exterior, self.interior
-            for triang in self.mc33:
-                triang.interior, triang.exterior = triang.exterior, triang.interior
+            for tri in self.mc33:
+                tri.interior, tri.exterior = tri.exterior, tri.interior

@@ -3,17 +3,18 @@ Containing a test-class to perform tests on a marching cubes 33 base
 case triangulation. Currently four test are performed. For more
 information see documentation pdf in the doc/ folder
 """
-
+import logging
 from base_case_triangulation import LookupGenerators
 from disambiguate import TestFace, TestRegular
 from polygon import PolygonList
 from geomobj import GeomObject
 
+LOGGER = logging.getLogger('lutgen.test')
+
 class Test(object):
     """ class for testing a marching-cubes 33 triangulation """
-    def __init__(self, generator, verbose = False):
+    def __init__(self, generator):
         self.generator = generator
-        self.verbose = verbose
     def find_test_results(self, base_case, mc33_index):
         """ returns the result for the face-test for mc33-case mc33_index """
         reference = self.generator.ref_elem
@@ -39,7 +40,6 @@ class Test(object):
         """        
         def rename_vertices(tri, vertices):
             """ rename the vertices in triangulation tri (i --> vertices[i]) """
-            renamed = []
             for elem in tri:
                 nel = []
                 for vertex in elem:
@@ -48,8 +48,7 @@ class Test(object):
                     else:
                         nel.append(tuple(sorted([vertices[vertex[0]], 
                                                  vertices[vertex[1]]])))
-                renamed.append(GeomObject(self.generator.dim-1, nel))
-            return renamed
+                yield GeomObject(self.generator.dim-1, nel)
         interior_faces = [GeomObject(self.generator.dim-1, x) 
                           for element in triangulation.interior
                           for x 
@@ -63,8 +62,8 @@ class Test(object):
             ref_face_element = GeomObject(self.generator.dim-1, ref_face)
             # ignore cases where a face of the interface intersects the ref_face
             if sum(1 for x in triangulation.faces 
-                   if GeomObject(self.generator.dim-1, x) in ref_face_element) \
-                   > 0:
+                   if GeomObject(self.generator.dim-1, x) 
+                   in ref_face_element) > 0:
                 continue            
             # now get the dim-1 dimensional decomposition of ref_face
             lower_case_number = tuple(case_number[i] for i in ref_face)
@@ -100,19 +99,20 @@ class Test(object):
                                                  if x in ref_face_element])
             # compare higher dimensional decomposition with 
             # lower dimensional one
+            errormsg = 'face {0} ({1}) {2} does not match'
             if not face_interior_low == face_interior_high :
-                if self.verbose:
-                    print 'error for face %i (%r): interior does not match ' \
-                        % (reference_faces.index(ref_face), lower_case_number)\
-                        +'lower interior'
-                    print '%r vs %r' % (face_interior_high, face_interior_low)
+                LOGGER.error(errormsg.format(reference_faces.index(ref_face),
+                                             lower_case_number,
+                                             'interior'))
+                LOGGER.error('{0} vs {1}'.format(face_interior_high, 
+                                                 face_interior_low))
                 return 0
             if not face_exterior_low == face_exterior_high:
-                if self.verbose:
-                    print 'error for face %i (%r): exterior does not match '\
-                        % (reference_faces.index(ref_face), lower_case_number)\
-                        +'lower exterior'
-                    print '%r vs %r' % (face_exterior_high, face_exterior_low)
+                LOGGER.error(errormsg.format(reference_faces.index(ref_face),
+                                             lower_case_number,
+                                             'exterior'))
+                LOGGER.error('{0} vs {1}'.format(face_interior_high, 
+                                                 face_interior_low))
                 return 0
         # all reference faces passed
         return 1
@@ -135,8 +135,9 @@ class Test(object):
             return faces
         def compare(first, second):
             """ returns true if first and second contain the same elements """
-            return len(first) == len(second) \
-                and sum(1 for x in first if x in second) == len(first)
+            return len(first) == len(second) and sum(1 for x in first 
+                                                     if x 
+                                                     in second) == len(first)
         interface_base = [GeomObject(self.generator.dim-1, x) 
                           for x in triangulation.faces if len(x)>0]
         # remove those faces from interface_base intersecting reference element
@@ -150,15 +151,14 @@ class Test(object):
                         for x in data if len(x)>0)
             interface = get_faces(reference, elements)
             if not compare(interface, interface_base):
-                if self.verbose:
-                    print 'interface: %r, base.faces: %r' \
-                        % (interface, interface_base)
-                    if data == triangulation.interior:
-                        print '## interface of interior does not match ', \
-                            'triangulation interface'
-                    else:
-                        print '## interface of exterior does not match ', \
-                            'triangulation interface'
+                LOGGER.error("interface: {0}, "
+                             "base.faces: {1}".format(interface, 
+                                                      interface_base))
+                errormsg = "interface of {0} does not match"
+                if data == triangulation.interior:
+                    LOGGER.error(errormsg.format('interior'))
+                else:
+                    LOGGER.error(errormsg.format('exterior'))
                 return False
         return True
     def test_surface(self, triangulation):
@@ -171,11 +171,11 @@ class Test(object):
                     if len(x)>0]
         reference = GeomObject(self.generator.dim, 
                             range(len(self.generator.ref_elem)))
-        if not reference.matches(elements, self.verbose):
-            if self.verbose:
-                print '#### elements do not match reference element:'
-                print '#### reference : ', self.generator.ref_elem.type
-                print '#### elements: ', elements
+        if not reference.matches(elements):
+            LOGGER.error("elements do not match reference element:"
+                         "reference : {0}"
+                         "elements: {1}".format(self.generator.ref_elem.type,
+                                                elements))
             return 0
         return 1
     def test_vertices(self, triang, case):
@@ -184,15 +184,14 @@ class Test(object):
         triangulation, i.e. if case[i] == 0 i should be in interior,
         otherwise in exterior
         """
-        for i in range(len(case)):
-            if case[i]:
+        for (index, value) in enumerate(case) :
+            if value:
                 inside = triang.exterior
             else:
                 inside = triang.interior
-            if sum(1 for x in inside if i in x) == 0:
-                if self.verbose:
-                    print '#### error: vertex %i should be %r' \
-                        % (i, ['inside','outside'][case[i]])
+            if sum(1 for x in inside if index in x) == 0:
+                LOGGER.error("vertex {0} should be "
+                             "{1}".format(index, ['inside','outside'][value]))
                 return 0
         return 1
     def test_triangulation(self, triang, base_case, mc33_index):
@@ -200,29 +199,30 @@ class Test(object):
         count, passed = 0, 0
         count += 1
         result = self.test_vertices(triang, base_case.case)
-        if self.verbose and result == 0:
-            print '###### vertex test for triangulation ' \
-                , triang.name, ' (', base_case.case, ') FAILED'
+        if result == 0:
+            LOGGER.error("vertex test for triangulation {0} ({1}) "
+                         "FAILED".format(triang.name, base_case.case))
         passed += result
         count += 1
         result = self.test_interface(triang)
-        if self.verbose and result == 0:
-            print '###### interface test for triangulation ' \
-                , triang.name, 'FAILED'
+        if result == 0:
+            LOGGER.error("interface test for triangulation {0} "
+                         "FAILED".format(triang.name))
         passed += result
         count += 1
         result = self.test_surface(triang)
-        if self.verbose and result == 0:
-            print '###### surface test for triangulation ' \
-                , triang.name, 'FAILED'
+        if result == 0:
+            LOGGER.error("surface test for triangulation {0} "
+                         "FAILED".format(triang.name))
         passed += result
         if self.generator.dim == 3:
             count += 1
             test_results = self.find_test_results(base_case, mc33_index)
             result = self.test_consistency(triang, base_case.case, test_results)
-            if self.verbose and result == 0:
-                print '###### consistency test for triangulation ', \
-                    triang.name, 'FAILED'
+            
+            if result == 0:
+                LOGGER.error("consistency test for triangulation {0} "
+                             "FAILED".format(triang.name))
             passed += result
         return (count, passed)
     def test(self):
@@ -230,21 +230,19 @@ class Test(object):
         performs tests for all base-case triangulations, including
         mc33 cases 
         """
-        if self.verbose:
-            print '# starting test of ', self.generator.geometry_type
+        LOGGER.info("starting test of {0}".format(self.generator.geometry_type))
         passed = 0
         count = 0
         for base_case in self.generator.base_cases:
-            (test_count, test_passed) = \
-                self.test_triangulation(base_case, base_case, -1)
+            (test_count, test_passed) = self.test_triangulation(base_case, 
+                                                                base_case, -1)
             count += test_count
             passed += test_passed
-            for i in range(len(base_case.mc33)):
-                mc_case = base_case.mc33[i]
-                (test_count, test_passed) = \
-                    self.test_triangulation(mc_case, base_case, i)
+            for (index, mc_case) in enumerate(base_case.mc33):
+                (test_count, test_passed) = self.test_triangulation(mc_case, 
+                                                                    base_case, 
+                                                                    index)
                 count += test_count
                 passed += test_passed
-        if self.verbose:
-            print '# ', passed, ' of ', count, ' tests passed'
+        LOGGER.info("{0} of {1} tests passed".format(passed, count))
         return passed == count

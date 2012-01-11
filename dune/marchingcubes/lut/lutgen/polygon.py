@@ -19,9 +19,9 @@ class PolygonList(object):
             """
             i = 0
             while i < len(vlist):
-                if type(vlist[i]) is tuple \
-                        and vlist[(i-1) % len(vlist)] in vlist[i] \
-                        and vlist[(i+1) % len(vlist)] in vlist[i]:
+                if (type(vlist[i]) is tuple 
+                    and vlist[(i-1) % len(vlist)] in vlist[i] 
+                    and vlist[(i+1) % len(vlist)] in vlist[i]):
                     vlist.pop(i)
                 else:
                     i += 1
@@ -30,8 +30,8 @@ class PolygonList(object):
         # until nothing changes anymore
         while changed:
             changed = False
-            for i in range(len(self.polygons)):                    
-                for j in range(i+1, len(self.polygons)):
+            for i in range(len(self.polygons)) :
+                for j in range(i+1, len(self.polygons)) :
                     # i connected to j
                     conn = self.polygons[i].connected(self.polygons[j])
                     # i connected to reverse of j
@@ -56,8 +56,8 @@ class PolygonList(object):
         other.merge()
         first = [set(x) for x in self.polygons]
         second = [set(x) for x in other.polygons]
-        if len(first) == len(second) \
-                and sum(1 for x in first if x in second) == len(first):
+        if (len(first) == len(second) 
+            and sum(1 for x in first if x in second) == len(first)):
             return True
         else:
             return False
@@ -81,19 +81,18 @@ class Polygon(list):
     def connected(self, other):
         """ returns index of the first vertex of a connection to other """
         start = -1
-        for i in range(len(self)):
-            if self[i] in other \
-                    and (self[(i+1) % len(self)] \
-                             == other[(other.index(self[i])+1) % len(other)] \
-                             or self[(i-1) % len(self)] \
-                             == other[(other.index(self[i])-1) % len(other)]):
+        ls = len(self)
+        lo = len(other)
+        for (i, v) in enumerate(self) :
+            if (v in other 
+                and (self[(i+1) % ls] == other[(other.index(v)+1) % lo] 
+                     or self[(i-1) % ls] == other[(other.index(v)-1) % lo])):
                 start = i
                 break
         if start >= 0:
             if start == 0 and not list.__eq__(self, other):
                 while self[start-1] in other:
                     start = (start - 1) % len(self)
-            #print '%r is connected to %r at %i' % (self, other, start)
             return start
         else:
             return -1
@@ -113,7 +112,6 @@ class Polygon(list):
         if start >= 0:
             # move start to the end of the list
             merged = list(self << start+1)
-            #print 'lists to merge: ',merged, ' and ', temp_other
             start_in_other = temp_other.index(merged[-1])
             # remove inner nodes
             inner_count = 0
@@ -122,12 +120,10 @@ class Polygon(list):
                 inner_count += 1
             # get index of one past end of connection in other
             other_index = (start_in_other+inner_count+2) % len(temp_other)
-            #print 'start_in_other: %i' % (start_in_other)
             # insert nodes from other to front of merged in reversed order
             while other_index != start_in_other:
                 merged.insert(0, temp_other[other_index])
                 other_index = (other_index + 1) % len(temp_other)
-            #print '%r + %r = %r' % (self, temp_other, merged)
             return Polygon(merged)
         else:
             raise RuntimeError('polygons are not connected')
@@ -136,8 +132,8 @@ class Polygon(list):
             return False
         srev = self.reverse()
         for offset in range(len(self)):
-            if list.__eq__(self >> offset, other) \
-                    or list.__eq__(srev >> offset, other):
+            if (list.__eq__(self >> offset, other) 
+                or list.__eq__(srev >> offset, other)):
                 return False
         return True
     def __repr__(self):

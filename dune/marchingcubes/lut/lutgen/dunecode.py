@@ -42,10 +42,11 @@ EX = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
 # Center point is in the center of a cube or tetrahedron
 EY = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
 # dictionary to get constant names from integers
-CONST_NAMES = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", \
-    VF:"VF", VG:"VG", VH:"VH", EJ:"EJ", EK:"EK", EL:"EL", \
-    EM:"EM", EN:"EN", EO:"EO", EP:"EP", EQ:"EQ", ER:"ER", \
-    ES:"ES", ET:"ET", EU:"EU", EV:"EV", EW:"EW", EX:"EX", EY:"EY"}
+CONST_NAMES = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", 
+               VF:"VF", VG:"VG", VH:"VH", EJ:"EJ", EK:"EK", EL:"EL", 
+               EM:"EM", EN:"EN", EO:"EO", EP:"EP", EQ:"EQ", ER:"ER", 
+               ES:"ES", ET:"ET", EU:"EU", EV:"EV", EW:"EW", EX:"EX",
+               EY:"EY"}
 # Constants indicating whether case special treatment when 
 # marching cubes' 33 is used.
 CASE_UNIQUE_MC33 = 0
@@ -79,21 +80,24 @@ class DuneCode:
             if first > second:
                 first, second = second, first
             # get center points
-            if first == VA and second == VH or first == VB and second == VG \
-                or first == VC and second == VF or first == VD and second == VE:
+            if (first == VA and second == VH
+                or first == VB and second == VG 
+                or first == VC and second == VF 
+                or first == VD and second == VE):
                 return EY
             # points on an edge"
             try:
                 # check whether edge exists, excpect 3D simplex because of 
                 # changed numering
-                if self.generator.basic_type != "simplex" \
-                        or self.generator.dim != 3:
+                if (self.generator.basic_type != "simplex" 
+                    or self.generator.dim != 3):
                     self.ref_elem.edges.index(set([first, second]))
-                return first * FACTOR_FIRST_POINT + \
-                    second * FACTOR_SECOND_POINT + NO_VERTEX
+                return (first * FACTOR_FIRST_POINT 
+                        + second * FACTOR_SECOND_POINT + NO_VERTEX)
             except ValueError:
-                raise ValueError, "Edge (%i, %i) does not exist in %s" % \
-                    (first, second, repr(self.generator.geometry_type))
+                msg = "Edge ({0}, {2}) does not exist in {2}"
+                raise ValueError, (msg.format(first, second, 
+                                              self.generator.geometry_type))
         def get_point_name(vertex):
             """ 
             returns the constant name of the point as a string given by 
@@ -107,6 +111,7 @@ class DuneCode:
         def create_codim_line(table, entry, new_elements):
             """ create a table line for codimX tables """
             # change 3D simplex numbering scheme to 3D cube's one
+            # ??? why?
             if self.generator.geometry_type == (3,"simplex"):
                 for i in range(len(new_elements)):
                     for j in range(len(new_elements[i])):
@@ -121,18 +126,22 @@ class DuneCode:
             # write comment in front of data
             assert entry.base_case in self.generator.base_cases
             base_case_number = self.generator.base_cases.index(entry.base_case)
-            table.append("      /* %s / %i / %s / %i */ " \
-                % (entry.case, entry.transformation.orientation 
-                   * base_case_number, \
-                   ", ".join(str(len(x)) for x in new_elements), \
-                   table.offset), 0)
+            table_comment = "      /* {0} / {1} / {2} / {3} */ "
+            table.append(table_comment.format(entry.case, 
+                                              (entry.transformation.orientation
+                                               * base_case_number),
+                                              ", ".join(str(len(x))
+                                                        for x in new_elements),
+                                              table.offset), 0)
             if len(new_elements) > 0:
                 # write all points of every element
                 for element in new_elements:
                     table.append("%i, " % len(element), 1)
-                    table.append("%s, " % 
-                                 ", ".join(get_point_name(x) for x in element)
-                                 , len(element))
+                    table.append("%s, " % ", ".join(get_point_name(x) 
+                                                    for x in element),
+                                 len(element))
+                    if entry.case == tuple([0,0,1,0,1,0,1,1]):
+                        print "Element: ",element," vertices ", ", ".join(get_point_name(x) for x in element)
             else:
                 table.append(" /* no elements */", 0)
             table.append("\n", 0)
@@ -150,12 +159,14 @@ class DuneCode:
                 assert entry.base_case in self.generator.base_cases
                 base_case_number = \
                     self.generator.base_cases.index(entry.base_case)
-                offsets.append("      /* %s / %i */ " \
-                    % (entry.case, entry.transformation.orientation 
-                       * base_case_number)
-                    + "{%i, %i, %i, %i, %i},\n" \
-                    % (codim0.offset, len(entry.interior), \
-                       codim1.offset, len(entry.faces), unique_case), 1)
+                oline = ("      /* {0} / {1} */ "
+                               "{{{2}, {3}, {4}, {5}, {6}}},\n")
+                offsets.append(oline.format(entry.case,
+                                            (entry.transformation.orientation
+                                             * base_case_number),
+                                            codim0.offset, len(entry.interior),
+                                            codim1.offset, len(entry.faces),
+                                            unique_case), 1)
                 create_codim_line(codim0, entry, entry.interior)
                 create_codim_line(codim1, entry, entry.faces)
         def create_mc33_tables(self, offsets, codim0, codim1, mc33_offsets, 
@@ -165,18 +176,17 @@ class DuneCode:
             for entry in self.generator.all_cases:
                 # above code should be obsolete
                 assert len(entry.base_case.tests) == len(entry.tests)
-                if entry.tests != []:
-                    mc33_offsets.append("    /* %s / %i */ " \
-                        % (entry.case, mc33_offsets.offset), 0)
-                    mc33_offsets.append("%i,\n" \
-                        % (mc33_tests.offset), 1)
+                if entry.tests:
+                    mc33_offsets.append("    /* {0} / {1} */ {2},"
+                                        "\n".format(entry.case, 
+                                                          mc33_offsets.offset,
+                                                          mc33_tests.offset), 1)
                     # Generate tests table
-                    mc33_tests.append("\n      /* %i / %s */" \
-                        % (mc33_tests.offset, entry.case), 0)
-                    i = 0
-                    for test in entry.tests:
-                        i = i + 1
-                        if math.log(i)/math.log(2.0) == round(math.log(i)
+                    mc33_tests.append("\n      /* {0} / {1} "
+                                      "*/".format(mc33_tests.offset, entry.case)
+                                      , 0)
+                    for (i, test) in enumerate(entry.tests):
+                        if math.log(i+1)/math.log(2.0) == round(math.log(i+1)
                                                               /math.log(2.0)):
                             mc33_tests.append("\n      ", 0)
                         if type(test) is int:
@@ -188,51 +198,61 @@ class DuneCode:
                     for mc33_case in entry.mc33:
                         base_case_number = \
                             self.generator.base_cases.index(entry.base_case)
-                        offsets.append("      /* %d test index:%d */ " \
-                            % (base_case_number, i)
-                            +"{%i, %i, %i, %i, 0},\n" \
-                            % (codim0.offset, len(mc33_case.interior), \
-                               codim1.offset, len(mc33_case.faces)), 1)
+                        oline = ("      /* {0} test index:{1} */ "
+                                 "{{{2}, {3}, {4}, {5}, 0}},\n")
+                        offsets.append(oline.format(base_case_number,
+                                                    len(entry.tests),
+                                                    codim0.offset,
+                                                    len(mc33_case.interior),
+                                                    codim1.offset,
+                                                    len(mc33_case.faces)),
+                                       1)
                         create_codim_line(codim0, entry, mc33_case.interior)
                         create_codim_line(codim1, entry, mc33_case.faces)
                 else:
-                    mc33_offsets.append("    /* %s / %i */ " \
-                        % (entry.case, mc33_offsets.offset), 0)
+                    mc33_offsets.append("    /* {0} / {1} */"
+                                        " ".format(entry.case, 
+                                                   mc33_offsets.offset), 0)
+                    # ??? why 255?
                     mc33_offsets.append("255,\n", 1)
             mc33_tests.append("\n", 0)
         
         # Start output with table definitions
         table_offsets = TableStorage()
-        table_offsets.tablestring = "    " \
-            "const short table_%(T)s%(D)id_cases_offsets[][5] = {\n" \
-            % { "D" : self.generator.dim, "T" : self.generator.basic_type } \
-            + "     /* vv: vertex values with 0=in, 1=out\n" \
-            "      * cn: case number\n" \
-            "      * bc: basic case, if negative it's inverted\n" \
-            "      * c1: element count of co-dimension 1 elements\n" \
-            "      * o1: table offset for co-dimension 1\n" \
-            "      * c0: element count of co-dimension 0 elements\n" \
-            "      * o0: table offset for co-dimension 0\n" \
-            "      * uniq: whether the case is ambiguous for MC33 */\n" \
-            "      /* vv / cn / bc / c0, o0, c1, o1, uniq */\n"
+        table_dict = {"D": self.generator.dim, "T": self.generator.basic_type}
+        table_offsets.tablestring = \
+            ("    "
+             "const short table_{0[T]}{0[D]}d_cases_offsets[][5] = {{\n"
+             "     /* vv: vertex values with 0=in, 1=out\n"
+             "      * cn: case number\n"
+             "      * bc: basic case, if negative it's inverted\n"
+             "      * c1: element count of co-dimension 1 elements\n"
+             "      * o1: table offset for co-dimension 1\n"
+             "      * c0: element count of co-dimension 0 elements\n"
+             "      * o0: table offset for co-dimension 0\n"
+             "      * uniq: whether the case is ambiguous for MC33 */\n"
+             "      /* vv / cn / bc / c0, o0, c1, o1, uniq */"
+             "\n".format(table_dict))
         table_codim0 = TableStorage()
-        table_codim0.tablestring = "    " \
-            "const short table_%(T)s%(D)id_codim_0[] = {\n" \
-            % { "D" : self.generator.dim, "T" : self.generator.basic_type } \
-            + "     /* cn: case number\n" \
-            "      * bc: basic case, if negative it's inverted\n" \
-            "      * el: elements specified by number of vertices\n" \
-            "      * cp: current position in array = offset */\n" \
-            "      /* cn / bc / el / cp */\n"
+        table_codim0.tablestring = \
+                 ("    "
+                  "const short table_{0[T]}{0[D]}d_codim_0[] = {{\n" 
+                  "     /* cn: case number\n"
+                  "      * bc: basic case, if negative it's inverted\n"
+                  "      * el: elements specified by number of vertices\n"
+                  "      * cp: current position in array = offset */\n"
+                  "      /* cn / bc / el / cp */"
+                  "\n".format(table_dict))
         table_codim1 = TableStorage()
-        table_codim1.tablestring = "    " \
-            "const short table_%(T)s%(D)id_codim_1[] = {\n" \
-            % { "D" : self.generator.dim, "T" : self.generator.basic_type } \
-            + "     /* cn: case number\n" \
-            "      * bc: basic case, if negative it's inverted\n" \
-            "      * el: elements specified by number of vertices\n" \
-            "      * cp: current position in array = offset */\n" \
-            "      /* cn / bc / el / cp */\n"
+        table_codim1.tablestring = \
+            ("    "
+             "const short table_{0[T]}{0[D]}d_codim_1[] = {{\n"
+             "     /* cn: case number\n"
+             "      * bc: basic case, if negative it's inverted\n"
+             "      * el: elements specified by number of vertices\n"
+             "      * cp: current position in array = offset */\n"
+             "      /* cn / bc / el / cp */"
+             "\n".format(table_dict))
         # write elements into the array
         create_tables(self, table_offsets, table_codim0, table_codim1)
         
@@ -240,15 +260,18 @@ class DuneCode:
         if self.generator.basic_type == "cube":
             table_mc33_offsets = TableStorage() 
             # TODO: Typ der Tabelle von char auf int (?) aendern
-            table_mc33_offsets.tablestring = "    " \
-                "const short table_%(T)s%(D)id_mc33_offsets[] = {\n" \
-                % {"D" : self.generator.dim, "T" : self.generator.basic_type }
+            table_mc33_offsets.tablestring = \
+                ("    "
+                "const short table_{0[T]}{0[D]}d_mc33_offsets[] = {{"
+                 "\n".format(table_dict))
             table_mc33_tests = TableStorage()
-            table_mc33_tests.tablestring = "    " \
-                "const short table_%(T)s%(D)id_mc33_face_test_order[] = {\n" \
-                % {"D" : self.generator.dim, "T" : self.generator.basic_type } \
-                + "      /* dummy entry/not used but the index has to start with 1*/\n" \
-                + "      1,\n"
+            table_mc33_tests.tablestring = \
+                ("    "
+                 "const short table_{0[T]}{0[D]}d_mc33_face_test_order[] "
+                 "= {{\n"
+                 "      /* dummy entry not used but the index has to "
+                 "start with 1*/\n"
+                 "      1,\n".format(table_dict))
             create_mc33_tables(self, table_offsets, table_codim0, 
                                table_codim1, table_mc33_offsets, 
                                table_mc33_tests)

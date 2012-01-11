@@ -22,19 +22,23 @@ class TestFace(object):
     def __mul__(self, perm):
         assert type(perm) is Permutation or type(perm) is Transformation
         assert len(perm) == 4 or len(perm) == 8
+        # need inverse permutation, because perm*case == base_case
+        # --> case = inv_perm * base_case (in geomobj its directly implemented)
+        invperm = Permutation(perm.orientation, 
+                              [perm.index(x) for x in range(len(perm))])
         if len(perm) == 8:
             dim = 3
             faces = ReferenceElements[(dim,"cube")].faces
             # get id of the permutated face
-            newidx = permute_faceid(self.idx, perm, faces)
+            newidx = permute_faceid(self.idx, invperm, faces)
             face = faces[newidx]
             refidx = faces[self.idx][self.refv]
-            vertices = perm * range(len(ReferenceElements[(3,"cube")]))
+            vertices = invperm * range(len(ReferenceElements[(3,"cube")]))
             refidx2 = vertices.index(refidx)
             refv = [0, 1, 1, 0][face.index(refidx2)]
             return TestFace(newidx, refv)
-        elif len(perm) == 4:
-            vertices = perm * range(4)
+        elif len(invperm) == 4:
+            vertices = invperm * range(4)
             refv = [0, 1, 1, 0][vertices.index(refv)]
             refidx = 0
     def __repr__(self):
