@@ -140,8 +140,6 @@ class DuneCode:
                     table.append("%s, " % ", ".join(get_point_name(x) 
                                                     for x in element),
                                  len(element))
-                    if entry.case == tuple([0,0,1,0,1,0,1,1]):
-                        print "Element: ",element," vertices ", ", ".join(get_point_name(x) for x in element)
             else:
                 table.append(" /* no elements */", 0)
             table.append("\n", 0)

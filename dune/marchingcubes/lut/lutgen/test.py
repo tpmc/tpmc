@@ -194,6 +194,18 @@ class Test(object):
                              "{1}".format(index, ['inside','outside'][value]))
                 return 0
         return 1
+    def test_face_tests(self, case, test_table, ref_elem):
+        """
+        checks if all faces tested in test_table are ambiguous
+        """
+        for x in (x for x in test_table if type(x) is TestFace):
+            face_values = [case[i] for i in ref_elem.faces[x.idx]];
+            if face_values != [0, 1, 1, 0] and face_values != [1, 0, 0, 1]:
+                LOGGER.error("face {0} should be tested "
+                             "but is not ambiguous".format(x.idx))
+                return 0            
+        return 1
+                
     def test_triangulation(self, triang, base_case, mc33_index):
         """ performs tests on the triangulation triang belonging to case """
         count, passed = 0, 0
@@ -228,7 +240,7 @@ class Test(object):
     def test(self):
         """ 
         performs tests for all base-case triangulations, including
-        mc33 cases 
+        mc33 cases and for dim=3 all updated cases
         """
         LOGGER.info("starting test of {0}".format(self.generator.geometry_type))
         passed = 0
@@ -244,5 +256,13 @@ class Test(object):
                                                                     index)
                 count += test_count
                 passed += test_passed
+        if self.generator.dim == 3:
+            for case in self.generator.all_cases:
+                result = self.test_face_tests(case.case, case.tests, self.generator.ref_elem)
+                if result == 0:
+                    LOGGER.error("face test for case {0} "
+                                 "FAILED".format(case.case))
+                count += 1;
+                passed += result;
         LOGGER.info("{0} of {1} tests passed".format(passed, count))
         return passed == count

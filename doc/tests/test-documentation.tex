@@ -9,9 +9,11 @@
 \begin{document}
 \section*{Marching-Cube 33 Tests}
 
-The following text contains the documentation of the marching cubes 33 tests performed by \file{test.py}. It contains four tests to evaluate the base case decomposition.
+The following text contains the documentation of the marching cubes 33 tests performed by \file{test.py}.
+\subsection*{Face-tests test}
+The tests loops through all Face tests in the marching cubes 33 test table and uses the case number to check if those faces are ambiguous.
 \subsection*{Vertex test}
-The first test uses the case number and checks if all vertices are correctly assigned to interior/exterior. A vertex with $0$ in the case number should be contained in an interior element, one with $1$ in an exterior element.
+The test uses the case number and checks if all vertices are correctly assigned to interior/exterior. A vertex with $0$ in the case number should be contained in an interior element, one with $1$ in an exterior element.
 \subsection*{Surface test}
 The surface test checks if the reference element is completely filled by the decomposition. This is accomplished by the following recursive scheme:
 
