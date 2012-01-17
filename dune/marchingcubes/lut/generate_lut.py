@@ -42,10 +42,6 @@ from lutgen.base_case_triangulation import LookupGenerators
 ################################################################################
 
 cube3d = LookupGenerators[(3,"cube")]
-#for i in cube3d.all_cases:
-#    print "".join(str(x) for x in i.case), " bc: ", i.base_case.tests
-#    print "".join(str(x) for x in i.case), ": ", i.tests
-#    print "".join(str(x) for x in i.case), ": ", i.transformation*range(len(i.transformation)) , "".join(str(x) for x in i.transformation**i.case), " vs ", "".join(str(x) for x in i.transformation*i.case)
 simplex3d = LookupGenerators[(3,"simplex")]
 cube2d = LookupGenerators[(2,"cube")]
 simplex2d = LookupGenerators[(2,"simplex")]

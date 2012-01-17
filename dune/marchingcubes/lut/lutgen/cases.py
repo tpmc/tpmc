@@ -3,6 +3,7 @@ contains classes for the description of marching cubes cases, including
 triangulation and base cases
 """
 
+from math import log, floor
 from geomobj import permute_geom_list
 from disambiguate import TestInvalid, TestRegular, TestInterior, TestFace
 
@@ -85,3 +86,22 @@ class Case(BaseCase):
             self.interior, self.exterior = self.exterior, self.interior
             for tri in self.mc33:
                 tri.interior, tri.exterior = tri.exterior, tri.interior
+            # mirror the test heap
+            def swap_subtrees(tree, index):
+                count = 0
+                while index < len(tree):
+                    left = 2*index+1
+                    if count>0:
+                        right = index+count
+                        tree[index:right], tree[right:right+count] = tree[right:right+count], tree[index:right]
+                        count *= 2
+                    else:
+                        count = 1
+                    index = left
+            count = len(self.tests)
+            index = 0;
+            while 2*index+1 < len(self.tests):
+                # no swap for InteriorTest
+                if type(self.tests[index]) is not TestInterior:
+                    swap_subtrees(self.tests, index)
+                index += 1

@@ -11,7 +11,7 @@ def permute_faceid(faceid, perm, faces):
     """ permutes the number of a tested face """
     perm_vertices = perm*range(len(perm))
     facesets = [set(f) for f in faces]
-    permface = set([perm_vertices.index(i) for i in facesets[faceid]])
+    permface = set([perm_vertices[i] for i in facesets[faceid]])
     return facesets.index(permface)
 
 class TestFace(object):
@@ -22,24 +22,23 @@ class TestFace(object):
     def __mul__(self, perm):
         assert type(perm) is Permutation or type(perm) is Transformation
         assert len(perm) == 4 or len(perm) == 8
-        # need inverse permutation, because perm*case == base_case
-        # --> case = inv_perm * base_case (in geomobj its directly implemented)
-        invperm = Permutation(perm.orientation, 
-                              [perm.index(x) for x in range(len(perm))])
         if len(perm) == 8:
             dim = 3
             faces = ReferenceElements[(dim,"cube")].faces
             # get id of the permutated face
-            newidx = permute_faceid(self.idx, invperm, faces)
+            newidx = permute_faceid(self.idx, perm, faces)
             face = faces[newidx]
+            # index of refv in base_case
             refidx = faces[self.idx][self.refv]
-            vertices = invperm * range(len(ReferenceElements[(3,"cube")]))
-            refidx2 = vertices.index(refidx)
+            # perm * case = base_case
+            vertices = perm * range(len(ReferenceElements[(3,"cube")]))
+            # index of refv in case
+            refidx2 = vertices[refidx]
             refv = [0, 1, 1, 0][face.index(refidx2)]
             return TestFace(newidx, refv)
-        elif len(invperm) == 4:
-            vertices = invperm * range(4)
-            refv = [0, 1, 1, 0][vertices.index(refv)]
+        elif len(perm) == 4:
+            vertices = perm * range(4)
+            refv = [0, 1, 1, 0][vertices[refv]]
             refidx = 0
     def __repr__(self):
         return "TEST_FACE_" + repr(self.idx) + "_" + repr(self.refv)
@@ -50,7 +49,7 @@ class TestInterior(object):
         self.refv = int(refv)
     def __mul__(self, perm):
         assert type(perm) is Permutation or type(perm) is Transformation
-        return TestInterior(perm[self.refv]%4)
+        return TestInterior([0,1,2,3,3,2,1,0][perm[self.refv]])
     def __repr__(self):
         return "TEST_INTERIOR_" + repr(self.refv)
 

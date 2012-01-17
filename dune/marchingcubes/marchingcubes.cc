@@ -12,7 +12,10 @@
 
 #include <fstream>
 #include <cmath>
+
+#ifndef NDEBUG
 #include <iostream> // FIXME TODO: Debug only, entferne mich!
+#endif
 
 #define DEBUG printf
 
@@ -151,31 +154,40 @@ namespace Dune {
       const GenericReferenceElement<ctype, dim> & ref_element =
         GenericReferenceElements<ctype, dim>::general(geo_type);
       valueType corner_a, corner_b, corner_c, corner_d;
-      //DEBUG("---- AMBIGUOUS\n");
+#ifndef NDEBUG
+      std::cout << "---- AMBIGUOUS\n" << std::endl;
+#endif
       // tests are negative, non-negativ values are offsets
       while ((test < 0) && (test != -CASE_IS_REGULAR))
       {
         assert(test != TEST_INVALID);
-                #ifndef NDEBUG
+#ifndef NDEBUG
         if (dim < 2 || dim > 3)
         {
           DUNE_THROW(IllegalArgumentException, "MC 33 cases should"
                      << " occur with dimension 2 or 3, not " << dim << ".");
         }
-                #endif
+#endif
 
         bool test_result = false;
-
-        DEBUG("++++ case-nr: %d, test: %d\n", case_number, test);
+#ifndef NDEBUG
+        std::cout << "++++ case-nr: " << case_number << ", test: "
+                  << test << ", test-index: " << test_index
+                  << std::endl;
+#endif
         if ((-test) & TEST_FACE)
         {
           size_t face = (-test - TEST_FACE) & ~TEST_FACE_FLIP;
-          DEBUG("++++ testing face %d\n", face);
+#ifndef NDEBUG
+          std::cout << "++++ testing face " << face << std::endl;
+#endif
           corner_a = vertex_values[ref_element.subEntity(face, dim-2, 0, dim)];
           corner_b = vertex_values[ref_element.subEntity(face, dim-2, 1, dim)];
           corner_c = vertex_values[ref_element.subEntity(face, dim-2, 2, dim)];
           corner_d = vertex_values[ref_element.subEntity(face, dim-2, 3, dim)];
+#ifndef NDEBUG
           std::cout << "vertices " << corner_a << " "  << corner_b << " "  << corner_c << " "  << corner_d << "\n";
+#endif
           bool inverse = (-test - TEST_FACE) & TEST_FACE_FLIP;
           test_result = testAmbiguousFace(corner_a, corner_b, corner_c, corner_d, inverse);
         }
@@ -189,19 +201,23 @@ namespace Dune {
           DUNE_THROW(IllegalArgumentException, "MC 33 test must be either"
                      "TEST_FACE or TEST_INTERIOR.");
         }
-        DEBUG("test_result: %d\n", test_result);
         // calculate next index position (if test is true: 2*index, otherwise: 2*index+1)
         tree_offset *= 2;
         tree_offset += (1 - test_result);
         test = table_mc33_face_test_order[test_index + tree_offset];
-        DEBUG("next test: %d\n", test);
-        DEBUG("regular is: %d\n", CASE_IS_REGULAR);
+#ifndef NDEBUG
+        std::cout << "test_result: " << test_result << std::endl;
+        std::cout << "next test: " << test << std::endl;
+        std::cout << "regular is: " << CASE_IS_REGULAR << std::endl;
+#endif
       }
       if (test != CASE_IS_REGULAR)
       {
         case_number = test;
       }
-      DEBUG("mc33: case is: %d\n", case_number);
+#ifndef NDEBUG
+      std::cout << "mc33: case is: " << case_number << std::endl;
+#endif
     }
     return case_number;
   }
@@ -262,21 +278,15 @@ namespace Dune {
                       + all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_1];
       }
       elements.reserve(element_count);
-      //std::cout << "Anzahl Elemente: " << element_count << " offset = "<<all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_0]<< std::endl;
-      // DEBUG("Anzahl Elemente: %d \n", (int)caseCountElements);
       for (sizeType i = 0; i < element_count; i++)
       {
         sizeType point_count = (sizeType) codim_index[0];
-        //std::cout << "element " << i << " contains " << point_count << " points" << std::endl;
         // Vector for storing the element points
         std::vector<point> element;
         element.resize(point_count);
         for (sizeType j = 0; j < point_count; j++)
         {
-          //std::cout << "trying to get coordinates of vertex " << (j+1) << std::endl;
-          //std::cout << "vertex index = " << codim_index[j+1] << std::endl;
           getCoordsFromNumber(vertex_values, vertex_count, codim_index[j+1], element[j]);
-          //std::cout << "done getting coordinates" << std::endl;
         }
         if (codim_1_not_0)
         {
@@ -318,11 +328,9 @@ namespace Dune {
                       const sizeType vertex_count, const short number,
                       point& coord) const
   {
-    //std::cout << "getting coords for " << number << std::endl;
     // it's a center point
     if (number == EY)
     {
-      //std::cout << "its a center point" << std::endl;
       //TODO: Testen
       // Initialize point
       for (sizeType i = 0; i < dim; i++)
@@ -363,7 +371,6 @@ namespace Dune {
     // it's an edge
     else if ((number & NO_VERTEX) == NO_VERTEX)
     {
-      //std::cout << "its an edge" << std::endl;
       // get both vertices
       point point_a, point_b;
       getCoordsFromEdgeNumber(vertex_values, vertex_count,
@@ -379,34 +386,24 @@ namespace Dune {
         index_b += (sizeType) point_b[i] * (1<<i);
       }
       // factor for interpolation
-      //#ifndef NDEBUG
-      //if (thresholdFunctor::isInside(vertex_values[index_a]) ==
-      //    thresholdFunctor::isInside(vertex_values[index_b]))
-      //    DUNE_THROW(Dune::Exception,
-      //    "No intersection on edge " << index_a << "/" << index_b << ", values: " << vertex_values[index_a] << "/" << vertex_values[index_b] << ".");
-      // assert(thresholdFunctor::isInside(vertex_values[index_a]) !=
-      //     thresholdFunctor::isInside(vertex_values[index_b]));
-      //#endif
       valueType interpol_factor =
         thresholdFunctor::getDistance(vertex_values[index_a])
         / (thresholdFunctor::getDistance(vertex_values[index_b])
            - thresholdFunctor::getDistance(vertex_values[index_a]));
-      // if we are at an egde with no intersecting, just take the edge-center
+      // if we are at an egde with no intersecting, just take the
+      // edge-center (occurs in codim 0 triangulation)
       if (thresholdFunctor::isInside(vertex_values[index_a]) ==
           thresholdFunctor::isInside(vertex_values[index_b]))
         interpol_factor = -0.5;
-      //            DEBUG("     Kante: coords %1.3f %1.3f davor indexA %d  indexB %d // %d %d\n", coord[0], coord[1], index_a, index_b, NO_VERTEX^number, number);
       // calculate interpolation point
       for (sizeType i = 0; i < dim; i++)
       {
         coord[i] = point_a[i] - interpol_factor * (point_b[i] - point_a[i]);
       }
-      //            DEBUG("     Kante: coords %1.3f %1.3f / A` %1.3f B` %1.3f \n", coord[0], coord[1], thresholdFunctor::getDistance(vertex_values[index_a]), thresholdFunctor::getDistance(vertex_values[index_b]));
     }
     // it's a vertex
     else
     {
-      //std::cout << "its a vertex" << std::endl;
       getCoordsFromEdgeNumber(vertex_values, vertex_count,
                               number, coord);
     }
@@ -472,15 +469,20 @@ namespace Dune {
     ctype c = thresholdFunctor::getDistance(corner_d);
     ctype d = thresholdFunctor::getDistance(corner_c);
 
-
+    // check if its really an amiguous face
     assert(a*c >= 0);
     assert(b*d >= 0);
 
-    ctype f = inverse ? a : b;
+    // should use 'a' according to lewiner paper (inverse is true if reference
+    // vertex is not equal to zero
+    //ctype f = inverse ? a : b;
+    ctype f = a;
 
+#ifndef NDEBUG
     std::cout << "testFace " << inverse << " => " << (a*c-b*d) << std::endl;
+#endif
 
-    bool result = thresholdFunctor::isLower(f*(a*c-b*d));
+    bool result = !thresholdFunctor::isLower(f*(a*c-b*d));
     return result;
   }
 
@@ -504,7 +506,9 @@ namespace Dune {
                       const sizeType vertex_count, size_t refCorner) const
   {
     assert(dim==3);
-    DEBUG("---------------------------\ntestAmbiguousCenter %i\n", (int)refCorner);
+#ifndef NDEBUG
+    std::cout << "---------------------------\ntestAmbiguousCenter " << refCorner << std::endl;
+#endif
     // permute vertices according to refCorner
     // rotate arounf z-axis such that refCorner is a0
     assert (refCorner < 4);
@@ -524,22 +528,22 @@ namespace Dune {
     const ctype c1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][7]]);
     const ctype d1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][5]]);
 
-    DEBUG("%f ::: %f ::: %f ::: %f ::: %f ::: %f ::: %f ::: %f\n",
-          vertex_values[0],
-          vertex_values[1],
-          vertex_values[2],
-          vertex_values[3],
-          vertex_values[4],
-          vertex_values[5],
-          vertex_values[6],
-          vertex_values[7]);
-    DEBUG("%f ::: %f ::: %f ::: %f ::: %f ::: %f ::: %f ::: %f\n",a0,d0,b0,c0,a1,d1,b1,c1);
+#ifndef NDEBUG
+    std::cout << vertex_values[0] << " ::: " << vertex_values[1] << " ::: "
+              << vertex_values[2] << " ::: " << vertex_values[3] << " ::: "
+              << vertex_values[4] << " ::: " << vertex_values[5] << " ::: "
+              << vertex_values[6] << " ::: " << vertex_values[7] <<std::endl;
+    std::cout << a0 << " ::: " << d0 << " ::: " << b0 << " ::: " << c0 << " ::: "
+              << a1 << " ::: " << d1 << " ::: " << b1 << " ::: " << c1 << std::endl;
+#endif
 
     // check that there is maximum
     const ctype a =  (a1 - a0) * (c1 - c0) - (b1 - b0) * (d1 - d0);
     if (a >= 0.0)
     {
-      DEBUG("a >= 0 (%f)\nresult: false\n", a);
+#ifndef NDEBUG
+      std::cout << "a >= 0 (" << a << ")\nresult: false" << std::endl;
+#endif
       return false;
     }
     // check that the maximum-plane is inside the cube
@@ -547,7 +551,9 @@ namespace Dune {
     const ctype t_max = -0.5 * b / a;
     if ((0.0 >= t_max) || (1.0 <= t_max))
     {
-      DEBUG("t_max not in [0,1]\nresult: false\n");
+#ifndef NDEBUG
+      std::cout << "t_max not in [0,1]\nresult: false" << std::endl;
+#endif
       return false;
     }
     // check that the
@@ -561,10 +567,13 @@ namespace Dune {
                                 && (bt*dt >= 0) && (at*bt >= 0);
     const bool corner_signs = (a0*ct >= 0) && (at*ct >= 0) && (ct*c1 >= 0);
     bool result = (inequation_4 && corner_signs);
-    DEBUG("ineq %d ::: corner %d ::: cornerX %d\nresult: %s\n",
-          inequation_4, corner_signs, corner_signs_x,
-          (result ? "true" : false));
-    DEBUG("corners: %f %f %f %f\n", at, bt, ct, dt);
+#ifndef NDEBUG
+    std::cout << "ineq " << inequation_4 << " ::: corner " << corner_signs
+              << " ::: cornerX " << corner_signs_x << std::endl;
+    std::cout << "result: " << (result ? "true" : "false") << std::endl;
+    std::cout << "corners: " << at << " " << bt << " " << c1 << " " << dt
+              << std::endl;
+#endif
     return result;
   }
 

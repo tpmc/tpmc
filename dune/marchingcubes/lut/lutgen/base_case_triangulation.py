@@ -55,7 +55,7 @@ BCTcube3d.base_cases[3].name = "MC33 Case 3.1"
 BCTcube3d.base_cases[3].faces = [[(1, 5), (0, 1), (1, 3)], [(2, 3), (0, 2), (2, 6)]]
 BCTcube3d.base_cases[3].exterior = [[1, (1, 5), (0, 1), (1, 3)], [2, (2, 3), (0, 2), (2, 6)]]
 BCTcube3d.base_cases[3].interior = [[(1, 5), (0, 1), (1, 3), 5, 0, 3], [(2, 3), (0, 2), (2, 6), 3, 0, 6], [5, 6, 7, 3], [0, 3, 5, 6], [0, 4, 5, 6]]
-# 1,1,1,0,0,0,0,0 -> 00000111 # Basic Case 4
+# 1,1,1,0,0,0,0,0 -> 00000111 # Basic Case 5
 BCTcube3d.base_cases[4].name = "MC33 Case 5"
 BCTcube3d.base_cases[4].faces = [[(0, 4), (1, 5), (2, 6)], [(1, 5), (2, 6), (1, 3), (2, 3)]]
 BCTcube3d.base_cases[4].exterior = [[0, 1, 2, (0, 4), (1, 5) , (2, 6)], [1, (1, 3), (1, 5), 2, (2, 3), (2, 6)]]
