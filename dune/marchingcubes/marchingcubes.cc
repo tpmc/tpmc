@@ -42,11 +42,15 @@ namespace Dune {
   template <typename valueType, int dim, typename thresholdFunctor>
   const short * const
   MarchingCubes33<valueType, dim, thresholdFunctor>::
-  all_codim_0[] = {
-    NULL, NULL, NULL, table_any1d_codim_0,
-    NULL, table_simplex2d_codim_0,
-    table_cube2d_codim_0, table_simplex3d_codim_0,
-    NULL, NULL, NULL, table_cube3d_codim_0
+  all_codim_0[][2] = {
+    {NULL, NULL}, {NULL, NULL}, {NULL, NULL},
+    {table_any1d_codim_0_interior, table_any1d_codim_0_exterior},
+    {NULL, NULL}, {table_simplex2d_codim_0_interior,
+                   table_simplex2d_codim_0_exterior},
+    {table_cube2d_codim_0_interior, table_cube2d_codim_0_exterior},
+    {table_simplex3d_codim_0_interior, table_simplex3d_codim_0_exterior},
+    {NULL, NULL}, {NULL, NULL}, {NULL, NULL},
+    {table_cube3d_codim_0_interior, table_cube3d_codim_0_exterior}
   };
 
   /*
@@ -107,7 +111,7 @@ namespace Dune {
   typename MarchingCubes33<valueType, dim, thresholdFunctor>::sizeType
   MarchingCubes33<valueType, dim, thresholdFunctor>::
   getKey(const valueVector& vertex_values, const sizeType vertex_count,
-         const bool use_mc_33)
+         const bool use_mc_33) const
   {
     if ((dim < 0) || (dim > 3))
     {
@@ -118,7 +122,7 @@ namespace Dune {
     {
       return 0;
     }
-    const short (* const table_case_offsets)[5] =
+    const short (* const table_case_offsets)[7] =
       all_case_offsets[vertex_count + dim];
     const short * const table_mc33_offsets =
       all_mc33_offsets[vertex_count + dim];
@@ -155,7 +159,11 @@ namespace Dune {
         GenericReferenceElements<ctype, dim>::general(geo_type);
       valueType corner_a, corner_b, corner_c, corner_d;
 #ifndef NDEBUG
-      std::cout << "---- AMBIGUOUS\n" << std::endl;
+      std::cout << "---- AMBIGUOUS:" << std::endl;
+      int count = 0;
+      for (auto it = vertex_values.begin(); it != vertex_values.end(); ++it)
+        std::cout << "v" << count++ << " = " << *it << "\n";
+      std::cout << std::endl;
 #endif
       // tests are negative, non-negativ values are offsets
       while ((test < 0) && (test != -CASE_IS_REGULAR))
@@ -219,6 +227,7 @@ namespace Dune {
       std::cout << "mc33: case is: " << case_number << std::endl;
 #endif
     }
+    delete[] vertex_inside;
     return case_number;
   }
 
@@ -250,7 +259,8 @@ namespace Dune {
   getElements(const valueVector& vertex_values,
               const sizeType vertex_count, const sizeType key,
               const bool codim_1_not_0,
-              std::vector<std::vector<point> >& elements)
+              const bool exterior_not_interior,
+              std::vector<std::vector<point> >& elements) const
   {
     if (dim == 0)
     {
@@ -267,9 +277,9 @@ namespace Dune {
     else
     {
       sizeType element_count = all_case_offsets
-                               [vertex_count + dim][key][INDEX_COUNT_CODIM_0];
-      const short (* codim_index) = all_codim_0[vertex_count + dim]
-                                    + all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_0];
+                               [vertex_count + dim][key][INDEX_COUNT_CODIM_0[int(exterior_not_interior)]];
+      const short (* codim_index) = all_codim_0[vertex_count + dim][int(exterior_not_interior)]
+                                    + all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_0[int(exterior_not_interior)]];
       if (codim_1_not_0)
       {
         element_count = all_case_offsets
@@ -563,8 +573,10 @@ namespace Dune {
     const ctype dt = d0 + (d1 - d0) * t_max;
     const bool inequation_4 = !thresholdFunctor::isLower(at*ct - bt*dt);
     // check sign(a0) = sign(at) = sign(ct) = sign(c1)
+#ifndef NDEBUG
     const bool corner_signs_x = (at*ct >= 0)
                                 && (bt*dt >= 0) && (at*bt >= 0);
+#endif
     const bool corner_signs = (a0*ct >= 0) && (at*ct >= 0) && (ct*c1 >= 0);
     bool result = (inequation_4 && corner_signs);
 #ifndef NDEBUG

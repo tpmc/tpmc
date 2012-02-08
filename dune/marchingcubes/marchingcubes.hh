@@ -23,20 +23,22 @@ namespace Dune {
   public:
     template <typename valueVector>
     sizeType getKey(const valueVector& vertex_values,
-                    const sizeType vertex_count, const bool use_mc_33);
+                    const sizeType vertex_count,
+                    const bool use_mc_33) const;
     template <typename valueVector>
     void getElements(const valueVector& vertex_values,
-                     const sizeType vertex_count,    const sizeType key,
+                     const sizeType vertex_count, const sizeType key,
                      const bool codim_1_not_0,
-                     std::vector<std::vector<point> >& elements);
+                     const bool exterior_not_interior,
+                     std::vector<std::vector<point> >& elements) const;
 
   private:
     /*
      * TODO: Comment
      */
-    typedef const short offsetRow[5];
+    typedef const short offsetRow[7];
     static offsetRow * all_case_offsets[];
-    static const short * const all_codim_0[];
+    static const short * const all_codim_0[][2];
     static const short * const all_codim_1[];
     static const short * const all_mc33_offsets[];
     static const short * const all_face_tests[];

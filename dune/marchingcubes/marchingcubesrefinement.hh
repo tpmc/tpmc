@@ -75,7 +75,7 @@ MarchingCubesRefinement(const GeometryType& type,std::vector<double> values)
   // Call the actual marching cubes algorithm
   MarchingCubes33<double,dim,MarchingCubes::ThresholdFunctor> marchingcubes33;
   size_t key = marchingcubes33.getKey(values, values.size(), true);
-  marchingcubes33.getElements(values, values.size(), key, false, elementCorners);
+  marchingcubes33.getElements(values, values.size(), key, false, false, elementCorners);
 
   // set up the list of BasicGeometries which is the output of this class
   geometries_.resize(elementCorners.size());

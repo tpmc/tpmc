@@ -113,11 +113,11 @@ static const short TEST_INTERIOR_2 = -(TEST_INTERIOR | 2);
 static const short TEST_INTERIOR_3 = -(TEST_INTERIOR | 3);
 
 /* Indices for access to cube2d_case_offsets */
-static const int INDEX_OFFSET_CODIM_0 = 0;
-static const int INDEX_COUNT_CODIM_0 = 1;
-static const int INDEX_OFFSET_CODIM_1 = 2;
-static const int INDEX_COUNT_CODIM_1 = 3;
-static const int INDEX_UNIQUE_CASE = 4;
+static const int INDEX_OFFSET_CODIM_0[] = {2, 0};
+static const int INDEX_COUNT_CODIM_0[] = {3, 1};
+static const int INDEX_OFFSET_CODIM_1 = 4;
+static const int INDEX_COUNT_CODIM_1 = 5;
+static const int INDEX_UNIQUE_CASE = 6;
 
 #ifndef _MARCHING_LUT_CC_
 
@@ -139,7 +139,7 @@ extern "C"
    * Basic case 2: 0 0 1 1
    * Basic case 3: 0 1 0 1
    */
-  extern const short table_cube2d_cases_offsets[][5];
+  extern const short table_cube2d_cases_offsets[][7];
 
   /*
    * Contains all lines for Cube 2D.
@@ -173,7 +173,8 @@ extern "C"
    *  |   |
    *  0-5-1
    */
-  extern const short table_cube2d_codim_0[];
+  extern const short table_cube2d_codim_0_exterior[];
+  extern const short table_cube2d_codim_0_interior[];
 
   /*
    * TODO: Comment
@@ -188,12 +189,13 @@ extern "C"
   /*
    * TODO: Comment 3D cube
    */
-  extern const short table_cube3d_cases_offsets[][5];
+  extern const short table_cube3d_cases_offsets[][7];
 
   /*
    * TODO: Comment
    */
-  extern const short table_cube3d_codim_0[];
+  extern const short table_cube3d_codim_0_exterior[];
+  extern const short table_cube3d_codim_0_interior[];
 
   /*
    * TODO: Comment
@@ -213,12 +215,13 @@ extern "C"
   /*
    * TODO: Comment 2D simplex
    */
-  extern const short table_simplex2d_cases_offsets[][5];
+  extern const short table_simplex2d_cases_offsets[][7];
 
   /*
    * TODO: Comment
    */
-  extern const short table_simplex2d_codim_0[];
+  extern const short table_simplex2d_codim_0_exterior[];
+  extern const short table_simplex2d_codim_0_interior[];
 
   /*
    * TODO: Comment
@@ -228,12 +231,13 @@ extern "C"
   /*
    * TODO: Comment 3D simplex
    */
-  extern const short table_simplex3d_cases_offsets[][5];
+  extern const short table_simplex3d_cases_offsets[][7];
 
   /*
    * TODO: Comment
    */
-  extern const short table_simplex3d_codim_0[];
+  extern const short table_simplex3d_codim_0_exterior[];
+  extern const short table_simplex3d_codim_0_interior[];
 
   /*
    * TODO: Comment
@@ -243,12 +247,13 @@ extern "C"
   /*
    * TODO: Comment
    */
-  extern const short table_any1d_cases_offsets[][5];
+  extern const short table_any1d_cases_offsets[][7];
 
   /*
    * TODO: Comment
    */
-  extern const short table_any1d_codim_0[];
+  extern const short table_any1d_codim_0_exterior[];
+  extern const short table_any1d_codim_0_interior[];
 
   /*
    * TODO: Comment
