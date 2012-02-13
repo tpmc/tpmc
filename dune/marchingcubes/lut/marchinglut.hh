@@ -11,26 +11,26 @@
  * a G and a following big letter, too.
  * Here is the naming scheme for a square and a cube. Lines,
  * triangles and tetrahedrons follow this scheme. They always
- * contain vertex A and edge J.
+ * contain vertex A and edge I.
  *
  * Square:
  *
- * C--K--D
+ * C--J--D
  * |     |
- * L     M
+ * K     L
  * |     |
- * A--J--B
+ * A--I--B
  *
  * Cube:
- *         G ________ H           _____S__
+ *         G ________ H           _____R__
  *         /|       /|          /|       /|
- *       /  |     /  |       T/  |     /U |
- *   E /_______ /    |    E /__R____ /    Q
- *    |     |  |F    |     |     P  |     |
- *    |    C|__|_____|D    |     |__|__K__|
- *    |    /   |    /      N   L/   O    /
- *    |  /     |  /        |  /     |  /M
- *    |/_______|/          |/___J___|/    Cube center: V
+ *       /  |     /  |       S/  |     /T |
+ *   E /_______ /    |    E /__Q____ /    P
+ *    |     |  |F    |     |     O  |     |
+ *    |    C|__|_____|D    |     |__|__J__|
+ *    |    /   |    /      M   K/   N    /
+ *    |  /     |  /        |  /     |  /L
+ *    |/_______|/          |/___I___|/    Cube center: Z
  *   A          B         A          B
  *
  *
@@ -68,23 +68,25 @@ static const short VF = VERTEX_GO_RIGHT + VERTEX_GO_UP;
 static const short VG = VERTEX_GO_DEPTH + VERTEX_GO_UP;
 static const short VH = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP;
 // edges start with E
-static const short EJ = VA * FACTOR_FIRST_POINT + VB * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EK = VC * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EL = VA * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EM = VB * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EN = VA * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EO = VB * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EP = VC * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EQ = VD * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short ER = VE * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short ES = VG * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short ET = VE * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EU = VF * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EV = VB * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EW = VB * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EX = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EI = VA * FACTOR_FIRST_POINT + VB * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EJ = VC * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EK = VA * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EL = VB * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EM = VA * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EN = VB * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EO = VC * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EP = VD * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EQ = VE * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short ER = VG * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short ES = VE * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short ET = VF * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EU = VB * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EV = VB * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EW = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EX = VC * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EY = VF * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
 // Center point is in the center of a cube or tetrahedron
-static const short EY = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short EZ = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
 
 /* Constants indicating whether case special treatment when marching cubes' 33 is used. */
 static const short CASE_UNIQUE_MC33 = 0;
@@ -243,6 +245,58 @@ extern "C"
    * TODO: Comment
    */
   extern const short table_simplex3d_codim_1[];
+
+  /*
+   * TODO: Comment 3D pyramid
+   */
+  extern const short table_pyramid3d_cases_offsets[][7];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_pyramid3d_codim_0_exterior[];
+  extern const short table_pyramid3d_codim_0_interior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_pyramid3d_codim_1[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_pyramid3d_mc33_offsets[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_pyramid3d_mc33_face_test_order[];
+
+  /*
+   * TODO: Comment 3D prism
+   */
+  extern const short table_prism3d_cases_offsets[][7];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_prism3d_codim_0_exterior[];
+  extern const short table_prism3d_codim_0_interior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_prism3d_codim_1[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_prism3d_mc33_offsets[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_prism3d_mc33_face_test_order[];
 
   /*
    * TODO: Comment

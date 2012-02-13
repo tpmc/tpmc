@@ -61,6 +61,8 @@ class PolygonList(object):
             return True
         else:
             return False
+    def __repr__(self):
+        return str(self.polygons)
 
 
 class Polygon(list):

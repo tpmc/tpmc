@@ -21,7 +21,7 @@ class TestFace(object):
         self.refv = int(refv)    
     def __mul__(self, perm):
         assert type(perm) is Permutation or type(perm) is Transformation
-        assert len(perm) == 4 or len(perm) == 8
+        assert len(perm) == 4 or len(perm) == 8 or len(perm) == 6
         if len(perm) == 8:
             dim = 3
             faces = ReferenceElements[(dim,"cube")].faces
@@ -32,6 +32,20 @@ class TestFace(object):
             refidx = faces[self.idx][self.refv]
             # perm * case = base_case
             vertices = perm * range(len(ReferenceElements[(3,"cube")]))
+            # index of refv in case
+            refidx2 = vertices[refidx]
+            refv = [0, 1, 1, 0][face.index(refidx2)]
+            return TestFace(newidx, refv)
+        elif len(perm) == 6:
+            dim = 3
+            faces = ReferenceElements[(dim,"prism")].faces
+            # get id of the permutated face
+            newidx = permute_faceid(self.idx, perm, faces)
+            face = faces[newidx]
+            # index of refv in base_case
+            refidx = faces[self.idx][self.refv]
+            # perm * case = base_case
+            vertices = perm * range(len(ReferenceElements[(3,"prism")]))
             # index of refv in case
             refidx2 = vertices[refidx]
             refv = [0, 1, 1, 0][face.index(refidx2)]

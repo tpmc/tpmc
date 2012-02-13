@@ -58,7 +58,7 @@ class Case(BaseCase):
         def permute_single_test(test, perm):
             """ permutes the test (eg face-number) """
             if type(test) in (TestInvalid, TestRegular, TestInterior, TestFace):
-                if dim == 3 and len(self.case) == 8:
+                if dim == 3 and (len(self.case) == 8 or len(self.case) == 6):
                     return test * perm
                 else:
                     return test

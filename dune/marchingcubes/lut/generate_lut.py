@@ -42,6 +42,8 @@ from lutgen.base_case_triangulation import LookupGenerators
 ################################################################################
 
 cube3d = LookupGenerators[(3,"cube")]
+pyramid3d = LookupGenerators[(3,"pyramid")]
+prism3d = LookupGenerators[(3,"prism")]
 simplex3d = LookupGenerators[(3,"simplex")]
 cube2d = LookupGenerators[(2,"cube")]
 simplex2d = LookupGenerators[(2,"simplex")]
@@ -76,27 +78,15 @@ DuneCode(lut1d).write(ccfile)
 DuneCode(simplex2d).write(ccfile)
 DuneCode(cube2d).write(ccfile)
 DuneCode(simplex3d).write(ccfile)
+DuneCode(pyramid3d).write(ccfile)
+DuneCode(prism3d).write(ccfile)
 DuneCode(cube3d).write(ccfile)
 
 ccfile.write("}\n")
 ccfile.close()
 
-## generators = {
-##     (1, "any"): lut1d,
-## 	(2, "simplex"): simplex2d,
-## 	(2, "cube"): cube2d,
-## 	(3, "simplex"): simplex3d,
-## #	(3, "prism"): prism3d,
-## #	(3, "pyramid"): pyramid3d,
-## 	(3, "cube"): cube3d
-## 	}
-
-#Consistency(generators).check(3, "simplex")
-# Consistency(generators).check(3, "cube")
-
-#Sk(cube3d).write("lutgen/sk")
-#Sk(simplex3d).write("lutgen/sk")
-
+Vtk(prism3d).write("lutgen/vtk")
+Vtk(pyramid3d).write("lutgen/vtk")
 Vtk(cube3d).write("lutgen/vtk")
 Vtk(cube2d).write("lutgen/vtk")
 Vtk(simplex2d).write("lutgen/vtk")
@@ -113,4 +103,10 @@ Test(simplex2d).test()
 LOGGER.info("time elapsed: {0}s".format(time.time()-start))
 start = time.time()
 Test(simplex3d).test()
+LOGGER.info("time elapsed: {0}s".format(time.time()-start))
+start = time.time()
+Test(pyramid3d).test()
+LOGGER.info("time elapsed: {0}s".format(time.time()-start))
+start = time.time()
+Test(prism3d).test()
 LOGGER.info("time elapsed: {0}s".format(time.time()-start))

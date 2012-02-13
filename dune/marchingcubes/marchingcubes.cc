@@ -32,7 +32,8 @@ namespace Dune {
     NULL, NULL, NULL, table_any1d_cases_offsets,
     NULL, table_simplex2d_cases_offsets,
     table_cube2d_cases_offsets, table_simplex3d_cases_offsets,
-    NULL, NULL, NULL, table_cube3d_cases_offsets
+    table_pyramid3d_cases_offsets, table_prism3d_cases_offsets,
+    NULL, table_cube3d_cases_offsets
   };
 
   /*
@@ -49,7 +50,9 @@ namespace Dune {
                    table_simplex2d_codim_0_exterior},
     {table_cube2d_codim_0_interior, table_cube2d_codim_0_exterior},
     {table_simplex3d_codim_0_interior, table_simplex3d_codim_0_exterior},
-    {NULL, NULL}, {NULL, NULL}, {NULL, NULL},
+    {table_pyramid3d_codim_0_interior, table_pyramid3d_codim_0_exterior},
+    {table_prism3d_codim_0_interior, table_prism3d_codim_0_exterior},
+    {NULL, NULL},
     {table_cube3d_codim_0_interior, table_cube3d_codim_0_exterior}
   };
 
@@ -64,7 +67,8 @@ namespace Dune {
     NULL, NULL, NULL, table_any1d_codim_1,
     NULL, table_simplex2d_codim_1,
     table_cube2d_codim_1, table_simplex3d_codim_1,
-    NULL, NULL, NULL, table_cube3d_codim_1
+    table_pyramid3d_codim_1, table_pyramid3d_codim_1, NULL,
+    table_cube3d_codim_1
   };
 
   /*
@@ -77,7 +81,8 @@ namespace Dune {
   all_mc33_offsets[] = {
     NULL, NULL, NULL, NULL, NULL, NULL,
     table_cube2d_mc33_offsets, NULL,
-    NULL, NULL, NULL, table_cube3d_mc33_offsets
+    table_pyramid3d_mc33_offsets, table_prism3d_mc33_offsets, NULL,
+    table_cube3d_mc33_offsets
   };
 
   /*
@@ -90,7 +95,9 @@ namespace Dune {
   all_face_tests[] = {
     NULL, NULL, NULL, NULL, NULL, NULL,
     table_cube2d_mc33_face_test_order, NULL,
-    NULL, NULL, NULL, table_cube3d_mc33_face_test_order
+    table_pyramid3d_mc33_face_test_order,
+    table_prism3d_mc33_face_test_order, NULL,
+    table_cube3d_mc33_face_test_order
   };
 
   /** \brief Calculates the key in the marching cubes' case table
@@ -130,7 +137,7 @@ namespace Dune {
       all_face_tests[vertex_count + dim];
 
     // vector containing information if vertices are inside or not
-    bool * vertex_inside = new bool[vertex_count];
+    bool vertex_inside[vertex_count];
     int case_number = 0;
     for (sizeType i = vertex_count; i > 0; i--)
     {
@@ -227,7 +234,6 @@ namespace Dune {
       std::cout << "mc33: case is: " << case_number << std::endl;
 #endif
     }
-    delete[] vertex_inside;
     return case_number;
   }
 
@@ -339,7 +345,7 @@ namespace Dune {
                       point& coord) const
   {
     // it's a center point
-    if (number == EY)
+    if (number == EZ)
     {
       //TODO: Testen
       // Initialize point
@@ -350,7 +356,7 @@ namespace Dune {
       // Mean from each threshold value on an edge
       short vertex_1, vertex_2;
       sizeType count = 0;
-      static short edges[] = {EJ, EK, EL, EM, EN, EO, EP, EQ, ER, ES, ET, EU};
+      static short edges[] = {EI, EJ, EK, EL, EM, EN, EO, EP, EQ, ER, ES, ET};
 
       for (short e_index = 0; e_index<12; ++e_index)
       {
@@ -489,7 +495,7 @@ namespace Dune {
     ctype f = a;
 
 #ifndef NDEBUG
-    std::cout << "testFace " << inverse << " => " << (a*c-b*d) << std::endl;
+    std::cout << "testFace " << inverse << " => " << f*(a*c-b*d) << std::endl;
 #endif
 
     bool result = !thresholdFunctor::isLower(f*(a*c-b*d));

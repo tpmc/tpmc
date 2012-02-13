@@ -23,30 +23,34 @@ VF = VERTEX_GO_RIGHT + VERTEX_GO_UP
 VG = VERTEX_GO_DEPTH + VERTEX_GO_UP
 VH = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP
 # edges start with E
-EJ = VA * FACTOR_FIRST_POINT + VB * FACTOR_SECOND_POINT + NO_VERTEX
-EK = VC * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX
-EL = VA * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX
-EM = VB * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX
-EN = VA * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
-EO = VB * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX
-EP = VC * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX
-EQ = VD * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
-ER = VE * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX
-ES = VG * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
-ET = VE * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX
-EU = VF * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
+EI = VA * FACTOR_FIRST_POINT + VB * FACTOR_SECOND_POINT + NO_VERTEX
+EJ = VC * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX
+EK = VA * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX
+EL = VB * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX
+EM = VA * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
+EN = VB * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX
+EO = VC * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX
+EP = VD * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
+EQ = VE * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX
+ER = VG * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
+ES = VE * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX
+ET = VF * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
 # Diagonals for simplices
-EV = VB * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX
-EW = VB * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
-EX = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
+EU = VB * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX
+EV = VB * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
+EW = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
+# Diagonal for pyramid
+EX = VC * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX
+# Diagonal for prism
+EY = VF * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX
 # Center point is in the center of a cube or tetrahedron
-EY = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
+EZ = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
 # dictionary to get constant names from integers
 CONST_NAMES = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", 
-               VF:"VF", VG:"VG", VH:"VH", EJ:"EJ", EK:"EK", EL:"EL", 
-               EM:"EM", EN:"EN", EO:"EO", EP:"EP", EQ:"EQ", ER:"ER", 
-               ES:"ES", ET:"ET", EU:"EU", EV:"EV", EW:"EW", EX:"EX",
-               EY:"EY"}
+               VF:"VF", VG:"VG", VH:"VH", EI:"EI", EJ:"EJ", EK:"EK", 
+               EL:"EL", EM:"EM", EN:"EN", EO:"EO", EP:"EP", EQ:"EQ", 
+               ER:"ER", ES:"ES", ET:"ET", EU:"EU", EV:"EV", EW:"EW", 
+               EX:"EX", EY:"EY", EZ:"EZ"}
 # Constants indicating whether case special treatment when 
 # marching cubes' 33 is used.
 CASE_UNIQUE_MC33 = 0
@@ -84,12 +88,14 @@ class DuneCode:
                 or first == VB and second == VG 
                 or first == VC and second == VF 
                 or first == VD and second == VE):
-                return EY
+                return EZ
             # points on an edge"
             try:
-                # check whether edge exists, excpect 3D simplex because of 
-                # changed numering
-                if (self.generator.basic_type != "simplex" 
+                # check whether edge exists, excpect 3D simplex, prism or 
+                # pyramid because of changed numering
+                if ((self.generator.basic_type != "simplex" 
+                     and self.generator.basic_type != "prism"
+                     and self.generator.basic_type != "pyramid")
                     or self.generator.dim != 3):
                     self.ref_elem.edges.index(set([first, second]))
                 return (first * FACTOR_FIRST_POINT 
@@ -111,18 +117,18 @@ class DuneCode:
         def create_codim_line(table, entry, new_elements):
             """ create a table line for codimX tables """
             # change 3D simplex numbering scheme to 3D cube's one
-            # ??? why? (an)
-            if self.generator.geometry_type == (3,"simplex"):
+            rename_vertices = {(3,"simplex"): [0,1,2,4],
+                               (3,"prism"): [0,1,2,4,5,6],
+                               (3,"pyramid"): [0,1,4,5,2]}
+            if self.generator.geometry_type in rename_vertices:
+                rename = rename_vertices[self.generator.geometry_type]
                 for i in range(len(new_elements)):
                     for j in range(len(new_elements[i])):
                         if type(new_elements[i][j]) is int:
-                            if new_elements[i][j] == 3:
-                                new_elements[i][j] = 4
+                            new_elements[i][j] = rename[new_elements[i][j]]
                         else:
-                            if new_elements[i][j][0] == 3:
-                                new_elements[i][j] = (4, new_elements[i][j][1]) 
-                            if new_elements[i][j][1] == 3:
-                                new_elements[i][j] = (new_elements[i][j][0], 4)
+                            new_elements[i][j] = (rename[new_elements[i][j][0]],
+                                                  rename[new_elements[i][j][1]])
             # write comment in front of data
             assert entry.base_case in self.generator.base_cases
             base_case_number = self.generator.base_cases.index(entry.base_case)
@@ -273,7 +279,8 @@ class DuneCode:
                       table_codim0_interior, table_codim1)
         
         # tables for mc 33
-        if self.generator.basic_type == "cube":
+        generate_mc33 = set(["cube", "prism", "pyramid"])
+        if self.generator.basic_type in generate_mc33:
             table_mc33_offsets = TableStorage() 
             # TODO: Typ der Tabelle von char auf int (?) aendern
             table_mc33_offsets.tablestring = \
@@ -300,7 +307,7 @@ class DuneCode:
         dune_file.write(table_codim0_exterior.tablestring)
         dune_file.write(table_codim0_interior.tablestring)
         dune_file.write(table_codim1.tablestring)
-        if self.generator.basic_type == "cube":
+        if self.generator.basic_type in generate_mc33:
             table_mc33_offsets.append("    };\n\n\n", 0)
             table_mc33_tests.append("    };\n\n\n", 0)
             dune_file.write(table_mc33_offsets.tablestring)

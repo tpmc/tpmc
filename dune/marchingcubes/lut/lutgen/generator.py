@@ -95,10 +95,12 @@ class LookupGenerator(object):
             return [Transformation(-1, 0, (4, 5, 6, 7, 0, 1, 2, 3)),
                     Transformation(1, 0, (1, 5, 3, 7, 0, 4, 2, 6)),
                     Transformation(1, 0, (1, 3, 0, 2, 5, 7, 4, 6))]
-        elif self.geometry_type == (3,"prism"):
-            assert 0
-        elif self.geometry_type == (3,"pyramid"):
-            assert 0
+        elif self.geometry_type == (3,"prism"): # mirror, rotate
+            return [Transformation(-1, 0, (3, 4, 5, 0, 1, 2)),
+                    Transformation(1, 0, (1, 2, 0, 4, 5, 3))]
+        elif self.geometry_type == (3,"pyramid"): #mirror, rotate
+            return [Transformation(-1, 0, (1, 0, 3, 2, 4)),
+                    Transformation(1, 0, (1, 3, 0, 2, 4))]
         elif self.geometry_type == (4,"cube"):
             return [Transformation(-1, 0, (8,9,10,11,12,13,14,15,
                                            0,1,2,3,4,5,6,7)),

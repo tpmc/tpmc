@@ -104,14 +104,14 @@ class Test(object):
                 LOGGER.error(errormsg.format(reference_faces.index(ref_face),
                                              lower_case_number,
                                              'interior'))
-                LOGGER.error('{0} vs {1}'.format(face_interior_high, 
+                LOGGER.error('high:{0} vs low:{1}'.format(face_interior_high, 
                                                  face_interior_low))
                 return 0
             if not face_exterior_low == face_exterior_high:
                 LOGGER.error(errormsg.format(reference_faces.index(ref_face),
                                              lower_case_number,
                                              'exterior'))
-                LOGGER.error('{0} vs {1}'.format(face_interior_high, 
+                LOGGER.error('high:{0} vs low:{1}'.format(face_interior_high, 
                                                  face_interior_low))
                 return 0
         # all reference faces passed
