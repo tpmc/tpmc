@@ -115,9 +115,23 @@ class LookupGenerator(object):
         """
         call update method of every case to let it fetch its triangulation 
         from its base case.
-        """        
+        """
+        def generate_vertex_group(c):
+            c.vertex_groups = [0]*self.p_size
+            for i in range(self.p_size):
+                interior = [k for k in range(len(c.interior)) if i in c.interior[k]]
+                exterior = [k for k in range(len(c.exterior)) if i in c.exterior[k]]
+                if len(interior)>0:
+                    c.vertex_groups[i] = c.interior_groups[interior[0]]
+                elif len(exterior)>0:
+                    c.vertex_groups[i] = c.exterior_groups[exterior[0]]
+        for bc in self.base_cases:
+            generate_vertex_group(bc)
+            for mc in bc.mc33:
+                generate_vertex_group(mc)
         for entry in self.all_cases:
             entry.update()
+            generate_vertex_group(entry)
 
     def print_base(self, prefix="lut", face_count=0, cell_count=0):
         """ print all base cases """

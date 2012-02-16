@@ -8,7 +8,7 @@ from pyvtk import *
 class Vtk(Output):
 	def __init__(self, lg):
 		self.lg = lg
-	def write_cells(self, cells, dim, element, fname):
+	def write_cells(self, cells, groups, dim, element, fname):
 		def vertex(v, points):
 			if type(v) is int:
 				return points[v] + [0]*(3-dim) # vtk assumes dim=3
@@ -58,19 +58,35 @@ class Vtk(Output):
 			points.append([0,0,0])
 			data.append(0)
 		# write vtk file
-		vtk = VtkData(
-			UnstructuredGrid(points,
-							 hexahedron=elements["cube"],
-							 tetra=elements["simplex"],
-							 wedge=elements["prism"],
-							 pyramid=elements["pyramid"],
-							 quad=elements["quad"],
-							 triangle=elements["triangle"]
-							 ),
-			PointData(Scalars(data, "ElementID", 'default')),
-			fname
-			)
+                # to avoid warnings for empty celldata:
+                if len(groups)>0:
+                        vtk = VtkData(
+                                UnstructuredGrid(points,
+                                                 hexahedron=elements["cube"],
+                                                 tetra=elements["simplex"],
+                                                 wedge=elements["prism"],
+                                                 pyramid=elements["pyramid"],
+                                                 quad=elements["quad"],
+                                                 triangle=elements["triangle"]
+                                                 ),
+                                PointData(Scalars(data, "ElementID", 'default')),
+                                CellData(Scalars(groups, "groupID", 'default')),
+                                fname
+                                )
+                else:
+                        vtk = VtkData(
+                                UnstructuredGrid(points,
+                                                 hexahedron=elements["cube"],
+                                                 tetra=elements["simplex"],
+                                                 wedge=elements["prism"],
+                                                 pyramid=elements["pyramid"],
+                                                 quad=elements["quad"],
+                                                 triangle=elements["triangle"]
+                                                 ),
+                                PointData(Scalars(data, "ElementID", 'default')),
+                                fname
+                                )
 		vtk.tofile(fname)
 	def write_case(self, case, triang, dim, element, fname):		
-		self.write_cells(triang.interior, dim, element, fname+'_interior');	
-		self.write_cells(triang.exterior, dim, element, fname+'_exterior');
+		self.write_cells(triang.interior, triang.interior_groups, dim, element, fname+'_interior');	
+		self.write_cells(triang.exterior, triang.exterior_groups, dim, element, fname+'_exterior');

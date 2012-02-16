@@ -31,14 +31,20 @@ namespace Dune {
                      const bool codim_1_not_0,
                      const bool exterior_not_interior,
                      std::vector<std::vector<point> >& elements) const;
-
+    void getVertexGroups(const sizeType vertex_count, const sizeType key,
+                         std::vector<short>& vertex_groups) const;
+    void getElementGroups(const sizeType vertex_count, const sizeType key,
+                          const bool exterior_not_interior,
+                          std::vector<short>& element_groups) const;
   private:
     /*
      * TODO: Comment
      */
-    typedef const short offsetRow[7];
+    typedef const short offsetRow[10];
     static offsetRow * all_case_offsets[];
+    static const short * const all_vertex_groups[];
     static const short * const all_codim_0[][2];
+    static const short * const all_element_groups[][2];
     static const short * const all_codim_1[];
     static const short * const all_mc33_offsets[];
     static const short * const all_face_tests[];

@@ -40,7 +40,7 @@ EU = VB * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX
 EV = VB * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
 EW = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
 # Diagonal for pyramid
-EX = VC * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX
+EX = VD * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
 # Diagonal for prism
 EY = VF * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX
 # Center point is in the center of a cube or tetrahedron
@@ -114,9 +114,50 @@ class DuneCode:
                 return CONST_NAMES[vertex]
             # point is on a edge or in the center
             return CONST_NAMES[edge(vertex[0], vertex[1])]
-        def create_codim_line(table, entry, new_elements):
+        def create_codim0_line(table, table_groups, entry, new_elements, new_elements_groups):
             """ create a table line for codimX tables """
-            # change 3D simplex numbering scheme to 3D cube's one
+            # change 3D simplex, prism & pyramid numbering scheme to 3D cube's one
+            rename_vertices = {(3,"simplex"): [0,1,2,4],
+                               (3,"prism"): [0,1,2,4,5,6]}
+            if self.generator.geometry_type in rename_vertices:
+                rename = rename_vertices[self.generator.geometry_type]
+                for i in range(len(new_elements)):
+                    for j in range(len(new_elements[i])):
+                        if type(new_elements[i][j]) is int:
+                            new_elements[i][j] = rename[new_elements[i][j]]
+                        else:
+                            new_elements[i][j] = (rename[new_elements[i][j][0]],
+                                                  rename[new_elements[i][j][1]])
+            # write comment in front of data
+            assert entry.base_case in self.generator.base_cases
+            base_case_number = self.generator.base_cases.index(entry.base_case)
+            table_comment = "      /* {0} / {1} / {2} / {3} */ "
+            table.append(table_comment.format(entry.case, 
+                                              (entry.transformation.orientation
+                                               * base_case_number),
+                                              ", ".join(str(len(x))
+                                                        for x in new_elements),
+                                              table.offset), 0)
+            table_groups_comment = "      /* {0} / {1} / {2} */ "
+            table_groups.append(table_groups_comment.format(entry.case, (entry.transformation.orientation
+                                                                  * base_case_number), table_groups.offset)
+                                , 0)
+            if len(new_elements) > 0:
+                # write all points of every element
+                for element in new_elements:
+                    table.append("%i, " % len(element), 1)
+                    table.append("%s, " % ", ".join(get_point_name(x) 
+                                                    for x in element),
+                                 len(element))
+                table_groups.append("%s, " % ", ".join(str(x) for x in new_elements_groups), len(new_elements_groups))
+            else:
+                table.append(" /* no elements */", 0)
+                table_groups.append(" /* no elements */", 0)
+            table.append("\n", 0)
+            table_groups.append("\n", 0)
+        def create_codim1_line(table, entry, new_elements):
+            """ create a table line for codimX tables """
+            # change 3D simplex, prism & pyramid numbering scheme to 3D cube's one
             rename_vertices = {(3,"simplex"): [0,1,2,4],
                                (3,"prism"): [0,1,2,4,5,6],
                                (3,"pyramid"): [0,1,4,5,2]}
@@ -149,8 +190,15 @@ class DuneCode:
             else:
                 table.append(" /* no elements */", 0)
             table.append("\n", 0)
-
-        def create_tables(self, offsets, codim0_exterior, codim0_interior, codim1):
+        def create_vertex_groups_line(entry, groups, table):
+            base_case_number = \
+                self.generator.base_cases.index(entry.base_case)
+            table.append("      /* {0} / {1} / {2} */ {3}, \n".format(entry.case,
+                                                              (entry.transformation.orientation
+                                                               * base_case_number),
+                                                              table.offset,
+                                                              ", ".join(str(g) for g in groups)), len(groups));
+        def create_tables(self, offsets, vertex_groups, codim0_exterior, codim0_exterior_groups, codim0_interior, codim0_interior_groups, codim1):
             """ creates string tables out of case tables """
             for entry in self.generator.all_cases:
                 # Constant whether unique MC33 case and whether inverted
@@ -164,18 +212,22 @@ class DuneCode:
                 base_case_number = \
                     self.generator.base_cases.index(entry.base_case)
                 oline = ("      /* {0} / {1} */ "
-                               "{{{2}, {3}, {4}, {5}, {6}, {7}, {8}}},\n")
+                               "{{{2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}}},\n")
                 offsets.append(oline.format(entry.case,
                                             (entry.transformation.orientation
                                              * base_case_number),
-                                            codim0_exterior.offset, len(entry.exterior),
-                                            codim0_interior.offset, len(entry.interior),
+                                            codim0_exterior.offset, codim0_exterior_groups.offset, 
+                                            len(entry.exterior),
+                                            codim0_interior.offset, codim0_interior_groups.offset,
+                                            len(entry.interior),
                                             codim1.offset, len(entry.faces),
+                                            vertex_groups.offset,
                                             unique_case), 1)
-                create_codim_line(codim0_exterior, entry, entry.exterior)
-                create_codim_line(codim0_interior, entry, entry.interior)
-                create_codim_line(codim1, entry, entry.faces)
-        def create_mc33_tables(self, offsets, codim0_exterior, codim0_interior, codim1, mc33_offsets, 
+                create_vertex_groups_line(entry, entry.vertex_groups, vertex_groups)
+                create_codim0_line(codim0_exterior, codim0_exterior_groups, entry, entry.exterior, entry.exterior_groups)
+                create_codim0_line(codim0_interior, codim0_interior_groups, entry, entry.interior, entry.interior_groups)
+                create_codim1_line(codim1, entry, entry.faces)
+        def create_mc33_tables(self, offsets, vertex_groups, codim0_exterior, codim0_exterior_groups, codim0_interior, codim0_interior_groups, codim1, mc33_offsets, 
                                mc33_tests):
             """ creates mc33 caste table and mc33 test table and returns  """
             offsets.append("      /* MC 33 cases follow */\n", 0)
@@ -205,19 +257,23 @@ class DuneCode:
                         base_case_number = \
                             self.generator.base_cases.index(entry.base_case)
                         oline = ("      /* {0} test index:{1} */ "
-                                 "{{{2}, {3}, {4}, {5}, {6}, {7}, 0}},\n")
+                                 "{{{2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, 0}},\n")
                         offsets.append(oline.format(base_case_number,
                                                     len(entry.tests),
                                                     codim0_exterior.offset,
+                                                    codim0_exterior_groups.offset,
                                                     len(mc33_case.exterior),
                                                     codim0_interior.offset,
+                                                    codim0_interior_groups.offset,
                                                     len(mc33_case.interior),
                                                     codim1.offset,
-                                                    len(mc33_case.faces)),
+                                                    len(mc33_case.faces),
+                                                    vertex_groups.offset),
                                        1)
-                        create_codim_line(codim0_exterior, entry, mc33_case.exterior)
-                        create_codim_line(codim0_interior, entry, mc33_case.interior)
-                        create_codim_line(codim1, entry, mc33_case.faces)
+                        create_vertex_groups_line(entry, mc33_case.vertex_groups, vertex_groups)
+                        create_codim0_line(codim0_exterior, codim0_exterior_groups, entry, mc33_case.exterior, mc33_case.exterior_groups)
+                        create_codim0_line(codim0_interior, codim0_interior_groups, entry, mc33_case.interior, mc33_case.interior_groups)
+                        create_codim1_line(codim1, entry, mc33_case.faces)
                 else:
                     mc33_offsets.append("    /* {0} / {1} */"
                                         " ".format(entry.case, 
@@ -231,7 +287,7 @@ class DuneCode:
         table_dict = {"D": self.generator.dim, "T": self.generator.basic_type}
         table_offsets.tablestring = \
             ("    "
-             "const short table_{0[T]}{0[D]}d_cases_offsets[][7] = {{\n"
+             "const short table_{0[T]}{0[D]}d_cases_offsets[][10] = {{\n"
              "     /* vv: vertex values with 0=in, 1=out\n"
              "      * cn: case number\n"
              "      * bc: basic case, if negative it's inverted\n"
@@ -241,8 +297,19 @@ class DuneCode:
              "      * o0e: table offset for co-dimension 0 exterior\n"
              "      * c0i: element count of co-dimension 0 interior elements\n"
              "      * o0i: table offset for co-dimension 0 interior\n"
+             "      * vg: table offset for vertex_groups\n"
              "      * uniq: whether the case is ambiguous for MC33 */\n"
-             "      /* vv / cn / bc / c0e, o0e, c0i, o0i, c1, o1, uniq */"
+             "      /* vv / cn / bc / o0e, o0eg, c0e, o0i, o0ig, c0i, o1, c1, vg, uniq */"
+             "\n".format(table_dict))
+        table_vertex_groups = TableStorage()
+        table_vertex_groups.tablestring = \
+            ("    "
+             "const short table_{0[T]}{0[D]}d_vertex_groups[] = {{\n"
+             "     /* vv: vertex values with 0=in, 1=out\n"
+             "      * bc: basic case, if negative it's invertex\n"
+             "      * cp: current position\n"
+             "      * vg: vertex_groups */\n"
+             "      /* vv / bc / cp / vg */"
              "\n".format(table_dict))
         table_codim0_exterior = TableStorage()
         table_codim0_exterior.tablestring = \
@@ -254,6 +321,15 @@ class DuneCode:
                   "      * cp: current position in array = offset */\n"
                   "      /* cn / bc / el / cp */"
                   "\n".format(table_dict))
+        table_codim0_exterior_groups = TableStorage()
+        table_codim0_exterior_groups.tablestring = \
+                 ("    "
+                  "const short table_{0[T]}{0[D]}d_exterior_groups[] = {{\n" 
+                  "     /* cn: case number\n"
+                  "      * bc: basic case, if negative it's inverted\n"
+                  "      * cp: current position in array = offset */\n"
+                  "      /* cn / bc / cp */"
+                  "\n".format(table_dict))
         table_codim0_interior = TableStorage()
         table_codim0_interior.tablestring = \
                  ("    "
@@ -263,6 +339,15 @@ class DuneCode:
                   "      * el: elements specified by number of vertices\n"
                   "      * cp: current position in array = offset */\n"
                   "      /* cn / bc / el / cp */"
+                  "\n".format(table_dict))
+        table_codim0_interior_groups = TableStorage()
+        table_codim0_interior_groups.tablestring = \
+                 ("    "
+                  "const short table_{0[T]}{0[D]}d_interior_groups[] = {{\n" 
+                  "     /* cn: case number\n"
+                  "      * bc: basic case, if negative it's inverted\n"
+                  "      * cp: current position in array = offset */\n"
+                  "      /* cn / bc / cp */"
                   "\n".format(table_dict))
         table_codim1 = TableStorage()
         table_codim1.tablestring = \
@@ -275,8 +360,8 @@ class DuneCode:
              "      /* cn / bc / el / cp */"
              "\n".format(table_dict))
         # write elements into the array
-        create_tables(self, table_offsets, table_codim0_exterior, 
-                      table_codim0_interior, table_codim1)
+        create_tables(self, table_offsets, table_vertex_groups, table_codim0_exterior, table_codim0_exterior_groups ,
+                      table_codim0_interior, table_codim0_interior_groups, table_codim1)
         
         # tables for mc 33
         generate_mc33 = set(["cube", "prism", "pyramid"])
@@ -295,17 +380,23 @@ class DuneCode:
                  "      /* dummy entry not used but the index has to "
                  "start with 1*/\n"
                  "      1,\n".format(table_dict))
-            create_mc33_tables(self, table_offsets, table_codim0_exterior, 
-                               table_codim0_interior, table_codim1, 
+            create_mc33_tables(self, table_offsets, table_vertex_groups, table_codim0_exterior, table_codim0_exterior_groups, 
+                               table_codim0_interior, table_codim0_interior_groups, table_codim1, 
                                table_mc33_offsets, table_mc33_tests)
         # close the arrays and write them
         table_offsets.append("    };\n\n\n", 0)
+        table_vertex_groups.append("    };\n\n\n", 0)
         table_codim0_exterior.append("    };\n\n\n", 0)
+        table_codim0_exterior_groups.append("    };\n\n\n", 0)
         table_codim0_interior.append("    };\n\n\n", 0)
+        table_codim0_interior_groups.append("    };\n\n\n", 0)
         table_codim1.append("    };\n\n\n", 0)
         dune_file.write(table_offsets.tablestring)
+        dune_file.write(table_vertex_groups.tablestring)
         dune_file.write(table_codim0_exterior.tablestring)
+        dune_file.write(table_codim0_exterior_groups.tablestring)
         dune_file.write(table_codim0_interior.tablestring)
+        dune_file.write(table_codim0_interior_groups.tablestring)
         dune_file.write(table_codim1.tablestring)
         if self.generator.basic_type in generate_mc33:
             table_mc33_offsets.append("    };\n\n\n", 0)

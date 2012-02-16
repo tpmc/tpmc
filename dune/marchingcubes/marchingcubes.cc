@@ -37,6 +37,21 @@ namespace Dune {
   };
 
   /*
+   * vertex_groups tables (e.g. table_cube2d_vertex_groups) for different
+   * types of elements and dimensions.
+   */
+  template <typename valueType, int dim, typename thresholdFunctor>
+  const short * const
+  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  all_vertex_groups[] = {
+    NULL, NULL, NULL, table_any1d_vertex_groups,
+    NULL, table_simplex2d_vertex_groups,
+    table_cube2d_vertex_groups, table_simplex3d_vertex_groups,
+    table_pyramid3d_vertex_groups, table_prism3d_vertex_groups,
+    NULL, table_cube3d_vertex_groups
+  };
+
+  /*
    * Codimension 0 element tables (e.g. table_cube2d_codim_0) for different
    * types of elements and dimensions.
    */
@@ -54,6 +69,26 @@ namespace Dune {
     {table_prism3d_codim_0_interior, table_prism3d_codim_0_exterior},
     {NULL, NULL},
     {table_cube3d_codim_0_interior, table_cube3d_codim_0_exterior}
+  };
+
+  /*
+   * element group tables (e.g. table_cube2d_codim_0_exterior_groups)
+   * for different types of elements and dimensions.
+   */
+  template <typename valueType, int dim, typename thresholdFunctor>
+  const short * const
+  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  all_element_groups[][2] = {
+    {NULL, NULL}, {NULL, NULL}, {NULL, NULL},
+    {table_any1d_interior_groups, table_any1d_exterior_groups},
+    {NULL, NULL}, {table_simplex2d_interior_groups,
+                   table_simplex2d_exterior_groups},
+    {table_cube2d_interior_groups, table_cube2d_exterior_groups},
+    {table_simplex3d_interior_groups, table_simplex3d_exterior_groups},
+    {table_pyramid3d_interior_groups, table_pyramid3d_exterior_groups},
+    {table_prism3d_interior_groups, table_prism3d_exterior_groups},
+    {NULL, NULL},
+    {table_cube3d_interior_groups, table_cube3d_exterior_groups}
   };
 
   /*
@@ -129,7 +164,7 @@ namespace Dune {
     {
       return 0;
     }
-    const short (* const table_case_offsets)[7] =
+    const short (* const table_case_offsets)[10] =
       all_case_offsets[vertex_count + dim];
     const short * const table_mc33_offsets =
       all_mc33_offsets[vertex_count + dim];
@@ -137,16 +172,13 @@ namespace Dune {
       all_face_tests[vertex_count + dim];
 
     // vector containing information if vertices are inside or not
-    bool vertex_inside[vertex_count];
     int case_number = 0;
     for (sizeType i = vertex_count; i > 0; i--)
     {
       case_number *= 2;
       // Set bit to 0 if vertex is inside
-      vertex_inside[i-1] = 1 - thresholdFunctor::isInside(vertex_values[i-1]);
-      case_number += (int) vertex_inside[i-1];
+      case_number |= !thresholdFunctor::isInside(vertex_values[i-1]);
     }
-
     // Is it a marching cubes' 33 case?
     bool ambiguous_case =
       (CASE_AMBIGUOUS_MC33 ==
@@ -161,12 +193,17 @@ namespace Dune {
       // perform tests and find case number
       short test = table_mc33_face_test_order[test_index + tree_offset];
 
-      GeometryType geo_type; geo_type.makeCube(dim);
+      GeometryType geo_type;
+      switch (vertex_count) {
+      case 5 : geo_type.makePyramid(); break;
+      case 6 : geo_type.makePrism(); break;
+      default : geo_type.makeCube(dim);
+      }
       const GenericReferenceElement<ctype, dim> & ref_element =
         GenericReferenceElements<ctype, dim>::general(geo_type);
       valueType corner_a, corner_b, corner_c, corner_d;
 #ifndef NDEBUG
-      std::cout << "---- AMBIGUOUS:" << std::endl;
+      std::cout << "---- AMBIGUOUS:";
       int count = 0;
       for (auto it = vertex_values.begin(); it != vertex_values.end(); ++it)
         std::cout << "v" << count++ << " = " << *it << "\n";
@@ -218,7 +255,7 @@ namespace Dune {
         }
         // calculate next index position (if test is true: 2*index, otherwise: 2*index+1)
         tree_offset *= 2;
-        tree_offset += (1 - test_result);
+        tree_offset |= !test_result;
         test = table_mc33_face_test_order[test_index + tree_offset];
 #ifndef NDEBUG
         std::cout << "test_result: " << test_result << std::endl;
@@ -257,6 +294,9 @@ namespace Dune {
    * \param codim_1_not_0 defines whether elements of co-dimension 1
    *                      (e.g. faces in 3D) will returned or of
    *                      co-dimension 0 (e.g. volumes in 3D).
+   * \param exterior_not_interior defines whether elements of the
+   *                              interior or exterior are generated.
+   *                              only affects codim0.
    * \param elements where the resulting coordinates will be stored.
    */
   template <typename valueType, int dim, typename thresholdFunctor>
@@ -321,6 +361,61 @@ namespace Dune {
   }
 
   /**
+   * \brief returns connectivity information of the reference vertices
+   * for a partition obtained by <code>getElements</code>
+   *
+   * Result will be stored in <code>vertex_groups</code>. Returns a group id
+   * for each vertex of the reference element. Vertices with the same id are
+   * connected in the partition obtained by <code>getElements</code>. The
+   * ids correspond to the ids generated by <code>getElementGroups</code>.
+   *
+   * \param vertex_count Number of vertices, same as length of <code>
+   *                     vertex_values</code>.
+   * \param key specifies the offset for the case table and must be
+   *            generated from <code>getKey</code>.
+   * \param vertex_groups where the resulting group indices are stored
+   */
+  template <typename valueType, int dim, typename thresholdFunctor>
+  void MarchingCubes33<valueType, dim, thresholdFunctor>::
+  getVertexGroups(const sizeType vertex_count, const sizeType key,
+                  std::vector<short>& vertex_groups) const {
+    const short *vg_index = all_vertex_groups[vertex_count + dim]
+                            + all_case_offsets[vertex_count+dim][key][INDEX_VERTEX_GROUPS];
+    for (sizeType i = 0; i<vertex_count; ++i) {
+      vertex_groups.push_back(*(vg_index++));
+    }
+  }
+
+  /**
+   * \brief returns connectivity information of the elements obtained by
+   * <code>getElements</code>
+   *
+   * Result will be stored in <code>vertex_groups</code>. Returns a group id
+   * for each element of the partition obtained by <code>getElements</code>.
+   * Elements with the same id are connected. The ids correspond to the ids
+   * generated by <code>getVertexGroups</code>.
+   *
+   * \param key specifies the offset for the case table and must be
+   *            generated from <code>getKey</code>.
+   * \param exterior_not_interior defines whether groups for interior or
+   *                              exterior elements are generated
+   * \param element_groups where the resulting group indices are stored
+   */
+  template <typename valueType, int dim, typename thresholdFunctor>
+  void MarchingCubes33<valueType, dim, thresholdFunctor>::
+  getElementGroups(const sizeType vertex_count, const sizeType key,
+                   const bool exterior_not_interior,
+                   std::vector<short>& element_groups) const {
+    const short * eg_index = all_element_groups[vertex_count + dim][int(exterior_not_interior)]
+                             + all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_ELEMENT_GROUPS[int(exterior_not_interior)]];
+    sizeType element_count = all_case_offsets
+                             [vertex_count + dim][key][INDEX_COUNT_CODIM_0[int(exterior_not_interior)]];
+    for (sizeType i = 0; i<element_count; ++i) {
+      element_groups.push_back(*(eg_index++));
+    }
+  }
+
+  /**
    * \brief Generates the coordinate for a point which is specified
    * by its vertex or edge number.
    *
@@ -344,8 +439,8 @@ namespace Dune {
                       const sizeType vertex_count, const short number,
                       point& coord) const
   {
-    // it's a center point
-    if (number == EZ)
+    // it's a center point and we are in the cube case
+    if (number == EZ && dim == 3 && vertex_count == 8)
     {
       //TODO: Testen
       // Initialize point

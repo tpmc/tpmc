@@ -10,15 +10,25 @@ from disambiguate import TestInvalid, TestRegular, TestInterior, TestFace
 class Triangulation(object):
     """
     class containg a triangulation of an object into interior, exterior
-    and interface
+    and interface along with information about connected groups
     """
-    def __init__(self, faces = None, exterior = None, interior = None):
+    def __init__(self, vertex_groups = None, faces = None, exterior = None, 
+                 exterior_groups = None, interior = None, 
+                 interior_groups = None):
         self.name = ""
+        self.vertex_groups = vertex_groups if vertex_groups is not None else []
         self.faces = faces if faces is not None else [[]]
         self.exterior = exterior if exterior is not None else [[]]
+        self.exterior_groups = exterior_groups if exterior_groups is not None else []
         self.interior = interior if interior is not None else [[]]
+        self.interior_groups = interior_groups if interior_groups is not None else []
     def __repr__(self):
-        return "{0}::{1}::{2}".format(self.faces, self.exterior, self.interior)
+        return "{0} - {1}::{2} - ({3})::{4} - ({5})".format(self.vertex_groups, 
+                                                            self.faces, 
+                                                            self.exterior, 
+                                                            self.exterior_groups, 
+                                                            self.interior, 
+                                                            self.interior_groups)
 
 class BaseCase(Triangulation):
     """
@@ -64,28 +74,35 @@ class Case(BaseCase):
                     return test
             else:
                 return test
-        # update the triangulation #
+        # update the triangulation 
         self.faces = permute_geom_list(dim-1, self.base_case.faces, 
                                        self.transformation)
         self.exterior = permute_geom_list(dim, self.base_case.exterior, 
                                           self.transformation)
+        self.exterior_groups = self.base_case.exterior_groups
         self.interior = permute_geom_list(dim, self.base_case.interior, 
                                           self.transformation)
+        self.interior_groups = self.base_case.interior_groups
         self.tests = [ permute_single_test(test, self.transformation) 
                        for test in self.base_case.tests ]
         # update mc33 triangulations
-        self.mc33 = [ Triangulation(permute_geom_list(dim-1, triang.faces, 
+        self.mc33 = [ Triangulation(self.transformation*triang.vertex_groups,
+                                    permute_geom_list(dim-1, triang.faces, 
                                                       self.transformation),
                                     permute_geom_list(dim, triang.exterior, 
                                                       self.transformation),
+                                    triang.exterior_groups,
                                     permute_geom_list(dim, triang.interior, 
-                                                      self.transformation))
+                                                      self.transformation),
+                                    triang.interior_groups)
                       for triang in self.base_case.mc33 ]
         # if necessary, invert the case, ie swap interior and exterior
         if self.transformation.inverted == 1:
             self.interior, self.exterior = self.exterior, self.interior
+            self.interior_groups, self.exterior_groups = self.exterior_groups, self.interior_groups
             for tri in self.mc33:
                 tri.interior, tri.exterior = tri.exterior, tri.interior
+                tri.interior_groups, tri.exterior_groups = tri.exterior_groups, tri.interior_groups
             # mirror the test heap
             def swap_subtrees(tree, index):
                 count = 0

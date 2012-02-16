@@ -178,6 +178,14 @@ class Test(object):
                                                 elements))
             return 0
         return 1
+    def test_vertex_groups(self, triang, case):
+        for i in range(len(case)):
+            vg = triang.vertex_groups[i]
+            interior_elements = [triang.interior_groups[e] for e in range(len(triang.interior)) if i in triang.interior[e]]
+            exterior_elements = [triang.exterior_groups[e] for e in range(len(triang.exterior)) if i in triang.exterior[e]]
+            if len([e for e in interior_elements if e != vg])>0 or len([e for e in exterior_elements if e != vg]):
+                return 0
+        return 1
     def test_vertices(self, triang, case):
         """
         checks if all vertices of the reference-faces are in the right
@@ -213,6 +221,12 @@ class Test(object):
         result = self.test_vertices(triang, base_case.case)
         if result == 0:
             LOGGER.error("vertex test for triangulation {0} ({1}) "
+                         "FAILED".format(triang.name, base_case.case))
+        passed += result
+        count += 1
+        result = self.test_vertex_groups(triang, base_case.case)
+        if result == 0:
+            LOGGER.error("vertex-groups test for triangulation {0} ({1}) "
                          "FAILED".format(triang.name, base_case.case))
         passed += result
         count += 1
