@@ -27,44 +27,86 @@ namespace Dune {
                     const bool use_mc_33) const;
     template <typename valueVector>
     void getElements(const valueVector& vertex_values,
-                     const sizeType vertex_count, const sizeType key,
+                     const sizeType vertex_count,
+                     const sizeType key,
                      const bool codim_1_not_0,
                      const bool exterior_not_interior,
                      std::vector<std::vector<point> >& elements) const;
-    void getVertexGroups(const sizeType vertex_count, const sizeType key,
+    void getVertexGroups(const sizeType vertex_count,
+                         const sizeType key,
                          std::vector<short>& vertex_groups) const;
-    void getElementGroups(const sizeType vertex_count, const sizeType key,
+    void getElementGroups(const sizeType vertex_count,
+                          const sizeType key,
                           const bool exterior_not_interior,
                           std::vector<short>& element_groups) const;
   private:
     /*
-     * TODO: Comment
+     * row containing information about a specific mc case. for details see
+     * marchinglut.hh
      */
     typedef const short offsetRow[10];
+    /*
+     * contains offset-tables for different geometries. for details see
+     * <code>marchinglut.hh</code>
+     */
     static offsetRow * all_case_offsets[];
+    /*
+     * contains vertex_groups-tables for different geometries. for details
+     * see <code>marchinglut.hh</code>
+     */
     static const short * const all_vertex_groups[];
+    /*
+     * contains codim0-tables for different geometries. for details see
+     * <code>marchinglut.hh</code>
+     */
     static const short * const all_codim_0[][2];
+    /*
+     * contains element-groups-tables for different geometries. for details
+     * see <code>marchinglut.hh</code>
+     */
     static const short * const all_element_groups[][2];
+    /*
+     * contains codim1-tables for different geometries. for details see
+     * <code>marchinglut.hh</code>
+     */
     static const short * const all_codim_1[];
+    /*
+     * contains mc33-offset-tables for different geometries. for details see
+     * <code>marchinglut.hh</code>
+     */
     static const short * const all_mc33_offsets[];
+    /*
+     * contains test-tables for different geometries. for details see
+     * <code>marchinglut.hh</code>
+     */
     static const short * const all_face_tests[];
 
     /** \brief Test if the face center is covered by the surface.
      *
-     * This test is needed to chose between ambiguous MC33 cases.
+     * This test is needed to choose between ambiguous MC33 cases.
      */
     bool testAmbiguousFace(const valueType corner_a, const valueType cornerB,
                            const valueType cornerC, const valueType cornerD, bool inverse) const;
 
+    /** \brief Only to be called on cube. Tests if <code>refCorner</code> is
+     * connected to its diagonally opposed corner
+     *
+     * This test is needed to choose between ambiguous MC33 cases.
+     */
     template <typename valueVector>
     bool testAmbiguousCenter(const valueVector& vertex_values,
                              const sizeType vertex_count, size_t refCorner) const;
 
+    /** \brief gets coordinates of the vertex represented by
+     * <code>number<code> (either a vertex, edge or center number)
+     */
     template <typename valueVector>
     void getCoordsFromNumber(const valueVector& vertex_values,
                              const sizeType vertex_count, const short number,
                              point& coord) const;
-
+    /** \brief gets coordinates of the first point of an edge given by its
+     * <code>number</code>
+     */
     template <typename valueVector>
     void getCoordsFromEdgeNumber(const valueVector& vertexValues,
                                  const sizeType vertexCount, char number,

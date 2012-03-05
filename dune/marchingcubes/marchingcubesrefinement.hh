@@ -73,7 +73,7 @@ MarchingCubesRefinement(const GeometryType& type,std::vector<double> values)
   std::vector<std::vector<FieldVector<double,dim> > > elementCorners;
 
   // Call the actual marching cubes algorithm
-  MarchingCubes33<double,dim,MarchingCubes::ThresholdFunctor> marchingcubes33;
+  MarchingCubes33<double,dim,MarchingCubes::ThresholdFunctor<double> > marchingcubes33;
   size_t key = marchingcubes33.getKey(values, values.size(), true);
   marchingcubes33.getElements(values, values.size(), key, false, false, elementCorners);
 

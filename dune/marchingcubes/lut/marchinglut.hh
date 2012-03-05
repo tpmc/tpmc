@@ -2,8 +2,8 @@
 // vi: set et ts=4 sw=2 sts=2:
 /*
  * This file contains the lookup tables for marching cubes' algorithms
- * for the 1D and 2D cases. The 2D case has additional tables for the
- * Marching Cubes' 33 algorithm.
+ * for the 1D, 2D and 3D cases along with their marching cubes' 33 tables for
+ * ambiguous cases.
  *
  * == Names for vertices and edges ==
  * For every vertex exists a constant begining with V and followed
@@ -33,6 +33,14 @@
  *    |/_______|/          |/___I___|/    Cube center: Z
  *   A          B         A          B
  *
+ * Simplex:
+ * Vertices: [A,B,C,E]
+ *
+ * Pyramid:
+ * Vertices: [A,B,C,D,E], (A,B,C,D) form the bottom square-face
+ *
+ * Prism:
+ * Vertices: [A,B,C,E,F,G], (A,B,C) and (E,F,G) form the two triangular faces
  *
  * To describe vertices and edges of lines, triangles, squares,
  * terahedrons and cubes every element has its own number.
