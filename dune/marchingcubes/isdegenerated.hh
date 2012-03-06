@@ -110,20 +110,21 @@ namespace Dune {
                  eq(c[1],c[3]) ||
                  eq(c[2],c[3]));
       case 5 :
-        //                     if (eq(c[0],c[1])) { erase(0,c); return check(c); }
-        //                     if (eq(c[1],c[2])) { erase(1,c); return check(c); }
-        //                     if (eq(c[2],c[3])) { erase(2,c); return check(c); }
-        //                     if (eq(c[3],c[0])) { erase(3,c); return check(c); }
-        //                     if (eq(c[0],c[2])) { return true; }
-        //                     if (eq(c[1],c[3])) { return true; }
-        return ( eq(c[0],c[4]) ||
-                 eq(c[1],c[4]) ||
-                 eq(c[2],c[4]) ||
-                 eq(c[3],c[4]) ||
-                 (eq(c[0],c[1]) && eq(c[0],c[1])) ||
-                 (eq(c[1],c[2]) && eq(c[0],c[3])) ||
-                 eq(c[1],c[3]) ||
-                 eq(c[0],c[2]));
+      {
+        bool deg=false;
+        deg |= eq(c[3],c[0]);
+        deg |= eq(c[2],c[1]);
+        int mat(0);
+        mat += int(eq(c[0],c[1]));
+        mat += int(eq(c[0],c[2]));
+        mat += int(eq(c[0],c[4]));
+        mat += int(eq(c[1],c[3]));
+        mat += int(eq(c[1],c[4]));
+        mat += int(eq(c[2],c[3]));
+        mat += int(eq(c[2],c[4]));
+        mat += int(eq(c[3],c[4]));
+        return deg || mat > 1;
+      }
       case 6 :
         return ( (eq(c[0],c[3]) && eq(c[1],c[4]) && eq(c[2],c[5])) ||
                  (eq(c[0],c[1]) && eq(c[3],c[4])) ||
