@@ -231,6 +231,7 @@ class DuneCode:
                                mc33_tests):
             """ creates mc33 caste table and mc33 test table and returns  """
             offsets.append("      /* MC 33 cases follow */\n", 0)
+            offsets.append("      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* dummy entry for regular case */\n", 1)
             for entry in self.generator.all_cases:
                 # above code should be obsolete
                 assert len(entry.base_case.tests) == len(entry.tests)
