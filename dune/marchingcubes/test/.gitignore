@@ -3,6 +3,6 @@
 Makefile.in
 Makefile
 
+test_mc33
 testmc33
 testmarchingcubesrefinement
-

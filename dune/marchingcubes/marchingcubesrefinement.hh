@@ -43,7 +43,8 @@ namespace Dune {
      * \param values Values of the level set function at the element corners
      */
     MarchingCubesRefinement(const GeometryType& type,
-                            std::vector<double> values);
+                            std::vector<double> values,
+                            bool exterior_not_interior = false);
 
     /** \brief Get iterator to the first element of the refinement */
     const_iterator begin() const {
@@ -68,14 +69,15 @@ namespace Dune {
 
 template <class ctype, int dim>
 Dune::MarchingCubesRefinement<ctype,dim>::
-MarchingCubesRefinement(const GeometryType& type,std::vector<double> values)
+MarchingCubesRefinement(const GeometryType& type,std::vector<double> values,
+                        bool exterior_not_interior)
 {
   std::vector<std::vector<FieldVector<double,dim> > > elementCorners;
 
   // Call the actual marching cubes algorithm
   MarchingCubes33<double,dim,MarchingCubes::ThresholdFunctor<double> > marchingcubes33;
   size_t key = marchingcubes33.getKey(values, values.size(), true);
-  marchingcubes33.getElements(values, values.size(), key, false, false, elementCorners);
+  marchingcubes33.getElements(values, values.size(), key, false, exterior_not_interior, elementCorners);
 
   // set up the list of BasicGeometries which is the output of this class
   geometries_.resize(elementCorners.size());

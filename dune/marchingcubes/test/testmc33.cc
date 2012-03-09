@@ -109,7 +109,7 @@ try
     std::cout << std::endl;
   }
   // Perform first part of MC 33 algorithm
-  Dune::MarchingCubes33<double, dim, Dune::MarchingCubes::ThresholdFunctor> mc;
+  Dune::MarchingCubes33<double, dim, Dune::MarchingCubes::ThresholdFunctor<double> > mc;
   size_t key = mc.getKey(vertices, vertex_count, true);
   // Print failed test cases
   if ((int)key != expect && expect != NO_KEY)
@@ -127,7 +127,7 @@ try
       // Perform second part of MC 33 algorithm
       typedef Dune::FieldVector<double, dim> dim_point;
       std::vector<std::vector<dim_point> > codim0;
-      mc.getElements(vertices, vertex_count, key, false, codim0);
+      mc.getElements(vertices, vertex_count, key, false, false, codim0);
       std::cout << "   Codim 0 elements: ";
       for(typename std::vector<std::vector<dim_point> >::iterator i =
             codim0.begin(); i != codim0.end(); ++i)
@@ -143,7 +143,7 @@ try
       std::cout << std::endl;
       // Perform second part of MC 33 algorithm for codim 1 elements
       std::vector<std::vector<dim_point> > codim1;
-      mc.getElements(vertices, vertex_count, key, true, codim1);
+      mc.getElements(vertices, vertex_count, key, true, false, codim1);
       std::cout << "   Codim 1 elements: ";
       for(typename std::vector<std::vector<dim_point> >::iterator i =
             codim1.begin(); i != codim1.end(); ++i)
@@ -164,11 +164,11 @@ try
       // Perform second part of MC 33 algorithm
       typedef Dune::FieldVector<double, dim> dim_point;
       std::vector<std::vector<dim_point> > codim0;
-      mc.getElements(vertices, vertex_count, key, false, codim0);
+      mc.getElements(vertices, vertex_count, key, false, false, codim0);
       writeVtkFile<dim>(codim0, dim, name);
       // Perform second part of MC 33 algorithm for codim 1 elements
       std::vector<std::vector<dim_point> > codim1;
-      mc.getElements(vertices, vertex_count, key, true, codim1);
+      mc.getElements(vertices, vertex_count, key, true, false, codim1);
       writeVtkFile<dim>(codim1, dim - 1, name);
     }
   }

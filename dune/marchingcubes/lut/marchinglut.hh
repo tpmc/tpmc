@@ -101,6 +101,7 @@ static const short EZ = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_
 static const short CASE_UNIQUE_MC33 = 0;
 static const short CASE_AMBIGUOUS_MC33 = 1;
 /* Face tests */
+/* \todo could lead to problems if index is a valid index of the offset table */
 static const short CASE_IS_REGULAR = (1<<8);
 static const short TEST_FACE = (1<<9);
 static const short TEST_INTERIOR = (1<<10);

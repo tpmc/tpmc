@@ -204,9 +204,8 @@ namespace Dune {
       valueType corner_a, corner_b, corner_c, corner_d;
 #ifndef NDEBUG
       std::cout << "---- AMBIGUOUS:";
-      int count = 0;
-      for (auto it = vertex_values.begin(); it != vertex_values.end(); ++it)
-        std::cout << "v" << count++ << " = " << *it << "\n";
+      for (sizeType i = 0; i<vertex_count; ++i)
+        std::cout << "v" << i << " = " << vertex_values[i] << "\n";
       std::cout << std::endl;
 #endif
       // tests are negative, non-negativ values are offsets
@@ -489,6 +488,13 @@ namespace Dune {
       getCoordsFromEdgeNumber(vertex_values, vertex_count,
                               (number / FACTOR_SECOND_POINT * FACTOR_FIRST_POINT), point_b);
       // get indices for point in valueVector
+
+      /* \TODO wrong indices for Simplex
+       * Simplex is numbered (0, 1, 2, 4) to get the right reference
+       * corners, ie to match the numbering of the cube. This leads to
+       * wrong indices in vertex_values.
+       */
+
       sizeType index_a = 0;
       sizeType index_b = 0;
       for (sizeType i = 0; i < dim; i++)
