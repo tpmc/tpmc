@@ -36,6 +36,17 @@ namespace Dune {
     NULL, table_cube3d_cases_offsets
   };
 
+  template <typename valueType, int dim, typename thresholdFunctor>
+  const short * const
+  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  all_vertex_to_index[] = {
+    NULL, NULL, NULL, table_any1d_vertex_to_index,
+    NULL, table_simplex2d_vertex_to_index,
+    table_cube2d_vertex_to_index, table_simplex3d_vertex_to_index,
+    table_pyramid3d_vertex_to_index, table_prism3d_vertex_to_index,
+    NULL, table_cube3d_vertex_to_index
+  };
+
   /*
    * vertex_groups tables (e.g. table_cube2d_vertex_groups) for different
    * types of elements and dimensions.
@@ -502,6 +513,8 @@ namespace Dune {
         index_a += (sizeType) point_a[i] * (1<<i);
         index_b += (sizeType) point_b[i] * (1<<i);
       }
+      index_a = all_vertex_to_index[vertex_count+dim][index_a];
+      index_b = all_vertex_to_index[vertex_count+dim][index_b];
       // factor for interpolation
       valueType interpol_factor =
         thresholdFunctor::getDistance(vertex_values[index_a])
@@ -635,15 +648,16 @@ namespace Dune {
       {2, 0, 3, 1, 6, 4, 7, 5},
       {3, 2, 1, 0, 7, 6, 5, 4}
     };
+    const ctype sign = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][0]]) < 0 ? -1.0 : 1.0;
     // get vertex values
-    const ctype a0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][0]]);
-    const ctype b0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][2]]);
-    const ctype c0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][3]]);
-    const ctype d0 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][1]]);
-    const ctype a1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][4]]);
-    const ctype b1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][6]]);
-    const ctype c1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][7]]);
-    const ctype d1 = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][5]]);
+    const ctype a0 = sign*thresholdFunctor::getDistance(vertex_values[permutation[refCorner][0]]);
+    const ctype b0 = sign*thresholdFunctor::getDistance(vertex_values[permutation[refCorner][2]]);
+    const ctype c0 = sign*thresholdFunctor::getDistance(vertex_values[permutation[refCorner][3]]);
+    const ctype d0 = sign*thresholdFunctor::getDistance(vertex_values[permutation[refCorner][1]]);
+    const ctype a1 = sign*thresholdFunctor::getDistance(vertex_values[permutation[refCorner][4]]);
+    const ctype b1 = sign*thresholdFunctor::getDistance(vertex_values[permutation[refCorner][6]]);
+    const ctype c1 = sign*thresholdFunctor::getDistance(vertex_values[permutation[refCorner][7]]);
+    const ctype d1 = sign*thresholdFunctor::getDistance(vertex_values[permutation[refCorner][5]]);
 
 #ifndef NDEBUG
     std::cout << vertex_values[0] << " ::: " << vertex_values[1] << " ::: "
@@ -690,7 +704,7 @@ namespace Dune {
     std::cout << "ineq " << inequation_4 << " ::: corner " << corner_signs
               << " ::: cornerX " << corner_signs_x << std::endl;
     std::cout << "result: " << (result ? "true" : "false") << std::endl;
-    std::cout << "corners: " << at << " " << bt << " " << c1 << " " << dt
+    std::cout << "corners: " << at << " " << bt << " " << ct << " " << dt
               << std::endl;
 #endif
     return result;

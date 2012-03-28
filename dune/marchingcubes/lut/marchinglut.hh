@@ -133,6 +133,15 @@ static const int INDEX_COUNT_CODIM_1 = 7;
 static const int INDEX_VERTEX_GROUPS = 8;
 static const int INDEX_UNIQUE_CASE = 9;
 
+/* Mappings for vertex number to linear index in value array */
+static const short table_any1d_vertex_to_index[] = {0};
+static const short table_simplex2d_vertex_to_index[] = {0,1,2};
+static const short table_cube2d_vertex_to_index[] = {0,1,2,3};
+static const short table_simplex3d_vertex_to_index[] = {0,1,2,0,3};
+static const short table_pyramid3d_vertex_to_index[] = {0,1,2,3,4};
+static const short table_prism3d_vertex_to_index[] = {0,1,2,0,3,4,5};
+static const short table_cube3d_vertex_to_index[] = {0,1,2,3,4,5,6,7};
+
 #ifndef _MARCHING_LUT_CC_
 
 extern "C"

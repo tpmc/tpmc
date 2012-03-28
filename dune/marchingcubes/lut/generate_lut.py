@@ -51,6 +51,30 @@ lut1d = LookupGenerators[(1,"any")]
 lut0d = LookupGenerators[(0,"any")]
 
 ################################################################################
+## Tests                                                                      ##
+################################################################################
+
+start = time.time()
+Test(cube2d).test()
+LOGGER.info("time elapsed: {0}s".format(time.time()-start))
+start = time.time()
+Test(cube3d).test()
+LOGGER.info("time elapsed: {0}s".format(time.time()-start))
+start = time.time()
+Test(simplex2d).test()
+LOGGER.info("time elapsed: {0}s".format(time.time()-start))
+start = time.time()
+Test(simplex3d).test()
+LOGGER.info("time elapsed: {0}s".format(time.time()-start))
+start = time.time()
+Test(pyramid3d).test()
+LOGGER.info("time elapsed: {0}s".format(time.time()-start))
+start = time.time()
+Test(prism3d).test()
+LOGGER.info("time elapsed: {0}s".format(time.time()-start))
+
+
+################################################################################
 ## Output                                                                     ##
 ################################################################################
 
@@ -91,22 +115,3 @@ Vtk(cube3d).write("lutgen/vtk")
 Vtk(cube2d).write("lutgen/vtk")
 Vtk(simplex2d).write("lutgen/vtk")
 Vtk(simplex3d).write("lutgen/vtk")
-
-start = time.time()
-Test(cube2d).test()
-LOGGER.info("time elapsed: {0}s".format(time.time()-start))
-start = time.time()
-Test(cube3d).test()
-LOGGER.info("time elapsed: {0}s".format(time.time()-start))
-start = time.time()
-Test(simplex2d).test()
-LOGGER.info("time elapsed: {0}s".format(time.time()-start))
-start = time.time()
-Test(simplex3d).test()
-LOGGER.info("time elapsed: {0}s".format(time.time()-start))
-start = time.time()
-Test(pyramid3d).test()
-LOGGER.info("time elapsed: {0}s".format(time.time()-start))
-start = time.time()
-Test(prism3d).test()
-LOGGER.info("time elapsed: {0}s".format(time.time()-start))

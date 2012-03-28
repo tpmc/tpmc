@@ -132,6 +132,8 @@ class LookupGenerator(object):
         for entry in self.all_cases:
             entry.update()
             generate_vertex_group(entry)
+            for mc in entry.mc33:
+                generate_vertex_group(mc)
 
     def print_base(self, prefix="lut", face_count=0, cell_count=0):
         """ print all base cases """

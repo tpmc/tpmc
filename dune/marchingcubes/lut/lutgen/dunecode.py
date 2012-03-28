@@ -91,7 +91,7 @@ class DuneCode:
                 return EZ
             # points on an edge"
             try:
-                # check whether edge exists, excpect 3D simplex, prism or 
+                # check whether edge exists, except 3D simplex, prism or 
                 # pyramid because of changed numering
                 if ((self.generator.basic_type != "simplex" 
                      and self.generator.basic_type != "prism"

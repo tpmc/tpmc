@@ -8,15 +8,17 @@
 
 \begin{document}
 \section*{Marching-Cube 33 Tests}
-
 The following text contains the documentation of the marching cubes 33 tests performed by \file{test.py}.
-\subsection*{Face-tests test}
-The tests loops through all Face tests in the marching cubes 33 test table and uses the case number to check if those faces are ambiguous.
-\subsection*{Vertex test}
+\subsection*{all-cases tests}
+\paragraph*{Vertex test}
 The test uses the case number and checks if all vertices are correctly assigned to interior/exterior. A vertex with $0$ in the case number should be contained in an interior element, one with $1$ in an exterior element.
-\subsection*{Vertex-groups test}
-The test checks if the group-ids assigned to the vertices correspond to the ones assigned to the codim 0 elements containing those vertices.
-\subsection*{Surface test}
+\paragraph*{Vertex-groups test}
+The test checks if the group-ids assigned to the vertices correspond
+to the ones assigned to the codim 0 elements containing those
+vertices.
+\paragraph*{Face-tests test}
+The tests loops through all Face tests in the marching cubes 33 test table and uses the case number to check if those faces are ambiguous.
+\paragraph*{Surface test}
 The surface test checks if the reference element is completely filled by the decomposition. This is accomplished by the following recursive scheme:
 
 Let $I$ and $E$ denoted the interior and exterior elements respectively and $R$ the reference element. The surface $surface(M)$ of a set of elements $M$ can be obtained by taking the faces of all elements and removing the non-unique ones. A set of elements \emph{matches} a reference element, if its surface matches the surface of the reference element.
@@ -29,9 +31,14 @@ Let $I$ and $E$ denoted the interior and exterior elements respectively and $R$ 
   \end{enumerate}
 \end{enumerate}
 the recursion ends on dimension $0$ where the vertices can be compared directly.
-\subsection*{Interface test}
+\paragraph*{Interface test}
 It is checked, if the interface provided by the base case decomposition is the same as the interface obtained by using the interior and exterior elements, ie \\
 $decomposition.faces \stackrel{?}{=} \lbrace f | f\text{ is face of interior element }\wedge f\text{ is face of exterior element}\rbrace$
-\subsection*{Consistency test}
+\paragraph*{Consistency test}
 This test checks if the decomposition of a face of the reference element obtained by the decomposition of the element in interior and exterior is the same as the one obtained by the lower dimensional decomposition of the reference face.
+\subsection*{base-case tests}
+\paragraph*{Pyramid test}
+Due to problems with quadrature of pyramids, they should be avoided in
+the triangulations. So this test fails if a pyramid has been used for
+a base case.
 \end{document}

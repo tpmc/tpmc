@@ -51,6 +51,11 @@ namespace Dune {
      */
     static offsetRow * all_case_offsets[];
     /*
+     * contains arrays for renumbering vertices. used for simplex and prism
+     * to map the vertex numbers to the indices in the vertex-values array
+     */
+    static const short * const all_vertex_to_index[];
+    /*
      * contains vertex_groups-tables for different geometries. for details
      * see <code>marchinglut.hh</code>
      */

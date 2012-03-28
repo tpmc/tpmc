@@ -11,6 +11,38 @@ from geomobj import GeomObject
 
 LOGGER = logging.getLogger('lutgen.test')
 
+class SingleTest(object):
+    def __init__(self, name = ""):
+        self.success = False
+        self.done = False
+        self.name = name
+    def succeed(self):
+        self.done = True
+        self.success = True
+    def fail(self):
+        self.done = True
+        self.success = False
+
+class SingleTriangulationTest(SingleTest):
+    def __init__(self, dimension, triangulation, name = ""):
+        SingleTest.__init__(self, name)
+        self.triangulation = triangulation
+        self.dimension = dimension
+
+class SinglePyramidTest(SingleTriangulationTest):
+    def __init__(self, dimension, triangulation, name = ""):
+        SingleTriangulationTest.__init__(dimension, triangulation, name)
+    def run(self):
+        def test_tri(tri):
+            if (self.dimension == 3) and (len([1 for element in tri if len(element) == 5]) > 0) :
+                self.fail()
+        test_tri(self.triangulation.interior)
+        if not self.done:
+            test_tri(self.triangulation.exterior)
+        if not self.done:
+            self.succeed()
+
+
 class Test(object):
     """ class for testing a marching-cubes 33 triangulation """
     def __init__(self, generator):
@@ -183,7 +215,7 @@ class Test(object):
             vg = triang.vertex_groups[i]
             interior_elements = [triang.interior_groups[e] for e in range(len(triang.interior)) if i in triang.interior[e]]
             exterior_elements = [triang.exterior_groups[e] for e in range(len(triang.exterior)) if i in triang.exterior[e]]
-            if len([e for e in interior_elements if e != vg])>0 or len([e for e in exterior_elements if e != vg]):
+            if len([e for e in interior_elements if e != vg])>0 or len([e for e in exterior_elements if e != vg])>0:
                 return 0
         return 1
     def test_vertices(self, triang, case):
@@ -211,9 +243,9 @@ class Test(object):
             if face_values != [0, 1, 1, 0] and face_values != [1, 0, 0, 1]:
                 LOGGER.error("face {0} should be tested "
                              "but is not ambiguous".format(x.idx))
-                return 0            
+                return 0
         return 1
-                
+
     def test_triangulation(self, triang, base_case, mc33_index):
         """ performs tests on the triangulation triang belonging to case """
         count, passed = 0, 0
@@ -259,7 +291,7 @@ class Test(object):
         LOGGER.info("starting test of {0}".format(self.generator.geometry_type))
         passed = 0
         count = 0
-        for base_case in self.generator.base_cases:
+        for base_case in self.generator.all_cases:
             (test_count, test_passed) = self.test_triangulation(base_case, 
                                                                 base_case, -1)
             count += test_count
