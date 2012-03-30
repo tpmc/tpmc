@@ -7,8 +7,8 @@
 #include "lut/marchinglut.hh"
 #include "isdegenerated.hh"
 
-#include <dune/common/geometrytype.hh>
-#include <dune/grid/common/genericreferenceelements.hh>
+#include <dune/geometry/type.hh>
+#include <dune/geometry/referenceelements.hh>
 
 #include <fstream>
 #include <cmath>

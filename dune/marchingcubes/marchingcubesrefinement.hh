@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include <dune/grid/genericgeometry/geometry.hh>
+#include <dune/geometry/genericgeometry/geometry.hh>
 
 #include <dune/marchingcubes/marchingcubes.hh>
 #include <dune/marchingcubes/thresholdfunctor.hh>
