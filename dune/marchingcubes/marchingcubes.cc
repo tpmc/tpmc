@@ -188,7 +188,7 @@ namespace Dune {
     {
       case_number *= 2;
       // Set bit to 0 if vertex is inside
-      case_number |= !thresholdFunctor::isInside(vertex_values[i-1]);
+      case_number |= !threshFunctor.isInside(vertex_values[i-1]);
     }
     // Is it a marching cubes' 33 case?
     bool ambiguous_case =
@@ -320,7 +320,7 @@ namespace Dune {
   {
     if (dim == 0)
     {
-      if (thresholdFunctor::isInside(vertex_values[0]))
+      if (threshFunctor.isInside(vertex_values[0]))
       {
         elements.resize(1);
         elements[1].resize(0);
@@ -343,6 +343,10 @@ namespace Dune {
         codim_index = all_codim_1[vertex_count + dim]
                       + all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_1];
       }
+
+      IsDegenerated<ctype,dim-1>::eqEpsilon=threshFunctor.degenerationDistance();
+      IsDegenerated<ctype,dim>::eqEpsilon=threshFunctor.degenerationDistance();
+
       elements.reserve(element_count);
       for (sizeType i = 0; i < element_count; i++)
       {
@@ -470,8 +474,8 @@ namespace Dune {
                    (VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP);
         vertex_2 = (i / FACTOR_SECOND_POINT) &
                    (VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP);
-        if (thresholdFunctor::isInside(vertex_values[vertex_1]) !=
-            thresholdFunctor::isInside(vertex_values[vertex_2]))
+        if (threshFunctor.isInside(vertex_values[vertex_1]) !=
+            threshFunctor.isInside(vertex_values[vertex_2]))
         {
           point edge_point;
           getCoordsFromNumber(vertex_values, vertex_count, i,
@@ -517,13 +521,12 @@ namespace Dune {
       index_b = all_vertex_to_index[vertex_count+dim][index_b];
       // factor for interpolation
       valueType interpol_factor =
-        thresholdFunctor::getDistance(vertex_values[index_a])
-        / (thresholdFunctor::getDistance(vertex_values[index_b])
-           - thresholdFunctor::getDistance(vertex_values[index_a]));
+        threshFunctor.interpolationFactor
+          (point_a,point_b,vertex_values[index_a],vertex_values[index_b]);
       // if we are at an egde with no intersecting, just take the
       // edge-center (occurs in codim 0 triangulation)
-      if (thresholdFunctor::isInside(vertex_values[index_a]) ==
-          thresholdFunctor::isInside(vertex_values[index_b]))
+      if (threshFunctor.isInside(vertex_values[index_a]) ==
+          threshFunctor.isInside(vertex_values[index_b]))
         interpol_factor = -0.5;
       // calculate interpolation point
       for (sizeType i = 0; i < dim; i++)
@@ -594,10 +597,10 @@ namespace Dune {
                     const valueType corner_c, const valueType corner_d, bool inverse) const
   {
     // Change naming scheme to jgt-paper ones
-    ctype a = thresholdFunctor::getDistance(corner_a);
-    ctype b = thresholdFunctor::getDistance(corner_b);
-    ctype c = thresholdFunctor::getDistance(corner_d);
-    ctype d = thresholdFunctor::getDistance(corner_c);
+    ctype a = threshFunctor.getDistance(corner_a);
+    ctype b = threshFunctor.getDistance(corner_b);
+    ctype c = threshFunctor.getDistance(corner_d);
+    ctype d = threshFunctor.getDistance(corner_c);
 
     // check if its really an amiguous face
     assert(a*c >= 0);
@@ -612,7 +615,7 @@ namespace Dune {
     std::cout << "testFace " << inverse << " => " << f*(a*c-b*d) << std::endl;
 #endif
 
-    bool result = !thresholdFunctor::isLower(f*(a*c-b*d));
+    bool result = !threshFunctor.isLower(f*(a*c-b*d));
     return result;
   }
 
@@ -648,16 +651,16 @@ namespace Dune {
       {2, 0, 3, 1, 6, 4, 7, 5},
       {3, 2, 1, 0, 7, 6, 5, 4}
     };
-    const ctype sign = thresholdFunctor::getDistance(vertex_values[permutation[refCorner][0]]) < 0 ? -1.0 : 1.0;
+    const ctype sign = threshFunctor.getDistance(vertex_values[permutation[refCorner][0]]) < 0 ? -1.0 : 1.0;
     // get vertex values
-    const ctype a0 = sign*thresholdFunctor::getDistance(vertex_values[permutation[refCorner][0]]);
-    const ctype b0 = sign*thresholdFunctor::getDistance(vertex_values[permutation[refCorner][2]]);
-    const ctype c0 = sign*thresholdFunctor::getDistance(vertex_values[permutation[refCorner][3]]);
-    const ctype d0 = sign*thresholdFunctor::getDistance(vertex_values[permutation[refCorner][1]]);
-    const ctype a1 = sign*thresholdFunctor::getDistance(vertex_values[permutation[refCorner][4]]);
-    const ctype b1 = sign*thresholdFunctor::getDistance(vertex_values[permutation[refCorner][6]]);
-    const ctype c1 = sign*thresholdFunctor::getDistance(vertex_values[permutation[refCorner][7]]);
-    const ctype d1 = sign*thresholdFunctor::getDistance(vertex_values[permutation[refCorner][5]]);
+    const ctype a0 = sign*threshFunctor.getDistance(vertex_values[permutation[refCorner][0]]);
+    const ctype b0 = sign*threshFunctor.getDistance(vertex_values[permutation[refCorner][2]]);
+    const ctype c0 = sign*threshFunctor.getDistance(vertex_values[permutation[refCorner][3]]);
+    const ctype d0 = sign*threshFunctor.getDistance(vertex_values[permutation[refCorner][1]]);
+    const ctype a1 = sign*threshFunctor.getDistance(vertex_values[permutation[refCorner][4]]);
+    const ctype b1 = sign*threshFunctor.getDistance(vertex_values[permutation[refCorner][6]]);
+    const ctype c1 = sign*threshFunctor.getDistance(vertex_values[permutation[refCorner][7]]);
+    const ctype d1 = sign*threshFunctor.getDistance(vertex_values[permutation[refCorner][5]]);
 
 #ifndef NDEBUG
     std::cout << vertex_values[0] << " ::: " << vertex_values[1] << " ::: "
@@ -692,7 +695,7 @@ namespace Dune {
     const ctype bt = b0 + (b1 - b0) * t_max;
     const ctype ct = c0 + (c1 - c0) * t_max;
     const ctype dt = d0 + (d1 - d0) * t_max;
-    const bool inequation_4 = !thresholdFunctor::isLower(at*ct - bt*dt);
+    const bool inequation_4 = !threshFunctor.isLower(at*ct - bt*dt);
     // check sign(a0) = sign(at) = sign(ct) = sign(c1)
 #ifndef NDEBUG
     const bool corner_signs_x = (at*ct >= 0)

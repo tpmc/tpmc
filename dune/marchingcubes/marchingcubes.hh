@@ -39,7 +39,16 @@ namespace Dune {
                           const sizeType key,
                           const bool exterior_not_interior,
                           std::vector<short>& element_groups) const;
+
+    MarchingCubes33(const thresholdFunctor & _threshFunctor = thresholdFunctor())
+      : threshFunctor(_threshFunctor) {}
+
   private:
+
+    /*
+     * functor for defining and asserting numerical thresholds
+     */
+    const thresholdFunctor threshFunctor;
     /*
      * row containing information about a specific mc case. for details see
      * marchinglut.hh
