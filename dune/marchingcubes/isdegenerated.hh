@@ -18,13 +18,15 @@ namespace Dune {
     static bool eq(const FieldVector<ctype,dim> & a,
                    const FieldVector<ctype,dim> & b)
     {
-      static const ctype eqEpsilon = 1e-8;
       ctype sum = 0;
       for (int d=0; d<dim; d++)
         sum += std::abs(a[d] - b[d]);
       return (sum <= eqEpsilon);
     }
+    static ctype eqEpsilon;
   };
+  template<class ctype> ctype IsDegeneratedBase<ctype>::eqEpsilon(1e-8);
+
 
   template <class ctype, int dim>
   struct IsDegenerated {
