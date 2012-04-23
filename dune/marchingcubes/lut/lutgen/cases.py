@@ -12,10 +12,10 @@ class Triangulation(object):
     class containg a triangulation of an object into interior, exterior
     and interface along with information about connected groups
     """
-    def __init__(self, vertex_groups = None, faces = None, exterior = None, 
+    def __init__(self,name = "", vertex_groups = None, faces = None, exterior = None, 
                  exterior_groups = None, interior = None, 
                  interior_groups = None):
-        self.name = ""
+        self.name = name
         self.vertex_groups = vertex_groups if vertex_groups is not None else []
         self.faces = faces if faces is not None else [[]]
         self.exterior = exterior if exterior is not None else [[]]
@@ -86,7 +86,8 @@ class Case(BaseCase):
         self.tests = [ permute_single_test(test, self.transformation) 
                        for test in self.base_case.tests ]
         # update mc33 triangulations
-        self.mc33 = [ Triangulation(self.transformation*triang.vertex_groups,
+        self.mc33 = [ Triangulation(triang.name,
+                                    self.transformation*triang.vertex_groups,
                                     permute_geom_list(dim-1, triang.faces, 
                                                       self.transformation),
                                     permute_geom_list(dim, triang.exterior, 

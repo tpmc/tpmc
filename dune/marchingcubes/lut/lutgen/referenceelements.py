@@ -1,6 +1,8 @@
 class CenterPoint(object):
         def __repr__(self):
                 return "CenterPoint"
+        def __eq__(self, other):
+                return type(other) is CenterPoint
 
 class GeometryType(tuple):
 	def __new__(cls, d, t=None):
