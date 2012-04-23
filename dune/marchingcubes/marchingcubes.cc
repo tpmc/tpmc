@@ -256,8 +256,9 @@ namespace Dune {
         }
         else if ((-test) & TEST_INTERIOR)
         {
-          size_t refCorner = -test - TEST_INTERIOR;
-          test_result = testAmbiguousCenter(vertex_values, vertex_count, refCorner);
+          size_t refCorner = (-test - TEST_INTERIOR) >> 3;
+          size_t refFace = (-test - TEST_INTERIOR) & 7;
+          test_result = testAmbiguousCenter(vertex_values, vertex_count, refCorner, refFace);
         }
         else
         {
@@ -638,33 +639,48 @@ namespace Dune {
   template <typename valueVector>
   bool MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   testAmbiguousCenter(const valueVector& vertex_values,
-                      const sizeType vertex_count, size_t refCorner) const
+                      const sizeType vertex_count, size_t refCorner, size_t refFace) const
   {
     assert(dim==3);
 #ifndef NDEBUG
-    std::cout << "---------------------------\ntestAmbiguousCenter " << refCorner << std::endl;
+    std::cout << "---------------------------\ntestAmbiguousCenter " << refCorner << "_" << refFace << std::endl;
 #endif
     // \TODO need to find proper axis and rotate accordingly
 
     // permute vertices according to refCorner
     // rotate arounf z-axis such that refCorner is a0
     assert (refCorner < 4);
+    assert (refFace == 0 || refFace == 2 || refFace == 4);
+    refFace /= 2;
     static size_t permutation[4][8] = {
       {0, 1, 2, 3, 4, 5, 6, 7},
       {1, 3, 0, 2, 5, 7, 4, 6},
       {2, 0, 3, 1, 6, 4, 7, 5},
       {3, 2, 1, 0, 7, 6, 5, 4}
     };
-    const ctype sign = threshFunctor.getDistance(vertex_values[permutation[refCorner][0]]) < 0 ? -1.0 : 1.0;
-    // get vertex values
-    const ctype a0 = sign*threshFunctor.getDistance(vertex_values[permutation[refCorner][0]]);
-    const ctype b0 = sign*threshFunctor.getDistance(vertex_values[permutation[refCorner][2]]);
-    const ctype c0 = sign*threshFunctor.getDistance(vertex_values[permutation[refCorner][3]]);
-    const ctype d0 = sign*threshFunctor.getDistance(vertex_values[permutation[refCorner][1]]);
-    const ctype a1 = sign*threshFunctor.getDistance(vertex_values[permutation[refCorner][4]]);
-    const ctype b1 = sign*threshFunctor.getDistance(vertex_values[permutation[refCorner][6]]);
-    const ctype c1 = sign*threshFunctor.getDistance(vertex_values[permutation[refCorner][7]]);
-    const ctype d1 = sign*threshFunctor.getDistance(vertex_values[permutation[refCorner][5]]);
+    static size_t face_permutation[3][8] = {
+      {0, 4, 2, 6, 1, 5, 3, 7},
+      {0, 1, 4, 5, 2, 3, 6, 7},
+      {0, 1, 2, 3, 4, 5, 6, 7}
+    };
+    static size_t face_ref_perm[3][4] = {
+      {0, 3, 2, 1},
+      {0, 1, 3, 2},
+      {0, 1, 2, 3}
+    };
+    // permute reference Corner
+    refCorner = face_ref_perm[refFace][refCorner];
+    size_t *p = permutation[refCorner];
+    size_t *fp = face_permutation[refFace];
+    const ctype sign = threshFunctor.isInside(vertex_values[fp[p[0]]]) ? -1.0 : 1.0;
+    const ctype a0 = sign*threshFunctor.getDistance(vertex_values[fp[p[0]]]);
+    const ctype b0 = sign*threshFunctor.getDistance(vertex_values[fp[p[2]]]);
+    const ctype c0 = sign*threshFunctor.getDistance(vertex_values[fp[p[3]]]);
+    const ctype d0 = sign*threshFunctor.getDistance(vertex_values[fp[p[1]]]);
+    const ctype a1 = sign*threshFunctor.getDistance(vertex_values[fp[p[4]]]);
+    const ctype b1 = sign*threshFunctor.getDistance(vertex_values[fp[p[6]]]);
+    const ctype c1 = sign*threshFunctor.getDistance(vertex_values[fp[p[7]]]);
+    const ctype d1 = sign*threshFunctor.getDistance(vertex_values[fp[p[5]]]);
 
 #ifndef NDEBUG
     std::cout << vertex_values[0] << " ::: " << vertex_values[1] << " ::: "

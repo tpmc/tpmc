@@ -4,7 +4,9 @@ from cases import Triangulation
 from referenceelements import Center
 from disambiguate import \
     TEST_FACE_0, TEST_FACE_1, TEST_FACE_2, TEST_FACE_3, TEST_FACE_4, TEST_FACE_5,\
-    TEST_INTERIOR_0, TEST_INTERIOR_1, TEST_INTERIOR_2, TEST_INTERIOR_3,\
+    TEST_INTERIOR_0_0, TEST_INTERIOR_1_0, TEST_INTERIOR_2_0, TEST_INTERIOR_3_0,\
+    TEST_INTERIOR_0_2, TEST_INTERIOR_1_2, TEST_INTERIOR_2_2, TEST_INTERIOR_3_2,\
+    TEST_INTERIOR_0_4, TEST_INTERIOR_1_4, TEST_INTERIOR_2_4, TEST_INTERIOR_3_4,\
     TEST_INVALID, CASE_IS_REGULAR, binaryheap
 from geomobj import permute_geom_list
 
@@ -158,7 +160,7 @@ BCTcube3d.base_cases[8].mc33[-1].exterior = [[4, (0, 4), (4, 5), (4, 6)], [(0, 4
 BCTcube3d.base_cases[8].mc33[-1].exterior_groups = [0, 0, 0, 0]
 BCTcube3d.base_cases[8].mc33[-1].interior = [[0, (0, 4), 5, (4, 5), (1, 3)], [0, 1, 5, (1, 3)], [0, (0, 4), 6, (4, 6), (2, 3)], [0, 2, 6, (2, 3)], [0, (0, 4), (2, 3), (1, 3)], [(1, 3), (3, 7), (4, 5), 5], [(2, 3), (3, 7), 6, (4, 6)], [5, (4, 5), 6, (4, 6), (3, 7)], [5, 6, 7, (3, 7)]]
 BCTcube3d.base_cases[8].mc33[-1].interior_groups = [1, 1, 1, 1, 1, 1, 1, 1, 1]
-BCTcube3d.base_cases[8].tests = binaryheap((TEST_INTERIOR_3, 0, CASE_IS_REGULAR))
+BCTcube3d.base_cases[8].tests = binaryheap((TEST_INTERIOR_3_4, 0, CASE_IS_REGULAR))
 # 1,0,0,1,1,0,0,0 -> 00011001 # MC33 Case 6.1.2
 BCTcube3d.base_cases[9].mc33.append(Triangulation())
 BCTcube3d.base_cases[9].mc33[-1].name = "MC33 Case 6.1.2"
@@ -185,7 +187,7 @@ BCTcube3d.base_cases[9].mc33[-1].interior = [[(4, 5), (4, 6), (3, 7), 7], [(0, 1
 BCTcube3d.base_cases[9].mc33[-1].interior_groups = [1, 1, 1, 1, 1, 1, 1]
 BCTcube3d.base_cases[9].tests = binaryheap((TEST_FACE_4,
                                             1,
-                                            (TEST_INTERIOR_3, 0, CASE_IS_REGULAR)
+                                            (TEST_INTERIOR_3_4, 0, CASE_IS_REGULAR)
                                             ))
 # 0,1,1,0,1,0,0,0 -> 00010110 # MC33 Case 7.2 (face 0, 2 inside; face 4 outside)
 BCTcube3d.base_cases[6].mc33.append(Triangulation())
@@ -254,7 +256,7 @@ BCTcube3d.base_cases[6].mc33[-1].interior_groups = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 BCTcube3d.base_cases[6].tests = binaryheap((TEST_FACE_0,
                                             (TEST_FACE_2,
                                              (TEST_FACE_4,
-                                              (TEST_INTERIOR_0, 7, 6),
+                                              (TEST_INTERIOR_0_4, 7, 6),
                                               5),
                                              (TEST_FACE_4, 4, 1)),
                                             (TEST_FACE_2,
@@ -296,7 +298,7 @@ BCTcube3d.base_cases[12].tests = binaryheap((TEST_FACE_0,
                                              (TEST_FACE_1, 0, 1),
                                              (TEST_FACE_1,
                                               2,
-                                              (TEST_INTERIOR_2, 3, CASE_IS_REGULAR))))
+                                              (TEST_INTERIOR_2_0, 3, CASE_IS_REGULAR))))
 # 0,1,1,1,1,0,0,0 -> 00011110 # Inverse of MC33 Case 12.1.1
 BCTcube3d.base_cases[11].mc33.append(Triangulation())
 BCTcube3d.base_cases[11].mc33[-1].name = "MC33 Case 12.1.1 inv"
@@ -343,11 +345,11 @@ BCTcube3d.base_cases[11].mc33[-1].interior_groups = BCTcube3d.base_cases[11].mc3
 # 0,1,1,1,1,0,0,0 -> 00011110 # MC33 Case 12.1.1 inverse (face 0, 2 outside) 
 BCTcube3d.base_cases[11].tests = binaryheap((TEST_FACE_0,
                                              (TEST_FACE_2, 
-                                              (TEST_INTERIOR_0, 4, 0),
+                                              (TEST_INTERIOR_0_4, 4, 0),
                                               3),
                                              (TEST_FACE_2,
                                               2,
-                                              (TEST_INTERIOR_3, 1, CASE_IS_REGULAR))))
+                                              (TEST_INTERIOR_3_4, 1, CASE_IS_REGULAR))))
 # 1,0,0,1,0,1,1,0 -> 01101001 # MC33 Case 13.2 (face 0, 1, 2, 3, 4 inside; 5 outside)
 BCTcube3d.base_cases[13].mc33.append(Triangulation())
 BCTcube3d.base_cases[13].mc33[-1].name = "MC33 Case 13.2 0, 1, 2, 3, 4 inside; 5 outside"
@@ -761,13 +763,13 @@ BCTcube3d.base_cases[13].tests = binaryheap((TEST_FACE_0,
                                                 (TEST_FACE_4,
                                                  (TEST_FACE_5, 35, 29),
                                                  (TEST_FACE_5,
-                                                  (TEST_INTERIOR_3, 25, 21),
+                                                  (TEST_INTERIOR_3_4, 25, 21),
                                                   17))),
                                                (TEST_FACE_3,
                                                 (TEST_FACE_4,
                                                  (TEST_FACE_5,
                                                   34,
-                                                  (TEST_INTERIOR_2, 24, 20)),
+                                                  (TEST_INTERIOR_2_4, 24, 20)),
                                                  (TEST_FACE_5, 28, 16)),
                                                 (TEST_FACE_4,
                                                  15,
@@ -781,13 +783,13 @@ BCTcube3d.base_cases[13].tests = binaryheap((TEST_FACE_0,
                                                 (TEST_FACE_4,
                                                  (TEST_FACE_5,
                                                   31,
-                                                  (TEST_INTERIOR_1, 23, 19)),
+                                                  (TEST_INTERIOR_1_4, 23, 19)),
                                                  (TEST_FACE_5, 27, 13))),
                                                (TEST_FACE_3,
                                                 (TEST_FACE_4,
                                                  (TEST_FACE_5, 30, 26),
                                                  (TEST_FACE_5,
-                                                  (TEST_INTERIOR_0, 22, 18),
+                                                  (TEST_INTERIOR_0_4, 22, 18),
                                                   12)),
                                                 (TEST_FACE_4,
                                                  11,

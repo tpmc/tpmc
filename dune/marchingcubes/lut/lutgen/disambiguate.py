@@ -59,13 +59,16 @@ class TestFace(object):
 
 class TestInterior(object):
     """ representing test for an ambigous interior """
-    def __init__(self, refv):
+    def __init__(self, refv, reff):
         self.refv = int(refv)
+        self.reff = reff
     def __mul__(self, perm):
         assert type(perm) is Permutation or type(perm) is Transformation
-        return TestInterior([0,1,2,3,3,2,1,0][perm[self.refv]])
+        faces = ReferenceElements[(3,"cube")].faces
+        newf = permute_faceid(self.reff, perm, faces)
+        return TestInterior([0,1,2,3,3,2,1,0][perm[self.refv]], [0,0,2,2,4,4][newf])
     def __repr__(self):
-        return "TEST_INTERIOR_" + repr(self.refv)
+        return "TEST_INTERIOR_" + repr(self.refv) + "_" + repr(self.reff)
 
 class TestRegular(object):
     """ dummy-object for regular case """
@@ -117,9 +120,17 @@ TEST_FACE_2 = TestFace(2)
 TEST_FACE_3 = TestFace(3)
 TEST_FACE_4 = TestFace(4)
 TEST_FACE_5 = TestFace(5)
-TEST_INTERIOR_0 = TestInterior(0)
-TEST_INTERIOR_1 = TestInterior(1)
-TEST_INTERIOR_2 = TestInterior(2)
-TEST_INTERIOR_3 = TestInterior(3)
+TEST_INTERIOR_0_0 = TestInterior(0, 0)
+TEST_INTERIOR_1_0 = TestInterior(1, 0)
+TEST_INTERIOR_2_0 = TestInterior(2, 0)
+TEST_INTERIOR_3_0 = TestInterior(3, 0)
+TEST_INTERIOR_0_2 = TestInterior(0, 2)
+TEST_INTERIOR_1_2 = TestInterior(1, 2)
+TEST_INTERIOR_2_2 = TestInterior(2, 2)
+TEST_INTERIOR_3_2 = TestInterior(3, 2)
+TEST_INTERIOR_0_4 = TestInterior(0, 4)
+TEST_INTERIOR_1_4 = TestInterior(1, 4)
+TEST_INTERIOR_2_4 = TestInterior(2, 4)
+TEST_INTERIOR_3_4 = TestInterior(3, 4)
 TEST_INVALID = TestInvalid()
 CASE_IS_REGULAR = TestRegular()

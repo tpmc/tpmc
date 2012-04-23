@@ -128,10 +128,18 @@ static const short TEST_FACE_2_1 = -(TEST_FACE | TEST_FACE_FLIP | 2);
 static const short TEST_FACE_3_1 = -(TEST_FACE | TEST_FACE_FLIP | 3);
 static const short TEST_FACE_4_1 = -(TEST_FACE | TEST_FACE_FLIP | 4);
 static const short TEST_FACE_5_1 = -(TEST_FACE | TEST_FACE_FLIP | 5);
-static const short TEST_INTERIOR_0 = -(TEST_INTERIOR | 0);
-static const short TEST_INTERIOR_1 = -(TEST_INTERIOR | 1);
-static const short TEST_INTERIOR_2 = -(TEST_INTERIOR | 2);
-static const short TEST_INTERIOR_3 = -(TEST_INTERIOR | 3);
+static const short TEST_INTERIOR_0_0 = -(TEST_INTERIOR | (0 << 3) | 0);
+static const short TEST_INTERIOR_1_0 = -(TEST_INTERIOR | (1 << 3) | 0);
+static const short TEST_INTERIOR_2_0 = -(TEST_INTERIOR | (2 << 3) | 0);
+static const short TEST_INTERIOR_3_0 = -(TEST_INTERIOR | (3 << 3) | 0);
+static const short TEST_INTERIOR_0_2 = -(TEST_INTERIOR | (0 << 3) | 2);
+static const short TEST_INTERIOR_1_2 = -(TEST_INTERIOR | (1 << 3) | 2);
+static const short TEST_INTERIOR_2_2 = -(TEST_INTERIOR | (2 << 3) | 2);
+static const short TEST_INTERIOR_3_2 = -(TEST_INTERIOR | (3 << 3) | 2);
+static const short TEST_INTERIOR_0_4 = -(TEST_INTERIOR | (0 << 3) | 4);
+static const short TEST_INTERIOR_1_4 = -(TEST_INTERIOR | (1 << 3) | 4);
+static const short TEST_INTERIOR_2_4 = -(TEST_INTERIOR | (2 << 3) | 4);
+static const short TEST_INTERIOR_3_4 = -(TEST_INTERIOR | (3 << 3) | 4);
 
 /* Indices for access to cube2d_case_offsets */
 static const int INDEX_OFFSET_CODIM_0[] = {3, 0};

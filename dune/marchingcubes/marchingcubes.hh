@@ -112,7 +112,8 @@ namespace Dune {
      */
     template <typename valueVector>
     bool testAmbiguousCenter(const valueVector& vertex_values,
-                             const sizeType vertex_count, size_t refCorner) const;
+                             const sizeType vertex_count, size_t refCorner
+                             , size_t refFace) const;
 
     /** \brief gets coordinates of the vertex represented by
      * <code>number<code> (either a vertex, edge or center number)
