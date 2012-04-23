@@ -7,7 +7,7 @@ import logging
 
 from permutation import Permutation
 from transformation import Transformation
-from referenceelements import ReferenceElements, GeometryType
+from referenceelements import ReferenceElements, GeometryType, CenterPoint
 from polygon import Polygon
 
 LOGGER = logging.getLogger('lutgen.geomobject')
@@ -88,6 +88,10 @@ class GeomObject(object):
             """ permutates vertex """
             if type(vertex) is int:
                 return perm[vertex]
+            if type(vertex[0]) is CenterPoint:
+                return tuple((perm[vertex[1]], vertex[0]))
+            if type(vertex[1]) is CenterPoint:
+                return tuple((perm[vertex[0]], vertex[1]))
             return tuple(sorted((perm[vertex[0]], perm[vertex[1]])))
         entity = self.vertices
         if len(self.vertices) == 0:

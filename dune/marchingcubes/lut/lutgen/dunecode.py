@@ -3,16 +3,16 @@ Contains classes/constants for export to dune marchinglut.cc
 """
 
 import math
-from referenceelements import ReferenceElements
+from referenceelements import ReferenceElements, CenterPoint
 
 # Following constants are copied from marchinglut.hh
 # constants for vertex and edge numbering
-NO_VERTEX = 1 << 6
+NO_VERTEX = 1 << 8
 VERTEX_GO_RIGHT = 1 # x1 = 1
 VERTEX_GO_DEPTH = 2 # x2 = 1
 VERTEX_GO_UP = 4 # x3 = 1
 FACTOR_FIRST_POINT = 1
-FACTOR_SECOND_POINT = 8
+FACTOR_SECOND_POINT = 16
 # vertices start with V
 VA = 0
 VB = VERTEX_GO_RIGHT
@@ -22,6 +22,8 @@ VE = VERTEX_GO_UP
 VF = VERTEX_GO_RIGHT + VERTEX_GO_UP
 VG = VERTEX_GO_DEPTH + VERTEX_GO_UP
 VH = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP
+# center point
+CP = 1 << 3
 # edges start with E
 EI = VA * FACTOR_FIRST_POINT + VB * FACTOR_SECOND_POINT + NO_VERTEX
 EJ = VC * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX
@@ -43,14 +45,22 @@ EW = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
 EX = VD * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
 # Diagonal for prism
 EY = VF * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX
-# Center point is in the center of a cube or tetrahedron
-EZ = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
+# connections from center to vertices
+CA = VA * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
+CB = VB * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
+CC = VC * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
+CD = VD * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
+CE = VE * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
+CF = VF * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
+CG = VG * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
+CH = VH * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
 # dictionary to get constant names from integers
 CONST_NAMES = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", 
                VF:"VF", VG:"VG", VH:"VH", EI:"EI", EJ:"EJ", EK:"EK", 
                EL:"EL", EM:"EM", EN:"EN", EO:"EO", EP:"EP", EQ:"EQ", 
                ER:"ER", ES:"ES", ET:"ET", EU:"EU", EV:"EV", EW:"EW", 
-               EX:"EX", EY:"EY", EZ:"EZ"}
+               EX:"EX", EY:"EY", CP:"CP", CA:"CA", CB:"CB", CC:"CC",
+               CD:"CD", CE:"CE", CF:"CF", CG:"CG", CH:"CH"}
 # Constants indicating whether case special treatment when 
 # marching cubes' 33 is used.
 CASE_UNIQUE_MC33 = 0
@@ -81,6 +91,10 @@ class DuneCode:
         def edge(first, second):
             """ generate value for a point on a vertex or in the center """
             # ensure first < second
+            if type(first)==CenterPoint:
+                first = CP
+            if type(second)==CenterPoint:
+                second = CP
             if first > second:
                 first, second = second, first
             # get center points
@@ -88,7 +102,7 @@ class DuneCode:
                 or first == VB and second == VG 
                 or first == VC and second == VF 
                 or first == VD and second == VE):
-                return EZ
+                return CP
             # points on an edge"
             try:
                 # check whether edge exists, except 3D simplex, prism or 
@@ -96,12 +110,13 @@ class DuneCode:
                 if ((self.generator.basic_type != "simplex" 
                      and self.generator.basic_type != "prism"
                      and self.generator.basic_type != "pyramid")
-                    or self.generator.dim != 3):
+                    and self.generator.dim != 3
+                    and (first != CP and second != CP)):
                     self.ref_elem.edges.index(set([first, second]))
                 return (first * FACTOR_FIRST_POINT 
                         + second * FACTOR_SECOND_POINT + NO_VERTEX)
             except ValueError:
-                msg = "Edge ({0}, {2}) does not exist in {2}"
+                msg = "Edge ({0}, {1}) does not exist in {2}"
                 raise ValueError, (msg.format(first, second, 
                                               self.generator.geometry_type))
         def get_point_name(vertex):
@@ -113,6 +128,7 @@ class DuneCode:
             if type(vertex) is int:
                 return CONST_NAMES[vertex]
             # point is on a edge or in the center
+            #print vertex," in ",self.generator.geometry_type,": ",edge(vertex[0],vertex[1])
             return CONST_NAMES[edge(vertex[0], vertex[1])]
         def create_codim0_line(table, table_groups, entry, new_elements, new_elements_groups):
             """ create a table line for codimX tables """
@@ -144,6 +160,7 @@ class DuneCode:
                                 , 0)
             if len(new_elements) > 0:
                 # write all points of every element
+                #print "wrinting elements: ", new_elements
                 for element in new_elements:
                     table.append("%i, " % len(element), 1)
                     table.append("%s, " % ", ".join(get_point_name(x) 
@@ -201,6 +218,7 @@ class DuneCode:
         def create_tables(self, offsets, vertex_groups, codim0_exterior, codim0_exterior_groups, codim0_interior, codim0_interior_groups, codim1):
             """ creates string tables out of case tables """
             for entry in self.generator.all_cases:
+                #print "AHHH writing entry ", entry
                 # Constant whether unique MC33 case and whether inverted
                 unique_case = CASE_UNIQUE_MC33
                 if entry.transformation.orientation == -1:
@@ -255,6 +273,7 @@ class DuneCode:
                             mc33_tests.append(repr(test) + ", ", 1)
                     # Case tables for mc 33 cases
                     for mc33_case in entry.mc33:
+                        #print "writing mc33 case: ", mc33_case
                         base_case_number = \
                             self.generator.base_cases.index(entry.base_case)
                         oline = ("      /* {0} test index:{1} */ "
@@ -288,7 +307,7 @@ class DuneCode:
         table_dict = {"D": self.generator.dim, "T": self.generator.basic_type}
         table_offsets.tablestring = \
             ("    "
-             "const short table_{0[T]}{0[D]}d_cases_offsets[][10] = {{\n"
+             "const int table_{0[T]}{0[D]}d_cases_offsets[][10] = {{\n"
              "     /* vv: vertex values with 0=in, 1=out\n"
              "      * cn: case number\n"
              "      * bc: basic case, if negative it's inverted\n"

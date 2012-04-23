@@ -60,12 +60,12 @@
 #define MARCHING_LUT
 
 // constants for vertex and edge numbering
-static const short NO_VERTEX = 1<<6;
+static const short NO_VERTEX = 1<<8;
 static const short VERTEX_GO_RIGHT = 1;     // x1 = 1
 static const short VERTEX_GO_DEPTH = 2;     // x2 = 1
 static const short VERTEX_GO_UP = 4;     // x3 = 1
 static const short FACTOR_FIRST_POINT = 1;
-static const short FACTOR_SECOND_POINT = 8;
+static const short FACTOR_SECOND_POINT = 16;
 // vertices start with V
 static const short VA = 0;
 static const short VB = VERTEX_GO_RIGHT;
@@ -75,6 +75,8 @@ static const short VE = VERTEX_GO_UP;
 static const short VF = VERTEX_GO_RIGHT + VERTEX_GO_UP;
 static const short VG = VERTEX_GO_DEPTH + VERTEX_GO_UP;
 static const short VH = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP;
+// center
+static const short CP = 1 << 3;
 // edges start with E
 static const short EI = VA * FACTOR_FIRST_POINT + VB * FACTOR_SECOND_POINT + NO_VERTEX;
 static const short EJ = VC * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
@@ -94,8 +96,15 @@ static const short EV = VB * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_
 static const short EW = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
 static const short EX = VD * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
 static const short EY = VF * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
-// Center point is in the center of a cube or tetrahedron
-static const short EZ = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
+// connection from center to vertices
+static const short CA = VA * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short CB = VB * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short CC = VC * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short CD = VD * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short CE = VE * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short CF = VF * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short CG = VG * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX;
+static const short CH = VH * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX;
 
 /* Constants indicating whether case special treatment when marching cubes' 33 is used. */
 static const short CASE_UNIQUE_MC33 = 0;
@@ -162,7 +171,7 @@ extern "C"
    * Basic case 2: 0 0 1 1
    * Basic case 3: 0 1 0 1
    */
-  extern const short table_cube2d_cases_offsets[][10];
+  extern const int table_cube2d_cases_offsets[][10];
 
   /*
    * TODO: Comment
@@ -227,7 +236,7 @@ extern "C"
   /*
    * TODO: Comment 3D cube
    */
-  extern const short table_cube3d_cases_offsets[][10];
+  extern const int table_cube3d_cases_offsets[][10];
 
   /*
    * TODO: Comment
@@ -271,7 +280,7 @@ extern "C"
   /*
    * TODO: Comment 2D simplex
    */
-  extern const short table_simplex2d_cases_offsets[][10];
+  extern const int table_simplex2d_cases_offsets[][10];
 
   /*
    * TODO: Comment
@@ -305,7 +314,7 @@ extern "C"
   /*
    * TODO: Comment 3D simplex
    */
-  extern const short table_simplex3d_cases_offsets[][10];
+  extern const int table_simplex3d_cases_offsets[][10];
 
   /*
    * TODO: Comment
@@ -339,7 +348,7 @@ extern "C"
   /*
    * TODO: Comment 3D pyramid
    */
-  extern const short table_pyramid3d_cases_offsets[][10];
+  extern const int table_pyramid3d_cases_offsets[][10];
 
   /*
    * TODO: Comment
@@ -383,7 +392,7 @@ extern "C"
   /*
    * TODO: Comment 3D prism
    */
-  extern const short table_prism3d_cases_offsets[][10];
+  extern const int table_prism3d_cases_offsets[][10];
 
   /*
    * TODO: Comment
@@ -427,7 +436,7 @@ extern "C"
   /*
    * TODO: Comment
    */
-  extern const short table_any1d_cases_offsets[][10];
+  extern const int table_any1d_cases_offsets[][10];
 
   /*
    * TODO: Comment

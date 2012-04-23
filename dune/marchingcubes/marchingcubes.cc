@@ -6,6 +6,7 @@
 
 #include "lut/marchinglut.hh"
 #include "isdegenerated.hh"
+#include "newtonfunctor.hh"
 
 #include <dune/geometry/type.hh>
 #include <dune/geometry/referenceelements.hh>
@@ -24,10 +25,10 @@ namespace Dune {
    * Case offset tables (e.g. table_cube2d_cases offsets) for different
    * types of elements and dimensions.
    */
-  template <typename valueType, int dim, typename thresholdFunctor>
-  typename MarchingCubes33<valueType, dim, thresholdFunctor>::
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
+  typename MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   offsetRow *
-  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   all_case_offsets[] = {
     NULL, NULL, NULL, table_any1d_cases_offsets,
     NULL, table_simplex2d_cases_offsets,
@@ -36,9 +37,9 @@ namespace Dune {
     NULL, table_cube3d_cases_offsets
   };
 
-  template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
   const short * const
-  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   all_vertex_to_index[] = {
     NULL, NULL, NULL, table_any1d_vertex_to_index,
     NULL, table_simplex2d_vertex_to_index,
@@ -51,9 +52,9 @@ namespace Dune {
    * vertex_groups tables (e.g. table_cube2d_vertex_groups) for different
    * types of elements and dimensions.
    */
-  template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
   const short * const
-  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   all_vertex_groups[] = {
     NULL, NULL, NULL, table_any1d_vertex_groups,
     NULL, table_simplex2d_vertex_groups,
@@ -66,9 +67,9 @@ namespace Dune {
    * Codimension 0 element tables (e.g. table_cube2d_codim_0) for different
    * types of elements and dimensions.
    */
-  template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
   const short * const
-  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   all_codim_0[][2] = {
     {NULL, NULL}, {NULL, NULL}, {NULL, NULL},
     {table_any1d_codim_0_interior, table_any1d_codim_0_exterior},
@@ -86,9 +87,9 @@ namespace Dune {
    * element group tables (e.g. table_cube2d_codim_0_exterior_groups)
    * for different types of elements and dimensions.
    */
-  template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
   const short * const
-  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   all_element_groups[][2] = {
     {NULL, NULL}, {NULL, NULL}, {NULL, NULL},
     {table_any1d_interior_groups, table_any1d_exterior_groups},
@@ -106,9 +107,9 @@ namespace Dune {
    * Codimension 1 element tables (e.g. table_cube2d_codim_1) for different
    * types of elements and dimensions.
    */
-  template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
   const short * const
-  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   all_codim_1[] = {
     NULL, NULL, NULL, table_any1d_codim_1,
     NULL, table_simplex2d_codim_1,
@@ -121,9 +122,9 @@ namespace Dune {
    * MC33 offset tables (e.g. table_cube2d_mc33_offsets) for
    * different types of elements and dimensions.
    */
-  template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
   const short * const
-  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   all_mc33_offsets[] = {
     NULL, NULL, NULL, NULL, NULL, NULL,
     table_cube2d_mc33_offsets, NULL,
@@ -135,9 +136,9 @@ namespace Dune {
    * Test face tables (e.g. table_cube2d_mc33_face_test_order) for
    * different types of elements and dimensions.
    */
-  template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
   const short * const
-  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   all_face_tests[] = {
     NULL, NULL, NULL, NULL, NULL, NULL,
     table_cube2d_mc33_face_test_order, NULL,
@@ -159,10 +160,10 @@ namespace Dune {
    *                  should be used. Marching cubes' 33 leads to more
    *                  elements but they are topological correct.
    */
-  template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
   template <typename valueVector>
-  typename MarchingCubes33<valueType, dim, thresholdFunctor>::sizeType
-  MarchingCubes33<valueType, dim, thresholdFunctor>::
+  typename MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::sizeType
+  MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   getKey(const valueVector& vertex_values, const sizeType vertex_count,
          const bool use_mc_33) const
   {
@@ -175,7 +176,7 @@ namespace Dune {
     {
       return 0;
     }
-    const short (* const table_case_offsets)[10] =
+    const int (* const table_case_offsets)[10] =
       all_case_offsets[vertex_count + dim];
     const short * const table_mc33_offsets =
       all_mc33_offsets[vertex_count + dim];
@@ -309,9 +310,9 @@ namespace Dune {
    *                              only affects codim0.
    * \param elements where the resulting coordinates will be stored.
    */
-  template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
   template <typename valueVector>
-  void MarchingCubes33<valueType, dim, thresholdFunctor>::
+  void MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   getElements(const valueVector& vertex_values,
               const sizeType vertex_count, const sizeType key,
               const bool codim_1_not_0,
@@ -389,8 +390,8 @@ namespace Dune {
    *            generated from <code>getKey</code>.
    * \param vertex_groups where the resulting group indices are stored
    */
-  template <typename valueType, int dim, typename thresholdFunctor>
-  void MarchingCubes33<valueType, dim, thresholdFunctor>::
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
+  void MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   getVertexGroups(const sizeType vertex_count, const sizeType key,
                   std::vector<short>& vertex_groups) const {
     const short *vg_index = all_vertex_groups[vertex_count + dim]
@@ -415,8 +416,8 @@ namespace Dune {
    *                              exterior elements are generated
    * \param element_groups where the resulting group indices are stored
    */
-  template <typename valueType, int dim, typename thresholdFunctor>
-  void MarchingCubes33<valueType, dim, thresholdFunctor>::
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
+  void MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   getElementGroups(const sizeType vertex_count, const sizeType key,
                    const bool exterior_not_interior,
                    std::vector<short>& element_groups) const {
@@ -446,15 +447,15 @@ namespace Dune {
    *               \ref marchinglut.hh .
    * \param coord where the resulting coordinates will be stored.
    */
-  template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
   template <typename valueVector>
-  void MarchingCubes33<valueType, dim, thresholdFunctor>::
+  void MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   getCoordsFromNumber(const valueVector& vertex_values,
                       const sizeType vertex_count, const short number,
                       point& coord) const
   {
     // it's a center point and we are in the cube case
-    if (number == EZ && dim == 3 && vertex_count == 8)
+    if (number == CP && dim == 3 && vertex_count == 8)
     {
       //TODO: Testen
       // Initialize point
@@ -498,40 +499,41 @@ namespace Dune {
     {
       // get both vertices
       point point_a, point_b;
-      getCoordsFromEdgeNumber(vertex_values, vertex_count,
-                              number, point_a);
-      getCoordsFromEdgeNumber(vertex_values, vertex_count,
-                              (number / FACTOR_SECOND_POINT * FACTOR_FIRST_POINT), point_b);
-      // get indices for point in valueVector
 
-      /* \TODO wrong indices for Simplex
-       * Simplex is numbered (0, 1, 2, 4) to get the right reference
-       * corners, ie to match the numbering of the cube. This leads to
-       * wrong indices in vertex_values.
-       */
+      // \TODO replace 15 by proper constant
+      short first = (number/FACTOR_FIRST_POINT) & 15;
+      short second = (number/FACTOR_SECOND_POINT) & 15;
+      getCoordsFromNumber(vertex_values, vertex_count,
+                          first, point_a);
+      getCoordsFromNumber(vertex_values, vertex_count,
+                          second, point_b);
+      if (first == CP || second == CP)
+        intersectionFunctor::findRoot(vertex_values, point_a, point_b, coord);
+      else {
+        sizeType index_a = all_vertex_to_index[vertex_count+dim][first];
+        sizeType index_b = all_vertex_to_index[vertex_count+dim][second];
+        // if theres no intersection along the edge, there is no vertex
+        if (threshFunctor.isInside(vertex_values[index_a]) ==
+            threshFunctor.isInside(vertex_values[index_b])) {
+#ifndef NDEBUG
+          std::cout << "vertex values: ";
+          for (std::size_t i = 0; i<vertex_count; ++i)
+            std::cout << " " << vertex_values[i];
+          std::cout << "\nfirst: " << first << " a: " << index_a
+                    << " second: " << second << " b: " << index_b << "\n";
+#endif
+          DUNE_THROW(IllegalArgumentException, "no vertex on edge found");
+        }
 
-      sizeType index_a = 0;
-      sizeType index_b = 0;
-      for (sizeType i = 0; i < dim; i++)
-      {
-        index_a += (sizeType) point_a[i] * (1<<i);
-        index_b += (sizeType) point_b[i] * (1<<i);
-      }
-      index_a = all_vertex_to_index[vertex_count+dim][index_a];
-      index_b = all_vertex_to_index[vertex_count+dim][index_b];
-      // factor for interpolation
-      valueType interpol_factor =
-        threshFunctor.interpolationFactor
-          (point_a,point_b,vertex_values[index_a],vertex_values[index_b]);
-      // if we are at an egde with no intersecting, just take the
-      // edge-center (occurs in codim 0 triangulation)
-      if (threshFunctor.isInside(vertex_values[index_a]) ==
-          threshFunctor.isInside(vertex_values[index_b]))
-        interpol_factor = -0.5;
-      // calculate interpolation point
-      for (sizeType i = 0; i < dim; i++)
-      {
-        coord[i] = point_a[i] - interpol_factor * (point_b[i] - point_a[i]);
+        // factor for interpolation
+        valueType interpol_factor = threshFunctor.interpolationFactor
+                                      (point_a,point_b,vertex_values[index_a],vertex_values[index_b]);
+
+
+        // calculate interpolation point
+        for (sizeType i = 0; i < dim; i++) {
+          coord[i] = point_a[i] - interpol_factor * (point_b[i] - point_a[i]);
+        }
       }
     }
     // it's a vertex
@@ -560,9 +562,9 @@ namespace Dune {
    *               \ref marchinglut.hh .
    * \param coord where the resulting coordinates will be stored.
    */
-  template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
   template <typename valueVector>
-  void MarchingCubes33<valueType, dim, thresholdFunctor>::
+  void MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   getCoordsFromEdgeNumber(const valueVector& vertex_values,
                           const sizeType vertex_count, char number,
                           point& coord) const
@@ -591,8 +593,8 @@ namespace Dune {
    *
    * \return <code>True</code> if face center is not inside
    */
-  template <typename valueType, int dim, typename thresholdFunctor>
-  bool MarchingCubes33<valueType, dim, thresholdFunctor>::
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
+  bool MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   testAmbiguousFace(const valueType corner_a, const valueType corner_b,
                     const valueType corner_c, const valueType corner_d, bool inverse) const
   {
@@ -632,9 +634,9 @@ namespace Dune {
    *
    * \return <code>True</true> if cell center is connected to refCorner and the opposite corner.
    */
-  template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
   template <typename valueVector>
-  bool MarchingCubes33<valueType, dim, thresholdFunctor>::
+  bool MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   testAmbiguousCenter(const valueVector& vertex_values,
                       const sizeType vertex_count, size_t refCorner) const
   {
@@ -642,6 +644,8 @@ namespace Dune {
 #ifndef NDEBUG
     std::cout << "---------------------------\ntestAmbiguousCenter " << refCorner << std::endl;
 #endif
+    // \TODO need to find proper axis and rotate accordingly
+
     // permute vertices according to refCorner
     // rotate arounf z-axis such that refCorner is a0
     assert (refCorner < 4);

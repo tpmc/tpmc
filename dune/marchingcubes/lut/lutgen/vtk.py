@@ -2,6 +2,7 @@ from lutgen.output import Output
 
 from lutgen.referenceelements import GeometryType
 from lutgen.referenceelements import ReferenceElements
+from lutgen.referenceelements import CenterPoint
 
 from pyvtk import *
 
@@ -12,12 +13,12 @@ class Vtk(Output):
 		def vertex(v, points):
 			if type(v) is int:
 				return points[v] + [0]*(3-dim) # vtk assumes dim=3
-			else:
-				try:
-					return [ (1.0*points[v[0]][i] + points[v[1]][i]) / 2.0
-							 for i in range(dim) ] + [0]*(3-dim) # vtk assumes dim=3
-				except KeyError:
-					return [ 0.5 for i in range(dim) ] + [0]*(3-dim)
+                        if type(v) is CenterPoint:
+                                return [0.5 for i in range(dim) ] + [0]*(3-dim)
+                        else:
+                                p1 = vertex(v[0],points)
+                                p2 = vertex(v[1],points)
+                                return [0.5*(p1[i]+p2[i]) for i in range(len(p1))]
 
 		if dim == 3:
 			renumber = [ None, None, None, None,

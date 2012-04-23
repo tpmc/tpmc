@@ -7,6 +7,8 @@
 #include <dune/common/float_cmp.hh>
 #include <dune/common/exceptions.hh>
 
+#include <dune/marchingcubes/newtonfunctor.hh>
+
 namespace Dune {
 
   /** \brief Exception to signal user that he used a method in an unintended way
@@ -15,7 +17,8 @@ namespace Dune {
 
   /** \brief The 'marching cubes 33' algorithm.
    */
-  template <typename valueType, int dim, typename thresholdFunctor>
+  template <typename valueType, int dim, typename thresholdFunctor,
+      class intersectionFunctor = NewtonFunctor<valueType> >
   class MarchingCubes33 {
     typedef size_t sizeType;
     typedef double ctype;
@@ -53,7 +56,7 @@ namespace Dune {
      * row containing information about a specific mc case. for details see
      * marchinglut.hh
      */
-    typedef const short offsetRow[10];
+    typedef const int offsetRow[10];
     /*
      * contains offset-tables for different geometries. for details see
      * <code>marchinglut.hh</code>
