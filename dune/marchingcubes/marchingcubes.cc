@@ -495,6 +495,24 @@ namespace Dune {
         coord[i] /= count;
       }
     }
+    // it's a face point (assuming consecutive numbering)
+    else if (number >= FA && number <= FF) {
+      int faceid = number - FA;
+      static short faces[][4] = {{0,2,4,6}, {1,3,5,7}, {0,1,4,5},
+                                 {2,3,6,7}, {0,1,2,3}, {4,5,6,7}};
+      // const, first dir, second dir
+      static short dirs[][3] = {{0,1,2}, {0,1,2}, {1,0,2}, {1,0,2},
+                                {2,0,1}, {2,0,1}};
+      static valueType constvalues[] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
+      valueType a = vertex_values[faces[faceid][0]],
+                b = vertex_values[faces[faceid][1]],
+                c = vertex_values[faces[faceid][2]],
+                d = vertex_values[faces[faceid][3]];
+      valueType factor = 1.0/(a-b-c+d);
+      coord[dirs[faceid][0]] = constvalues[faceid];
+      coord[dirs[faceid][1]] = factor*(a-c);
+      coord[dirs[faceid][2]] = factor*(a-b);
+    }
     // it's an edge
     else if ((number & NO_VERTEX) == NO_VERTEX)
     {
@@ -508,7 +526,7 @@ namespace Dune {
                           first, point_a);
       getCoordsFromNumber(vertex_values, vertex_count,
                           second, point_b);
-      if (first == CP || second == CP)
+      if ((first >= FA && first <= CP) || (second >= FA && second <= CP))
         intersectionFunctor::findRoot(vertex_values, point_a, point_b, coord);
       else {
         sizeType index_a = all_vertex_to_index[vertex_count+dim][first];

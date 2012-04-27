@@ -3,7 +3,8 @@ Contains classes/constants for export to dune marchinglut.cc
 """
 
 import math
-from referenceelements import ReferenceElements, CenterPoint
+from referenceelements import ReferenceElements
+from geomobj import FacePoint, CenterPoint
 
 # Following constants are copied from marchinglut.hh
 # constants for vertex and edge numbering
@@ -22,8 +23,15 @@ VE = VERTEX_GO_UP
 VF = VERTEX_GO_RIGHT + VERTEX_GO_UP
 VG = VERTEX_GO_DEPTH + VERTEX_GO_UP
 VH = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP
+# faces
+FA = VH + 1
+FB = VH + 2
+FC = VH + 3
+FD = VH + 4
+FE = VH + 5
+FF = VH + 6
 # center point
-CP = 1 << 3
+CP = FF + 1
 # edges start with E
 EI = VA * FACTOR_FIRST_POINT + VB * FACTOR_SECOND_POINT + NO_VERTEX
 EJ = VC * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX
@@ -54,13 +62,73 @@ CE = VE * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
 CF = VF * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
 CG = VG * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
 CH = VH * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
+# connections from faces to vertices
+FAA = VA * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX
+FAB = VB * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX
+FAC = VC * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX
+FAD = VD * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX
+FAE = VE * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX
+FAF = VF * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX
+FAG = VG * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX
+FAH = VH * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX
+FBA = VA * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX
+FBB = VB * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX
+FBC = VC * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX
+FBD = VD * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX
+FBE = VE * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX
+FBF = VF * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX
+FBG = VG * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX
+FBH = VH * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX
+FCA = VA * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX
+FCB = VB * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX
+FCC = VC * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX
+FCD = VD * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX
+FCE = VE * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX
+FCF = VF * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX
+FCG = VG * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX
+FCH = VH * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX
+FDA = VA * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX
+FDB = VB * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX
+FDC = VC * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX
+FDD = VD * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX
+FDE = VE * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX
+FDF = VF * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX
+FDG = VG * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX
+FDH = VH * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX
+FEA = VA * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX
+FEB = VB * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX
+FEC = VC * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX
+FED = VD * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX
+FEE = VE * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX
+FEF = VF * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX
+FEG = VG * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX
+FEH = VH * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX
+FFA = VA * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX
+FFB = VB * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX
+FFC = VC * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX
+FFD = VD * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX
+FFE = VE * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX
+FFF = VF * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX
+FFG = VG * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX
+FFH = VH * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX
 # dictionary to get constant names from integers
 CONST_NAMES = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", 
                VF:"VF", VG:"VG", VH:"VH", EI:"EI", EJ:"EJ", EK:"EK", 
                EL:"EL", EM:"EM", EN:"EN", EO:"EO", EP:"EP", EQ:"EQ", 
                ER:"ER", ES:"ES", ET:"ET", EU:"EU", EV:"EV", EW:"EW", 
                EX:"EX", EY:"EY", CP:"CP", CA:"CA", CB:"CB", CC:"CC",
-               CD:"CD", CE:"CE", CF:"CF", CG:"CG", CH:"CH"}
+               CD:"CD", CE:"CE", CF:"CF", CG:"CG", CH:"CH", FA:"FA",
+               FB:"FB", FC:"FC", FD:"FD", FE:"FE", FF:"FF", FAA:"FAA", 
+               FAB:"FAB", FAC:"FAC", FAD:"FAD", FAE:"FAE", FAF:"FAF", 
+               FAG:"FAG", FAH:"FAH", FBA:"FBA", FBB:"FBB", FBC:"FBC", 
+               FBD:"FBD", FBE:"FBE", FBF:"FBF", FBG:"FBG", FBH:"FBH", 
+               FCA:"FCA", FCB:"FCB", FCC:"FCC", FCD:"FCD", FCE:"FCE", 
+               FCF:"FCF", FCG:"FCG", FCH:"FCH", FDA:"FDA", FDB:"FDB", 
+               FDC:"FDC", FDD:"FDD", FDE:"FDE", FDF:"FDF", FDG:"FDG", 
+               FDH:"FDH", FEA:"FEA", FEB:"FEB", FEC:"FEC", FED:"FED", 
+               FEE:"FEE", FEF:"FEF", FEG:"FEG", FEH:"FEH", FFA:"FFA", 
+               FFB:"FFB", FFC:"FFC", FFD:"FFD", FFE:"FFE", FFF:"FFF", 
+               FFG:"FFG", FFH:"FFH"}
 # Constants indicating whether case special treatment when 
 # marching cubes' 33 is used.
 CASE_UNIQUE_MC33 = 0
@@ -90,11 +158,16 @@ class DuneCode:
         """ Generate lookup table """
         def edge(first, second):
             """ generate value for a point on a vertex or in the center """
+            faceids = [FA, FB, FC, FD, FE, FF]
             # ensure first < second
-            if type(first)==CenterPoint:
+            if type(first) is CenterPoint:
                 first = CP
-            if type(second)==CenterPoint:
+            if type(second) is CenterPoint:
                 second = CP
+            if type(first) is FacePoint:
+                first = faceids[first.id]
+            if type(second) is FacePoint:
+                second = faceids[second.id]
             if first > second:
                 first, second = second, first
             # get center points
@@ -111,7 +184,8 @@ class DuneCode:
                      and self.generator.basic_type != "prism"
                      and self.generator.basic_type != "pyramid")
                     and self.generator.dim != 3
-                    and (first != CP and second != CP)):
+                    and (first != CP and second != CP)
+                    and (first not in faceids and second not in faceids)):
                     self.ref_elem.edges.index(set([first, second]))
                 return (first * FACTOR_FIRST_POINT 
                         + second * FACTOR_SECOND_POINT + NO_VERTEX)

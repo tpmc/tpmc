@@ -7,10 +7,25 @@ import logging
 
 from permutation import Permutation
 from transformation import Transformation
-from referenceelements import ReferenceElements, GeometryType, CenterPoint
+from referenceelements import ReferenceElements, GeometryType
 from polygon import Polygon
+from disambiguate import permute_faceid
 
 LOGGER = logging.getLogger('lutgen.geomobject')
+
+class CenterPoint(object):
+        def __repr__(self):
+                return "CenterPoint"
+        def __eq__(self, other):
+                return type(other) is CenterPoint
+
+class FacePoint(object):
+	def __init__(self, id):
+		self.id = id
+	def __repr__(self):
+		return "FacePoint",id
+	def __eq__(self, other):
+		return type(other) is FacePoint and other.id == self.id
 
 class GeomObject(object):
     """ class representing a geometric object, eg a 3d cube, 2d simplex, etc """
@@ -90,8 +105,14 @@ class GeomObject(object):
                 return perm[vertex]
             if type(vertex[0]) is CenterPoint:
                 return tuple((perm[vertex[1]], vertex[0]))
+            if type(vertex[0]) is FacePoint:
+                nfp = FacePoint(permute_faceid(vertex[0].id, perm, self.reference.faces))
+                return tuple((perm[vertex[1]],  nfp))
             if type(vertex[1]) is CenterPoint:
                 return tuple((perm[vertex[0]], vertex[1]))
+            if type(vertex[1]) is FacePoint:
+                nfp = FacePoint(permute_faceid(vertex[1].id, perm, self.reference.faces))
+                return tuple((perm[vertex[0]],  nfp))
             return tuple(sorted((perm[vertex[0]], perm[vertex[1]])))
         entity = self.vertices
         if len(self.vertices) == 0:
@@ -123,3 +144,12 @@ def permute_geom_list(dim, entities, perm):
     ie a list of lists of vertices
     """
     return [ GeomObject(dim, e) * perm for e in entities ]
+
+
+Center = CenterPoint()
+Face0 = FacePoint(0)
+Face1 = FacePoint(1)
+Face2 = FacePoint(2)
+Face3 = FacePoint(3)
+Face4 = FacePoint(4)
+Face5 = FacePoint(5)

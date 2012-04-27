@@ -1,9 +1,3 @@
-class CenterPoint(object):
-        def __repr__(self):
-                return "CenterPoint"
-        def __eq__(self, other):
-                return type(other) is CenterPoint
-
 class GeometryType(tuple):
 	def __new__(cls, d, t=None):
 		if t is None:
@@ -98,4 +92,3 @@ ReferenceElements = {(0,"any"): ReferenceElement((0,"any"), [[]], [], []),
 									   [0,2],[1,3],[4,6],[5,7],
 									   [0,1],[2,3],[4,5],[6,7]])}
 
-Center = CenterPoint()

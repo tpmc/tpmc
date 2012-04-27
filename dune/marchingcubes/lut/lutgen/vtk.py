@@ -2,7 +2,7 @@ from lutgen.output import Output
 
 from lutgen.referenceelements import GeometryType
 from lutgen.referenceelements import ReferenceElements
-from lutgen.referenceelements import CenterPoint
+from lutgen.geomobj import CenterPoint, FacePoint
 
 from pyvtk import *
 
@@ -15,6 +15,11 @@ class Vtk(Output):
 				return points[v] + [0]*(3-dim) # vtk assumes dim=3
                         if type(v) is CenterPoint:
                                 return [0.5 for i in range(dim) ] + [0]*(3-dim)
+			if type(v) is FacePoint:
+				soliddims = [(0,0), (0,1), (1,0), (1,1), (2,0), (2,1)]
+				res = [0.5]*dim
+				res[soliddims[v.id][0]] = soliddims[v.id][1]
+				return res
                         else:
                                 p1 = vertex(v[0],points)
                                 p2 = vertex(v[1],points)

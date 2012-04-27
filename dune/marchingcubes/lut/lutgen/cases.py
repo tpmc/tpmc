@@ -74,7 +74,8 @@ class Case(BaseCase):
                     return test
             else:
                 return test
-        # update the triangulation 
+        # update the triangulation
+        self.name = self.base_case.name
         self.faces = permute_geom_list(dim-1, self.base_case.faces, 
                                        self.transformation)
         self.exterior = permute_geom_list(dim, self.base_case.exterior, 

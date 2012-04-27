@@ -7,7 +7,7 @@ import logging
 from base_case_triangulation import LookupGenerators
 from disambiguate import TestFace, TestRegular
 from polygon import PolygonList
-from geomobj import GeomObject
+from geomobj import GeomObject, CenterPoint, FacePoint
 
 LOGGER = logging.getLogger('lutgen.test')
 
@@ -245,7 +245,21 @@ class Test(object):
                              "but is not ambiguous".format(x.idx))
                 return 0
         return 1
-
+    def test_valid_vertices(self, triang, case):
+        for x in (x for e in triang.interior+triang.exterior+triang.faces for x in e):
+            if type(x) is not int and type(x) is not CenterPoint and type(x) is not FacePoint:
+                if type(x[0]) is int and type(x[1]) is int:
+                    if case[x[0]] == case[x[1]]:
+                        LOGGER.error("vertex on edge {0} does"
+                                     " not exist in case {1}".format(x,case))
+                        return 0
+        return 1
+    def test_pyramids(self, triang):
+        for e in triang.interior+triang.exterior:
+            if len(e) == 5:
+                LOGGER.error("evil pyramid found: {0}".format(e))
+                return 0
+        return 1
     def test_triangulation(self, triang, base_case, mc33_index):
         """ performs tests on the triangulation triang belonging to case """
         count, passed = 0, 0
@@ -273,14 +287,25 @@ class Test(object):
             LOGGER.error("surface test for triangulation {0} "
                          "FAILED".format(triang.name))
         passed += result
+        count += 1
+        result = self.test_valid_vertices(triang, base_case.case)
+        if result == 0:
+            LOGGER.error("valid-vertices test for triangulation {0} "
+                         "FAILED".format(triang.name))
+        passed += result
         if self.generator.dim == 3:
             count += 1
             test_results = self.find_test_results(base_case, mc33_index)
             result = self.test_consistency(triang, base_case.case, test_results)
-            
             if result == 0:
                 LOGGER.error("consistency test for triangulation {0} "
                              "FAILED".format(triang.name))
+            passed += result
+            count += 1
+            result = self.test_pyramids(triang)
+            if result == 0:
+                LOGGER.error("pyramid test for triangulation {0} , case {1} "
+                             "FAILED".format(triang.name, base_case.case))
             passed += result
         return (count, passed)
     def test(self):

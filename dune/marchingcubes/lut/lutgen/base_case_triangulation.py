@@ -1,14 +1,13 @@
 from generator import LookupGenerator
 from permutation import Permutation
 from cases import Triangulation
-from referenceelements import Center
 from disambiguate import \
     TEST_FACE_0, TEST_FACE_1, TEST_FACE_2, TEST_FACE_3, TEST_FACE_4, TEST_FACE_5,\
     TEST_INTERIOR_0_0, TEST_INTERIOR_1_0, TEST_INTERIOR_2_0, TEST_INTERIOR_3_0,\
     TEST_INTERIOR_0_2, TEST_INTERIOR_1_2, TEST_INTERIOR_2_2, TEST_INTERIOR_3_2,\
     TEST_INTERIOR_0_4, TEST_INTERIOR_1_4, TEST_INTERIOR_2_4, TEST_INTERIOR_3_4,\
     TEST_INVALID, CASE_IS_REGULAR, binaryheap
-from geomobj import permute_geom_list
+from geomobj import permute_geom_list, Center, Face0, Face1, Face2, Face3, Face4, Face5
 
 
 # this file contains the triangulations for the marching-cubes base cases generated
