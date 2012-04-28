@@ -169,7 +169,7 @@ class Test(object):
             """ returns true if first and second contain the same elements """
             return len(first) == len(second) and sum(1 for x in first 
                                                      if x 
-                                                     in second) == len(first)
+                                                     not in second) == 0
         interface_base = [GeomObject(self.generator.dim-1, x) 
                           for x in triangulation.faces if len(x)>0]
         # remove those faces from interface_base intersecting reference element
@@ -183,9 +183,9 @@ class Test(object):
                         for x in data if len(x)>0)
             interface = get_faces(reference, elements)
             if not compare(interface, interface_base):
-                #LOGGER.error("interface: {0}, "
-                #             "base.faces: {1}".format(interface, 
-                #                                      interface_base))
+                LOGGER.error("interface: {0}\n"
+                             "base.faces: {1}".format(interface, 
+                                                      interface_base))
                 errormsg = "interface of {0} does not match"
                 if data == triangulation.interior:
                     LOGGER.error(errormsg.format('interior'))

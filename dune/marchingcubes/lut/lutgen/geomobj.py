@@ -23,9 +23,11 @@ class FacePoint(object):
 	def __init__(self, id):
 		self.id = id
 	def __repr__(self):
-		return "FacePoint",id
-	def __eq__(self, other):
-		return type(other) is FacePoint and other.id == self.id
+		return "FacePoint{0}".format(self.id)
+	def __cmp__(self, other):
+                if type(other) is FacePoint:
+                        return self.id - other.id
+                return -1
 
 class GeomObject(object):
     """ class representing a geometric object, eg a 3d cube, 2d simplex, etc """
@@ -105,13 +107,15 @@ class GeomObject(object):
                 return perm[vertex]
             if type(vertex[0]) is CenterPoint:
                 return tuple((perm[vertex[1]], vertex[0]))
-            if type(vertex[0]) is FacePoint:
-                nfp = FacePoint(permute_faceid(vertex[0].id, perm, self.reference.faces))
+            if type(vertex[0]) is FacePoint: # only supported for 3d cubes
+                cubereffaces = ReferenceElements[(3, "cube")].faces
+                nfp = FacePoint(permute_faceid(vertex[0].id, perm, cubereffaces))
                 return tuple((perm[vertex[1]],  nfp))
             if type(vertex[1]) is CenterPoint:
                 return tuple((perm[vertex[0]], vertex[1]))
-            if type(vertex[1]) is FacePoint:
-                nfp = FacePoint(permute_faceid(vertex[1].id, perm, self.reference.faces))
+            if type(vertex[1]) is FacePoint: # only supported for 3d cubes
+                cubereffaces = ReferenceElements[(3, "cube")].faces
+                nfp = FacePoint(permute_faceid(vertex[1].id, perm, cubereffaces))
                 return tuple((perm[vertex[0]],  nfp))
             return tuple(sorted((perm[vertex[0]], perm[vertex[1]])))
         entity = self.vertices
@@ -133,8 +137,10 @@ class GeomObject(object):
         return (intcount + lincount) == len(other.vertices)
     def __eq__(self, other):
         """ elements are equal if they contain the same vertices """
-        return (self.dim == other.dim 
-                and set(self.vertices) == set(other.vertices))
+        #print "eq: {0} vs {1}: {2}".format(set(self.vertices), set(other.vertices),(self.dim == other.dim
+        #                                                and set(self.vertices) == set(other.vertices)))
+        return (self.dim == other.dim
+                and sorted(self.vertices) == sorted(other.vertices))
     def __repr__(self):
         return 'GeomObject: {0}: {1}'.format(self.reference.type, self.vertices)
 
