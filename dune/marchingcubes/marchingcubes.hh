@@ -56,7 +56,7 @@ namespace Dune {
      * row containing information about a specific mc case. for details see
      * marchinglut.hh
      */
-    typedef const int offsetRow[10];
+    typedef const unsigned short offsetRow[10];
     /*
      * contains offset-tables for different geometries. for details see
      * <code>marchinglut.hh</code>

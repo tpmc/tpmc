@@ -11,14 +11,17 @@ namespace Dune {
   /*
    * stop Newton's method after a constant number of iterations
    */
-  template <unsigned int maxIteration = 5>
+  template <typename ValueType>
   class IterationStopPolicy {
   public:
-    template <typename ValueType>
     static bool stop(unsigned int iteration, ValueType residuum) {
-      return iteration >= maxIteration;
+      return iteration >= MAX_ITERATION;
     }
+  private:
+    static const unsigned int MAX_ITERATION;
   };
+  template <typename ValueType>
+  const unsigned int IterationStopPolicy<ValueType>::MAX_ITERATION = 10;
 
   /*
    * stop Newton's method if the residuum is small enough
@@ -36,10 +39,26 @@ namespace Dune {
   const ValueType ResiduumStopPolicy<ValueType>::MIN_RESIDUUM = 1e-8;
 
   /*
+   * stop if one of the stop policies says so
+   */
+  template <typename ValueType, template <typename> class Policy1,
+      template <typename> class Policy2>
+  class OrCombinedStopPolicy {
+  public:
+    static bool stop(unsigned int iteration, ValueType residuum) {
+      return (Policy1<ValueType>::stop(iteration, residuum)
+              || Policy2<ValueType>::stop(iteration, residuum));
+    }
+  };
+
+  /*
    * finds a root of a trilinear function along a line from a point a
    * to a point b using a combination of Newton's method and Bisection
    */
-  template <typename ValueType, class StopPolicy = ResiduumStopPolicy<ValueType> >
+  template <typename ValueType,
+      class StopPolicy = OrCombinedStopPolicy<ValueType,
+          ResiduumStopPolicy,
+          IterationStopPolicy> >
   class NewtonFunctor {
     typedef double ctype;
   public:
@@ -50,6 +69,12 @@ namespace Dune {
                          const PointType& a,
                          const PointType& b,
                          PointType& result);
+
+    template <class VectorType>
+    static void findRoot(const VectorType& vertex_values,
+                         const Dune::FieldVector<ctype, 2>& a,
+                         const Dune::FieldVector<ctype, 2>& b,
+                         Dune::FieldVector<ctype, 2>& result);
   private:
     /* parameterization of a line from a to b; line(t=0)=a, line(t=1)=b */
     static void line(ValueType t, const PointType& a,
@@ -60,6 +85,15 @@ namespace Dune {
       result += a;
     }
   };
+
+  template <typename ValueType, class StopPolicy>
+  template <class VectorType>
+  void NewtonFunctor<ValueType, StopPolicy>::findRoot(const VectorType& vertex_values,
+                                                      const Dune::FieldVector<ctype, 2>& a,
+                                                      const Dune::FieldVector<ctype, 2>& b,
+                                                      Dune::FieldVector<ctype, 2>& result) {
+    DUNE_THROW(Dune::NotImplemented, "newton method not supported for 2d vector");
+  }
 
   template <typename ValueType, class StopPolicy>
   template <class VectorType>
@@ -82,7 +116,8 @@ namespace Dune {
               << " to " << b << " (" << fb << ") with t = " << t << "\n";
 #endif
     /* stop criteria provided by StopPolicy */
-    while (!StopPolicy::stop(iteration, residuum)) {
+    while (!StopPolicy::stop(iteration, residuum)
+           && FloatCmp::ne(l,r)) {
       ++iteration;
       // compute gradient
       PointType gradient;

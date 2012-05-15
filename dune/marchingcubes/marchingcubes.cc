@@ -176,7 +176,7 @@ namespace Dune {
     {
       return 0;
     }
-    const int (* const table_case_offsets)[10] =
+    const unsigned short (* const table_case_offsets)[10] =
       all_case_offsets[vertex_count + dim];
     const short * const table_mc33_offsets =
       all_mc33_offsets[vertex_count + dim];

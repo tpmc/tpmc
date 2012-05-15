@@ -250,8 +250,7 @@ class DuneCode:
             """ create a table line for codimX tables """
             # change 3D simplex, prism & pyramid numbering scheme to 3D cube's one
             rename_vertices = {(3,"simplex"): [0,1,2,4],
-                               (3,"prism"): [0,1,2,4,5,6],
-                               (3,"pyramid"): [0,1,4,5,2]}
+                               (3,"prism"): [0,1,2,4,5,6]}
             if self.generator.geometry_type in rename_vertices:
                 rename = rename_vertices[self.generator.geometry_type]
                 for i in range(len(new_elements)):
@@ -381,7 +380,7 @@ class DuneCode:
         table_dict = {"D": self.generator.dim, "T": self.generator.basic_type}
         table_offsets.tablestring = \
             ("    "
-             "const int table_{0[T]}{0[D]}d_cases_offsets[][10] = {{\n"
+             "const unsigned short table_{0[T]}{0[D]}d_cases_offsets[][10] = {{\n"
              "     /* vv: vertex values with 0=in, 1=out\n"
              "      * cn: case number\n"
              "      * bc: basic case, if negative it's inverted\n"

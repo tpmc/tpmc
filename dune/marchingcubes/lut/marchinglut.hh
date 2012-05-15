@@ -235,7 +235,7 @@ extern "C"
    * Basic case 2: 0 0 1 1
    * Basic case 3: 0 1 0 1
    */
-  extern const int table_cube2d_cases_offsets[][10];
+  extern const unsigned short table_cube2d_cases_offsets[][10];
 
   /*
    * TODO: Comment
@@ -300,7 +300,7 @@ extern "C"
   /*
    * TODO: Comment 3D cube
    */
-  extern const int table_cube3d_cases_offsets[][10];
+  extern const unsigned short table_cube3d_cases_offsets[][10];
 
   /*
    * TODO: Comment
@@ -344,7 +344,7 @@ extern "C"
   /*
    * TODO: Comment 2D simplex
    */
-  extern const int table_simplex2d_cases_offsets[][10];
+  extern const unsigned short table_simplex2d_cases_offsets[][10];
 
   /*
    * TODO: Comment
@@ -378,7 +378,7 @@ extern "C"
   /*
    * TODO: Comment 3D simplex
    */
-  extern const int table_simplex3d_cases_offsets[][10];
+  extern const unsigned short table_simplex3d_cases_offsets[][10];
 
   /*
    * TODO: Comment
@@ -412,7 +412,7 @@ extern "C"
   /*
    * TODO: Comment 3D pyramid
    */
-  extern const int table_pyramid3d_cases_offsets[][10];
+  extern const unsigned short table_pyramid3d_cases_offsets[][10];
 
   /*
    * TODO: Comment
@@ -456,7 +456,7 @@ extern "C"
   /*
    * TODO: Comment 3D prism
    */
-  extern const int table_prism3d_cases_offsets[][10];
+  extern const unsigned short table_prism3d_cases_offsets[][10];
 
   /*
    * TODO: Comment
@@ -500,7 +500,7 @@ extern "C"
   /*
    * TODO: Comment
    */
-  extern const int table_any1d_cases_offsets[][10];
+  extern const unsigned short table_any1d_cases_offsets[][10];
 
   /*
    * TODO: Comment

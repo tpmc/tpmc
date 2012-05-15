@@ -21,9 +21,15 @@ class Vtk(Output):
 				res[soliddims[v.id][0]] = soliddims[v.id][1]
 				return res
                         else:
+                                w = 0.5
                                 p1 = vertex(v[0],points)
                                 p2 = vertex(v[1],points)
-                                return [0.5*(p1[i]+p2[i]) for i in range(len(p1))]
+                                # different weighting for face points (just solving display issues
+                                if type(v[0]) is FacePoint:
+                                        w = 0.85
+                                if type(v[1]) is FacePoint:
+                                        w = 0.15
+                                return [w*p1[i]+(1-w)*p2[i] for i in range(len(p1))]
 
 		if dim == 3:
 			renumber = [ None, None, None, None,
