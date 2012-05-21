@@ -12,6 +12,12 @@ AM_CONFIG_HEADER([config.h])
 # this implies checking for [dune-common]
 DUNE_CHECK_ALL
 
+# stuff for gui program
+AM_OPTIONS_WXCONFIG
+reqwx=2.4.0
+AM_PATH_WXCONFIG($reqwx, wxWin=1)
+PKG_CHECK_MODULES([GTK], [gtk+-2.0])
+
 # implicitly set the Dune-flags everywhere
 AC_SUBST(AM_CPPFLAGS, $DUNE_CPPFLAGS)
 AC_SUBST(AM_LDFLAGS, $DUNE_LDFLAGS)
@@ -27,6 +33,7 @@ AC_CONFIG_FILES([
   dune/marchingcubes/Makefile
   dune/marchingcubes/test/Makefile
   dune/marchingcubes/lut/Makefile
+  dune/marchingcubes/gui/Makefile
   lib/Makefile
   doc/doxygen/Doxyfile
   dune-mc.pc
