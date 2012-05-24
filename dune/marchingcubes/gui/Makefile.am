@@ -3,8 +3,10 @@ SUBDIRS =
 
 noinst_PROGRAMS = dune_mc_gui
 
-dune_mc_gui_SOURCES = dune_mc_gui.cc \
-	wxsfmlcanvas.cpp
+dune_mc_gui_SOURCES = dune_mc_gui.cc ctlpanel.hh mainframe.hh \
+	marchingcubescontainer.hh marchingcubesgui.hh \
+	mccanvas.hh origincenteredcamera.hh planefunctor.hh \
+	trilinearfunctor.hh viewpanel.hh wxsfmlcanvas.cpp
 
 dune_mc_gui_CPPFLAGS = $(AM_CPPFLAGS) \
 	$(DUNEMPICPPFLAGS) \
@@ -20,11 +22,12 @@ dune_mc_gui_LDADD = \
 	$(GTK_LIBS) \
 	$(WX_LIBS) \
 	-lsfml-system -lsfml-window -lsfml-graphics \
-	$(GL_LIBS) -lGLU \
-	$(LDADD)
+	$(GL_LIBS) -lGLU
 dune_mc_gui_LDFLAGS = $(AM_LDFLAGS) \
 	$(DUNEMPILDFLAGS) \
+	-L$(top_srcdir)/dune/marchingcubes/lut -lmclut \
 	$(DUNE_LDFLAGS)
+dune_mc_gui_DEPENDENCIES = $(top_srcdir)/dune/marchingcubes/lut/libmclut.la
 
 # don't follow the full GNU-standard
 # we need automake 1.5
