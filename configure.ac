@@ -16,7 +16,17 @@ DUNE_CHECK_ALL
 AM_OPTIONS_WXCONFIG
 reqwx=2.4.0
 AM_PATH_WXCONFIG($reqwx, wxWin=1)
-PKG_CHECK_MODULES(GTK, [gdk-x11-2.0])
+PKG_CHECK_MODULES(GTK, [gdk-x11-2.0], [
+  have_gtk=1
+], [
+  have_gtk=0
+])
+
+if test "$wxWin" != 1 -o "$have_gtk" != 1; then
+  AC_MSG_WARN(not building the gui)
+  AM_CONDITIONAL(GUI, [false])
+fi
+
 
 # implicitly set the Dune-flags everywhere
 AC_SUBST(AM_CPPFLAGS, $DUNE_CPPFLAGS)

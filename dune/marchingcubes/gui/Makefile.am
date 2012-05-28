@@ -1,6 +1,8 @@
 
 SUBDIRS =
 
+if GUI
+
 noinst_PROGRAMS = dune_mc_gui
 
 dune_mc_gui_SOURCES = dune_mc_gui.cc ctlpanel.hh mainframe.hh \
@@ -28,6 +30,8 @@ dune_mc_gui_LDFLAGS = $(AM_LDFLAGS) \
 	-L$(top_srcdir)/dune/marchingcubes/lut -lmclut \
 	$(DUNE_LDFLAGS)
 dune_mc_gui_DEPENDENCIES = $(top_srcdir)/dune/marchingcubes/lut/libmclut.la
+
+endif # GUI
 
 # don't follow the full GNU-standard
 # we need automake 1.5
