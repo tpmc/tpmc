@@ -21,7 +21,7 @@ private:
 };
 
 OriginCenteredCamera::OriginCenteredCamera()
-  : mTheta(0), mPhi(0), mDist(2), mEye(0), mUp(0) {
+  : mTheta(0), mPhi(0), mDist(2.5), mEye(0), mUp(0) {
   update();
 }
 

@@ -5,10 +5,12 @@ if GUI
 
 noinst_PROGRAMS = dune_mc_gui
 
-dune_mc_gui_SOURCES = dune_mc_gui.cc ctlpanel.hh mainframe.hh \
+dune_mc_gui_SOURCES = dune_mc_gui.cc ctlpanel.hh geometries.hh \
+	geometrycontainer.hh geometrypanel.hh geometryparser.hh \
+	glshapes.hh mainframe.hh \
 	marchingcubescontainer.hh marchingcubesgui.hh \
-	mccanvas.hh origincenteredcamera.hh planefunctor.hh \
-	trilinearfunctor.hh viewpanel.hh wxsfmlcanvas.cpp
+	mccanvas.hh origincenteredcamera.hh planefunctor.hh python.hh \
+	triangulation.hh trilinearfunctor.hh viewpanel.hh wxsfmlcanvas.cpp
 
 dune_mc_gui_CPPFLAGS = $(AM_CPPFLAGS) \
 	$(DUNEMPICPPFLAGS) \

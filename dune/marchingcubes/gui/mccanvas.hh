@@ -8,6 +8,7 @@
 #include "wxsfmlcanvas.h"
 #include "marchingcubesgui.hh"
 #include "origincenteredcamera.hh"
+#include "glshapes.hh"
 
 template <std::size_t N>
 class MainFrame;
@@ -34,16 +35,7 @@ private:
   void drawInterfaces();
   void drawPlaneGrid();
   void drawPlane();
-  void drawElement(int codim, const Element<ValueType, 3>& element);
-  void drawElement(int codim, const Element<ValueType, 2>& element);
-  void drawElementBorder(int codim, const Element<ValueType, 3>& element);
-  void drawTriangle(const Element<ValueType, 3>& element);
-  void drawTriangle(const Element<ValueType, 2>& element);
-  void drawLine(const Element<ValueType, 2>& element);
-  void drawTriangleBorder(const Element<ValueType, 3>& element);
-  void drawQuad(const Element<ValueType, 3>& element);
-  void drawQuad(const Element<ValueType, 2>& element);
-  void drawQuadBorder(const Element<ValueType, 3>& element);
+  void drawGeometryElements();
   void drawUnitQuadBorder();
   void drawWireframeUnitCube();
   void drawUnitCube();
@@ -251,6 +243,7 @@ void MCCanvas<N>::OnUpdate() {
   }
   if (mParentFrame->getShowFaceCenter()) {
     for (std::size_t i = 0; i<mGui->getFaceCount(); ++i) {
+      glDisable(GL_LIGHTING);
       glPushMatrix();
       glColor3f(0.7f,0.7f,0.7f);
       VectorType fp;
@@ -261,8 +254,10 @@ void MCCanvas<N>::OnUpdate() {
       glTranslatef(-0.5f,-0.5f,-0.5f);
       drawUnitCube();
       glPopMatrix();
+      glEnable(GL_LIGHTING);
     }
   }
+  drawGeometryElements();
   drawInterfaces();
   if (mParentFrame->getShowPlane()) {
     glColor3f(1.f,1.f,0.f);
@@ -299,109 +294,61 @@ template <std::size_t N>
 void MCCanvas<N>::drawInterfaces() {
   typedef typename MarchingCubesGUI<N>::VolumeTriangulationType::const_iterator const_iterator;
   for (std::size_t i = 0; i<N; ++i) {
-    std::size_t c = i % TRIANGULATION_COLOR_COUNT;
+    std::size_t c = (i+1) % TRIANGULATION_COLOR_COUNT;
     const float *color = TRIANGULATION_COLORS[c];
     if (mParentFrame->getShowInterface(i)) {
-      const_iterator itend = mGui->fend(i);
-      for (const_iterator it = mGui->fbegin(i); it != itend; ++it) {
+      const_iterator itend = mGui->gridContainer(i).fend();
+      for (const_iterator it = mGui->gridContainer(i).fbegin(); it != itend; ++it) {
         glColor3f(color[0], color[1], color[2]);
-        drawElement(1,*it);
+        GLShape<ValueType, 3, 1, false>::draw(*it);
         glColor3f(0.f, 0.f, 0.f);
-        drawElementBorder(1, *it);
+        GLShape<ValueType, 3, 1, true>::draw(*it);
       }
     }
   }
 }
 
 template <std::size_t N>
+void MCCanvas<N>::drawGeometryElements() {
+  typedef typename MarchingCubesGUI<N>::VolumeTriangulationType::const_iterator const_iterator;
+  typedef typename MarchingCubesGUI<N>::GeoContainer GC;
+  const float *color = TRIANGULATION_COLORS[0];
+  const_iterator itend = mGui->geometryContainer().end(GC::INTERFACE);
+  for (const_iterator it = mGui->geometryContainer().begin(GC::INTERFACE); it != itend; ++it) {
+    glColor3f(color[0], color[1], color[2]);
+    GLShape<ValueType, 3, 1, false>::draw(*it);
+    glColor3f(0.f, 0.f, 0.f);
+    GLShape<ValueType, 3, 1, true>::draw(*it);
+  }
+  itend = mGui->geometryContainer().end(GC::INTERIOR);
+  for (const_iterator it = mGui->geometryContainer().begin(GC::INTERIOR); it != itend; ++it) {
+    glColor3f(color[0], color[1], color[2]);
+    GLShape<ValueType, 3, 0, false>::draw(*it);
+    glColor3f(0.f, 0.f, 0.f);
+    GLShape<ValueType, 3, 0, true>::draw(*it);
+  }
+  itend = mGui->geometryContainer().end(GC::EXTERIOR);
+  for (const_iterator it = mGui->geometryContainer().begin(GC::EXTERIOR); it != itend; ++it) {
+    glColor3f(color[0], color[1], color[2]);
+    GLShape<ValueType, 3, 0, false>::draw(*it);
+    glColor3f(0.f, 0.f, 0.f);
+    GLShape<ValueType, 3, 0, true>::draw(*it);
+  }
+}
+
+template <std::size_t N>
 void MCCanvas<N>::drawPlaneGrid() {
   typedef typename MarchingCubesGUI<N>::PlaneTriangulationType::const_iterator const_iterator;
-  const_iterator itfend = mGui->pfend();
-  for (const_iterator it = mGui->pfbegin(); it != itfend; ++it) {
+  const_iterator itfend = mGui->planeGridContainer().fend();
+  for (const_iterator it = mGui->planeGridContainer().fbegin(); it != itfend; ++it) {
     glColor4f(0.f,0.f,0.f,0.75f);
-    drawElement(1, *it);
+    GLShape<ValueType, 2, 1, false>::draw(*it);
   }
-  const_iterator itend = mGui->piend();
-  for (const_iterator it = mGui->pibegin(); it != itend; ++it) {
+  const_iterator itend = mGui->planeGridContainer().iend();
+  for (const_iterator it = mGui->planeGridContainer().ibegin(); it != itend; ++it) {
     glColor4f(1.f, 1.f, 0.f, 0.75f);
-    drawElement(0, *it);
+    GLShape<ValueType, 2, 0, false>::draw(*it);
   }
-}
-
-template <std::size_t N>
-void MCCanvas<N>::drawElement(int codim, const Element<ValueType, 3>& element) {
-  if (codim == 1) {
-    switch (element.size()) {
-    case 3 : drawTriangle(element); break;
-    case 4 : drawQuad(element); break;
-    default : break;
-    }
-  }
-}
-
-template <std::size_t N>
-void MCCanvas<N>::drawElement(int codim, const Element<ValueType, 2>& element) {
-  if (codim == 0) {
-    switch (element.size()) {
-    case 3 : drawTriangle(element); break;
-    case 4 : drawQuad(element); break;
-    default : break;
-    }
-  } else if (codim == 1) {
-    switch (element.size()) {
-    case 2 : drawLine(element); break;
-    default : break;
-    }
-  }
-}
-
-template <std::size_t N>
-void MCCanvas<N>::drawElementBorder(int codim, const Element<ValueType, 3>& element) {
-  if (codim == 1) {
-    switch (element.size()) {
-    case 3 : drawTriangleBorder(element); break;
-    case 4 : drawQuadBorder(element); break;
-    default : break;
-    }
-  }
-}
-
-template <std::size_t N>
-void MCCanvas<N>::drawTriangle(const Element<ValueType, 3>& element) {
-  glBegin(GL_TRIANGLES);
-  for (std::size_t i = 0; i<3; ++i) {
-    const VectorType& p = element[i].vertex();
-    const VectorType& n = element[i].normal();
-    glNormal3f(n[0], n[2], -n[1]);
-    glVertex3d(p[0], p[2], 1.f-p[1]);
-  }
-  glEnd();
-}
-
-template <std::size_t N>
-void MCCanvas<N>::drawTriangle(const Element<ValueType, 2>& element) {
-  glBegin(GL_TRIANGLES);
-  for (std::size_t i = 0; i<3; ++i) {
-    const PlaneVectorType& p = element[i].vertex();
-    glVertex2d(p[0], p[1]);
-  }
-  glEnd();
-}
-
-template <std::size_t N>
-void MCCanvas<N>::drawTriangleBorder(const Element<ValueType, 3>& element) {
-  glBegin(GL_LINES);
-  for (std::size_t i = 0; i<3; ++i) {
-    const VectorType& p1 = element[i].vertex(),
-                      p2 = element[(i+1)%3].vertex();
-    const VectorType& n1 = element[i].normal(),
-                      n2 = element[(i+1)%3].normal();
-    glNormal3f(n1[0], n1[2], -n1[1]);
-    glVertex3f(p1[0], p1[2], 1.f-p1[1]);
-    glNormal3f(n2[0], n2[2], -n2[1]);
-    glVertex3f(p2[0], p2[2], 1.f-p2[1]);
-  }
-  glEnd();
 }
 
 template <std::size_t N>
@@ -427,67 +374,6 @@ void MCCanvas<N>::drawPlane() {
   glNormal3d(n[0], n[2], -n[1]);
   glVertex3d(p3[0], p3[2], 1.f-p3[1]);
   glNormal3d(n[0], n[2], -n[1]);
-  glVertex3d(p2[0], p2[2], 1.f-p2[1]);
-  glEnd();
-}
-
-template <std::size_t N>
-void MCCanvas<N>::drawQuad(const Element<ValueType, 3>& element) {
-  const VectorType& p0 = element[0].vertex(),
-                    p1 = element[1].vertex(), p2 = element[2].vertex(),
-                    p3 = element[3].vertex();
-  const VectorType& n0 = element[0].normal(), n1 = element[1].normal(),
-                    n2 = element[2].normal(), n3 = element[3].normal();
-  glBegin(GL_QUADS);
-  glNormal3f(n0[0], n0[2], -n0[1]);
-  glVertex3d(p0[0], p0[2], 1.f-p0[1]);
-  glNormal3f(n1[0], n1[2], -n1[1]);
-  glVertex3d(p1[0], p1[2], 1.f-p1[1]);
-  glNormal3f(n3[0], n3[2], -n3[1]);
-  glVertex3d(p3[0], p3[2], 1.f-p3[1]);
-  glNormal3f(n2[0], n2[2], -n2[1]);
-  glVertex3d(p2[0], p2[2], 1.f-p2[1]);
-  glEnd();
-}
-
-template <std::size_t N>
-void MCCanvas<N>::drawLine(const Element<ValueType, 2>& element) {
-  const PlaneVectorType& p0 = element[0].vertex(),
-                         p1 = element[1].vertex();
-  glBegin(GL_LINES);
-  glVertex2d(p0[0], p0[1]);
-  glVertex2d(p1[0], p1[1]);
-  glEnd();
-}
-
-template <std::size_t N>
-void MCCanvas<N>::drawQuad(const Element<ValueType, 2>& element) {
-  const PlaneVectorType& p0 = element[0].vertex(),
-                         p1 = element[1].vertex(), p2 = element[2].vertex(),
-                         p3 = element[3].vertex();
-  glBegin(GL_QUADS);
-  glVertex2d(p0[0], p0[1]);
-  glVertex2d(p1[0], p1[1]);
-  glVertex2d(p3[0], p3[1]);
-  glVertex2d(p2[0], p2[1]);
-  glEnd();
-}
-
-template <std::size_t N>
-void MCCanvas<N>::drawQuadBorder(const Element<ValueType, 3>& element) {
-  const VectorType& p0 = element[0].vertex(),
-                    p1 = element[1].vertex(), p2 = element[2].vertex(),
-                    p3 = element[3].vertex();
-  const VectorType& n0 = element[0].normal(), n1 = element[1].normal(),
-                    n2 = element[2].normal(), n3 = element[3].normal();
-  glBegin(GL_LINE_LOOP);
-  glNormal3f(n0[0], n0[2], -n0[1]);
-  glVertex3d(p0[0], p0[2], 1.f-p0[1]);
-  glNormal3f(n1[0], n1[2], -n1[1]);
-  glVertex3d(p1[0], p1[2], 1.f-p1[1]);
-  glNormal3f(n3[0], n3[2], -n3[1]);
-  glVertex3d(p3[0], p3[2], 1.f-p3[1]);
-  glNormal3f(n2[0], n2[2], -n2[1]);
   glVertex3d(p2[0], p2[2], 1.f-p2[1]);
   glEnd();
 }
@@ -644,5 +530,4 @@ void MCCanvas<N>::OnKeyUp(wxKeyEvent& event) {
     mKeyLShiftPressed = false;
 }
 
-
-#endif //_MCCANVAS_HH
+#endif //MCCANVAS_HH

@@ -13,10 +13,16 @@
 #include "marchingcubescontainer.hh"
 #include "trilinearfunctor.hh"
 #include "planefunctor.hh"
+#include "geometrycontainer.hh"
+#include "geometryparser.hh"
+#include "python.hh"
 
 template <std::size_t N>
 class MarchingCubesGUI {
 public:
+  enum TriangulationType {
+    INTERIOR, EXTERIOR, INTERFACE
+  };
   typedef double ValueType;
   typedef double CoordType;
   typedef Dune::SGrid<3,3,CoordType> VolumeGridType;
@@ -25,6 +31,8 @@ public:
   typedef Element<ValueType, 2>::VectorType PlaneVectorType;
   typedef std::vector<Element<ValueType, 3> > VolumeTriangulationType;
   typedef std::vector<Element<ValueType, 2> > PlaneTriangulationType;
+  typedef GeometryContainer<CoordType, 3> GeoContainer;
+  typedef GeoContainer::geo_iterator geo_iterator;
   static const int TRIANGULATION_COUNT = N;
 
   MarchingCubesGUI();
@@ -41,12 +49,11 @@ public:
   void setPlaneFirst(const VectorType& v) { mPlaneFirst = v; }
   const VectorType& getPlaneSecond() const { return mPlaneSecond; }
   void setPlaneSecond(const VectorType& v) { mPlaneSecond = v; }
-  VolumeTriangulationType::const_iterator fbegin(std::size_t i) const { return mGridContainers[i].fbegin(); }
-  VolumeTriangulationType::const_iterator fend(std::size_t i) const { return mGridContainers[i].fend(); }
-  PlaneTriangulationType::const_iterator pibegin() const { return mPlaneGridContainer.ibegin(); }
-  PlaneTriangulationType::const_iterator piend() const { return mPlaneGridContainer.iend(); }
-  PlaneTriangulationType::const_iterator pfbegin() const { return mPlaneGridContainer.fbegin(); }
-  PlaneTriangulationType::const_iterator pfend() const { return mPlaneGridContainer.fend(); }
+  void addGeometryElement(const std::string& pattern, TriangulationType t);
+
+  const MarchingCubesContainer<CoordType, 3>& gridContainer(std::size_t i) const { return mGridContainers[i]; }
+  const MarchingCubesContainer<CoordType, 2>& planeGridContainer() const { return mPlaneGridContainer; }
+  const GeoContainer& geometryContainer() const { return mGeometryContainer; }
 private:
   ValueType mVertexValues[8];
   VectorType mPlanePosition;
@@ -56,6 +63,7 @@ private:
   std::shared_ptr<PlaneGridType> mPlaneGrid;
   MarchingCubesContainer<CoordType, 3> mGridContainers[N];
   MarchingCubesContainer<CoordType, 2> mPlaneGridContainer;
+  GeoContainer mGeometryContainer;
   std::size_t mRefinements[N];
   bool mGridValid[N];
   std::size_t mPlaneGridRefinements;
@@ -123,11 +131,29 @@ void MarchingCubesGUI<N>::computeTriangulations() {
     LeafGridView leafView = mGrids[i]->leafView();
     mGridContainers[i].computeTriangulation(leafView, functor);
   }
+  mGeometryContainer.computeTriangulation(functor, 8);
+
   typedef PlaneGridType::LeafGridView PlaneLeafGridView;
   PlaneFunctor<FunctorType> planeFunctor(functor, mPlanePosition,
                                          mPlaneFirst, mPlaneSecond);
   PlaneLeafGridView planeView = mPlaneGrid->leafView();
   mPlaneGridContainer.computeTriangulation(planeView, planeFunctor);
+}
+
+template <std::size_t N>
+void MarchingCubesGUI<N>::addGeometryElement(const std::string& pattern,
+                                             TriangulationType t) {
+  GeometryParser<','> parser;
+  Geometry::Element<double, 3> element;
+  parser.parse(pattern, element);
+  switch (t) {
+  case INTERFACE : mGeometryContainer.addInterface(element); break;
+  case INTERIOR :  mGeometryContainer.addInterior(element); break;
+  case EXTERIOR :  mGeometryContainer.addExterior(element); break;
+  }
+  typedef TrilinearFunctor<CoordType, ValueType> FunctorType;
+  FunctorType functor(mVertexValues);
+  mGeometryContainer.computeTriangulation(functor, 8);
 }
 
 

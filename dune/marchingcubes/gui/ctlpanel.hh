@@ -6,7 +6,9 @@
 #include <wx/wx.h>
 #include <wx/panel.h>
 #include "marchingcubesgui.hh"
-#include "mainframe.hh"
+
+template <std::size_t N>
+class MainFrame;
 
 template <std::size_t N>
 class CtlPanel : public wxPanel {
