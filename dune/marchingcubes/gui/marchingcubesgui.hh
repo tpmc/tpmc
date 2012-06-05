@@ -20,9 +20,6 @@
 template <std::size_t N>
 class MarchingCubesGUI {
 public:
-  enum TriangulationType {
-    INTERIOR, EXTERIOR, INTERFACE
-  };
   typedef double ValueType;
   typedef double CoordType;
   typedef Dune::SGrid<3,3,CoordType> VolumeGridType;
@@ -32,6 +29,7 @@ public:
   typedef std::vector<Element<ValueType, 3> > VolumeTriangulationType;
   typedef std::vector<Element<ValueType, 2> > PlaneTriangulationType;
   typedef GeometryContainer<CoordType, 3> GeoContainer;
+  typedef typename GeoContainer::TriangulationType TriangulationType;
   typedef GeoContainer::geo_iterator geo_iterator;
   static const int TRIANGULATION_COUNT = N;
 
@@ -50,6 +48,7 @@ public:
   const VectorType& getPlaneSecond() const { return mPlaneSecond; }
   void setPlaneSecond(const VectorType& v) { mPlaneSecond = v; }
   void addGeometryElement(const std::string& pattern, TriangulationType t);
+  void removeGeometryElement(std::size_t i, TriangulationType t);
 
   const MarchingCubesContainer<CoordType, 3>& gridContainer(std::size_t i) const { return mGridContainers[i]; }
   const MarchingCubesContainer<CoordType, 2>& planeGridContainer() const { return mPlaneGridContainer; }
@@ -146,11 +145,16 @@ void MarchingCubesGUI<N>::addGeometryElement(const std::string& pattern,
   GeometryParser<','> parser;
   Geometry::Element<double, 3> element;
   parser.parse(pattern, element);
-  switch (t) {
-  case INTERFACE : mGeometryContainer.addInterface(element); break;
-  case INTERIOR :  mGeometryContainer.addInterior(element); break;
-  case EXTERIOR :  mGeometryContainer.addExterior(element); break;
-  }
+  mGeometryContainer.add(element, t);
+  typedef TrilinearFunctor<CoordType, ValueType> FunctorType;
+  FunctorType functor(mVertexValues);
+  mGeometryContainer.computeTriangulation(functor, 8);
+}
+
+template <std::size_t N>
+void MarchingCubesGUI<N>::removeGeometryElement(std::size_t i,
+                                                TriangulationType t) {
+  mGeometryContainer.remove(i,t);
   typedef TrilinearFunctor<CoordType, ValueType> FunctorType;
   FunctorType functor(mVertexValues);
   mGeometryContainer.computeTriangulation(functor, 8);

@@ -57,6 +57,8 @@ private:
   static const float INDICATOR_CUBE_SIZE;
   static const float TRIANGULATION_COLORS[][3];
   static const std::size_t TRIANGULATION_COLOR_COUNT;
+  static const float GEOMETRY_COLOR[3];
+  static const float GEOMETRY_HIGHLIGHT_COLOR[3];
   static const double PLANE_PERCENT;
   //Camera mCamera;
   OriginCenteredCamera mCamera;
@@ -74,10 +76,14 @@ template <std::size_t N>
 const float MCCanvas<N>::INDICATOR_CUBE_SIZE = 0.05f;
 template <std::size_t N>
 const float MCCanvas<N>::TRIANGULATION_COLORS[][3] = {
-  {1.f, 0.f, 0.f}, {0.f,1.f,0.f}, {0.f,0.f,1.f}
+  {0.f,1.f,0.f}, {0.f,0.f,1.f}
 };
 template <std::size_t N>
-const std::size_t MCCanvas<N>::TRIANGULATION_COLOR_COUNT = 3;
+const std::size_t MCCanvas<N>::TRIANGULATION_COLOR_COUNT = 2;
+template <std::size_t N>
+const float MCCanvas<N>::GEOMETRY_COLOR[3] = {1.f,0.f,0.f};
+template <std::size_t N>
+const float MCCanvas<N>::GEOMETRY_HIGHLIGHT_COLOR[3] = {1.f,0.4f,0.4f};
 template <std::size_t N>
 const double MCCanvas<N>::PLANE_PERCENT = 0.2;
 
@@ -294,7 +300,7 @@ template <std::size_t N>
 void MCCanvas<N>::drawInterfaces() {
   typedef typename MarchingCubesGUI<N>::VolumeTriangulationType::const_iterator const_iterator;
   for (std::size_t i = 0; i<N; ++i) {
-    std::size_t c = (i+1) % TRIANGULATION_COLOR_COUNT;
+    std::size_t c = i % TRIANGULATION_COLOR_COUNT;
     const float *color = TRIANGULATION_COLORS[c];
     if (mParentFrame->getShowInterface(i)) {
       const_iterator itend = mGui->gridContainer(i).fend();
@@ -312,27 +318,48 @@ template <std::size_t N>
 void MCCanvas<N>::drawGeometryElements() {
   typedef typename MarchingCubesGUI<N>::VolumeTriangulationType::const_iterator const_iterator;
   typedef typename MarchingCubesGUI<N>::GeoContainer GC;
-  const float *color = TRIANGULATION_COLORS[0];
-  const_iterator itend = mGui->geometryContainer().end(GC::INTERFACE);
-  for (const_iterator it = mGui->geometryContainer().begin(GC::INTERFACE); it != itend; ++it) {
-    glColor3f(color[0], color[1], color[2]);
-    GLShape<ValueType, 3, 1, false>::draw(*it);
-    glColor3f(0.f, 0.f, 0.f);
-    GLShape<ValueType, 3, 1, true>::draw(*it);
+  const float *color = GEOMETRY_COLOR, *highlight_color = GEOMETRY_HIGHLIGHT_COLOR;
+  if (mParentFrame->getShowGeo(GC::INTERFACE)) {
+    const_iterator itend = mGui->geometryContainer().end(GC::INTERFACE);
+    int count = 0;
+    for (const_iterator it = mGui->geometryContainer().begin(GC::INTERFACE); it != itend; ++it, ++count) {
+      if (count == mParentFrame->selectedGeometryElement(GC::INTERFACE))
+        glColor3f(highlight_color[0], highlight_color[1],
+                  highlight_color[2]);
+      else
+        glColor3f(color[0], color[1], color[2]);
+      GLShape<ValueType, 3, 1, false>::draw(*it);
+      glColor3f(0.f, 0.f, 0.f);
+      GLShape<ValueType, 3, 1, true>::draw(*it);
+    }
   }
-  itend = mGui->geometryContainer().end(GC::INTERIOR);
-  for (const_iterator it = mGui->geometryContainer().begin(GC::INTERIOR); it != itend; ++it) {
-    glColor3f(color[0], color[1], color[2]);
-    GLShape<ValueType, 3, 0, false>::draw(*it);
-    glColor3f(0.f, 0.f, 0.f);
-    GLShape<ValueType, 3, 0, true>::draw(*it);
+  if (mParentFrame->getShowGeo(GC::INTERIOR)) {
+    const_iterator itend = mGui->geometryContainer().end(GC::INTERIOR);
+    int count = 0;
+    for (const_iterator it = mGui->geometryContainer().begin(GC::INTERIOR); it != itend; ++it, ++count) {
+      if (count == mParentFrame->selectedGeometryElement(GC::INTERIOR))
+        glColor3f(highlight_color[0], highlight_color[1],
+                  highlight_color[2]);
+      else
+        glColor3f(color[0], color[1], color[2]);
+      GLShape<ValueType, 3, 0, false>::draw(*it);
+      glColor3f(0.f, 0.f, 0.f);
+      GLShape<ValueType, 3, 0, true>::draw(*it);
+    }
   }
-  itend = mGui->geometryContainer().end(GC::EXTERIOR);
-  for (const_iterator it = mGui->geometryContainer().begin(GC::EXTERIOR); it != itend; ++it) {
-    glColor3f(color[0], color[1], color[2]);
-    GLShape<ValueType, 3, 0, false>::draw(*it);
-    glColor3f(0.f, 0.f, 0.f);
-    GLShape<ValueType, 3, 0, true>::draw(*it);
+  if (mParentFrame->getShowGeo(GC::EXTERIOR)) {
+    const_iterator itend = mGui->geometryContainer().end(GC::EXTERIOR);
+    int count = 0;
+    for (const_iterator it = mGui->geometryContainer().begin(GC::EXTERIOR); it != itend; ++it, ++count) {
+      if (count == mParentFrame->selectedGeometryElement(GC::EXTERIOR))
+        glColor3f(highlight_color[0], highlight_color[1],
+                  highlight_color[2]);
+      else
+        glColor3f(color[0], color[1], color[2]);
+      GLShape<ValueType, 3, 0, false>::draw(*it);
+      glColor3f(0.f, 0.f, 0.f);
+      GLShape<ValueType, 3, 0, true>::draw(*it);
+    }
   }
 }
 

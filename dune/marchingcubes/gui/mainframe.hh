@@ -9,13 +9,14 @@
 #include "ctlpanel.hh"
 #include "viewpanel.hh"
 #include "geometrypanel.hh"
+#include "geometrycontainer.hh"
 
 template <std::size_t N>
 class MainFrame : public wxFrame {
 public:
-  enum TriangulationType {
-    INTERIOR, EXTERIOR, INTERFACE
-  };
+  typedef typename MarchingCubesGUI<N>::GeoContainer GeoContainer;
+  typedef typename GeoContainer::TriangulationType TriangulationType;
+
   MainFrame(const wxString& title);
   bool getShowInterface(std::size_t i) const { return mShowInterface[i]; }
   void setShowInterface(std::size_t i, bool v) { mShowInterface[i] = v; }
@@ -25,17 +26,18 @@ public:
   void setShowPlane(bool v) { mShowPlane = v; }
   bool getShowFaceCenter() const { return mShowFaceCenter; }
   void setShowFaceCenter(bool v) { mShowFaceCenter = v; }
-  bool getShowGeo(TriangulationType t) {
+  int selectedGeometryElement(TriangulationType t) const;
+  bool getShowGeo(TriangulationType t) const {
     switch (t) {
-    case INTERIOR : return mShowGeoInterior;
-    case EXTERIOR : return mShowGeoExterior;
+    case GeoContainer::INTERIOR : return mShowGeoInterior;
+    case GeoContainer::EXTERIOR : return mShowGeoExterior;
     default : return mShowGeoInterface;
     }
   }
   void setShowGeo(TriangulationType t, bool v) {
     switch (t) {
-    case INTERIOR : mShowGeoInterior = v; break;
-    case EXTERIOR : mShowGeoExterior = v; break;
+    case GeoContainer::INTERIOR : mShowGeoInterior = v; break;
+    case GeoContainer::EXTERIOR : mShowGeoExterior = v; break;
     default : mShowGeoInterface = v; break;
     }
   }
@@ -51,6 +53,7 @@ private:
   bool mShowGeoExterior;
   MarchingCubesGUI<N> mGui;
   MCCanvas<N> *mccanvas;
+  GeometryPanel<N> *geometrypanel;
 };
 
 template <std::size_t N>
@@ -65,7 +68,7 @@ MainFrame<N>::MainFrame(const wxString& title)
   mccanvas = new MCCanvas<N>(&mGui, this, panel, ID_CANVAS);
   CtlPanel<N> *ctlpanel = new CtlPanel<N>(&mGui, this, panel);
   ViewPanel<N> *viewpanel = new ViewPanel<N>(&mGui, this, panel);
-  GeometryPanel<N> *geometrypanel = new GeometryPanel<N>(&mGui, this, panel);
+  geometrypanel = new GeometryPanel<N>(&mGui, this, panel);
 
   wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);
   wxBoxSizer *vboxl = new wxBoxSizer(wxVERTICAL);
@@ -83,6 +86,15 @@ MainFrame<N>::MainFrame(const wxString& title)
   panel->SetSizer(hbox);
 
   Centre();
+}
+
+template <std::size_t N>
+int MainFrame<N>::selectedGeometryElement(TriangulationType t) const {
+  switch (t) {
+  case GeoContainer::INTERIOR : return geometrypanel->selectedInterior();
+  case GeoContainer::EXTERIOR : return geometrypanel->selectedExterior();
+  default : return geometrypanel->selectedInterface();
+  }
 }
 
 

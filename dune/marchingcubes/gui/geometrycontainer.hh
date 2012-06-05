@@ -23,9 +23,39 @@ public:
   void computeTriangulation(const FunctorType& f,
                             SizeType vertexCount);
 
-  void addInterior(const Geometry::Element<ctype, dim>& element) { mGeoInterior.push_back(element); }
-  void addExterior(const Geometry::Element<ctype, dim>& element) { mGeoExterior.push_back(element); }
-  void addInterface(const Geometry::Element<ctype, dim>& element) { mGeoInterface.push_back(element); }
+  void add(const Geometry::Element<ctype, dim>& element,
+           TriangulationType t) {
+    switch (t) {
+    case INTERIOR : mGeoInterior.push_back(element); break;
+    case EXTERIOR : mGeoExterior.push_back(element); break;
+    default : mGeoInterface.push_back(element); break;
+    }
+  }
+
+  void remove(SizeType index,
+              TriangulationType t) {
+    switch (t) {
+    case INTERIOR : mGeoInterior.erase(mGeoInterior.begin()+index); break;
+    case EXTERIOR : mGeoExterior.erase(mGeoExterior.begin()+index); break;
+    default : mGeoInterface.erase(mGeoInterface.begin()+index); break;
+    }
+  }
+
+  bool empty(TriangulationType t) const {
+    switch (t) {
+    case INTERIOR : return mGeoInterior.empty();
+    case EXTERIOR : return mGeoExterior.empty();
+    default : return mGeoInterface.empty();
+    }
+  }
+
+  SizeType size(TriangulationType t) const {
+    switch (t) {
+    case INTERIOR : return mGeoInterior.size();
+    case EXTERIOR : return mGeoExterior.size();
+    default : return mGeoInterface.size();
+    }
+  }
 
   const_iterator begin(TriangulationType t) const {
     switch (t) {

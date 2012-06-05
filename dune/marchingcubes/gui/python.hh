@@ -11,6 +11,8 @@ class PythonAdapter : public Geometry::GeometryVisitor<ctype, dim> {
 public:
   PythonAdapter(const Geometry::Vertex<ctype, dim>& v) { v.takeVisitor(*this); }
   PythonAdapter(const Geometry::Element<ctype, dim>& e) { e.takeVisitor(*this); }
+  PythonAdapter(const GeometryContainer<ctype, dim>& c,
+                typename GeometryContainer<ctype, dim>::TriangulationType t);
 
   void visitElement(const Geometry::Element<ctype, dim>& e);
   void visitReferenceVertex(const Geometry::ReferenceVertex<ctype, dim>& v);
@@ -23,6 +25,18 @@ public:
 private:
   std::stringstream s_;
 };
+
+template <typename ctype, int dim>
+PythonAdapter<ctype, dim>::PythonAdapter(const GeometryContainer<ctype, dim>& c,
+                                         typename GeometryContainer<ctype, dim>::TriangulationType t) {
+  typedef typename GeometryContainer<ctype, dim>::geo_iterator Iterator;
+  Iterator itend = c.geoend(t), itbegin = c.geobegin(t);
+  s_ << "[";
+  for (Iterator it = itbegin; it != itend; ++it) {
+    s_ << (it != itbegin ? ", " : "") << PythonAdapter(*it);
+  }
+  s_ << "]";
+}
 
 template <typename ctype, int dim>
 void PythonAdapter<ctype, dim>::visitElement(const Geometry::Element<ctype, dim>& e) {
