@@ -21,9 +21,15 @@ PKG_CHECK_MODULES(GTK, [gdk-x11-2.0], [
 ], [
   have_gtk=0
 ])
+AC_CHECK_HEADER([SFML/Graphics.hpp],[
+  have_sgml=1
+],[
+  have_sgml=0
+])
+
 
 AM_CONDITIONAL(GUI, [true])
-if test "$wxWin" != 1 -o "$have_gtk" != 1; then
+if test "$wxWin" != 1 -o "$have_gtk" != 1 -o "$have_sfml" != 1; then
   AC_MSG_WARN(not building the gui)
   AM_CONDITIONAL(GUI, [false])
 fi
