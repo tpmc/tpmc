@@ -25,7 +25,7 @@ dune_mc_gui_LDADD = \
 	$(DUNEMPILIBS)	\
 	$(GTK_LIBS) \
 	$(WX_LIBS) \
-	-lsfml-system -lsfml-window -lsfml-graphics \
+	-lsfml-system -lsfml-window -lsfml-graphics -lX11 \
 	$(GL_LIBS) -lGLU
 dune_mc_gui_LDFLAGS = $(AM_LDFLAGS) \
 	$(DUNEMPILDFLAGS) \
