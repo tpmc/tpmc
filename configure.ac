@@ -37,7 +37,7 @@ fi
 
 # implicitly set the Dune-flags everywhere
 AC_SUBST(AM_CPPFLAGS, '$(DUNE_CPPFLAGS) -I$(top_srcdir)')
-AC_SUBST(AM_LDFLAGS, [$(DUNE_LDFLAGS)])
+AC_SUBST(AM_LDFLAGS, $DUNE_LDFLAGS)
 AC_SUBST([LDADD], '$(top_builddir)/lib/libdunemc.la')
 LIBS="$DUNE_LIBS"
 
