@@ -13,9 +13,11 @@ AM_CONFIG_HEADER([config.h])
 DUNE_CHECK_ALL
 
 # stuff for gui program
+# install libwxgtk2.X-dev
 AM_OPTIONS_WXCONFIG
 reqwx=2.4.0
 AM_PATH_WXCONFIG($reqwx, wxWin=1)
+# install libgtk2.0-dev
 PKG_CHECK_MODULES(GTK, [gdk-x11-2.0], [
   have_gtk=1
 ], [
