@@ -29,9 +29,9 @@ dune_mc_gui_LDADD = \
 	$(GL_LIBS) -lGLU
 dune_mc_gui_LDFLAGS = $(AM_LDFLAGS) \
 	$(DUNEMPILDFLAGS) \
-	-L$(top_srcdir)/dune/marchingcubes/lut -lmclut \
+	-L$(top_builddir)/dune/marchingcubes/lut -lmclut \
 	$(DUNE_LDFLAGS)
-dune_mc_gui_DEPENDENCIES = $(top_srcdir)/dune/marchingcubes/lut/libmclut.la
+dune_mc_gui_DEPENDENCIES = $(top_builddir)/dune/marchingcubes/lut/libmclut.la
 
 endif # GUI
 
