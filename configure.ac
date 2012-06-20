@@ -54,8 +54,8 @@ AC_CONFIG_FILES([
   dune/marchingcubes/Makefile
   dune/marchingcubes/test/Makefile
   dune/marchingcubes/lut/Makefile
-  dune/marchingcubes/gui/Makefile
   lib/Makefile
+  gui/Makefile
   doc/doxygen/Doxyfile
   dune-mc.pc
 ])
