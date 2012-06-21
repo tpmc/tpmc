@@ -183,6 +183,7 @@ void GeometryPanel<N>::updateImpl(TriangulationType t, wxListBox* list, wxTextCt
     sa << PythonAdapter<double, 3>(mGui->geometryContainer(), t);
     text->SetValue(wxString(sa.str().c_str(), wxConvUTF8));
   }
+  list->Select(list->GetCount()-1);
 }
 
 template <std::size_t N>

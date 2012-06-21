@@ -7,6 +7,7 @@
 #include <sstream>
 #include <dune/common/shared_ptr.hh>
 #include <dune/marchingcubes/newtonfunctor.hh>
+#include <dune/marchingcubes/aberthfunctor.hh>
 
 namespace Geometry {
   template <typename ctype, int dim>
@@ -159,8 +160,10 @@ namespace Geometry {
     Dune::FieldVector<ctype, dim> first, second;
     mFirst->evaluate(vertexValues, vertexCount, first);
     mSecond->evaluate(vertexValues, vertexCount, second);
-    static Dune::NewtonFunctor<double> nf;
-    nf.findRoot(vertexValues, first, second, result);
+    //static Dune::NewtonFunctor<double> nf;
+    //nf.findRoot(vertexValues, first, second, result);
+    static Dune::AberthFunctor<double> af;
+    af.findRoot(vertexValues, first, second, result);
   }
 }
 
