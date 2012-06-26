@@ -32,103 +32,10 @@ FE = VH + 5
 FF = VH + 6
 # center point
 CP = FF + 1
-# edges start with E
-EI = VA * FACTOR_FIRST_POINT + VB * FACTOR_SECOND_POINT + NO_VERTEX
-EJ = VC * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX
-EK = VA * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX
-EL = VB * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX
-EM = VA * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
-EN = VB * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX
-EO = VC * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX
-EP = VD * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
-EQ = VE * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX
-ER = VG * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
-ES = VE * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX
-ET = VF * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX
-# Diagonals for simplices
-EU = VB * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX
-EV = VB * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
-EW = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
-# Diagonal for pyramid
-EX = VD * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX
-# Diagonal for prism
-EY = VF * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX
-# connections from center to vertices
-CA = VA * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
-CB = VB * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
-CC = VC * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
-CD = VD * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
-CE = VE * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
-CF = VF * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
-CG = VG * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
-CH = VH * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX
-# connections from faces to vertices
-FAA = VA * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX
-FAB = VB * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX
-FAC = VC * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX
-FAD = VD * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX
-FAE = VE * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX
-FAF = VF * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX
-FAG = VG * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX
-FAH = VH * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX
-FBA = VA * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX
-FBB = VB * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX
-FBC = VC * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX
-FBD = VD * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX
-FBE = VE * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX
-FBF = VF * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX
-FBG = VG * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX
-FBH = VH * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX
-FCA = VA * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX
-FCB = VB * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX
-FCC = VC * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX
-FCD = VD * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX
-FCE = VE * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX
-FCF = VF * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX
-FCG = VG * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX
-FCH = VH * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX
-FDA = VA * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX
-FDB = VB * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX
-FDC = VC * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX
-FDD = VD * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX
-FDE = VE * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX
-FDF = VF * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX
-FDG = VG * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX
-FDH = VH * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX
-FEA = VA * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX
-FEB = VB * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX
-FEC = VC * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX
-FED = VD * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX
-FEE = VE * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX
-FEF = VF * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX
-FEG = VG * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX
-FEH = VH * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX
-FFA = VA * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX
-FFB = VB * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX
-FFC = VC * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX
-FFD = VD * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX
-FFE = VE * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX
-FFF = VF * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX
-FFG = VG * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX
-FFH = VH * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX
 # dictionary to get constant names from integers
 CONST_NAMES = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", 
-               VF:"VF", VG:"VG", VH:"VH", EI:"EI", EJ:"EJ", EK:"EK", 
-               EL:"EL", EM:"EM", EN:"EN", EO:"EO", EP:"EP", EQ:"EQ", 
-               ER:"ER", ES:"ES", ET:"ET", EU:"EU", EV:"EV", EW:"EW", 
-               EX:"EX", EY:"EY", CP:"CP", CA:"CA", CB:"CB", CC:"CC",
-               CD:"CD", CE:"CE", CF:"CF", CG:"CG", CH:"CH", FA:"FA",
-               FB:"FB", FC:"FC", FD:"FD", FE:"FE", FF:"FF", FAA:"FAA", 
-               FAB:"FAB", FAC:"FAC", FAD:"FAD", FAE:"FAE", FAF:"FAF", 
-               FAG:"FAG", FAH:"FAH", FBA:"FBA", FBB:"FBB", FBC:"FBC", 
-               FBD:"FBD", FBE:"FBE", FBF:"FBF", FBG:"FBG", FBH:"FBH", 
-               FCA:"FCA", FCB:"FCB", FCC:"FCC", FCD:"FCD", FCE:"FCE", 
-               FCF:"FCF", FCG:"FCG", FCH:"FCH", FDA:"FDA", FDB:"FDB", 
-               FDC:"FDC", FDD:"FDD", FDE:"FDE", FDF:"FDF", FDG:"FDG", 
-               FDH:"FDH", FEA:"FEA", FEB:"FEB", FEC:"FEC", FED:"FED", 
-               FEE:"FEE", FEF:"FEF", FEG:"FEG", FEH:"FEH", FFA:"FFA", 
-               FFB:"FFB", FFC:"FFC", FFD:"FFD", FFE:"FFE", FFF:"FFF", 
-               FFG:"FFG", FFH:"FFH"}
+               VF:"VF", VG:"VG", VH:"VH", FA:"FA", FB:"FB", 
+               FC:"FC", FD:"FD", FE:"FE", FF:"FF", CP:"CP"}
 # Constants indicating whether case special treatment when 
 # marching cubes' 33 is used.
 CASE_UNIQUE_MC33 = 0
@@ -149,6 +56,40 @@ class TableStorage:
         self.tablestring += to_append
         self.offset += count
 
+class VertexMapper:
+    def __init__(self):
+        self.table = TableStorage()
+        self.vertices = dict()
+    def id(self, vertex):
+        if vertex in self.vertices:
+            return self.vertices[vertex]
+        else:
+            if type(vertex) is tuple:
+                id0 = self.id(vertex[0])
+                id1 = self.id(vertex[1])
+                offset = self.table.offset
+                self.vertices[vertex] = offset
+                self.table.append("      /* {2} / {3} */ 2, {0}, {1}, \n".format(id0,
+                                                                                 id1,
+                                                                                 repr(vertex),
+                                                                                 offset),
+                                  3)
+                return offset
+            else:
+                faceids = [FA, FB, FC, FD, FE, FF]
+                val = vertex
+                if type(vertex) is CenterPoint:
+                    val = CP
+                if type(vertex) is FacePoint:
+                    val = faceids[vertex.id]
+                offset = self.table.offset
+                self.vertices[vertex] = offset
+                self.table.append("      /* {1} / {2} */ 1, {0},\n".format(CONST_NAMES[val],
+                                                                           repr(vertex),
+                                                                           offset),
+                                  2)
+                return offset
+
 class DuneCode:
     """ Generates the tables, writes marchinglut.cc """
     def __init__(self, generator):
@@ -156,55 +97,7 @@ class DuneCode:
         self.ref_elem = ReferenceElements[self.generator.geometry_type]
     def write(self, dune_file):
         """ Generate lookup table """
-        def edge(first, second):
-            """ generate value for a point on a vertex or in the center """
-            faceids = [FA, FB, FC, FD, FE, FF]
-            # ensure first < second
-            if type(first) is CenterPoint:
-                first = CP
-            if type(second) is CenterPoint:
-                second = CP
-            if type(first) is FacePoint:
-                first = faceids[first.id]
-            if type(second) is FacePoint:
-                second = faceids[second.id]
-            if first > second:
-                first, second = second, first
-            # get center points
-            if (first == VA and second == VH
-                or first == VB and second == VG 
-                or first == VC and second == VF 
-                or first == VD and second == VE):
-                return CP
-            # points on an edge"
-            try:
-                # check whether edge exists, except 3D simplex, prism or 
-                # pyramid because of changed numering
-                if ((self.generator.basic_type != "simplex" 
-                     and self.generator.basic_type != "prism"
-                     and self.generator.basic_type != "pyramid")
-                    and self.generator.dim != 3
-                    and (first != CP and second != CP)
-                    and (first not in faceids and second not in faceids)):
-                    self.ref_elem.edges.index(set([first, second]))
-                return (first * FACTOR_FIRST_POINT 
-                        + second * FACTOR_SECOND_POINT + NO_VERTEX)
-            except ValueError:
-                msg = "Edge ({0}, {1}) does not exist in {2}"
-                raise ValueError, (msg.format(first, second, 
-                                              self.generator.geometry_type))
-        def get_point_name(vertex):
-            """ 
-            returns the constant name of the point as a string given by 
-            its number 
-            """
-            # point is a vertex
-            if type(vertex) is int:
-                return CONST_NAMES[vertex]
-            # point is on a edge or in the center
-            #print vertex," in ",self.generator.geometry_type,": ",edge(vertex[0],vertex[1])
-            return CONST_NAMES[edge(vertex[0], vertex[1])]
-        def create_codim0_line(table, table_groups, entry, new_elements, new_elements_groups):
+        def create_codim0_line(vmapper, table, table_groups, entry, new_elements, new_elements_groups):
             """ create a table line for codimX tables """
             # change 3D simplex, prism & pyramid numbering scheme to 3D cube's one
             rename_vertices = {(3,"simplex"): [0,1,2,4],
@@ -237,7 +130,7 @@ class DuneCode:
                 #print "wrinting elements: ", new_elements
                 for element in new_elements:
                     table.append("%i, " % len(element), 1)
-                    table.append("%s, " % ", ".join(get_point_name(x) 
+                    table.append("%s, " % ", ".join(str(vmapper.id(x)) 
                                                     for x in element),
                                  len(element))
                 table_groups.append("%s, " % ", ".join(str(x) for x in new_elements_groups), len(new_elements_groups))
@@ -246,7 +139,7 @@ class DuneCode:
                 table_groups.append(" /* no elements */", 0)
             table.append("\n", 0)
             table_groups.append("\n", 0)
-        def create_codim1_line(table, entry, new_elements):
+        def create_codim1_line(vmapper,table, entry, new_elements):
             """ create a table line for codimX tables """
             # change 3D simplex, prism & pyramid numbering scheme to 3D cube's one
             rename_vertices = {(3,"simplex"): [0,1,2,4],
@@ -274,7 +167,7 @@ class DuneCode:
                 # write all points of every element
                 for element in new_elements:
                     table.append("%i, " % len(element), 1)
-                    table.append("%s, " % ", ".join(get_point_name(x) 
+                    table.append("%s, " % ", ".join(str(vmapper.id(x)) 
                                                     for x in element),
                                  len(element))
             else:
@@ -288,7 +181,7 @@ class DuneCode:
                                                                * base_case_number),
                                                               table.offset,
                                                               ", ".join(str(g) for g in groups)), len(groups));
-        def create_tables(self, offsets, vertex_groups, codim0_exterior, codim0_exterior_groups, codim0_interior, codim0_interior_groups, codim1):
+        def create_tables(self, vmapper, offsets, vertex_groups, codim0_exterior, codim0_exterior_groups, codim0_interior, codim0_interior_groups, codim1):
             """ creates string tables out of case tables """
             for entry in self.generator.all_cases:
                 #print "AHHH writing entry ", entry
@@ -315,10 +208,10 @@ class DuneCode:
                                             vertex_groups.offset,
                                             unique_case), 1)
                 create_vertex_groups_line(entry, entry.vertex_groups, vertex_groups)
-                create_codim0_line(codim0_exterior, codim0_exterior_groups, entry, entry.exterior, entry.exterior_groups)
-                create_codim0_line(codim0_interior, codim0_interior_groups, entry, entry.interior, entry.interior_groups)
-                create_codim1_line(codim1, entry, entry.faces)
-        def create_mc33_tables(self, offsets, vertex_groups, codim0_exterior, codim0_exterior_groups, codim0_interior, codim0_interior_groups, codim1, mc33_offsets, 
+                create_codim0_line(vmapper, codim0_exterior, codim0_exterior_groups, entry, entry.exterior, entry.exterior_groups)
+                create_codim0_line(vmapper, codim0_interior, codim0_interior_groups, entry, entry.interior, entry.interior_groups)
+                create_codim1_line(vmapper, codim1, entry, entry.faces)
+        def create_mc33_tables(self, vmapper, offsets, vertex_groups, codim0_exterior, codim0_exterior_groups, codim0_interior, codim0_interior_groups, codim1, mc33_offsets, 
                                mc33_tests):
             """ creates mc33 caste table and mc33 test table and returns  """
             offsets.append("      /* MC 33 cases follow */\n", 0)
@@ -364,9 +257,9 @@ class DuneCode:
                                                     vertex_groups.offset),
                                        1)
                         create_vertex_groups_line(entry, mc33_case.vertex_groups, vertex_groups)
-                        create_codim0_line(codim0_exterior, codim0_exterior_groups, entry, mc33_case.exterior, mc33_case.exterior_groups)
-                        create_codim0_line(codim0_interior, codim0_interior_groups, entry, mc33_case.interior, mc33_case.interior_groups)
-                        create_codim1_line(codim1, entry, mc33_case.faces)
+                        create_codim0_line(vmapper, codim0_exterior, codim0_exterior_groups, entry, mc33_case.exterior, mc33_case.exterior_groups)
+                        create_codim0_line(vmapper, codim0_interior, codim0_interior_groups, entry, mc33_case.interior, mc33_case.interior_groups)
+                        create_codim1_line(vmapper, codim1, entry, mc33_case.faces)
                 else:
                     mc33_offsets.append("    /* {0} / {1} */"
                                         " ".format(entry.case, 
@@ -376,8 +269,13 @@ class DuneCode:
             mc33_tests.append("\n", 0)
         
         # Start output with table definitions
-        table_offsets = TableStorage()
         table_dict = {"D": self.generator.dim, "T": self.generator.basic_type}
+        vmapper = VertexMapper()
+        vmapper.table.tablestring = \
+            ("    "
+             "const unsigned short table_{0[T]}{0[D]}d_vertices[] = {{"
+             "\n".format(table_dict))
+        table_offsets = TableStorage()
         table_offsets.tablestring = \
             ("    "
              "const unsigned short table_{0[T]}{0[D]}d_cases_offsets[][10] = {{\n"
@@ -453,7 +351,7 @@ class DuneCode:
              "      /* cn / bc / el / cp */"
              "\n".format(table_dict))
         # write elements into the array
-        create_tables(self, table_offsets, table_vertex_groups, table_codim0_exterior, table_codim0_exterior_groups ,
+        create_tables(self, vmapper, table_offsets, table_vertex_groups, table_codim0_exterior, table_codim0_exterior_groups ,
                       table_codim0_interior, table_codim0_interior_groups, table_codim1)
         
         # tables for mc 33
@@ -473,10 +371,11 @@ class DuneCode:
                  "      /* dummy entry not used but the index has to "
                  "start with 1*/\n"
                  "      1,\n".format(table_dict))
-            create_mc33_tables(self, table_offsets, table_vertex_groups, table_codim0_exterior, table_codim0_exterior_groups, 
+            create_mc33_tables(self, vmapper, table_offsets, table_vertex_groups, table_codim0_exterior, table_codim0_exterior_groups, 
                                table_codim0_interior, table_codim0_interior_groups, table_codim1, 
                                table_mc33_offsets, table_mc33_tests)
         # close the arrays and write them
+        vmapper.table.append("    };\n\n\n", 0)
         table_offsets.append("    };\n\n\n", 0)
         table_vertex_groups.append("    };\n\n\n", 0)
         table_codim0_exterior.append("    };\n\n\n", 0)
@@ -484,6 +383,7 @@ class DuneCode:
         table_codim0_interior.append("    };\n\n\n", 0)
         table_codim0_interior_groups.append("    };\n\n\n", 0)
         table_codim1.append("    };\n\n\n", 0)
+        dune_file.write(vmapper.table.tablestring)
         dune_file.write(table_offsets.tablestring)
         dune_file.write(table_vertex_groups.tablestring)
         dune_file.write(table_codim0_exterior.tablestring)

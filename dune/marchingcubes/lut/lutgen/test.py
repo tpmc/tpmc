@@ -71,15 +71,16 @@ class Test(object):
         0 equals left, ie outside, 1 equals right, ie inside
         """        
         def rename_vertices(tri, vertices):
+            def rvertex(v):
+                if type(v) is tuple:
+                    return tuple(sorted([rvertex(v[0]), rvertex(v[1])]))
+                else:
+                    return vertices[v]
             """ rename the vertices in triangulation tri (i --> vertices[i]) """
             for elem in tri:
                 nel = []
                 for vertex in elem:
-                    if type(vertex) is int:
-                        nel.append(vertices[vertex])
-                    else:
-                        nel.append(tuple(sorted([vertices[vertex[0]], 
-                                                 vertices[vertex[1]]])))
+                    nel.append(rvertex(vertex))
                 yield GeomObject(self.generator.dim-1, nel)
         interior_faces = [GeomObject(self.generator.dim-1, x) 
                           for element in triangulation.interior
@@ -247,7 +248,7 @@ class Test(object):
         return 1
     def test_valid_vertices(self, triang, case):
         for x in (x for e in triang.interior+triang.exterior+triang.faces for x in e):
-            if type(x) is not int and type(x) is not CenterPoint and type(x) is not FacePoint:
+            if type(x) is tuple:
                 if type(x[0]) is int and type(x[1]) is int:
                     if case[x[0]] == case[x[1]]:
                         LOGGER.error("vertex on edge {0} does"

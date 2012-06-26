@@ -38,6 +38,17 @@ namespace Dune {
   };
 
   template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
+  const unsigned short * const
+  MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
+  all_case_vertices[] = {
+    NULL, NULL, NULL, table_any1d_vertices,
+    NULL, table_simplex2d_vertices,
+    table_cube2d_vertices, table_simplex3d_vertices,
+    table_pyramid3d_vertices, table_prism3d_vertices,
+    NULL, table_cube3d_vertices
+  };
+
+  template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
   const short * const
   MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   all_vertex_to_index[] = {
@@ -455,82 +466,46 @@ namespace Dune {
                       const sizeType vertex_count, const short number,
                       point& coord) const
   {
-    // it's a center point and we are in the cube case
-    if (number == CP && dim == 3 && vertex_count == 8)
-    {
-      //TODO: Testen
-      // Initialize point
-      for (sizeType i = 0; i < dim; i++)
-      {
-        coord[i] = 0.0;
-      }
-      // Mean from each threshold value on an edge
-      short vertex_1, vertex_2;
-      sizeType count = 0;
-      static short edges[] = {EI, EJ, EK, EL, EM, EN, EO, EP, EQ, ER, ES, ET};
+    // get position in the vertex table
+    const unsigned short (* vertex_index) = all_case_vertices[vertex_count + dim]+number;
 
-      for (short e_index = 0; e_index<12; ++e_index)
-      {
-        int i = edges[e_index];
-        vertex_1 = (i / FACTOR_FIRST_POINT) &
-                   (VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP);
-        vertex_2 = (i / FACTOR_SECOND_POINT) &
-                   (VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP);
-        if (threshFunctor.isInside(vertex_values[vertex_1]) !=
-            threshFunctor.isInside(vertex_values[vertex_2]))
-        {
-          point edge_point;
-          getCoordsFromNumber(vertex_values, vertex_count, i,
-                              edge_point);
-          for (sizeType j = 0; j < dim; j++)
-          {
-            coord[j] += edge_point[j];
-          }
-          count++;
-        }
+    if (*vertex_index == 1) {     // we have a single point
+      if (vertex_index[1] == CP && dim == 3 && vertex_count == 8) {
+        // should not use CP anymore
+        //DUNE_THROW(IllegalArgumentException, "centerpoint found");
+      } else if (vertex_index[1] >= FA && vertex_index[1] <= FF) {
+        int faceid = vertex_index[1] - FA;
+        static short faces[][4] = {{0,2,4,6}, {1,3,5,7}, {0,1,4,5},
+                                   {2,3,6,7}, {0,1,2,3}, {4,5,6,7}};
+        // const, first dir, second dir
+        static short dirs[][3] = {{0,1,2}, {0,1,2}, {1,0,2}, {1,0,2},
+                                  {2,0,1}, {2,0,1}};
+        static valueType constvalues[] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
+        valueType a = vertex_values[faces[faceid][0]],
+                  b = vertex_values[faces[faceid][1]],
+                  c = vertex_values[faces[faceid][2]],
+                  d = vertex_values[faces[faceid][3]];
+        valueType factor = 1.0/(a-b-c+d);
+        coord[dirs[faceid][0]] = constvalues[faceid];
+        coord[dirs[faceid][1]] = factor*(a-c);
+        coord[dirs[faceid][2]] = factor*(a-b);
+      } else {
+        getCoordsFromEdgeNumber(vertex_values, vertex_count,
+                                vertex_index[1], coord);
       }
-      assert(count > 0);
-      for (sizeType i = 0; i < dim; i++)
-      {
-        coord[i] /= count;
-      }
-    }
-    // it's a face point (assuming consecutive numbering)
-    else if (number >= FA && number <= FF) {
-      int faceid = number - FA;
-      static short faces[][4] = {{0,2,4,6}, {1,3,5,7}, {0,1,4,5},
-                                 {2,3,6,7}, {0,1,2,3}, {4,5,6,7}};
-      // const, first dir, second dir
-      static short dirs[][3] = {{0,1,2}, {0,1,2}, {1,0,2}, {1,0,2},
-                                {2,0,1}, {2,0,1}};
-      static valueType constvalues[] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
-      valueType a = vertex_values[faces[faceid][0]],
-                b = vertex_values[faces[faceid][1]],
-                c = vertex_values[faces[faceid][2]],
-                d = vertex_values[faces[faceid][3]];
-      valueType factor = 1.0/(a-b-c+d);
-      coord[dirs[faceid][0]] = constvalues[faceid];
-      coord[dirs[faceid][1]] = factor*(a-c);
-      coord[dirs[faceid][2]] = factor*(a-b);
-    }
-    // it's an edge
-    else if ((number & NO_VERTEX) == NO_VERTEX)
-    {
-      // get both vertices
+    } else {     // we have an egde
       point point_a, point_b;
-
-      // \TODO replace 15 by proper constant
-      short first = (number/FACTOR_FIRST_POINT) & 15;
-      short second = (number/FACTOR_SECOND_POINT) & 15;
       getCoordsFromNumber(vertex_values, vertex_count,
-                          first, point_a);
+                          vertex_index[1], point_a);
       getCoordsFromNumber(vertex_values, vertex_count,
-                          second, point_b);
-      if ((first >= FA && first <= CP) || (second >= FA && second <= CP))
-        intersectionFunctor::findRoot(vertex_values, point_a, point_b, coord);
-      else {
-        sizeType index_a = all_vertex_to_index[vertex_count+dim][first];
-        sizeType index_b = all_vertex_to_index[vertex_count+dim][second];
+                          vertex_index[2], point_b);
+      const unsigned short (*first) = all_case_vertices[vertex_count + dim]+vertex_index[1];
+      const unsigned short (*second) = all_case_vertices[vertex_count + dim]+vertex_index[2];
+      if (*first == 1 && *second == 1 &&
+          first[1] >= VA && first[1] <= VH
+          && second[1] >= VA && second[1] <= VH) {       // we have a simple edge
+        sizeType index_a = all_vertex_to_index[vertex_count+dim][first[1]];
+        sizeType index_b = all_vertex_to_index[vertex_count+dim][second[1]];
         // if theres no intersection along the edge, there is no vertex
         if (threshFunctor.isInside(vertex_values[index_a]) ==
             threshFunctor.isInside(vertex_values[index_b])) {
@@ -538,10 +513,10 @@ namespace Dune {
           std::cout << "vertex values: ";
           for (std::size_t i = 0; i<vertex_count; ++i)
             std::cout << " " << vertex_values[i];
-          std::cout << "\nfirst: " << first << " a: " << index_a
-                    << " second: " << second << " b: " << index_b << "\n";
+          std::cout << "\nfirst: " << vertex_index[1] << " a: " << index_a
+                    << " second: " << vertex_index[2] << " b: " << index_b << "\n";
 #endif
-          DUNE_THROW(IllegalArgumentException, "no vertex on edge found");
+          //DUNE_THROW(IllegalArgumentException, "no vertex on edge found");
         }
 
         // factor for interpolation
@@ -553,13 +528,9 @@ namespace Dune {
         for (sizeType i = 0; i < dim; i++) {
           coord[i] = point_a[i] - interpol_factor * (point_b[i] - point_a[i]);
         }
+      } else {
+        intersectionFunctor::findRoot(vertex_values, point_a, point_b, coord);
       }
-    }
-    // it's a vertex
-    else
-    {
-      getCoordsFromEdgeNumber(vertex_values, vertex_count,
-                              number, coord);
     }
     if (! std::isfinite(coord[0]))
       assert(false);

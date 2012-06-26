@@ -7,7 +7,8 @@
 #include <dune/common/float_cmp.hh>
 #include <dune/common/exceptions.hh>
 
-#include <dune/marchingcubes/newtonfunctor.hh>
+//#include <dune/marchingcubes/newtonfunctor.hh>
+#include <dune/marchingcubes/aberthfunctor.hh>
 
 namespace Dune {
 
@@ -17,8 +18,10 @@ namespace Dune {
 
   /** \brief The 'marching cubes 33' algorithm.
    */
+  //template <typename valueType, int dim, typename thresholdFunctor,
+  //          class intersectionFunctor = NewtonFunctor<valueType> >
   template <typename valueType, int dim, typename thresholdFunctor,
-      class intersectionFunctor = NewtonFunctor<valueType> >
+      class intersectionFunctor = AberthFunctor<valueType> >
   class MarchingCubes33 {
     typedef size_t sizeType;
     typedef double ctype;
@@ -67,6 +70,7 @@ namespace Dune {
      * to map the vertex numbers to the indices in the vertex-values array
      */
     static const short * const all_vertex_to_index[];
+    static const unsigned short * const all_case_vertices[];
     /*
      * contains vertex_groups-tables for different geometries. for details
      * see <code>marchinglut.hh</code>

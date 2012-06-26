@@ -119,6 +119,7 @@ class LookupGenerator(object):
         def generate_vertex_group(c):
             c.vertex_groups = [0]*self.p_size
             for i in range(self.p_size):
+                # get those elements containing vertex i
                 interior = [k for k in range(len(c.interior)) if i in c.interior[k]]
                 exterior = [k for k in range(len(c.exterior)) if i in c.exterior[k]]
                 if len(interior)>0:

@@ -138,7 +138,8 @@ namespace Dune {
     int id = -1;
     ctype v = 0.0;
     for (SizeType i = 0; i<po; ++i) {
-      if (FloatCmp::ge(std::min(roots[i], 1.0-roots[i]),v)) {
+      ctype value = p(roots[i]);
+      if (std::abs(value) < 1e-4 && FloatCmp::ge(std::min(roots[i], 1.0-roots[i]),v)) {
         id = i;
         v = roots[i];
       }

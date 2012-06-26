@@ -14,20 +14,24 @@ from disambiguate import permute_faceid
 LOGGER = logging.getLogger('lutgen.geomobject')
 
 class CenterPoint(object):
-        def __repr__(self):
-                return "CenterPoint"
-        def __eq__(self, other):
-                return type(other) is CenterPoint
+    def __repr__(self):
+        return "CenterPoint"
+    def __eq__(self, other):
+        return type(other) is CenterPoint
+    def __hash__(self):
+        return hash("CenterPoint")
 
 class FacePoint(object):
-	def __init__(self, id):
-		self.id = id
-	def __repr__(self):
-		return "FacePoint{0}".format(self.id)
-	def __cmp__(self, other):
-                if type(other) is FacePoint:
-                        return self.id - other.id
-                return -1
+    def __init__(self, id):
+        self.id = id
+    def __repr__(self):
+        return "FacePoint{0}".format(self.id)
+    def __cmp__(self, other):
+        if type(other) is FacePoint:
+            return self.id - other.id
+        return -1
+    def __hash__(self):
+        return hash("FacePoint{0}".format(self.id))
 
 class GeomObject(object):
     """ class representing a geometric object, eg a 3d cube, 2d simplex, etc """
@@ -105,19 +109,15 @@ class GeomObject(object):
             """ permutates vertex """
             if type(vertex) is int:
                 return perm[vertex]
-            if type(vertex[0]) is CenterPoint:
-                return tuple((perm[vertex[1]], vertex[0]))
-            if type(vertex[0]) is FacePoint: # only supported for 3d cubes
+            if type(vertex) is CenterPoint:
+                return vertex
+            if type(vertex) is FacePoint:
                 cubereffaces = ReferenceElements[(3, "cube")].faces
-                nfp = FacePoint(permute_faceid(vertex[0].id, perm, cubereffaces))
-                return tuple((perm[vertex[1]],  nfp))
-            if type(vertex[1]) is CenterPoint:
-                return tuple((perm[vertex[0]], vertex[1]))
-            if type(vertex[1]) is FacePoint: # only supported for 3d cubes
-                cubereffaces = ReferenceElements[(3, "cube")].faces
-                nfp = FacePoint(permute_faceid(vertex[1].id, perm, cubereffaces))
-                return tuple((perm[vertex[0]],  nfp))
-            return tuple(sorted((perm[vertex[0]], perm[vertex[1]])))
+                return FacePoint(permute_faceid(vertex.id, perm, cubereffaces))
+            l = [apply_perm(vertex[0]), apply_perm(vertex[1])];
+            if type(vertex[0]) is tuple or type(vertex[1]) is tuple:
+                return tuple(l)
+            return tuple(sorted(l))
         entity = self.vertices
         if len(self.vertices) == 0:
             return []
@@ -125,16 +125,20 @@ class GeomObject(object):
             entity = self.get_flip() * entity
         return [apply_perm(vertex) for vertex in entity]
     def __contains__(self, other):
+        def contv(vertex):
+            if vertex in self.vertices:
+                return 1
+            if (type(vertex) is tuple
+                and type(vertex[0]) is int
+                and type(vertex[1]) is int
+                and vertex[0] in self.vertices
+                and vertex[1] in self.vertices):
+                return 1
+            return 0
         # check if all vertices of other are inside self
         # number of intersecting points
-        intcount = sum(1 for x in other.vertices if x in self.vertices)
-        # number of points on edges not in self, of which both adjoining 
-        # vertices are in self
-        lincount = sum(1 for x in other.vertices 
-                       if type(x) is not int
-                       and x not in self.vertices
-                       and x[0] in self.vertices and x[1] in self.vertices)
-        return (intcount + lincount) == len(other.vertices)
+        intcount = sum(contv(x) for x in other.vertices)
+        return intcount == len(other.vertices)
     def __eq__(self, other):
         """ elements are equal if they contain the same vertices """
         #print "eq: {0} vs {1}: {2}".format(set(self.vertices), set(other.vertices),(self.dim == other.dim
@@ -145,7 +149,7 @@ class GeomObject(object):
         return 'GeomObject: {0}: {1}'.format(self.reference.type, self.vertices)
 
 def permute_geom_list(dim, entities, perm):
-    """ 
+    """
     applies the permutation perm to all entities. returns a list of entities,
     ie a list of lists of vertices
     """

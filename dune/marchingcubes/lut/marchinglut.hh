@@ -84,83 +84,6 @@ static const short FE = VH + 5;
 static const short FF = VH + 6;
 // center
 static const short CP = FF + 1;
-// edges start with E
-static const short EI = VA * FACTOR_FIRST_POINT + VB * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EJ = VC * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EK = VA * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EL = VB * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EM = VA * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EN = VB * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EO = VC * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EP = VD * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EQ = VE * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short ER = VG * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short ES = VE * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short ET = VF * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
-// diagonals for simplices, pyramids and prisms
-static const short EU = VB * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EV = VB * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EW = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EX = VD * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EY = VF * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
-// connection from center to vertices
-static const short CA = VA * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short CB = VB * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short CC = VC * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short CD = VD * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short CE = VE * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short CF = VF * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short CG = VG * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short CH = VH * FACTOR_FIRST_POINT + CP * FACTOR_SECOND_POINT + NO_VERTEX;
-// connections from faces to vertices
-static const short FAA = VA * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FAB = VB * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FAC = VC * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FAD = VD * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FAE = VE * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FAF = VF * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FAG = VG * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FAH = VH * FACTOR_FIRST_POINT + FA * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FBA = VA * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FBB = VB * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FBC = VC * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FBD = VD * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FBE = VE * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FBF = VF * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FBG = VG * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FBH = VH * FACTOR_FIRST_POINT + FB * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FCA = VA * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FCB = VB * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FCC = VC * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FCD = VD * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FCE = VE * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FCF = VF * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FCG = VG * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FCH = VH * FACTOR_FIRST_POINT + FC * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FDA = VA * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FDB = VB * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FDC = VC * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FDD = VD * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FDE = VE * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FDF = VF * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FDG = VG * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FDH = VH * FACTOR_FIRST_POINT + FD * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FEA = VA * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FEB = VB * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FEC = VC * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FED = VD * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FEE = VE * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FEF = VF * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FEG = VG * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FEH = VH * FACTOR_FIRST_POINT + FE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FFA = VA * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FFB = VB * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FFC = VC * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FFD = VD * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FFE = VE * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FFF = VF * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FFG = VG * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short FFH = VH * FACTOR_FIRST_POINT + FF * FACTOR_SECOND_POINT + NO_VERTEX;
 
 /* Constants indicating whether case special treatment when marching cubes' 33 is used. */
 static const short CASE_UNIQUE_MC33 = 0;
@@ -219,6 +142,8 @@ static const short table_cube3d_vertex_to_index[] = {0,1,2,3,4,5,6,7};
 
 extern "C"
 {
+
+  extern const unsigned short table_cube2d_vertices[];
   /*
    * Lookup table for 2D cases. The first entry is the offset
    * for
@@ -297,6 +222,7 @@ extern "C"
    */
   extern const short table_cube2d_mc33_face_test_order[];
 
+  extern const unsigned short table_cube3d_vertices[];
   /*
    * TODO: Comment 3D cube
    */
@@ -341,6 +267,7 @@ extern "C"
    */
   extern const short table_cube3d_mc33_face_test_order[];
 
+  extern const unsigned short table_simplex2d_vertices[];
   /*
    * TODO: Comment 2D simplex
    */
@@ -375,6 +302,7 @@ extern "C"
    */
   extern const short table_simplex2d_codim_1[];
 
+  extern const unsigned short table_simplex3d_vertices[];
   /*
    * TODO: Comment 3D simplex
    */
@@ -409,6 +337,7 @@ extern "C"
    */
   extern const short table_simplex3d_codim_1[];
 
+  extern const unsigned short table_pyramid3d_vertices[];
   /*
    * TODO: Comment 3D pyramid
    */
@@ -453,6 +382,7 @@ extern "C"
    */
   extern const short table_pyramid3d_mc33_face_test_order[];
 
+  extern const unsigned short table_prism3d_vertices[];
   /*
    * TODO: Comment 3D prism
    */
@@ -497,6 +427,7 @@ extern "C"
    */
   extern const short table_prism3d_mc33_face_test_order[];
 
+  extern const unsigned short table_any1d_vertices[];
   /*
    * TODO: Comment
    */
