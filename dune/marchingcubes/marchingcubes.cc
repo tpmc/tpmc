@@ -529,6 +529,10 @@ namespace Dune {
           coord[i] = point_a[i] - interpol_factor * (point_b[i] - point_a[i]);
         }
       } else {
+#ifndef NDEBUG
+        std::cout << "#####!!non-simple edge " << number << " = " << vertex_index[0]
+                  << " (" << vertex_index[1] << ", " << vertex_index[2] << ")\n";
+#endif
         intersectionFunctor::findRoot(vertex_values, point_a, point_b, coord);
       }
     }
