@@ -69,11 +69,11 @@ class VertexMapper:
                 id1 = self.id(vertex[1])
                 offset = self.table.offset
                 self.vertices[vertex] = offset
-                self.table.append("      /* {2} / {3} */ 2, {0}, {1}, \n".format(id0,
-                                                                                 id1,
-                                                                                 repr(vertex),
-                                                                                 offset),
-                                  3)
+                self.table.append("      /* {2} / {3} */ {0}, {1}, \n".format(id0,
+                                                                              id1,
+                                                                              repr(vertex),
+                                                                              offset),
+                                  2)
                 return offset
             else:
                 faceids = [FA, FB, FC, FD, FE, FF]
@@ -82,13 +82,7 @@ class VertexMapper:
                     val = CP
                 if type(vertex) is FacePoint:
                     val = faceids[vertex.id]
-                offset = self.table.offset
-                self.vertices[vertex] = offset
-                self.table.append("      /* {1} / {2} */ 1, {0},\n".format(CONST_NAMES[val],
-                                                                           repr(vertex),
-                                                                           offset),
-                                  2)
-                return offset
+                return -val;
 
 class DuneCode:
     """ Generates the tables, writes marchinglut.cc """
@@ -273,8 +267,10 @@ class DuneCode:
         vmapper = VertexMapper()
         vmapper.table.tablestring = \
             ("    "
-             "const unsigned short table_{0[T]}{0[D]}d_vertices[] = {{"
-             "\n".format(table_dict))
+             "const short table_{0[T]}{0[D]}d_vertices[] = {{"
+             "\n    /* <=0: single vertex, >0 offset in table */\n"
+             "      1, /* dummy entry so offset starts with 1 */\n".format(table_dict))
+        vmapper.table.offset = 1;
         table_offsets = TableStorage()
         table_offsets.tablestring = \
             ("    "

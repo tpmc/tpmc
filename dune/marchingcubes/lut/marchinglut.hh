@@ -143,7 +143,7 @@ static const short table_cube3d_vertex_to_index[] = {0,1,2,3,4,5,6,7};
 extern "C"
 {
 
-  extern const unsigned short table_cube2d_vertices[];
+  extern const short table_cube2d_vertices[];
   /*
    * Lookup table for 2D cases. The first entry is the offset
    * for
@@ -222,7 +222,7 @@ extern "C"
    */
   extern const short table_cube2d_mc33_face_test_order[];
 
-  extern const unsigned short table_cube3d_vertices[];
+  extern const short table_cube3d_vertices[];
   /*
    * TODO: Comment 3D cube
    */
@@ -267,7 +267,7 @@ extern "C"
    */
   extern const short table_cube3d_mc33_face_test_order[];
 
-  extern const unsigned short table_simplex2d_vertices[];
+  extern const short table_simplex2d_vertices[];
   /*
    * TODO: Comment 2D simplex
    */
@@ -302,7 +302,7 @@ extern "C"
    */
   extern const short table_simplex2d_codim_1[];
 
-  extern const unsigned short table_simplex3d_vertices[];
+  extern const short table_simplex3d_vertices[];
   /*
    * TODO: Comment 3D simplex
    */
@@ -337,7 +337,7 @@ extern "C"
    */
   extern const short table_simplex3d_codim_1[];
 
-  extern const unsigned short table_pyramid3d_vertices[];
+  extern const short table_pyramid3d_vertices[];
   /*
    * TODO: Comment 3D pyramid
    */
@@ -382,7 +382,7 @@ extern "C"
    */
   extern const short table_pyramid3d_mc33_face_test_order[];
 
-  extern const unsigned short table_prism3d_vertices[];
+  extern const short table_prism3d_vertices[];
   /*
    * TODO: Comment 3D prism
    */
@@ -427,7 +427,7 @@ extern "C"
    */
   extern const short table_prism3d_mc33_face_test_order[];
 
-  extern const unsigned short table_any1d_vertices[];
+  extern const short table_any1d_vertices[];
   /*
    * TODO: Comment
    */

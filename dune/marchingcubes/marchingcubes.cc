@@ -38,7 +38,7 @@ namespace Dune {
   };
 
   template <typename valueType, int dim, typename thresholdFunctor, class intersectionFunctor>
-  const unsigned short * const
+  const short * const
   MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   all_case_vertices[] = {
     NULL, NULL, NULL, table_any1d_vertices,
@@ -463,18 +463,19 @@ namespace Dune {
   template <typename valueVector>
   void MarchingCubes33<valueType, dim, thresholdFunctor, intersectionFunctor>::
   getCoordsFromNumber(const valueVector& vertex_values,
-                      const sizeType vertex_count, const short number,
+                      const sizeType vertex_count, short number,
                       point& coord) const
   {
     // get position in the vertex table
-    const unsigned short (* vertex_index) = all_case_vertices[vertex_count + dim]+number;
 
-    if (*vertex_index == 1) {     // we have a single point
-      if (vertex_index[1] == CP && dim == 3 && vertex_count == 8) {
+    if (number <= 0) {     // we have a single point
+      number *= -1;
+
+      if (number == CP && dim == 3 && vertex_count == 8) {
         // should not use CP anymore
         //DUNE_THROW(IllegalArgumentException, "centerpoint found");
-      } else if (vertex_index[1] >= FA && vertex_index[1] <= FF) {
-        int faceid = vertex_index[1] - FA;
+      } else if (number >= FA && number <= FF) {
+        int faceid = number - FA;
         static short faces[][4] = {{0,2,4,6}, {1,3,5,7}, {0,1,4,5},
                                    {2,3,6,7}, {0,1,2,3}, {4,5,6,7}};
         // const, first dir, second dir
@@ -491,21 +492,20 @@ namespace Dune {
         coord[dirs[faceid][2]] = factor*(a-b);
       } else {
         getCoordsFromEdgeNumber(vertex_values, vertex_count,
-                                vertex_index[1], coord);
+                                number, coord);
       }
     } else {     // we have an egde
+      const short (* vertex_index) = all_case_vertices[vertex_count + dim]+number;
       point point_a, point_b;
       getCoordsFromNumber(vertex_values, vertex_count,
-                          vertex_index[1], point_a);
+                          vertex_index[0], point_a);
       getCoordsFromNumber(vertex_values, vertex_count,
-                          vertex_index[2], point_b);
-      const unsigned short (*first) = all_case_vertices[vertex_count + dim]+vertex_index[1];
-      const unsigned short (*second) = all_case_vertices[vertex_count + dim]+vertex_index[2];
-      if (*first == 1 && *second == 1 &&
-          first[1] >= VA && first[1] <= VH
-          && second[1] >= VA && second[1] <= VH) {       // we have a simple edge
-        sizeType index_a = all_vertex_to_index[vertex_count+dim][first[1]];
-        sizeType index_b = all_vertex_to_index[vertex_count+dim][second[1]];
+                          vertex_index[1], point_b);
+      if (vertex_index[0] <= 0 && vertex_index[1] <= 0 &&
+          -vertex_index[0] >= VA && -vertex_index[0] <= VH
+          && -vertex_index[1] >= VA && -vertex_index[1] <= VH) {       // we have a simple edge
+        sizeType index_a = all_vertex_to_index[vertex_count+dim][-vertex_index[0]];
+        sizeType index_b = all_vertex_to_index[vertex_count+dim][-vertex_index[1]];
         // if theres no intersection along the edge, there is no vertex
         if (threshFunctor.isInside(vertex_values[index_a]) ==
             threshFunctor.isInside(vertex_values[index_b])) {
@@ -513,8 +513,8 @@ namespace Dune {
           std::cout << "vertex values: ";
           for (std::size_t i = 0; i<vertex_count; ++i)
             std::cout << " " << vertex_values[i];
-          std::cout << "\nfirst: " << vertex_index[1] << " a: " << index_a
-                    << " second: " << vertex_index[2] << " b: " << index_b << "\n";
+          std::cout << "\nfirst: " << vertex_index[0] << " a: " << index_a
+                    << " second: " << vertex_index[1] << " b: " << index_b << "\n";
 #endif
           //DUNE_THROW(IllegalArgumentException, "no vertex on edge found");
         }
@@ -530,8 +530,8 @@ namespace Dune {
         }
       } else {
 #ifndef NDEBUG
-        std::cout << "#####!!non-simple edge " << number << " = " << vertex_index[0]
-                  << " (" << vertex_index[1] << ", " << vertex_index[2] << ")\n";
+        std::cout << "#####!!non-simple edge " << number << " = "
+                  << " (" << vertex_index[0] << ", " << vertex_index[1] << ")\n";
 #endif
         intersectionFunctor::findRoot(vertex_values, point_a, point_b, coord);
       }

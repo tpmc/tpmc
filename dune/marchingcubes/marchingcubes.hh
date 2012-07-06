@@ -70,7 +70,7 @@ namespace Dune {
      * to map the vertex numbers to the indices in the vertex-values array
      */
     static const short * const all_vertex_to_index[];
-    static const unsigned short * const all_case_vertices[];
+    static const short * const all_case_vertices[];
     /*
      * contains vertex_groups-tables for different geometries. for details
      * see <code>marchinglut.hh</code>
