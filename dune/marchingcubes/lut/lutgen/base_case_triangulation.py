@@ -910,8 +910,8 @@ BCTprism3d.generate()
 BCTpyramid3d = LookupGenerator(3,"pyramid")
 # 0,0,0,0,0 -> 00000
 BCTpyramid3d.base_cases[0].faces = []
-BCTpyramid3d.base_cases[0].interior = [[0, 1, 2, 3, 4]]
-BCTpyramid3d.base_cases[0].interior_groups = [0]
+BCTpyramid3d.base_cases[0].interior = [[0, 1, 2, 4], [1, 2, 3, 4]]
+BCTpyramid3d.base_cases[0].interior_groups = [0, 0]
 BCTpyramid3d.base_cases[0].exterior = []
 BCTpyramid3d.base_cases[0].exterior_groups = []
 # 1,0,0,0,0 -> 00001
@@ -921,11 +921,11 @@ BCTpyramid3d.base_cases[1].interior_groups = [0, 0]
 BCTpyramid3d.base_cases[1].exterior = [[(0, 1), (0, 2), (0, 4), 0]]
 BCTpyramid3d.base_cases[1].exterior_groups = [1]
 # 1,1,0,0,0 -> 00011
-BCTpyramid3d.base_cases[2].faces = [[(0, 2), (1, 3), (0, 4), (1, 4)]]
-BCTpyramid3d.base_cases[2].interior = [[(0, 2), (1, 3), (0, 4), (1, 4), 4], [(0, 2), (1, 3), 2, 3, 4]]
-BCTpyramid3d.base_cases[2].interior_groups = [0, 0]
-BCTpyramid3d.base_cases[2].exterior = [[0, (0, 2), (0, 4), 1, (1, 3), (1, 4)]]
-BCTpyramid3d.base_cases[2].exterior_groups = [1]
+BCTpyramid3d.base_cases[2].faces = [[(0, 2), (0, 4), (1, 3)], [(1, 3), (1, 4), (0, 4)]]
+BCTpyramid3d.base_cases[2].interior = [[(0, 2), (1, 3), (0, 4), 2], [(1, 3), (0, 4), 2, (1, 4)], [(1, 3), (1, 4), 3, 2], [(1, 4), (0, 4), 2, 4], [(1, 4), 2, 3, 4]]
+BCTpyramid3d.base_cases[2].interior_groups = [0, 0, 0, 0, 0]
+BCTpyramid3d.base_cases[2].exterior = [[0, (1, 3), (0, 4), (0, 2)], [1, (1, 3), (1, 4), (0, 4)], [0, 1, (1, 3), (0, 4)]]
+BCTpyramid3d.base_cases[2].exterior_groups = [1, 1, 1]
 # 0,1,1,0,0 -> 00110 # (face 0 outside)
 BCTpyramid3d.base_cases[3].faces = [[1, (0, 1), (1, 4)], [1, (1, 3), (1, 4)], [2, (0, 2), (2, 4)], [2, (2, 3), (2, 4)], [(0, 2), (0, 1), (2, 4), (1, 4)], [(1, 3), (2, 3), (1, 4), (2, 4)]]
 BCTpyramid3d.base_cases[3].interior = [[0, (0, 1), (0, 2), 4, (1, 4), (2, 4)], [3, (1, 3), (2, 3), 4, (1, 4), (2, 4)]]
@@ -939,11 +939,11 @@ BCTpyramid3d.base_cases[4].interior_groups = [0, 0]
 BCTpyramid3d.base_cases[4].exterior = [[0, 1, 2, (0, 4), (1, 4), (2, 4)], [1, (1, 3), (1, 4), 2, (2, 3), (2, 4)]]
 BCTpyramid3d.base_cases[4].exterior_groups = [1, 1]
 # 1,1,1,1,0 -> 01111
-BCTpyramid3d.base_cases[5].faces = [[(0, 4), (1, 4), (2, 4), (3, 4)]]
-BCTpyramid3d.base_cases[5].interior = [[(0, 4), (1, 4), (2, 4), (3, 4), 4]]
-BCTpyramid3d.base_cases[5].interior_groups = [0]
-BCTpyramid3d.base_cases[5].exterior = [[0, 1, 2, 3, (0, 4), (1, 4), (2, 4), (3, 4)]]
-BCTpyramid3d.base_cases[5].exterior_groups = [1]
+BCTpyramid3d.base_cases[5].faces = [[(0, 4), (1, 4), (2, 4)], [(1, 4), (2, 4), (3, 4)]]
+BCTpyramid3d.base_cases[5].interior = [[(0, 4), (1, 4), (2, 4), 4], [(1, 4), (2, 4), (3, 4), 4]]
+BCTpyramid3d.base_cases[5].interior_groups = [0, 0]
+BCTpyramid3d.base_cases[5].exterior = [[(0, 4), (1, 4), (2, 4), 2], [(0, 4), (1, 4), 2, 0], [0, 1, 2, (1, 4)], [(1, 4), (2, 4), (3, 4), 2], [(1, 4), (3, 4), 2, 3], [2, 3, 1, (1, 4)]]
+BCTpyramid3d.base_cases[5].exterior_groups = [1, 1, 1, 1, 1, 1]
 # mc33 case follows
 # 0,1,1,0,0 -> 00110 # (face 0 inside)
 BCTpyramid3d.base_cases[3].mc33.append(Triangulation())
