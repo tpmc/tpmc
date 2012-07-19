@@ -822,13 +822,13 @@ BCTprism3d.base_cases[0].exterior = []
 BCTprism3d.base_cases[0].exterior_groups = []
 # 1,0,0,0,0,0 -> 000001
 BCTprism3d.base_cases[1].faces = [[(0, 1), (0, 2), (0, 3)]]
-BCTprism3d.base_cases[1].interior = [[(0, 1), (0, 2), 1, 2, (0, 3)], [1, 2, (0, 3), 4, 5, 3]]
-BCTprism3d.base_cases[1].interior_groups = [0, 0]
+BCTprism3d.base_cases[1].interior = [[(0, 1), (0, 2), (0, 3), 1, 2, 3], [1, 2, 3, 4], [2, 3, 4, 5]]
+BCTprism3d.base_cases[1].interior_groups = [0, 0, 0]
 BCTprism3d.base_cases[1].exterior = [[(0, 1), (0, 2), (0, 3), 0]]
 BCTprism3d.base_cases[1].exterior_groups = [1]
 # 1,1,0,0,0,0 -> 000011
 BCTprism3d.base_cases[2].faces = [[(0, 2), (1, 2), (0, 3), (1, 4)]]
-BCTprism3d.base_cases[2].interior = [[(0, 2), (1, 2), (0, 3), (1, 4), 2], [(0, 3), (1, 4), 2, 3, 4, 5]]
+BCTprism3d.base_cases[2].interior = [[(0, 2), (1, 2), 2, 3, 4, 5], [(0, 2), (0, 3), 3, (1, 2), (1, 4), 4]]
 BCTprism3d.base_cases[2].interior_groups = [0, 0]
 BCTprism3d.base_cases[2].exterior = [[0, (0, 2), (0, 3), 1, (1, 2), (1, 4)]]
 BCTprism3d.base_cases[2].exterior_groups = [1]
@@ -846,11 +846,11 @@ BCTprism3d.base_cases[4].exterior = [[0, (0, 1), (0, 2), 3, (3, 4), (3, 5)]]
 BCTprism3d.base_cases[4].exterior_groups = [1]
 # 0,1,0,1,0,0 -> 001010 (face 0 outside)
 BCTprism3d.base_cases[5].name = "MC33 Prism Case 5, face 0 outside"
-BCTprism3d.base_cases[5].faces = [[(0, 1), (1, 2), (0, 3), (3, 5)], [(1, 2), (1, 4), (3, 5), (3, 4)]]
-BCTprism3d.base_cases[5].interior = [[0, (0, 3), (0, 1), 2], [(1, 2), (1, 4), (3, 5), (3, 4), 4], [(3, 5), 4, 5, (1, 2)], [(0, 3), (3, 5), (0, 1), (1, 2), 2], [2, (1, 2), (3, 5), 5]]
-BCTprism3d.base_cases[5].interior_groups = [0, 0, 0, 0, 0]
-BCTprism3d.base_cases[5].exterior = [[3, (0, 3), (3, 4), (3, 5)], [1, (0, 1), (1, 2), (1, 4)], [(0, 3), (3, 4), (3, 5), (0, 1), (1, 4), (1, 2)]]
-BCTprism3d.base_cases[5].exterior_groups = [1, 1, 1]
+BCTprism3d.base_cases[5].faces = [[(0, 1), (1, 2), (0, 3)], [(1, 2), (1, 4), (3, 4)], [(1, 2), (3, 4), (3, 5)], [(1, 2), (0, 3), (3, 5)]]
+BCTprism3d.base_cases[5].interior = [[(1, 4), (3, 4), 4, (1, 2)], [(1, 2), 4, (3, 4), 5], [(1, 2), (3, 4), (3, 5), 5], [(1, 2), (3, 5), 5, 2], [2, (1, 2), (3, 5), (0, 3)], [(1, 2), 2, (0, 3), 0], [0, (1, 2), (0, 1), (0, 3)]]
+BCTprism3d.base_cases[5].interior_groups = [0, 0, 0, 0, 0, 0, 0]
+BCTprism3d.base_cases[5].exterior = [[(0, 1), (1, 2), (1, 4), 1], [(0, 1), (1, 2), (1, 4), (0, 3)], [(1, 2), (1, 4), (0, 3), (3, 4)], [(1, 2), (0, 3), (3, 4), (3, 5)], [(0, 3), (3, 4), (3, 5), 3]]
+BCTprism3d.base_cases[5].exterior_groups = [1, 1, 1, 1, 1]
 # 1,1,0,1,0,0 -> 001101
 BCTprism3d.base_cases[6].name = "MC33 Prism Case 6"
 BCTprism3d.base_cases[6].faces = [[(3, 5), (3, 4), (0, 2)], [(3, 4), (1, 4), (0, 2)], [(1, 4), (0, 2), (1, 2)]]
@@ -860,32 +860,32 @@ BCTprism3d.base_cases[6].exterior = [[0, 1, (1, 2), (1, 4)], [(1, 2), (1, 4), (0
 BCTprism3d.base_cases[6].exterior_groups = [1, 1, 1, 1, 1]
 # 0,1,1,1,0,0 -> 001110 (face 0, 1 outside)
 BCTprism3d.base_cases[7].name = "MC33 Prism Case 7, face 0, 1 outside"
-BCTprism3d.base_cases[7].faces = [[(0, 1), (0, 2), (0, 3)], [(1, 4), (3, 4), (2, 5), (3, 5)]]
-BCTprism3d.base_cases[7].interior = [[(0, 1), (0, 2), (0, 3), 0], [(3, 4), (1, 4), 4, (3, 5), (2, 5), 5]]
-BCTprism3d.base_cases[7].interior_groups = [0, 1]
-BCTprism3d.base_cases[7].exterior = [[(0, 1), 1, (1, 4), (0, 2), 2, (2, 5)], [(0, 1), (1, 4), (3, 4), (0, 2), (2, 5), (3, 5)], [(0, 1), (0, 2), (3, 4), (3, 5), (0, 3)], [(0, 3), (3, 4), (3, 5), 3]]
-BCTprism3d.base_cases[7].exterior_groups = [2, 2, 2, 2]
+BCTprism3d.base_cases[7].faces = [[(0, 1), (0, 2), (0, 3)], [(2, 5), (1, 4), (3, 4)], [(2, 5), (3, 4), (3, 5)]]
+BCTprism3d.base_cases[7].interior = [[0, (0, 1), (0, 2), (0, 3)], [(1, 4), (2, 5), (3, 4), 4], [(2, 5), (3, 4), (3, 5), 4], [(2, 5), (3, 5), 4, 5]]
+BCTprism3d.base_cases[7].interior_groups = [0, 1, 1, 1]
+BCTprism3d.base_cases[7].exterior = [[(2, 5), (3, 4), (3, 5), 3], [(2, 5), (3, 4), 3, 2], [2, (2, 5), (3, 4), (1, 4)], [1, 2, (3, 4), (1, 4)], [2, 3, (3, 4), (0, 3)], [1, 2, (0, 3), (3, 4)], [1, 2, (0, 3), (0, 2)], [(0, 2), 1, (0, 3), (0, 1)]]
+BCTprism3d.base_cases[7].exterior_groups = [2, 2, 2, 2, 2, 2, 2, 2]
 # mc33 cases follow
 # 0,1,0,1,0,0 -> 001010 (face 0 inside)
 BCTprism3d.base_cases[5].mc33.append(Triangulation())
-BCTprism3d.base_cases[5].mc33[-1].name = "MC33 Prism Case 5, face 0 inside"
+BCTprism3d.base_cases[5].mc33[-1].name = "MC33 Prism Case 5,  face 0 inside"
 BCTprism3d.base_cases[5].mc33[-1].faces = [[(0, 3), (3, 4), (3, 5)], [(0, 1), (1, 2), (1, 4)]]
-BCTprism3d.base_cases[5].mc33[-1].interior = [[0, (0, 3), (0, 1), 2], [(1, 2), (1, 4), (3, 5), (3, 4), 4], [(3, 5), 4, 5, (1, 2)], [(0, 3), (3, 5), (0, 1), (1, 2), 2], [2, (1, 2), (3, 5), 5], [(0, 3), (3, 4), (3, 5), (0, 1), (1, 4), (1, 2)]]
-BCTprism3d.base_cases[5].mc33[-1].interior_groups = [0, 0, 0, 0, 0, 0]
+BCTprism3d.base_cases[5].mc33[-1].interior = [[0, 2, (0, 1), (0, 3)], [2, (0, 1), (1, 2), (1, 4)], [(0, 1), 2, (1, 4), (0, 3)], [2, (0, 3), (1, 4), (3, 4)], [2, (0, 3), (3, 4), (3, 5)], [2, (1, 4), (3, 4), 4], [2, 4, (3, 4), (3, 5)], [2, 4, (3, 5), 5]]
+BCTprism3d.base_cases[5].mc33[-1].interior_groups = [0, 0, 0, 0, 0, 0, 0, 0]
 BCTprism3d.base_cases[5].mc33[-1].exterior = [[(0, 3), (3, 4), (3, 5), 3], [(0, 1), (1, 2), (1, 4), 1]]
 BCTprism3d.base_cases[5].mc33[-1].exterior_groups = [1, 2]
-BCTprism3d.base_cases[5].tests = [TEST_FACE_0, CASE_IS_REGULAR , 0]
+BCTprism3d.base_cases[5].tests = [TEST_FACE_0, CASE_IS_REGULAR, 0]
 # 0,1,1,1,0,0 -> 001110 (face 1 outside, 0 inside)
 BCTprism3d.base_cases[7].mc33.append(Triangulation())
-BCTprism3d.base_cases[7].mc33[-1].name = "MC33 Prism Case 7, face 1 outside, 0 inside"
-BCTprism3d.base_cases[7].mc33[-1].faces = [[(0, 3), (3, 4), (0, 2)], [(3, 4), (3, 5), (2, 5)], [(3, 4), (2, 5), (0, 2)], [(0, 2), (0, 1), (2, 5), (1, 4)]]
-BCTprism3d.base_cases[7].mc33[-1].interior = [[(3, 4), 4, (3, 5), 5, (2, 5)], [(3, 4), (1, 4), 4, (2, 5)], [(2, 5), (1, 4), (0, 2), (0, 1), (3, 4)], [(0, 3), (0, 1), (0, 2), (3, 4)], [(0, 3), (0, 1), (0, 2), 0]]
-BCTprism3d.base_cases[7].mc33[-1].interior_groups = [0, 0, 0, 0, 0]
-BCTprism3d.base_cases[7].mc33[-1].exterior = [[(0, 3), (3, 4), (3, 5), 3], [(0, 3), (0, 2), (3, 5), (2, 5), (3, 4)], [(0, 2), 2, (2, 5), (0, 1), 1, (1, 4)]]
-BCTprism3d.base_cases[7].mc33[-1].exterior_groups = [1, 1, 1]
+BCTprism3d.base_cases[7].mc33[-1].name = "MC33 Prism Case 7, face 0 outside, 1 inside"
+BCTprism3d.base_cases[7].mc33[-1].faces = [[(0, 1), (0, 2), (2, 5)], [(0, 1), (0, 3), (2, 5)], [(2, 5), (1, 4), (3, 4)], [(2, 5), (3, 4), (3, 5)], [(0, 3), (2, 5), (3, 5)]]
+BCTprism3d.base_cases[7].mc33[-1].interior = [[0, (0, 1), (0, 2), (0, 3)], [(0, 1), (0, 2), (0, 3), (2, 5)], [(0, 2), (0, 3), (2, 5), (3, 5)], [(2, 5), (3, 5), (3, 4), 5], [(2, 5), (3, 4), 5, 4], [(2, 5), (3, 4), 4, (1, 4)]]
+BCTprism3d.base_cases[7].mc33[-1].interior_groups = [0, 0, 0, 0, 0, 0]
+BCTprism3d.base_cases[7].mc33[-1].exterior = [[(0, 1), (0, 2), (2, 5), 2], [2, (0, 1), (2, 5), 1], [(0, 1), 1, (2, 5), (1, 4)], [(0, 1), (1, 4), (2, 5), (0, 3)], [(0, 3), (1, 4), (2, 5), (3, 4)], [(0, 3), (3, 4), (3, 5), (2, 5)], [(0, 3), (3, 4), (3, 5), 3]]
+BCTprism3d.base_cases[7].mc33[-1].exterior_groups = [1, 1, 1, 1, 1, 1, 1]
 # 0,1,1,1,0,0 -> 001110 (face 0 outside, 1 inside)
 BCTprism3d.base_cases[7].mc33.append(Triangulation())
-BCTprism3d.base_cases[7].mc33[-1].name = "MC33 Prism Case 7, face 0 outside, 1 inside"
+BCTprism3d.base_cases[7].mc33[-1].name = "MC33 Prism Case 7, face 1 outside, 0 inside"
 BCTprism3d.base_cases[7].mc33[-1].faces = permute_geom_list(2, BCTprism3d.base_cases[7].mc33[0].faces, MIRROR_PRISM_0_1)
 BCTprism3d.base_cases[7].mc33[-1].interior = permute_geom_list(3, BCTprism3d.base_cases[7].mc33[0].interior, MIRROR_PRISM_0_1)
 BCTprism3d.base_cases[7].mc33[-1].interior_groups = BCTprism3d.base_cases[7].mc33[0].interior_groups
@@ -894,14 +894,14 @@ BCTprism3d.base_cases[7].mc33[-1].exterior_groups = BCTprism3d.base_cases[7].mc3
 # 0,1,1,1,0,0 -> 001110 (face 0, 1 inside)
 BCTprism3d.base_cases[7].mc33.append(Triangulation())
 BCTprism3d.base_cases[7].mc33[-1].name = "MC33 Prism Case 7, face 0, 1 inside"
-BCTprism3d.base_cases[7].mc33[-1].faces = [[(0, 3), (3, 4), (3, 5)], [(0, 1), (0, 2), (1, 4), (2, 5)]]
-BCTprism3d.base_cases[7].mc33[-1].interior = [[(1, 4), 4, (3, 4), (2, 5), 5, (3, 5)], [(1, 4), (3, 4), (2, 5), (3, 5), (0, 3)], [(0, 1), (1, 4), (0, 2), (2, 5), (0, 3)], [(0, 1), (0, 2), (0, 3), 0]]
-BCTprism3d.base_cases[7].mc33[-1].interior_groups = [0, 0, 0, 0]
-BCTprism3d.base_cases[7].mc33[-1].exterior = [[(0, 3), (3, 4), (3, 5), 3], [(0, 1), 1, (1, 4), (0, 2), 2, (2, 5)]]
-BCTprism3d.base_cases[7].mc33[-1].exterior_groups = [1, 2]
+BCTprism3d.base_cases[7].mc33[-1].faces = [[(0, 3), (3, 4), (3, 5)], [(0, 2), (0, 1), (1, 4)], [(0, 2), (1, 4), (2, 5)]]
+BCTprism3d.base_cases[7].mc33[-1].interior = [[0, (0, 1), (0, 2), (0, 3)], [(0, 1), (0, 2), (0, 3), (1, 4)], [(0, 2), (1, 4), (0, 3), (2, 5)], [(0, 3), (1, 4), (2, 5), (3, 4)], [(0, 3), (2, 5), (3, 4), (3, 5)], [(1, 4), (2, 5), (3, 4), 4], [(2, 5), (3, 4), (3, 5), 5], [(2, 5), (3, 4), 5, 4]]
+BCTprism3d.base_cases[7].mc33[-1].interior_groups = [0, 0, 0, 0, 0, 0, 0, 0]
+BCTprism3d.base_cases[7].mc33[-1].exterior = [[(0, 3), (3, 4), (3, 5), 3], [(0, 1), (1, 4), (0, 2), 1], [1, (0, 2), (1, 4), 2], [2, (0, 2), (1, 4), (2, 5)]]
+BCTprism3d.base_cases[7].mc33[-1].exterior_groups = [1, 2, 2, 2]
 BCTprism3d.base_cases[7].tests = binaryheap((TEST_FACE_0,
-                                             (TEST_FACE_1, CASE_IS_REGULAR, 1),
-                                             (TEST_FACE_1, 0, 2)))
+                                             (TEST_FACE_1, CASE_IS_REGULAR, 0),
+                                             (TEST_FACE_1, 1, 2)))
 BCTprism3d.generate()
 
 ################################################################################
