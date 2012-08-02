@@ -2,6 +2,9 @@
 
 CLEANFILES = marchinglut.cc
 
+# ignore file in sourcescheck, it is generated
+sourcescheck_DUMMY = marchinglut.cc
+
 noinst_LTLIBRARIES = libmclut.la
 
 libmclut_la_SOURCES = marchinglut.cc marchinglut.hh
@@ -9,6 +12,7 @@ libmclut_la_SOURCES = marchinglut.cc marchinglut.hh
 LUTGEN_py = lutgen/consistencycheck.py lutgen/cases.py lutgen/generator.py lutgen/disambiguate.py \
 	lutgen/__init__.py lutgen/referenceelements.py lutgen/output.py lutgen/sk.py lutgen/permutation.py \
 	lutgen/geomobj.py lutgen/dunecode.py lutgen/vtk.py
+
 marchinglut.cc: generate_lut.py $(LUTGEN_py)
 	$(PYTHON) $(srcdir)/generate_lut.py
 

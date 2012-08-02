@@ -5,6 +5,9 @@ check: all
 #check_PROGRAMS=testmc33 testmarchingcubesrefinement test_mc33
 check_PROGRAMS=testmarchingcubesrefinement test_mc33
 
+# we do not build testmc33, so ignore the source file
+sourcescheck_NOSOURCES=testmc33.cc
+
 #testmc33_SOURCES=testmc33.cc
 #testmc33_CPPFLAGS=$(AM_CPPFLAGS) -g -Wall -O0
 #testmc33_LDFLAGS=-L$(top_srcdir)/dune/marchingcubes/lut -lmclut
