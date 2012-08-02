@@ -184,9 +184,8 @@ namespace Dune {
     } else {
       apply<1, ctype*>(coefficients, coefficients+2, root);
     }
-    result = x;
-    result *= root;
-    result += a;
+    result = a;
+    result.axpy(root, x);
   }
 }
 
