@@ -1,5 +1,7 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
+#include "config.h"
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -8,10 +10,10 @@
 #include <cstdlib>
 #include <sstream>
 #include "dune/common/float_cmp.hh"
-#include "dune/common/geometrytype.hh"
+#include "dune/geometry/type.hh"
 #include "dune/common/shared_ptr.hh"
-#include "dune/grid/genericgeometry/topologytypes.hh"
-#include "dune/grid/common/genericreferenceelements.hh"
+#include "dune/geometry/genericgeometry/topologytypes.hh"
+#include "dune/geometry/referenceelements.hh"
 #include "dune/marchingcubes/marchingcubesrefinement.hh"
 
 namespace MarchingCubesTest {
