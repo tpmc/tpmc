@@ -9,12 +9,13 @@
 #include <ctime>
 #include <cstdlib>
 #include <sstream>
-#include "dune/common/float_cmp.hh"
-#include "dune/geometry/type.hh"
-#include "dune/common/shared_ptr.hh"
-#include "dune/geometry/genericgeometry/topologytypes.hh"
-#include "dune/geometry/referenceelements.hh"
-#include "dune/marchingcubes/marchingcubesrefinement.hh"
+#include <dune/common/float_cmp.hh>
+#include <dune/geometry/type.hh>
+#include <dune/common/shared_ptr.hh>
+#include <dune/geometry/genericgeometry/topologytypes.hh>
+#include <dune/geometry/referenceelements.hh>
+#include <dune/geometry/quadraturerules.hh>
+#include <dune/marchingcubes/marchingcubesrefinement.hh>
 
 namespace MarchingCubesTest {
   template <typename S, typename V>
@@ -23,19 +24,34 @@ namespace MarchingCubesTest {
       s << (i>0 ? ", " : "") << v[i];
   }
 
+  template <typename V>
+  std::string valuesToCode(const V& v) {
+    std::stringstream ss;
+    for (std::size_t i = 0; i<v.size(); ++i)
+      ss << (v[i]>0.0);
+    return ss.str();
+  }
+
   // runs tests and counts the successful ones
   class Test {
-    int count_;
-    int success_;
   public:
-    Test()
-      : count_(0), success_(0) {}
+    Test(std::string name)
+      : count_(0), success_(0), name_(name) {}
 
     template <typename G, typename T>
     void run();
     bool successful() const { return count_ == success_; }
     int count() const { return count_; }
     int success() const { return success_; }
+    template <class S>
+    void report(S& stream) {
+      stream << "Result of test <" << name_ << ">: " << success_
+             << "/" << count_ << " tests successfull\n";
+    }
+  private:
+    int count_;
+    int success_;
+    std::string name_;
   };
 
   template <typename G, typename T>
@@ -50,7 +66,7 @@ namespace MarchingCubesTest {
         std::cout << "[FAILED] test " << test.name() << " failed on " << generator.name() << std::endl;
         std::cout << "         vertex values: (";
         vectorToStream(std::cout, *it);
-        std::cout << ")" << std::endl;
+        std::cout << ") " << valuesToCode(*it) << std::endl;
       }
     }
   }
@@ -116,6 +132,17 @@ namespace MarchingCubesTest {
     }
   }
 
+  template <class Geo>
+  typename Geo::ctype integrate(const Geo& geo, int intorder = 1) {
+    typename Geo::ctype result = 0.0;
+    const Dune::QuadratureRule<typename Geo::ctype, Geo::mydimension>& rule = Dune::QuadratureRules<typename Geo::ctype, Geo::mydimension>::rule(geo.type(), intorder);
+    for (typename Dune::QuadratureRule<typename Geo::ctype, Geo::mydimension>::const_iterator it = rule.begin();
+         it != rule.end(); ++it) {
+      result += it->weight()*geo.integrationElement(it->position());
+    }
+    return result;
+  }
+
   // tests if the volume of interior and exterior match the volume of the reference element
   template <typename Geometry>
   class VolumeTest {
@@ -159,11 +186,11 @@ namespace MarchingCubesTest {
     volumeExterior = 0.0;
     int countInterior = 0, countExterior = 0;
     for (I it = ibegin; it != iend; ++it) {
-      volumeInterior += it->volume();
+      volumeInterior += integrate(*it);
       ++countInterior;
     }
     for (I it = ebegin; it != eend; ++it) {
-      volumeExterior += it->volume();
+      volumeExterior += integrate(*it);
       ++countExterior;
     }
     bool result = Dune::FloatCmp::eq(volumeInterior+volumeExterior, referenceVolume);
@@ -214,16 +241,10 @@ namespace MarchingCubesTest {
       ctype ve = sumVolume(refExterior.begin(), refExterior.end());
       ctype vir = sumVolume(refInteriorRotated.begin(), refInteriorRotated.end());
       ctype ver = sumVolume(refExteriorRotated.begin(), refExteriorRotated.end());
-      if (!Dune::FloatCmp::eq(vi, vir)) {
+      if (Dune::FloatCmp::ne(vi, vir) || Dune::FloatCmp::ne(ve, ver)) {
         result_ = false;
-        std::cout << "TransformationTest: i: " << vi << " ir: " << vir << std::endl;
-        std::cout << "    rotated values: (";
-        vectorToStream(std::cout, rotatedValues);
-        std::cout << ")" << std::endl;
-      }
-      if (!Dune::FloatCmp::eq(ve, ver)) {
-        result_ = false;
-        std::cout << "TransformationTest: e: " << ve << " er: " << ver << std::endl;
+        std::cout << "TransformationTest: i: " << vi << " ir: " << vir
+                  << " e: " << ve << " er: " << ver << std::endl;
         std::cout << "    rotated values: (";
         vectorToStream(std::cout, rotatedValues);
         std::cout << ")" << std::endl;
@@ -239,7 +260,7 @@ namespace MarchingCubesTest {
   typename Geometry::ValueType TransformationTest<Geometry>::sumVolume(I begin, I end) {
     typename Geometry::ValueType v = 0.0;
     while (begin != end) {
-      v += begin->volume();
+      v += integrate(*begin);
       ++begin;
     }
     return v;
@@ -339,7 +360,7 @@ int main(int argc, char* argv[]) {
   using namespace MarchingCubesTest;
   const int N = 100;
   std::srand(std::time(0));
-  Test volumetest;
+  Test volumetest("volume");
   volumetest.run<AllCombinationGenerator<CubeGeometry<3> >, VolumeTest<CubeGeometry<3> > >();
   volumetest.run<AllCombinationGenerator<CubeGeometry<2> >, VolumeTest<CubeGeometry<2> > >();
   volumetest.run<AllCombinationGenerator<SimplexGeometry<3> >, VolumeTest<SimplexGeometry<3> > >();
@@ -352,7 +373,7 @@ int main(int argc, char* argv[]) {
   volumetest.run<RandomDataGenerator<SimplexGeometry<2>, N>, VolumeTest<SimplexGeometry<2> > >();
   volumetest.run<RandomDataGenerator<PrismGeometry, N>, VolumeTest<PrismGeometry> >();
   volumetest.run<RandomDataGenerator<PyramidGeometry, N>, VolumeTest<PyramidGeometry> >();
-  Test transformationtest;
+  Test transformationtest("transformation");
   transformationtest.run<AllCombinationGenerator<CubeGeometry<3> >, TransformationTest<CubeGeometry<3> > >();
   transformationtest.run<AllCombinationGenerator<CubeGeometry<2> >, TransformationTest<CubeGeometry<2> > >();
   transformationtest.run<AllCombinationGenerator<SimplexGeometry<3> >, TransformationTest<SimplexGeometry<3> > >();
@@ -365,7 +386,7 @@ int main(int argc, char* argv[]) {
   transformationtest.run<RandomDataGenerator<SimplexGeometry<2>, N>, TransformationTest<SimplexGeometry<2> > >();
   transformationtest.run<RandomDataGenerator<PrismGeometry, N>, TransformationTest<PrismGeometry> >();
   transformationtest.run<RandomDataGenerator<PyramidGeometry, N>, TransformationTest<PyramidGeometry> >();
-  std::cout << volumetest.success() << "/" << volumetest.count() << " volume tests successful" << std::endl;
-  std::cout << transformationtest.success() << "/" << transformationtest.count() << " transformation tests successful" << std::endl;
+  volumetest.report(std::cout);
+  transformationtest.report(std::cout);
   return !(volumetest.successful() && transformationtest.successful());
 }
