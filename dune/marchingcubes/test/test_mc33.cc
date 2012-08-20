@@ -149,6 +149,8 @@ namespace MarchingCubesTest {
     const typename Geometry::VectorType& values_;
     bool result_;
   public:
+    typedef Geometry GeometryType;
+
     VolumeTest(const typename Geometry::VectorType& values);
     bool successful() const { return result_; }
     static std::string name() {
@@ -210,6 +212,8 @@ namespace MarchingCubesTest {
   class TransformationTest {
     bool result_;
   public:
+    typedef Geometry GeometryType;
+
     TransformationTest(const typename Geometry::VectorType& values);
     bool successful() const { return result_; }
     static std::string name() {

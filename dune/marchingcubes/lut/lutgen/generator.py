@@ -9,6 +9,7 @@ from pprint import pprint
 from transformation import Transformation
 from referenceelements import ReferenceElements
 from cases import Case, BaseCase
+from geomobj import GeomObject
 
 LOGGER = logging.getLogger('lutgen.generator')
 
@@ -126,12 +127,21 @@ class LookupGenerator(object):
                     c.vertex_groups[i] = c.interior_groups[interior[0]]
                 elif len(exterior)>0:
                     c.vertex_groups[i] = c.exterior_groups[exterior[0]]
+        def renumber_vertices(c):
+            """ renumber vertices of each face so that the normal points outwards """
+            for i in range(len(c.faces)):
+                # find interior element containing this face and use the numbering based on
+                # the elements reference element
+                iface = next(f for e in c.interior for f in GeomObject(self.dim, e).faces()
+                             if set(f) == set(c.faces[i]))
+                c.faces[i] = iface
         for bc in self.base_cases:
             generate_vertex_group(bc)
             for mc in bc.mc33:
                 generate_vertex_group(mc)
         for entry in self.all_cases:
             entry.update()
+            renumber_vertices(entry)
             generate_vertex_group(entry)
             for mc in entry.mc33:
                 generate_vertex_group(mc)

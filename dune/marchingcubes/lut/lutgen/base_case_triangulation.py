@@ -927,7 +927,7 @@ BCTpyramid3d.base_cases[2].interior_groups = [0, 0, 0, 0, 0]
 BCTpyramid3d.base_cases[2].exterior = [[0, (1, 3), (0, 4), (0, 2)], [1, (1, 3), (1, 4), (0, 4)], [0, 1, (1, 3), (0, 4)]]
 BCTpyramid3d.base_cases[2].exterior_groups = [1, 1, 1]
 # 0,1,1,0,0 -> 00110 # (face 0 outside)
-BCTpyramid3d.base_cases[3].faces = [[1, (0, 1), (1, 4)], [1, (1, 3), (1, 4)], [2, (0, 2), (2, 4)], [2, (2, 3), (2, 4)], [(0, 2), (0, 1), (2, 4), (1, 4)], [(1, 3), (2, 3), (1, 4), (2, 4)]]
+BCTpyramid3d.base_cases[3].faces = [[(0, 2), (0, 1), (2, 4), (1, 4)], [(1, 3), (2, 3), (1, 4), (2, 4)]]
 BCTpyramid3d.base_cases[3].interior = [[0, (0, 1), (0, 2), 4, (1, 4), (2, 4)], [3, (1, 3), (2, 3), 4, (1, 4), (2, 4)]]
 BCTpyramid3d.base_cases[3].interior_groups = [0, 0]
 BCTpyramid3d.base_cases[3].exterior = [[1, (0, 1), (1, 3), (1, 4)], [2, (0, 2), (2, 3), (2, 4)], [(0, 1), (1, 3), (1, 4), (0, 2), (2, 3), (2, 4)]]
