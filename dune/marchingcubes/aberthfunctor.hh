@@ -102,11 +102,11 @@ namespace Dune {
                          const PointType& b,
                          PointType& result);
 
-    template <class VectorType>
+    template <class VectorType, int dim>
     static void findRoot(const VectorType& vertex_values,
-                         const Dune::FieldVector<ctype, 2>& a,
-                         const Dune::FieldVector<ctype, 2>& b,
-                         Dune::FieldVector<ctype, 2>& result);
+                         const Dune::FieldVector<ctype, dim>& a,
+                         const Dune::FieldVector<ctype, dim>& b,
+                         Dune::FieldVector<ctype, dim>& result);
   private:
     template <int po, class I>
     static void apply(const I& begin, const I& end, ctype& result);
@@ -114,12 +114,12 @@ namespace Dune {
 
 
   template <typename ctype, class StopPolicy>
-  template <class VectorType>
+  template <class VectorType, int dim>
   void AberthFunctor<ctype, StopPolicy>::findRoot(const VectorType& vertex_values,
-                                                  const Dune::FieldVector<ctype, 2>& a,
-                                                  const Dune::FieldVector<ctype, 2>& b,
-                                                  Dune::FieldVector<ctype, 2>& result) {
-    DUNE_THROW(Dune::NotImplemented, "aberth method not supported for 2d vector");
+                                                  const Dune::FieldVector<ctype, dim>& a,
+                                                  const Dune::FieldVector<ctype, dim>& b,
+                                                  Dune::FieldVector<ctype, dim>& result) {
+    DUNE_THROW(Dune::NotImplemented, "aberth method not supported for dim < 3");
   }
 
   template <typename ctype, class StopPolicy>
