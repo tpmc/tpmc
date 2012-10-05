@@ -26,7 +26,7 @@ namespace Dune {
     public:
 
       //! setup the ThresholdFunctor with a given threshold value
-      ThresholdFunctor(value v = 0.0) : threshold(v) {}
+      ThresholdFunctor(vtype v = 0.0) : threshold(v) {}
 
       //! Function to test whether a point is inside the isosurface.
       bool isInside(vtype testValue) const
@@ -89,7 +89,7 @@ namespace Dune {
     class StaticThresholdFunctor {
     public:
 
-      typedef ValueTraits::ValueType vtype;
+      typedef typename ValueTraits::ValueType vtype;
 
       //! Function to test whether a point is inside the isosurface.
       bool isInside(vtype testValue) const
