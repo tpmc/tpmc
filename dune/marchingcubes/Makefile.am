@@ -10,6 +10,7 @@ marchingcubesinclude_HEADERS = aberthfunctor.hh \
                                marchingcubes.cc \
                                marchingcubes.hh \
                                marchingcubesrefinement.hh \
+                               marchingcubesvtkwriter.hh \
                                newtonfunctor.hh \
                                thresholdfunctor.hh \
                                trilinearfunction.hh \
