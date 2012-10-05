@@ -72,16 +72,18 @@ MainFrame<N>::MainFrame(const wxString& title)
 
   wxBoxSizer *hbox = new wxBoxSizer(wxHORIZONTAL);
   wxBoxSizer *vboxl = new wxBoxSizer(wxVERTICAL);
-  wxBoxSizer *vboxm = new wxBoxSizer(wxVERTICAL);
   wxBoxSizer *vboxr = new wxBoxSizer(wxVERTICAL);
+  wxBoxSizer *hboxrt = new wxBoxSizer(wxHORIZONTAL);
+  wxBoxSizer *hboxrb = new wxBoxSizer(wxHORIZONTAL);
 
   vboxl->Add(geometrypanel, 0, wxBOTTOM, 5);
-  vboxm->Add(viewpanel, 0, wxBOTTOM, 10);
-  vboxm->Add(mccanvas, 1, wxEXPAND | wxALL, 0);
-  vboxr->Add(ctlpanel, 0, wxBOTTOM, 5);
+  hboxrt->Add(viewpanel, 0, wxBOTTOM, 10);
+  hboxrb->Add(mccanvas, 1, wxEXPAND | wxALL, 0);
+  hboxrb->Add(ctlpanel, 0, wxLEFT, 10);
+  vboxr->Add(hboxrt, 0, wxALL, 0);
+  vboxr->Add(hboxrb, 1, wxEXPAND | wxBOTTOM, 5);
   hbox->Add(vboxl, 0, wxALL, 10);
-  hbox->Add(vboxm, 1, wxEXPAND | wxALL, 10);
-  hbox->Add(vboxr, 0, wxALL, 10);
+  hbox->Add(vboxr, 1, wxEXPAND | wxALL, 10);
 
   panel->SetSizer(hbox);
 
