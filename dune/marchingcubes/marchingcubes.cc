@@ -14,8 +14,6 @@
 #include <iostream> // FIXME TODO: Debug only, entferne mich!
 #endif
 
-#define DEBUG printf
-
 namespace Dune {
   /*
    * Case offset tables (e.g. table_cube2d_cases offsets) for different
