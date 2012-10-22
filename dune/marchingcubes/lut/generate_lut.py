@@ -41,14 +41,15 @@ from lutgen.base_case_triangulation import LookupGenerators
 ## LookupGenerators                                                           ##
 ################################################################################
 
-cube3d = LookupGenerators[(3,"cube")]
-pyramid3d = LookupGenerators[(3,"pyramid")]
-prism3d = LookupGenerators[(3,"prism")]
-simplex3d = LookupGenerators[(3,"simplex")]
-cube2d = LookupGenerators[(2,"cube")]
-simplex2d = LookupGenerators[(2,"simplex")]
-lut1d = LookupGenerators[(1,"any")]
-lut0d = LookupGenerators[(0,"any")]
+cube3d = LookupGenerators[(3,"cube")]['standard']
+cube3dsym = LookupGenerators[(3,"cube")]['symmetric']
+pyramid3d = LookupGenerators[(3,"pyramid")]['standard']
+prism3d = LookupGenerators[(3,"prism")]['standard']
+simplex3d = LookupGenerators[(3,"simplex")]['standard']
+cube2d = LookupGenerators[(2,"cube")]['standard']
+simplex2d = LookupGenerators[(2,"simplex")]['standard']
+lut1d = LookupGenerators[(1,"any")]['standard']
+lut0d = LookupGenerators[(0,"any")]['standard']
 
 ################################################################################
 ## Tests                                                                      ##
@@ -58,6 +59,9 @@ lut0d = LookupGenerators[(0,"any")]
 
 start = time.time()
 Test(cube2d).test()
+LOGGER.info("time elapsed: {0}s".format(time.time()-start))
+start = time.time()
+Test(cube3dsym).test()
 LOGGER.info("time elapsed: {0}s".format(time.time()-start))
 start = time.time()
 Test(cube3d).test()
@@ -106,6 +110,7 @@ DuneCode(simplex3d).write(ccfile)
 DuneCode(pyramid3d).write(ccfile)
 DuneCode(prism3d).write(ccfile)
 DuneCode(cube3d).write(ccfile)
+DuneCode(cube3dsym, "sym").write(ccfile)
 
 ccfile.write("}\n")
 ccfile.close()

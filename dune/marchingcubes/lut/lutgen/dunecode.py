@@ -86,8 +86,9 @@ class VertexMapper:
 
 class DuneCode:
     """ Generates the tables, writes marchinglut.cc """
-    def __init__(self, generator):
+    def __init__(self, generator, suffix = ""):
         self.generator = generator
+        self.suffix = suffix
         self.ref_elem = ReferenceElements[self.generator.geometry_type]
     def write(self, dune_file):
         """ Generate lookup table """
@@ -263,18 +264,19 @@ class DuneCode:
             mc33_tests.append("\n", 0)
         
         # Start output with table definitions
-        table_dict = {"D": self.generator.dim, "T": self.generator.basic_type}
+        table_dict = {"D": self.generator.dim, "T": self.generator.basic_type,
+                      "S": self.suffix}
         vmapper = VertexMapper()
         vmapper.table.tablestring = \
             ("    "
-             "const short table_{0[T]}{0[D]}d_vertices[] = {{"
+             "const short table_{0[T]}{0[D]}d{0[S]}_vertices[] = {{"
              "\n    /* <=0: single vertex, >0 offset in table */\n"
              "      1, /* dummy entry so offset starts with 1 */\n".format(table_dict))
         vmapper.table.offset = 1;
         table_offsets = TableStorage()
         table_offsets.tablestring = \
             ("    "
-             "const unsigned short table_{0[T]}{0[D]}d_cases_offsets[][10] = {{\n"
+             "const unsigned short table_{0[T]}{0[D]}d{0[S]}_cases_offsets[][10] = {{\n"
              "     /* vv: vertex values with 0=in, 1=out\n"
              "      * cn: case number\n"
              "      * bc: basic case, if negative it's inverted\n"
@@ -291,7 +293,7 @@ class DuneCode:
         table_vertex_groups = TableStorage()
         table_vertex_groups.tablestring = \
             ("    "
-             "const short table_{0[T]}{0[D]}d_vertex_groups[] = {{\n"
+             "const short table_{0[T]}{0[D]}d{0[S]}_vertex_groups[] = {{\n"
              "     /* vv: vertex values with 0=in, 1=out\n"
              "      * bc: basic case, if negative it's invertex\n"
              "      * cp: current position\n"
@@ -301,7 +303,7 @@ class DuneCode:
         table_codim0_exterior = TableStorage()
         table_codim0_exterior.tablestring = \
                  ("    "
-                  "const short table_{0[T]}{0[D]}d_codim_0_exterior[] = {{\n" 
+                  "const short table_{0[T]}{0[D]}d{0[S]}_codim_0_exterior[] = {{\n" 
                   "     /* cn: case number\n"
                   "      * bc: basic case, if negative it's inverted\n"
                   "      * el: elements specified by number of vertices\n"
@@ -311,7 +313,7 @@ class DuneCode:
         table_codim0_exterior_groups = TableStorage()
         table_codim0_exterior_groups.tablestring = \
                  ("    "
-                  "const short table_{0[T]}{0[D]}d_exterior_groups[] = {{\n" 
+                  "const short table_{0[T]}{0[D]}d{0[S]}_exterior_groups[] = {{\n" 
                   "     /* cn: case number\n"
                   "      * bc: basic case, if negative it's inverted\n"
                   "      * cp: current position in array = offset */\n"
@@ -320,7 +322,7 @@ class DuneCode:
         table_codim0_interior = TableStorage()
         table_codim0_interior.tablestring = \
                  ("    "
-                  "const short table_{0[T]}{0[D]}d_codim_0_interior[] = {{\n" 
+                  "const short table_{0[T]}{0[D]}d{0[S]}_codim_0_interior[] = {{\n" 
                   "     /* cn: case number\n"
                   "      * bc: basic case, if negative it's inverted\n"
                   "      * el: elements specified by number of vertices\n"
@@ -330,7 +332,7 @@ class DuneCode:
         table_codim0_interior_groups = TableStorage()
         table_codim0_interior_groups.tablestring = \
                  ("    "
-                  "const short table_{0[T]}{0[D]}d_interior_groups[] = {{\n" 
+                  "const short table_{0[T]}{0[D]}d{0[S]}_interior_groups[] = {{\n" 
                   "     /* cn: case number\n"
                   "      * bc: basic case, if negative it's inverted\n"
                   "      * cp: current position in array = offset */\n"
@@ -339,7 +341,7 @@ class DuneCode:
         table_codim1 = TableStorage()
         table_codim1.tablestring = \
             ("    "
-             "const short table_{0[T]}{0[D]}d_codim_1[] = {{\n"
+             "const short table_{0[T]}{0[D]}d{0[S]}_codim_1[] = {{\n"
              "     /* cn: case number\n"
              "      * bc: basic case, if negative it's inverted\n"
              "      * el: elements specified by number of vertices\n"
@@ -357,12 +359,12 @@ class DuneCode:
             # TODO: Typ der Tabelle von char auf int (?) aendern
             table_mc33_offsets.tablestring = \
                 ("    "
-                "const short table_{0[T]}{0[D]}d_mc33_offsets[] = {{"
+                "const short table_{0[T]}{0[D]}d{0[S]}_mc33_offsets[] = {{"
                  "\n".format(table_dict))
             table_mc33_tests = TableStorage()
             table_mc33_tests.tablestring = \
                 ("    "
-                 "const short table_{0[T]}{0[D]}d_mc33_face_test_order[] "
+                 "const short table_{0[T]}{0[D]}d{0[S]}_mc33_face_test_order[] "
                  "= {{\n"
                  "      /* dummy entry not used but the index has to "
                  "start with 1*/\n"

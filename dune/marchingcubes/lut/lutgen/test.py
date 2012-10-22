@@ -100,7 +100,7 @@ class Test(object):
                 continue            
             # now get the dim-1 dimensional decomposition of ref_face
             lower_case_number = tuple(case_number[i] for i in ref_face)
-            lower_generator = LookupGenerators[ref_face_element.reference.type]
+            lower_generator = LookupGenerators[ref_face_element.reference.type]['standard']
             lower_case = next((case for case in lower_generator.all_cases 
                                if case.case == lower_case_number), None)
             assert(lower_case!=None)

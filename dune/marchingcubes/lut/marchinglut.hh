@@ -267,6 +267,51 @@ extern "C"
    */
   extern const short table_cube3d_mc33_face_test_order[];
 
+  extern const short table_cube3dsym_vertices[];
+  /*
+   * TODO: Comment 3D cube
+   */
+  extern const unsigned short table_cube3dsym_cases_offsets[][10];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3dsym_vertex_groups[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3dsym_codim_0_exterior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3dsym_codim_0_interior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3dsym_exterior_groups[];
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3dsym_interior_groups[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3dsym_codim_1[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3dsym_mc33_offsets[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3dsym_mc33_face_test_order[];
+
   extern const short table_simplex2d_vertices[];
   /*
    * TODO: Comment 2D simplex
