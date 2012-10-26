@@ -91,7 +91,7 @@ class Test(object):
                           for x 
                           in GeomObject(self.generator.dim, element).faces()]
         reference_faces = self.generator.ref_elem.faces
-        for ref_face in reference_faces:
+        for (faceid,ref_face) in enumerate(reference_faces):
             ref_face_element = GeomObject(self.generator.dim-1, ref_face)
             # ignore cases where a face of the interface intersects the ref_face
             if sum(1 for x in triangulation.faces 
@@ -125,11 +125,11 @@ class Test(object):
                                                  ref_face)])
             # retrieve the decomposition of ref_face based on triangulation
             face_interior_high = PolygonList([x.polygon() 
-                                                 for x in interior_faces 
-                                                 if x in ref_face_element])
+                                              for x in interior_faces 
+                                              if ref_face_element.containsIfFace(faceid,x)])
             face_exterior_high = PolygonList([x.polygon() 
-                                                 for x in exterior_faces 
-                                                 if x in ref_face_element])
+                                              for x in exterior_faces 
+                                              if ref_face_element.containsIfFace(faceid,x)])
             # compare higher dimensional decomposition with 
             # lower dimensional one
             errormsg = 'face {0} ({1}) {2} does not match'
@@ -162,9 +162,9 @@ class Test(object):
             faces = [GeomObject(element.dim-1, face) 
                      for element in elements for face in element.faces()]
             faces = [x for x in faces if faces.count(x) != 2]
-            for ref_face in (GeomObject(reference.dim-1, x) 
-                             for x in reference.faces()):
-                faces = [x for x in faces if x not in ref_face]
+            for (i,ref_face) in ((i,GeomObject(reference.dim-1, x))
+                                 for (i,x) in enumerate(reference.faces())):
+                faces = [x for x in faces if not ref_face.containsIfFace(i,x)]
             return faces
         def compare(first, second):
             """ returns true if first and second contain the same elements """
@@ -176,11 +176,11 @@ class Test(object):
         # remove those faces from interface_base intersecting reference element
         reference = GeomObject(self.generator.dim, 
                             range(len(self.generator.ref_elem)))
-        for ref_face in (GeomObject(reference.dim-1, x) 
-                         for x in reference.faces()):
-            interface_base = [x for x in interface_base if x not in ref_face]
+        for (i,ref_face) in ((i,GeomObject(reference.dim-1, x))
+                             for (i,x) in enumerate(reference.faces())):
+            interface_base = [x for x in interface_base if not ref_face.containsIfFace(i,x)]
         for data in (triangulation.interior, triangulation.exterior):
-            elements = (GeomObject(self.generator.dim, x) 
+            elements = (GeomObject(self.generator.dim, x)
                         for x in data if len(x)>0)
             interface = get_faces(reference, elements)
             if not compare(interface, interface_base):

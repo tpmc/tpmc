@@ -78,11 +78,11 @@ class GeomObject(object):
         surface = [x for x in faces if faces.count(x) == 1]
         # check if every face of self can be matched by the surface-faces 
         #intersecting it
-        for reference_face in [GeomObject(self.dim-1, face) 
-                               for face in self.faces()]:
+        for (i,reference_face) in [(i,GeomObject(self.dim-1, face))
+                                   for (i,face) in enumerate(self.faces())]:
             intersecting_faces = [face for face in surface
-                                  if face in reference_face]            
-            surface = [face for face in surface 
+                                  if reference_face.containsIfFace(i,face)]
+            surface = [face for face in surface
                        if face not in intersecting_faces]
             if not reference_face.matches(intersecting_faces):
                 LOGGER.error('{0} is not matched by '
@@ -103,6 +103,29 @@ class GeomObject(object):
         if self.reference.type == (2,'cube'):
             return Polygon(self.vertices[i] for i in [0, 1, 3, 2])
         return Polygon(self.vertices)
+    def containsIfFace(self, faceid, other):
+        # returns true if all vertices of other are inside this face,
+        # if this face has the given faceid
+        def contv(vertex):
+            if (vertex in self.vertices
+                or (type(vertex) is FacePoint
+                    and vertex.id == faceid)):
+                return 1
+            if (type(vertex) is tuple
+                and type(vertex[0]) is int
+                and type(vertex[1]) is int
+                and (vertex[0] in self.vertices
+                     or (type(vertex) is FacePoint
+                         and vertex.id == faceid))
+                and (vertex[1] in self.vertices
+                     or (type(vertex) is FacePoint
+                         and vertex.id == faceid))):
+                return 1
+            return 0
+        # check if all vertices of other are inside self
+        # number of intersecting points
+        intcount = sum(contv(x) for x in other.vertices)
+        return intcount == len(other.vertices)
     def __mul__ (self, perm):
         assert type(perm) is Permutation or type(perm) is Transformation
         def apply_perm(vertex):
