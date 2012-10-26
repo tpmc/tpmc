@@ -10,6 +10,15 @@
 #include <dune/marchingcubes/aberthfunctor.hh>
 
 namespace Geometry {
+  namespace {
+    template <class ctype>
+    double interpolateCoord(const std::vector<double>& v, const Dune::FieldVector<ctype, 3>& c) {
+      assert(v.size() == 8);
+      return c[2]*(c[1]*(c[0]*v[7]+(1-c[0])*v[6])+(1-c[1])*(c[0]*v[5]+(1-c[0])*v[4]))
+             + (1-c[2])*(c[1]*(c[0]*v[3]+(1-c[0])*v[2])+(1-c[1])*(c[0]*v[1]+(1-c[0])*v[0]));
+    }
+  }
+
   template <typename ctype, int dim>
   class GeometryVisitor;
 
@@ -174,10 +183,18 @@ namespace Geometry {
     Dune::FieldVector<ctype, dim> first, second;
     mFirst->evaluate(vertexValues, vertexCount, first);
     mSecond->evaluate(vertexValues, vertexCount, second);
-    //static Dune::NewtonFunctor<double> nf;
-    //nf.findRoot(vertexValues, first, second, result);
-    static Dune::AberthFunctor<double> af;
-    af.findRoot(vertexValues, first, second, result);
+    double va = interpolateCoord(vertexValues, first);
+    double vb = interpolateCoord(vertexValues, second);
+    if (va*vb < 0.0) {
+      //static Dune::NewtonFunctor<double> nf;
+      //nf.findRoot(vertexValues, first, second, result);
+      static Dune::AberthFunctor<double> af;
+      af.findRoot(vertexValues, first, second, result);
+    } else {
+      result = first;
+      result += second;
+      result *= 0.5;
+    }
   }
 }
 
