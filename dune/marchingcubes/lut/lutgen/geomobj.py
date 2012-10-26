@@ -112,14 +112,8 @@ class GeomObject(object):
                     and vertex.id == faceid)):
                 return 1
             if (type(vertex) is tuple
-                and type(vertex[0]) is int
-                and type(vertex[1]) is int
-                and (vertex[0] in self.vertices
-                     or (type(vertex) is FacePoint
-                         and vertex.id == faceid))
-                and (vertex[1] in self.vertices
-                     or (type(vertex) is FacePoint
-                         and vertex.id == faceid))):
+                and contv(vertex[0])
+                and contv(vertex[1])):
                 return 1
             return 0
         # check if all vertices of other are inside self
@@ -152,10 +146,8 @@ class GeomObject(object):
             if vertex in self.vertices:
                 return 1
             if (type(vertex) is tuple
-                and type(vertex[0]) is int
-                and type(vertex[1]) is int
-                and vertex[0] in self.vertices
-                and vertex[1] in self.vertices):
+                and contv(vertex[0])
+                and contv(vertex[1])):
                 return 1
             return 0
         # check if all vertices of other are inside self
