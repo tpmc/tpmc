@@ -148,10 +148,24 @@ namespace Geometry {
            b = vertexValues[ids[mId][1]],
            c = vertexValues[ids[mId][2]],
            d = vertexValues[ids[mId][3]];
-    double factor = 1.0/(a-b-c+d);
-    result[use[mId/2][0]] = (mId % 2 == 1);
-    result[use[mId/2][1]] = factor*(a-c);
-    result[use[mId/2][2]] = factor*(a-b);
+    // if its a 0110 type face, compute center of hyperbola
+    if (a*d > 0 && b*c > 0 && a*b < 0) {
+      double factor = 1.0/(a-b-c+d);
+      result[use[mId/2][0]] = (mId % 2 == 1);
+      result[use[mId/2][1]] = factor*(a-c);
+      result[use[mId/2][2]] = factor*(a-b);
+    } else {     // use center of mass
+      // translate min to 1
+      double m = std::min(std::min(a,b), std::min(c,d));
+      a -= m-1;
+      b -= m-1;
+      c -= m-1;
+      d -= m-1;
+      double sum = a+b+c+d;
+      result[use[mId/2][0]] = (mId % 2 == 1);
+      result[use[mId/2][1]] = (b+d)/sum;
+      result[use[mId/2][2]] = (c+d)/sum;
+    }
   }
 
   template <typename ctype, int dim>
