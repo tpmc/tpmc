@@ -1010,11 +1010,11 @@ BCTcube3dsym.base_cases[6].mc33[-1].interior_groups = BCTcube3dsym.base_cases[6]
 # 0,1,1,0,1,0,0,0 -> 00010110 # MC33 Case 7.4.1
 BCTcube3dsym.base_cases[6].mc33.append(Triangulation())
 BCTcube3dsym.base_cases[6].mc33[-1].name = "MC33 Case 7.4.1"
-BCTcube3dsym.base_cases[6].mc33[-1].faces = []
-BCTcube3dsym.base_cases[6].mc33[-1].exterior = []
-BCTcube3dsym.base_cases[6].mc33[-1].exterior_groups = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-BCTcube3dsym.base_cases[6].mc33[-1].interior = []
-BCTcube3dsym.base_cases[6].mc33[-1].interior_groups = [0, 2, 2, 2, 2, 2, 2, 2]
+BCTcube3dsym.base_cases[6].mc33[-1].faces = [[(2, 3), (2, 6), (4, 6)], [(4, 6), (1, 5), (4, 5)], [(1, 5), (1, 3), (2, 3)], [(2, 3), (4, 6), (1, 5)], [(0, 1), (0, 2), (0, 4)]]
+BCTcube3dsym.base_cases[6].mc33[-1].exterior = [[(2, 3), (2, 6), (4, 6), Face0], [(1, 5), (4, 5), (4, 6), Face2], [(2, 3), (1, 3), (1, 5), Face4], [(4, 6), (2, 3), (1, 5), Face4], [Face4, Face0, (2, 3), (4, 6)], [Face4, (4, 6), (1, 5), Face2], [Face4, Face0, Face2, (4, 6)], [(2, 3), (0, 2), Face4, Face0], [(0, 2), (2, 3), (2, 6), Face0], [Face4, (1, 3), (0, 1), (1, 5)], [Face4, (0, 1), (1, 5), Face2], [(0, 2), (2, 3), (2, 6), 2], [(0, 1), (1, 3), (1, 5), 1], [(0, 1), (0, 4), Face2, Face4], [(0, 2), (0, 1), (0, 4), Face4], [(0, 2), (0, 4), Face0, Face4], [Face0, Face2, Face4, (0, 4)], [(0, 4), (4, 6), Face0, Face2], [Face2, (0, 4), (4, 5), (4, 6)], [(0, 4), (4, 5), (4, 6), 4]]
+BCTcube3dsym.base_cases[6].mc33[-1].exterior_groups = [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
+BCTcube3dsym.base_cases[6].mc33[-1].interior = [[0, (0, 1), (0, 2), (0, 4)], [(1, 5), (4, 5), (4, 6), 7], [(4, 6), (2, 6), (2, 3), 7], [(1, 3), (2, 3), (1, 5), 7], [(2, 3), (1, 5), (4, 6), 7], [(4, 5), (1, 5), 5, 7], [(4, 6), (2, 6), 6, 7], [(1, 3), (2, 3), 3, 7]]
+BCTcube3dsym.base_cases[6].mc33[-1].interior_groups = [0,1,1,1,1,1,1,1]
 # 0,1,1,0,1,0,0,0 -> 00010110 # MC33 Case 7.4.2
 BCTcube3dsym.base_cases[6].mc33.append(Triangulation())
 BCTcube3dsym.base_cases[6].mc33[-1].name = "MC33 Case 7.4.2"
