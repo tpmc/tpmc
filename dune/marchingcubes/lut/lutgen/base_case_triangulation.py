@@ -848,11 +848,11 @@ BCTcube3dsym.base_cases[3].interior = [[(0, 2), (2, 3), Face4, Face5], [(2, 3), 
 BCTcube3dsym.base_cases[3].interior_groups = [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
 # 1,1,1,0,0,0,0,0 -> 00000111 # Basic Case 5
 BCTcube3dsym.base_cases[4].name = "MC33 Case 5"
-BCTcube3dsym.base_cases[4].faces = []
-BCTcube3dsym.base_cases[4].exterior = []
-BCTcube3dsym.base_cases[4].exterior_groups = [0, 0]
-BCTcube3dsym.base_cases[4].interior = []
-BCTcube3dsym.base_cases[4].interior_groups = [1, 1, 1, 1, 1, 1]
+BCTcube3dsym.base_cases[4].faces = [[(1, 3), (1, 5), ((0, 4), (1, 5))], [(1, 3), (0, 4), ((0, 4), (1, 5))], [(1, 3), (2, 3), (0, 4)], [(0, 4), ((0, 4), (2, 6)), (2, 3)], [(2, 3), ((0, 4), (2, 6)), (2, 6)]]
+BCTcube3dsym.base_cases[4].exterior = [[(1, 3), (2, 3), 0, (0, 4)], [0, 1, (1, 3), ((0, 4), (1, 5))], [0, (1, 3), (0, 4), ((0, 4), (1, 5))], [1, (1, 3), (1, 5), ((0, 4), (1, 5))], [0, 2, (2, 3), ((0, 4), (2, 6))], [0, (2, 3), (0, 4), ((0, 4), (2, 6))], [2, (2, 3), (2, 6), ((0, 4), (2, 6))]]
+BCTcube3dsym.base_cases[4].exterior_groups = [0,0,0,0,0,0,0]
+BCTcube3dsym.base_cases[4].interior = [[(1, 3), (1, 5), ((0, 4), (1, 5)), 7], [(2, 3), (2, 6), ((0, 4), (2, 6)), 7], [(2, 3), (1, 3), (0, 4), 7], [(2, 3), (0, 4), ((0, 4), (2, 6)), 7], [(1, 3), (0, 4), ((0, 4), (1, 5)), 7], [(0, 4), ((0, 4), (1, 5)), 7, Face5], [(0, 4), 7, ((0, 4), (2, 6)), Face5], [(0, 4), ((0, 4), (2, 6)), 4, Face5], [(0, 4), ((0, 4), (1, 5)), Face5, 4], [((0, 4), (1, 5)), (1, 5), 5, 7], [(2, 6), ((0, 4), (2, 6)), 7, 6], [((0, 4), (1, 5)), 5, 7, Face5], [6, 7, Face5, ((0, 4), (2, 6))], [4, 6, Face5, ((0, 4), (2, 6))], [4, 5, Face5, ((0, 4), (1, 5))], [(1, 3), (2, 3), 3, 7]]
+BCTcube3dsym.base_cases[4].interior_groups = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 # 1,1,1,1,0,0,0,0 -> 00001111 # Basic Case 8 and its inverse
 BCTcube3dsym.base_cases[5].name = "MC33 Case 8"
 BCTcube3dsym.base_cases[5].faces = []
