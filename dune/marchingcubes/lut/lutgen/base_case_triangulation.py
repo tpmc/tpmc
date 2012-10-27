@@ -823,8 +823,8 @@ BCTcube3dsym.base_cases[0].name = "MC33 Case 0"
 BCTcube3dsym.base_cases[0].faces = []
 BCTcube3dsym.base_cases[0].exterior = []
 BCTcube3dsym.base_cases[0].exterior_groups = []
-BCTcube3dsym.base_cases[0].interior = [[0,1,2,3,4,5,6,7]]
-BCTcube3dsym.base_cases[0].interior_groups = [0]
+BCTcube3dsym.base_cases[0].interior = [[0, 4, Face0, Face2], [1, 5, Face1, Face2], [3, 7, Face1, Face3], [2, 6, Face0, Face3], [0, 2, Face0, Face4], [0, 1, Face4, Face2], [1, 3, Face1, Face4], [2, 3, Face3, Face4], [Face4, Face0, Face2, 0], [Face1, Face2, Face4, 1], [Face1, Face3, Face4, 3], [Face0, Face3, Face4, 2], [Face4, Face5, Face1, Face3], [Face1, Face2, Face4, Face5], [Face0, Face2, Face4, Face5], [Face0, Face3, Face4, Face5], [Face1, Face2, Face5, 5], [Face1, Face3, Face5, 7], [Face0, Face3, Face5, 6], [Face0, Face2, Face5, 4], [4, 5, Face2, Face5], [5, 7, Face1, Face5], [4, 6, Face0, Face5], [6, 7, Face3, Face5]]
+BCTcube3dsym.base_cases[0].interior_groups = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 # 1,0,0,0,0,0,0,0 -> 00000001 # Basic Case 1
 BCTcube3dsym.base_cases[1].name = "MC33 Case 1"
 BCTcube3dsym.base_cases[1].faces = [[(0, 1), (0, 2), (0, 4)]]
