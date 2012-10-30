@@ -185,15 +185,19 @@ namespace Geometry {
     mSecond->evaluate(vertexValues, vertexCount, second);
     double va = interpolateCoord(vertexValues, first);
     double vb = interpolateCoord(vertexValues, second);
-    if (va*vb < 0.0) {
+    static const double eps = 1e-10;
+    static Dune::FloatCmpOps<double, Dune::FloatCmp::absolute> cmp(eps);
+    if ((cmp.lt(va,0.0) && cmp.lt(vb,0.0))
+        || (cmp.gt(va,0.0) && cmp.gt(vb,0.0))
+        || (cmp.eq(va,0.0) && cmp.eq(vb,0.0))) {
+      result = first;
+      result += second;
+      result *= 0.5;
+    } else {
       //static Dune::NewtonFunctor<double> nf;
       //nf.findRoot(vertexValues, first, second, result);
       static Dune::AberthFunctor<double> af;
       af.findRoot(vertexValues, first, second, result);
-    } else {
-      result = first;
-      result += second;
-      result *= 0.5;
     }
   }
 }
