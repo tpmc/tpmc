@@ -22,6 +22,7 @@ class TestMarchingCubes33
 {
 public:
   static const int NO_KEY;
+  double iso_value;
   bool verbose;
   bool write_vtk;
   bool testAny0d(int expect, double vertex_0, std::string name);
@@ -52,6 +53,7 @@ bool TestMarchingCubes33::testAny0d(int expect,
 {
   // double vertices[] = {vertex_0};
   // return this->assertEquals<0>(expect, 1, vertices, name);
+  return true;
 }
 
 bool TestMarchingCubes33::testAny1d(int expect,
@@ -110,7 +112,8 @@ try
     std::cout << std::endl;
   }
   // Perform first part of MC 33 algorithm
-  Dune::MarchingCubes33<double, dim, Dune::MarchingCubes::ThresholdFunctor<double> > mc;
+  Dune::MarchingCubes::ThresholdFunctor<double> th(iso_value);
+  Dune::MarchingCubes33<double, dim, Dune::MarchingCubes::ThresholdFunctor<double> > mc(th);
   size_t key = mc.getKey(vertices, vertex_count, true);
   std::vector<short> vertex_groups;
   mc.getVertexGroups(vertex_count, key, vertex_groups);
@@ -361,12 +364,20 @@ int main(int argc, char ** argv)
   int count = 0;
   testmc33.verbose = false;
   testmc33.write_vtk = true;
+  testmc33.iso_value = 0.13;
 
   if (argc > 1)
     testmc33.verbose = (std::string("-verbose") == argv[1] || std::string("-v") == argv[1]);
 
   count++;
-  passed += testmc33.testCube2d(0, 3.640775, -2.886633, -0.731467, 2.046425, "cube2d_0");
+  testmc33.iso_value = 0.13;
+  passed += testmc33.testCube2d(9, 3.640775, -2.886633, -0.731467, 2.046425, "cube2d_0");
+  count++;
+  testmc33.iso_value = 0.5;
+  passed += testmc33.testCube2d(9, 3.640775, -2.886633, -0.731467, 2.046425, "cube2d_0");
+  count++;
+  testmc33.iso_value = 0.6;
+  passed += testmc33.testCube2d(18, 3.640775, -2.886633, -0.731467, 2.046425, "cube2d_0");
 
 #if 0
   // Test any 0d (point)
