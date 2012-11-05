@@ -94,7 +94,7 @@ MarchingCubesRefinement(const GeometryType& type,std::vector<double> values,
   // Construct the Dune GeometryType from the number of corners and the space dimension
   for (size_t i=0; i<elementCorners.size(); i++) {
     // Make BasicGeometry from the element type and the corner positions
-    geometries_[i] = RefinementGeometryType(dim, elementCorners[i]);
+    geometries_[i] = RefinementGeometryType(elementCorners[i]);
   }
 
 }
