@@ -93,46 +93,8 @@ MarchingCubesRefinement(const GeometryType& type,std::vector<double> values,
 
   // Construct the Dune GeometryType from the number of corners and the space dimension
   for (size_t i=0; i<elementCorners.size(); i++) {
-
-    GeometryType type;
-    if (dim==2) {
-
-      switch (elementCorners[i].size()) {
-      case 3 :
-        type.makeSimplex(dim);
-        break;
-      case 4 :
-        type.makeCube(dim);
-        break;
-      default :
-        DUNE_THROW(NotImplemented, "2d elements with " << elementCorners[i].size() << " corners are not supported!");
-      }
-
-    } else if (dim==3) {
-
-      switch (elementCorners[i].size()) {
-      case 4 :
-        type.makeSimplex(dim);
-        break;
-      case 5 :
-        type.makePyramid();
-        break;
-      case 6 :
-        type.makePrism();
-        break;
-      case 8 :
-        type.makeCube(dim);
-        break;
-      default :
-        DUNE_THROW(NotImplemented, "3d elements with " << elementCorners[i].size() << " corners are not supported!");
-      }
-
-
-    } else
-      DUNE_THROW(NotImplemented, "MarchingCubesRefinement only implemented for 2d and 3d");
-
     // Make BasicGeometry from the element type and the corner positions
-    geometries_[i] = RefinementGeometryType(type, elementCorners[i]);
+    geometries_[i] = RefinementGeometryType(dim, elementCorners[i]);
   }
 
 }
