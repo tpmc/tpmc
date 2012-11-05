@@ -50,8 +50,8 @@ const int TestMarchingCubes33::NO_KEY = -1;
 bool TestMarchingCubes33::testAny0d(int expect,
                                     double vertex_0, std::string name)
 {
-  double vertices[] = {vertex_0};
-  return this->assertEquals<0>(expect, 1, vertices, name);
+  // double vertices[] = {vertex_0};
+  // return this->assertEquals<0>(expect, 1, vertices, name);
 }
 
 bool TestMarchingCubes33::testAny1d(int expect,
@@ -112,6 +112,12 @@ try
   // Perform first part of MC 33 algorithm
   Dune::MarchingCubes33<double, dim, Dune::MarchingCubes::ThresholdFunctor<double> > mc;
   size_t key = mc.getKey(vertices, vertex_count, true);
+  std::vector<short> vertex_groups;
+  mc.getVertexGroups(vertex_count, key, vertex_groups);
+  for (unsigned int i = 0; i < vertex_count; i++)
+  {
+    std::cout << "v " << i << " -> group " << vertex_groups[i] << std::endl;
+  }
   // Print failed test cases
   if ((int)key != expect && expect != NO_KEY)
   {
@@ -358,6 +364,11 @@ int main(int argc, char ** argv)
 
   if (argc > 1)
     testmc33.verbose = (std::string("-verbose") == argv[1] || std::string("-v") == argv[1]);
+
+  count++;
+  passed += testmc33.testCube2d(0, 3.640775, -2.886633, -0.731467, 2.046425, "cube2d_0");
+
+#if 0
   // Test any 0d (point)
   // count++;
   // passed += testmc33.testAny0d(0, 0.4, "any0d_0");
@@ -579,6 +590,7 @@ int main(int argc, char ** argv)
   count++;
   passed += testmc33.testCube3d(testmc33.NO_KEY, 0.7, 0.2, 0.2, 0.7,
                                 0.9, 0.5, 0.5, 0.9, "cube3d_mc33_10.2"); // MC case 10.2
+#endif
 
   if (passed < count)
   {
