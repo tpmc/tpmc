@@ -911,11 +911,11 @@ BCTcube3dsym.base_cases[12].interior = [[(0, 2), (2, 6), Face0, ((2, 6), (3, 7))
 BCTcube3dsym.base_cases[12].interior_groups = [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
 # 1,0,0,1,0,1,1,0 -> 01101001 # Basic Case 13 and its inverse
 BCTcube3dsym.base_cases[13].name = "MC33 Case 13.1"
-BCTcube3dsym.base_cases[13].faces = []
-BCTcube3dsym.base_cases[13].exterior = []
+BCTcube3dsym.base_cases[13].faces = [[(0, 1), (0, 2), (0, 4)], [(1, 3), (2, 3), (3, 7)], [(1, 5), (4, 5), (5, 7)], [(2, 6), (4, 6), (6, 7)]]
+BCTcube3dsym.base_cases[13].exterior = [[(0, 1), (0, 2), (0, 4), 0], [(1, 3), (2, 3), (3, 7), 3], [(1, 5), (4, 5), (5, 7), 5], [(2, 6), (4, 6), (6, 7), 6]]
 BCTcube3dsym.base_cases[13].exterior_groups = [0, 1, 2, 3]
-BCTcube3dsym.base_cases[13].interior = []
-BCTcube3dsym.base_cases[13].interior_groups = [4, 4, 4, 4, 4]
+BCTcube3dsym.base_cases[13].interior = [[(1, 5), (4, 5), (5, 7), Face2], [(0, 1), (0, 2), (0, 4), Face0], [(2, 6), (4, 6), (6, 7), Face3], [(1, 3), (2, 3), (3, 7), Face1], [Face2, Face5, (4, 5), (5, 7)], [Face1, Face2, (5, 7), (1, 5)], [(0, 1), (0, 4), Face2, Face0], [Face3, Face0, (2, 6), (4, 6)], [Face3, Face5, (6, 7), (4, 6)], [(0, 2), (0, 1), Face0, Face4], [(3, 7), (2, 3), Face1, Face3], [(1, 3), (2, 3), Face1, Face4], [Face1, Face5, (5, 7), Face2], [Face3, Face5, Face0, (4, 6)], [Face4, Face3, Face1, (2, 3)], [(0, 1), Face4, Face2, Face0], [Face4, Face0, Face2, Face1], [Face0, Face4, Face1, Face3], [Face0, Face3, Face1, Face5], [Face0, Face2, Face1, Face5], [(0, 4), Face0, Face2, Face5], [(0, 4), Face0, Face5, (4, 6)], [(0, 4), (4, 5), Face2, Face5], [(4, 6), (4, 5), Face5, (0, 4)], [(0, 4), (4, 5), (4, 6), 4], [(3, 7), Face1, Face3, Face5], [(3, 7), (5, 7), Face1, Face5], [(3, 7), (6, 7), Face3, Face5], [Face5, (3, 7), (5, 7), (6, 7)], [(3, 7), (5, 7), (6, 7), 7], [Face4, (1, 5), Face2, Face1], [(0, 1), (1, 5), Face2, Face4], [(1, 3), Face4, Face1, (1, 5)], [(0, 1), (1, 3), (1, 5), Face4], [(0, 1), (1, 3), (1, 5), 1], [(2, 6), Face3, Face0, Face4], [(2, 3), (2, 6), Face3, Face4], [(0, 2), (2, 6), Face0, Face4], [(0, 2), (2, 3), (2, 6), Face4], [(0, 2), (2, 3), (2, 6), 2]]
+BCTcube3dsym.base_cases[13].interior_groups = [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]
 
 # ################################################################################
 # ## MC 33 cases and MC 33 face test table for 3D Cube                          ##
