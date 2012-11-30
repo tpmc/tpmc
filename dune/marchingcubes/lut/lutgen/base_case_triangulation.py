@@ -1181,11 +1181,11 @@ BCTcube3dsym.base_cases[13].mc33[-1].interior_groups = BCTcube3dsym.base_cases[1
 # 1,0,0,1,0,1,1,0 -> 01101001 # MC33 Case 13.3 (face 0, 1, 2, 4 inside; 3, 5 outside)
 BCTcube3dsym.base_cases[13].mc33.append(Triangulation())
 BCTcube3dsym.base_cases[13].mc33[-1].name = "MC33 Case 13.3 0, 1, 2, 4 inside; 3, 5 outside"
-BCTcube3dsym.base_cases[13].mc33[-1].faces = []
-BCTcube3dsym.base_cases[13].mc33[-1].exterior = []
-BCTcube3dsym.base_cases[13].mc33[-1].exterior_groups = [0,0,0,0,0,0,0,0,0,0,0,1]
-BCTcube3dsym.base_cases[13].mc33[-1].interior = []
-BCTcube3dsym.base_cases[13].mc33[-1].interior_groups = [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
+BCTcube3dsym.base_cases[13].mc33[-1].faces = [[(0, 1), (0, 2), (0, 4)], [(1, 5), (4, 5), (Face5, 1)], [(2, 3), (1, 3), (Face3, 1)], [(1, 3), (3, 7), (Face3, 1)], [(1, 5), (5, 7), (Face5, 1)], [(6, 7), (5, 7), (Face5, 1)], [(4, 6), (4, 5), (Face5, 1)], [(2, 6), (2, 3), (Face3, 1)], [(3, 7), (6, 7), (Face3, 1)], [(6, 7), (Face3, 1), (Face5, 1)], [(2, 6), (4, 6), (Face5, 1)], [(2, 6), (Face5, 1), (Face3, 1)]]
+BCTcube3dsym.base_cases[13].mc33[-1].exterior = [[(0, 1), (0, 2), (0, 4), 0], [(1, 5), (4, 5), (5, 7), (Face5, 1)], [(1, 5), (4, 5), (5, 7), 5], [(Face5, 1), (4, 5), (4, 6), Face5], [(Face5, 1), (6, 7), (5, 7), Face5], [(5, 7), (4, 5), Face5, (Face5, 1)], [(Face5, 1), (4, 6), (6, 7), Face5], [(2, 6), (6, 7), (Face5, 1), (Face3, 1)], [(Face5, 1), (2, 6), (6, 7), (4, 6)], [(2, 6), (6, 7), (4, 6), 6], [(Face3, 1), (2, 6), (6, 7), Face3], [(3, 7), (6, 7), (Face3, 1), Face3], [(2, 3), (2, 6), (Face3, 1), Face3], [(2, 3), (3, 7), (Face3, 1), Face3], [(Face3, 1), (2, 3), (1, 3), (3, 7)], [(1, 3), (2, 3), (3, 7), 3]]
+BCTcube3dsym.base_cases[13].mc33[-1].exterior_groups = [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+BCTcube3dsym.base_cases[13].mc33[-1].interior = [[(6, 7), (Face5, 1), (Face3, 1), Face1], [(Face5, 1), Face1, (5, 7), (6, 7)], [Face1, (Face3, 1), (3, 7), (6, 7)], [(3, 7), (5, 7), Face1, (6, 7)], [(3, 7), (5, 7), (6, 7), 7], [(Face3, 1), (1, 3), (3, 7), Face1], [(1, 5), (5, 7), Face1, (Face5, 1)], [(2, 6), (0, 2), (Face5, 1), (Face3, 1)], [(Face5, 1), (Face3, 1), (0, 2), (0, 1)], [(1, 3), (1, 5), Face1, (Face3, 1)], [(Face3, 1), Face1, (Face5, 1), (1, 5)], [(2, 3), (0, 2), (2, 6), (Face3, 1)], [(2, 3), (0, 2), (2, 6), 2], [(2, 3), (0, 2), Face4, (Face3, 1)], [(Face3, 1), (0, 2), (0, 1), Face4], [(Face3, 1), (1, 3), (2, 3), Face4], [(0, 1), (1, 3), Face4, (Face3, 1)], [(0, 1), (1, 5), (Face3, 1), (Face5, 1)], [(0, 1), (1, 3), (1, 5), (Face3, 1)], [(0, 1), (1, 3), (1, 5), 1], [(0, 2), (2, 6), Face0, (Face5, 1)], [(2, 6), (4, 6), (Face5, 1), Face0], [(0, 2), (0, 1), (0, 4), (Face5, 1)], [(0, 2), (0, 4), Face0, (Face5, 1)], [(0, 4), (4, 6), Face0, (Face5, 1)], [(0, 1), (1, 5), (Face5, 1), Face2], [(0, 1), (0, 4), Face2, (Face5, 1)], [(1, 5), (4, 5), Face2, (Face5, 1)], [(0, 4), (4, 5), Face2, (Face5, 1)], [(0, 4), (4, 5), (4, 6), (Face5, 1)], [(0, 4), (4, 5), (4, 6), 4]]
+BCTcube3dsym.base_cases[13].mc33[-1].interior_groups = [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
 # 1,0,0,1,0,1,1,0 -> 01101001 # MC33 Case 13.3 (face 0, 1, 2, 5 inside; 3, 4 outside)
 BCTcube3dsym.base_cases[13].mc33.append(Triangulation())
 BCTcube3dsym.base_cases[13].mc33[-1].name = "MC33 Case 13.3 0, 1, 2, 5 inside; 3, 4 outside"
