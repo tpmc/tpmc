@@ -71,7 +71,16 @@ void GeometryParser<sep>::lex(const std::string& s,
     case '7' : result.push(L_7); break;
     case '8' : result.push(L_8); break;
     case '9' : result.push(L_9); break;
-    case 'f' : result.push(L_FACE); ss.ignore(3); break;
+    case 'f' : result.push(L_FACE);
+      // ignore following letters
+      while (ss >> c) {
+        c = tolower(c);
+        if (c < 'a' || c > 'z') {
+          ss.unget();
+          break;
+        }
+      }
+      break;
     case '(' : result.push(L_BRACO); break;
     case ')' : result.push(L_BRACC); break;
     case sep : result.push(L_SEP); break;
