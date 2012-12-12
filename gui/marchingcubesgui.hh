@@ -145,10 +145,12 @@ void MarchingCubesGUI<N>::addGeometryElement(const std::string& pattern,
   GeometryParser<','> parser;
   Geometry::Element<double, 3> element;
   parser.parse(pattern, element);
-  mGeometryContainer.add(element, t);
-  typedef TrilinearFunctor<CoordType, ValueType> FunctorType;
-  FunctorType functor(mVertexValues);
-  mGeometryContainer.computeTriangulation(functor, 8);
+  if (element.valid()) {
+    mGeometryContainer.add(element, t);
+    typedef TrilinearFunctor<CoordType, ValueType> FunctorType;
+    FunctorType functor(mVertexValues);
+    mGeometryContainer.computeTriangulation(functor, 8);
+  }
 }
 
 template <std::size_t N>

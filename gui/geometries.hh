@@ -106,6 +106,21 @@ namespace Geometry {
       vertices.push_back(v);
     }
 
+    bool valid() const {
+      switch (dim) {
+      case 0 :
+        return vertices.size() == 1;
+      case 1 :
+        return vertices.size() == 2;
+      case 2 :
+        return vertices.size() == 3 || vertices.size() == 4;
+      case 3 :
+        return vertices.size() == 4 || vertices.size() == 5 || vertices.size() == 6 || vertices.size() == 8;
+      default :
+        return false;
+      }
+    }
+
     const_iterator begin() const { return vertices.begin(); }
     const_iterator end() const { return vertices.end(); }
 
