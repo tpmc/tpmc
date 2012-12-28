@@ -155,6 +155,7 @@ void GeometryPanel<N>::OnAdd(wxCommandEvent& event) {
   std::stringstream s;
   s << mPatternText->GetValue().mb_str();
   mPatternText->Clear();
+  std::cout << "trying to add: " << s.str() << "\n";
   try {
     switch (mTypeCombo->GetSelection()) {
     case 0 : mGui->addGeometryElement(s.str(), GeoContainer::INTERIOR); updateInterior(); break;
@@ -163,6 +164,7 @@ void GeometryPanel<N>::OnAdd(wxCommandEvent& event) {
     default : mGui->addGeometryElement(s.str(), GeoContainer::INTERIOR); updateInterior(); break;
     }
   } catch (Dune::Exception& e) {
+    std::cerr << e.what() << "\n";
     // print some error
   }
 }
