@@ -14,6 +14,8 @@ parser = argparse.ArgumentParser('generate_lut')
 parser.add_argument('--log', nargs = 1, dest = 'loglevel',
                     choices = ["DEBUG", "ERROR"],
                     help = "sets the log level")
+parser.add_argument("--symmetric", help="generate symmetric versions of lookup tables",
+                    action="store_true")
 args = parser.parse_args(sys.argv[1:])
 
 # initialize logging
@@ -45,6 +47,7 @@ cube3d = LookupGenerators[(3,"cube")]['standard']
 cube3dsym = LookupGenerators[(3,"cube")]['symmetric']
 pyramid3d = LookupGenerators[(3,"pyramid")]['standard']
 prism3d = LookupGenerators[(3,"prism")]['standard']
+prism3dsym = LookupGenerators[(3,"prism")]['symmetric']
 simplex3d = LookupGenerators[(3,"simplex")]['standard']
 cube2d = LookupGenerators[(2,"cube")]['standard']
 simplex2d = LookupGenerators[(2,"simplex")]['standard']
@@ -57,6 +60,12 @@ lut0d = LookupGenerators[(0,"any")]['standard']
 
 # TODO commented tests until they are fixed
 
+start = time.time()
+Test(prism3d).test()
+LOGGER.info("time elapsed: {0}s".format(time.time()-start))
+start = time.time()
+Test(prism3dsym).test()
+LOGGER.info("time elapsed: {0}s".format(time.time()-start))
 start = time.time()
 Test(cube2d).test()
 LOGGER.info("time elapsed: {0}s".format(time.time()-start))
@@ -74,9 +83,6 @@ Test(simplex3d).test()
 LOGGER.info("time elapsed: {0}s".format(time.time()-start))
 start = time.time()
 Test(pyramid3d).test()
-LOGGER.info("time elapsed: {0}s".format(time.time()-start))
-start = time.time()
-Test(prism3d).test()
 LOGGER.info("time elapsed: {0}s".format(time.time()-start))
 
 ################################################################################

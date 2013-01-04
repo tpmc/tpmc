@@ -132,7 +132,7 @@ class LookupGenerator(object):
             for i in range(len(c.faces)):
                 # find interior element containing this face and use the numbering based on
                 # the elements reference element
-                iface = next(f for e in c.interior for f in GeomObject(self.dim, e).faces()
+                iface = next(f for e in c.interior for f in GeomObject(self.dim, e, self.geometry_type).faces()
                              if set(f) == set(c.faces[i]))
                 c.faces[i] = iface
         for bc in self.base_cases:
@@ -140,7 +140,7 @@ class LookupGenerator(object):
             for mc in bc.mc33:
                 generate_vertex_group(mc)
         for entry in self.all_cases:
-            entry.update()
+            entry.update(self.geometry_type)
             renumber_vertices(entry)
             generate_vertex_group(entry)
             for mc in entry.mc33:

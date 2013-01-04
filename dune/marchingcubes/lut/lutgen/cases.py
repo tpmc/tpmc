@@ -59,7 +59,7 @@ class Case(BaseCase):
         self.base_case = None
     def __repr__(self):
         return "{0}, {1}".format(BaseCase.__repr__(self), self.transformation)
-    def update(self):
+    def update(self, global_type):
         """
         updates itself according to its base case using the transformation
         stored.
@@ -76,12 +76,12 @@ class Case(BaseCase):
                 return test
         # update the triangulation
         self.name = self.base_case.name
-        self.faces = permute_geom_list(dim-1, self.base_case.faces, 
+        self.faces = permute_geom_list(dim-1, global_type, self.base_case.faces, 
                                        self.transformation)
-        self.exterior = permute_geom_list(dim, self.base_case.exterior, 
+        self.exterior = permute_geom_list(dim, global_type, self.base_case.exterior, 
                                           self.transformation)
         self.exterior_groups = self.base_case.exterior_groups
-        self.interior = permute_geom_list(dim, self.base_case.interior, 
+        self.interior = permute_geom_list(dim, global_type, self.base_case.interior, 
                                           self.transformation)
         self.interior_groups = self.base_case.interior_groups
         self.tests = [ permute_single_test(test, self.transformation) 
@@ -89,12 +89,12 @@ class Case(BaseCase):
         # update mc33 triangulations
         self.mc33 = [ Triangulation(triang.name,
                                     self.transformation*triang.vertex_groups,
-                                    permute_geom_list(dim-1, triang.faces, 
+                                    permute_geom_list(dim-1, global_type, triang.faces, 
                                                       self.transformation),
-                                    permute_geom_list(dim, triang.exterior, 
+                                    permute_geom_list(dim, global_type, triang.exterior, 
                                                       self.transformation),
                                     triang.exterior_groups,
-                                    permute_geom_list(dim, triang.interior, 
+                                    permute_geom_list(dim, global_type, triang.interior, 
                                                       self.transformation),
                                     triang.interior_groups)
                       for triang in self.base_case.mc33 ]

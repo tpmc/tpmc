@@ -35,9 +35,10 @@ class FacePoint(object):
 
 class GeomObject(object):
     """ class representing a geometric object, eg a 3d cube, 2d simplex, etc """
-    def __init__(self, dim, vertices):
+    def __init__(self, dim, vertices, global_type):
         self.dim = dim
         self.vertices = vertices
+        self.global_type = global_type
         self.reference = ReferenceElements[GeometryType.type(dim, vertices)]
     def get_flip(self):
         dim = self.dim
@@ -72,13 +73,13 @@ class GeomObject(object):
         if self.dim == 0:
             return subelements == [self]
         # merge all faces of all subelements
-        faces = [GeomObject(element.dim-1, face) 
+        faces = [GeomObject(element.dim-1, face, self.global_type) 
                  for element in subelements for face in element.faces()]
         # retrieve faces which only occur onces
         surface = [x for x in faces if faces.count(x) == 1]
         # check if every face of self can be matched by the surface-faces 
         #intersecting it
-        for (i,reference_face) in [(i,GeomObject(self.dim-1, face))
+        for (i,reference_face) in [(i,GeomObject(self.dim-1, face, self.global_type))
                                    for (i,face) in enumerate(self.faces())]:
             intersecting_faces = [face for face in surface
                                   if reference_face.containsIfFace(i,face)]
@@ -129,7 +130,7 @@ class GeomObject(object):
             if type(vertex) is CenterPoint:
                 return vertex
             if type(vertex) is FacePoint:
-                cubereffaces = ReferenceElements[(3, "cube")].faces
+                cubereffaces = ReferenceElements[self.global_type].faces
                 return FacePoint(permute_faceid(vertex.id, perm, cubereffaces))
             l = [apply_perm(vertex[0]), apply_perm(vertex[1])];
             if type(vertex[0]) is tuple or type(vertex[1]) is tuple:
@@ -163,12 +164,12 @@ class GeomObject(object):
     def __repr__(self):
         return 'GeomObject: {0}: {1}'.format(self.reference.type, self.vertices)
 
-def permute_geom_list(dim, entities, perm):
+def permute_geom_list(dim, global_type, entities, perm):
     """
     applies the permutation perm to all entities. returns a list of entities,
     ie a list of lists of vertices
     """
-    return [ GeomObject(dim, e) * perm for e in entities ]
+    return [ GeomObject(dim, e, global_type) * perm for e in entities ]
 
 
 Center = CenterPoint()

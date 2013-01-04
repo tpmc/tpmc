@@ -81,21 +81,21 @@ class Test(object):
                 nel = []
                 for vertex in elem:
                     nel.append(rvertex(vertex))
-                yield GeomObject(self.generator.dim-1, nel)
-        interior_faces = [GeomObject(self.generator.dim-1, x) 
+                yield GeomObject(self.generator.dim-1, nel, self.generator.geometry_type)
+        interior_faces = [GeomObject(self.generator.dim-1, x, self.generator.geometry_type) 
                           for element in triangulation.interior
                           for x 
-                          in GeomObject(self.generator.dim, element).faces()]
-        exterior_faces = [GeomObject(self.generator.dim-1, x) 
+                          in GeomObject(self.generator.dim, element, self.generator.geometry_type).faces()]
+        exterior_faces = [GeomObject(self.generator.dim-1, x, self.generator.geometry_type) 
                           for element in triangulation.exterior
                           for x 
-                          in GeomObject(self.generator.dim, element).faces()]
+                          in GeomObject(self.generator.dim, element, self.generator.geometry_type).faces()]
         reference_faces = self.generator.ref_elem.faces
         for (faceid,ref_face) in enumerate(reference_faces):
-            ref_face_element = GeomObject(self.generator.dim-1, ref_face)
+            ref_face_element = GeomObject(self.generator.dim-1, ref_face, self.generator.geometry_type)
             # ignore cases where a face of the interface intersects the ref_face
             if sum(1 for x in triangulation.faces 
-                   if GeomObject(self.generator.dim-1, x) 
+                   if GeomObject(self.generator.dim-1, x, self.generator.geometry_type) 
                    in ref_face_element) > 0:
                 continue            
             # now get the dim-1 dimensional decomposition of ref_face
@@ -159,10 +159,10 @@ class Test(object):
             return surface-faces of elements not intersecting a face of
             the reference element
             """
-            faces = [GeomObject(element.dim-1, face) 
+            faces = [GeomObject(element.dim-1, face, self.generator.geometry_type) 
                      for element in elements for face in element.faces()]
             faces = [x for x in faces if faces.count(x) != 2]
-            for (i,ref_face) in ((i,GeomObject(reference.dim-1, x))
+            for (i,ref_face) in ((i,GeomObject(reference.dim-1, x, self.generator.geometry_type))
                                  for (i,x) in enumerate(reference.faces())):
                 faces = [x for x in faces if not ref_face.containsIfFace(i,x)]
             return faces
@@ -171,16 +171,17 @@ class Test(object):
             return len(first) == len(second) and sum(1 for x in first 
                                                      if x 
                                                      not in second) == 0
-        interface_base = [GeomObject(self.generator.dim-1, x) 
+        interface_base = [GeomObject(self.generator.dim-1, x, self.generator.geometry_type) 
                           for x in triangulation.faces if len(x)>0]
         # remove those faces from interface_base intersecting reference element
         reference = GeomObject(self.generator.dim, 
-                            range(len(self.generator.ref_elem)))
-        for (i,ref_face) in ((i,GeomObject(reference.dim-1, x))
+                               range(len(self.generator.ref_elem)),
+                               self.generator.geometry_type)
+        for (i,ref_face) in ((i,GeomObject(reference.dim-1, x, self.generator.geometry_type))
                              for (i,x) in enumerate(reference.faces())):
             interface_base = [x for x in interface_base if not ref_face.containsIfFace(i,x)]
         for data in (triangulation.interior, triangulation.exterior):
-            elements = (GeomObject(self.generator.dim, x)
+            elements = (GeomObject(self.generator.dim, x, self.generator.geometry_type)
                         for x in data if len(x)>0)
             interface = get_faces(reference, elements)
             if not compare(interface, interface_base):
@@ -199,11 +200,12 @@ class Test(object):
         compare the surface of the union of interior and exterior with the 
         surface of the reference element    
         """
-        elements = [GeomObject(self.generator.dim, x) 
+        elements = [GeomObject(self.generator.dim, x, self.generator.geometry_type) 
                     for x in triangulation.interior + triangulation.exterior 
                     if len(x)>0]
         reference = GeomObject(self.generator.dim, 
-                            range(len(self.generator.ref_elem)))
+                               range(len(self.generator.ref_elem)),
+                               self.generator.geometry_type)
         if not reference.matches(elements):
             LOGGER.error("elements do not match reference element:"
                          "reference : {0}"
