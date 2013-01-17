@@ -20,7 +20,7 @@ private:
 template <typename ctype, typename vtype>
 template <class V>
 TrilinearFunctor<ctype, vtype>::TrilinearFunctor(V values) {
-  std::copy(values, values+8, mVertexValues);
+  std::copy(values.begin(), values.end(), mVertexValues);
 }
 
 template <typename ctype, typename vtype>

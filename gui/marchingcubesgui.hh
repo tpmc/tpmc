@@ -8,13 +8,15 @@
 #include <dune/marchingcubes/marchingcubes.hh>
 #include <dune/marchingcubes/thresholdfunctor.hh>
 #include <dune/common/float_cmp.hh>
-#include <dune/grid/sgrid.hh>
 #include <dune/grid/common/mcmgmapper.hh>
+#include "referencegrid.hh"
+#include "boundinggrid.hh"
 #include "marchingcubescontainer.hh"
 #include "trilinearfunctor.hh"
 #include "planefunctor.hh"
 #include "geometrycontainer.hh"
 #include "geometryparser.hh"
+#include "geometries.hh"
 #include "python.hh"
 
 template <std::size_t N>
@@ -22,8 +24,9 @@ class MarchingCubesGUI {
 public:
   typedef double ValueType;
   typedef double CoordType;
-  typedef Dune::SGrid<3,3,CoordType> VolumeGridType;
-  typedef Dune::SGrid<2,2,CoordType> PlaneGridType;
+  typedef MCGui::ReferenceGrid<Dune::GeometryType::cube,CoordType,3> VolumeGridType;
+  typedef MCGui::ReferenceGrid<Dune::GeometryType::cube,CoordType,2> PlaneGridType;
+  typedef MCGui::BoundingGrid<Dune::GeometryType::cube,CoordType,3> BoundingGridType;
   typedef Element<ValueType, 3>::VectorType VectorType;
   typedef Element<ValueType, 2>::VectorType PlaneVectorType;
   typedef std::vector<Element<ValueType, 3> > VolumeTriangulationType;
@@ -37,8 +40,9 @@ public:
   void computeTriangulations();
   void getFaceCenter(std::size_t i, VectorType& result) const;
   std::size_t getFaceCount() const { return 6; }
-  ValueType getVertexValue(std::size_t i) const { return mVertexValues[i]; }
-  void setVertexValue(std::size_t i, ValueType v) { mVertexValues[i] = v; }
+  ValueType getVertexValue(std::size_t i) const { return mValues[i]; }
+  void setVertexValue(std::size_t i, ValueType v) { mValues[i] = v; }
+  std::size_t getVertexCount() const { return mValues.size(); }
   std::size_t getRefinements(std::size_t i) const { return mRefinements[i]; }
   void setRefinements(std::size_t i, std::size_t v) { mRefinements[i] = v; mGridValid[i] = false; }
   const VectorType& getPlanePosition() const { return mPlanePosition; }
@@ -47,6 +51,7 @@ public:
   void setPlaneFirst(const VectorType& v) { mPlaneFirst = v; }
   const VectorType& getPlaneSecond() const { return mPlaneSecond; }
   void setPlaneSecond(const VectorType& v) { mPlaneSecond = v; }
+  const BoundingGridType& getBoundingGrid() const { return mBoundingGrid; }
   void addGeometryElement(const std::string& pattern, TriangulationType t);
   void removeGeometryElement(std::size_t i, TriangulationType t);
 
@@ -54,12 +59,13 @@ public:
   const MarchingCubesContainer<CoordType, 2>& planeGridContainer() const { return mPlaneGridContainer; }
   const GeoContainer& geometryContainer() const { return mGeometryContainer; }
 private:
-  ValueType mVertexValues[8];
   VectorType mPlanePosition;
   VectorType mPlaneFirst;
   VectorType mPlaneSecond;
-  std::shared_ptr<VolumeGridType> mGrids[N];
-  std::shared_ptr<PlaneGridType> mPlaneGrid;
+  VolumeGridType mGrids[N];
+  BoundingGridType mBoundingGrid;
+  std::vector<ValueType> mValues;
+  PlaneGridType mPlaneGrid;
   MarchingCubesContainer<CoordType, 3> mGridContainers[N];
   MarchingCubesContainer<CoordType, 2> mPlaneGridContainer;
   GeoContainer mGeometryContainer;
@@ -74,7 +80,8 @@ template <std::size_t N>
 MarchingCubesGUI<N>::MarchingCubesGUI()
   : mPlanePosition(0), mPlaneFirst(0), mPlaneSecond(0),
     mPlaneGridRefinements(4), mPlaneGridValid(false) {
-  std::fill(mVertexValues, mVertexValues+8, 1);
+  mValues.resize(mBoundingGrid.vertexCount());
+  std::fill(mValues.begin(), mValues.end(), 1);
   std::fill(mGridValid, mGridValid+N, false);
   std::fill(mRefinements, mRefinements+N, 0);
   mRefinements[0] = 4;
@@ -88,14 +95,14 @@ template <std::size_t N>
 void MarchingCubesGUI<N>::updateGrids() {
   for (std::size_t i = 0; i<N; ++i) {
     if (!mGridValid[i]) {
-      mGrids[i] = std::shared_ptr<VolumeGridType>(new VolumeGridType);
-      mGrids[i]->globalRefine(mRefinements[i]);
+      mGrids[i].reset();
+      mGrids[i].refine(mRefinements[i]);
       mGridValid[i] = true;;
     }
   }
   if (!mPlaneGridValid) {
-    mPlaneGrid = std::shared_ptr<PlaneGridType>(new PlaneGridType);
-    mPlaneGrid->globalRefine(mPlaneGridRefinements);
+    mPlaneGrid.reset();
+    mPlaneGrid.refine(mPlaneGridRefinements);
     mPlaneGridValid = true;
   }
 }
@@ -103,40 +110,24 @@ void MarchingCubesGUI<N>::updateGrids() {
 template <std::size_t N>
 void MarchingCubesGUI<N>::getFaceCenter(std::size_t i,
                                         VectorType& result) const {
-  static const short faces[][4] = {{0,2,4,6}, {1,3,5,7}, {0,1,4,5},
-                                   {2,3,6,7}, {0,1,2,3}, {4,5,6,7}};
-  // const, first dir, second dir
-  static const short dirs[][3] = {{0,1,2}, {0,1,2}, {1,0,2}, {1,0,2},
-                                  {2,0,1}, {2,0,1}};
-  static const ValueType constvalues[] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
-  ValueType a = mVertexValues[faces[i][0]],
-            b = mVertexValues[faces[i][1]],
-            c = mVertexValues[faces[i][2]],
-            d = mVertexValues[faces[i][3]];
-  ValueType factor = 1.0/(a-b-c+d);
-  result[dirs[i][0]] = constvalues[i];
-  result[dirs[i][1]] = factor*(a-c);
-  result[dirs[i][2]] = factor*(a-b);
+  Geometry::FaceVertex<double,3> fv(i);
+  fv.evaluate(mValues, mValues.size(), result);
 }
 
 template <std::size_t N>
 void MarchingCubesGUI<N>::computeTriangulations() {
   updateGrids();
   typedef TrilinearFunctor<CoordType, ValueType> FunctorType;
-  FunctorType functor(mVertexValues);
-  typedef VolumeGridType::LeafGridView LeafGridView;
-  typedef typename LeafGridView::Codim<0>::Entity::Geometry Geometry;
+  FunctorType functor(mValues);
+  typedef typename VolumeGridType::GridViewType GridViewType;
+  typedef typename GridViewType::Codim<0>::Entity::Geometry Geometry;
   for (std::size_t i = 0; i<N; ++i) {
-    LeafGridView leafView = mGrids[i]->leafView();
-    mGridContainers[i].computeTriangulation(leafView, functor);
+    mGridContainers[i].computeTriangulation(mGrids[i].gridView(), functor);
   }
-  mGeometryContainer.computeTriangulation(functor, 8);
-
-  typedef PlaneGridType::LeafGridView PlaneLeafGridView;
+  mGeometryContainer.computeTriangulation(functor, mValues.size());
   PlaneFunctor<FunctorType> planeFunctor(functor, mPlanePosition,
                                          mPlaneFirst, mPlaneSecond);
-  PlaneLeafGridView planeView = mPlaneGrid->leafView();
-  mPlaneGridContainer.computeTriangulation(planeView, planeFunctor);
+  mPlaneGridContainer.computeTriangulation(mPlaneGrid.gridView(), planeFunctor);
 }
 
 template <std::size_t N>
@@ -150,7 +141,7 @@ void MarchingCubesGUI<N>::addGeometryElement(const std::string& pattern,
   std::cout << "element valid!\n";
   mGeometryContainer.add(element, t);
   typedef TrilinearFunctor<CoordType, ValueType> FunctorType;
-  FunctorType functor(mVertexValues);
+  FunctorType functor(mValues);
   mGeometryContainer.computeTriangulation(functor, 8);
   //} else {
   //std::cout << "element not valid!\n";
@@ -162,8 +153,8 @@ void MarchingCubesGUI<N>::removeGeometryElement(std::size_t i,
                                                 TriangulationType t) {
   mGeometryContainer.remove(i,t);
   typedef TrilinearFunctor<CoordType, ValueType> FunctorType;
-  FunctorType functor(mVertexValues);
-  mGeometryContainer.computeTriangulation(functor, 8);
+  FunctorType functor(mValues);
+  mGeometryContainer.computeTriangulation(functor, mValues.size());
 }
 
 

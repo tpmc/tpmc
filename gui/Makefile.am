@@ -14,6 +14,7 @@ dune_mc_gui_SOURCES = dune_mc_gui.cc ctlpanel.hh geometries.hh \
 
 dune_mc_gui_CPPFLAGS = $(AM_CPPFLAGS) \
 	$(DUNEMPICPPFLAGS) \
+	$(ALUGRID_CPPFLAGS) \
 	$(GTK_CFLAGS) \
 	$(WX_CPPFLAGS)
 # The libraries have to be given in reverse order (most basic libraries
@@ -23,6 +24,7 @@ dune_mc_gui_CPPFLAGS = $(AM_CPPFLAGS) \
 dune_mc_gui_LDADD = \
 	$(DUNE_LDFLAGS) $(DUNE_LIBS) \
 	$(DUNEMPILIBS)	\
+	$(ALUGRID_LDFLAGS) $(ALUGRID_LIBS) \
 	$(GTK_LIBS) \
 	$(WX_LIBS) \
 	-lsfml-system -lsfml-window -lsfml-graphics -lX11 \

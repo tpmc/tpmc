@@ -40,6 +40,9 @@ private:
   void drawWireframeUnitCube();
   void drawUnitCube();
   void drawAxes();
+  template <class ctype>
+  void drawLine(const Dune::FieldVector<ctype, 3>& a,
+                const Dune::FieldVector<ctype, 3>& b);
   MarchingCubesGUI<N> *mGui;
   MainFrame<N> *mParentFrame;
   bool mKeyLeftPressed;
@@ -147,16 +150,6 @@ void MCCanvas<N>::projectOrigin(V& result) {
 
 template <std::size_t N>
 void MCCanvas<N>::OnUpdate() {
-  static const float coords[][3] = {
-    {0.f, 0.f, 1.f},
-    {1.f, 0.f, 1.f},
-    {0.f, 0.f, 0.f},
-    {1.f, 0.f, 0.f},
-    {0.f, 1.f, 1.f},
-    {1.f, 1.f, 1.f},
-    {0.f, 1.f, 0.f},
-    {1.f, 1.f, 0.f}
-  };
   sf::Event Event;
   while (GetEvent(Event)) {
     if (Event.Type == sf::Event::Resized) {
@@ -223,10 +216,17 @@ void MCCanvas<N>::OnUpdate() {
   if (mParentFrame->getShowCube()) {
     glDisable(GL_LIGHTING);
     glColor3f(0.f, 0.f, 0.f);
-    drawWireframeUnitCube();
-    for (int i = 0; i<8; ++i) {
+    typedef typename MarchingCubesGUI<N>::BoundingGridType BG;
+    const BG& boundingGrid = mGui->getBoundingGrid();
+    for (typename BG::ConstEdgeIterator eit = boundingGrid.beginEdges();
+         eit != boundingGrid.endEdges(); ++eit) {
+      drawLine(eit->first, eit->second);
+    }
+    int i = 0;
+    for (typename BG::ConstVertexIterator vit = boundingGrid.beginVertices();
+         vit != boundingGrid.endVertices(); ++vit, ++i) {
       glPushMatrix();
-      glTranslatef(coords[i][0], coords[i][1], coords[i][2]);
+      glTranslatef((*vit)[0], (*vit)[2], 1.f-(*vit)[1]);
       glScalef(INDICATOR_CUBE_SIZE,INDICATOR_CUBE_SIZE,
                INDICATOR_CUBE_SIZE);
       double pr[2];
@@ -412,6 +412,15 @@ void MCCanvas<N>::drawUnitQuadBorder() {
   glVertex2d(1.f, 0.f);
   glVertex2d(1.f, 1.f);
   glVertex2d(0.f, 1.f);
+  glEnd();
+}
+
+template <std::size_t N>
+template <class ctype>
+void MCCanvas<N>::drawLine(const Dune::FieldVector<ctype, 3>& a, const Dune::FieldVector<ctype, 3>& b) {
+  glBegin(GL_LINES);
+  glVertex3f(a[0],a[2],1.0-a[1]);
+  glVertex3f(b[0],b[2],1.0-b[1]);
   glEnd();
 }
 
