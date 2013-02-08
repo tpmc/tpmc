@@ -21,7 +21,7 @@ public:
   const_iterator eend() const { return mExterior.end(); }
 private:
   typedef Dune::MarchingCubes::ThresholdFunctor<ctype> ThresholdFunctor;
-  typedef Dune::MarchingCubes33<ctype, dim, ThresholdFunctor> MCType;
+  typedef Dune::MarchingCubes33<ctype, dim, ThresholdFunctor, Dune::SymmetryType::symmetric> MCType;
   MCType mMc;
   Triangulation<ctype, dim> mInterface, mInterior, mExterior;
 

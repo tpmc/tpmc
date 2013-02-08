@@ -9,6 +9,7 @@
 
 //#include <dune/marchingcubes/newtonfunctor.hh>
 #include <dune/marchingcubes/aberthfunctor.hh>
+#include "marchingcubestables.hh"
 
 namespace Dune {
 
@@ -21,6 +22,7 @@ namespace Dune {
   //template <typename valueType, int dim, typename thresholdFunctor,
   //          class intersectionFunctor = NewtonFunctor<valueType> >
   template <typename valueType, int dim, typename thresholdFunctor,
+      SymmetryType symmetryType = SymmetryType::nonsymmetric,
       class intersectionFunctor = AberthFunctor<valueType> >
   class MarchingCubes33 {
     typedef size_t sizeType;
@@ -55,52 +57,13 @@ namespace Dune {
      * functor for defining and asserting numerical thresholds
      */
     const thresholdFunctor threshFunctor;
+
     /*
-     * row containing information about a specific mc case. for details see
-     * marchinglut.hh
+     * class containing tables as static members specialized by
+     * symmetry type.
      */
-    typedef const unsigned short offsetRow[10];
-    /*
-     * contains offset-tables for different geometries. for details see
-     * <code>marchinglut.hh</code>
-     */
-    static offsetRow * all_case_offsets[];
-    /*
-     * contains arrays for renumbering vertices. used for simplex and prism
-     * to map the vertex numbers to the indices in the vertex-values array
-     */
-    static const short * const all_vertex_to_index[];
-    static const short * const all_case_vertices[];
-    /*
-     * contains vertex_groups-tables for different geometries. for details
-     * see <code>marchinglut.hh</code>
-     */
-    static const short * const all_vertex_groups[];
-    /*
-     * contains codim0-tables for different geometries. for details see
-     * <code>marchinglut.hh</code>
-     */
-    static const short * const all_codim_0[][2];
-    /*
-     * contains element-groups-tables for different geometries. for details
-     * see <code>marchinglut.hh</code>
-     */
-    static const short * const all_element_groups[][2];
-    /*
-     * contains codim1-tables for different geometries. for details see
-     * <code>marchinglut.hh</code>
-     */
-    static const short * const all_codim_1[];
-    /*
-     * contains mc33-offset-tables for different geometries. for details see
-     * <code>marchinglut.hh</code>
-     */
-    static const short * const all_mc33_offsets[];
-    /*
-     * contains test-tables for different geometries. for details see
-     * <code>marchinglut.hh</code>
-     */
-    static const short * const all_face_tests[];
+    typedef MarchingCubes33Tables<valueType,dim,thresholdFunctor,
+        symmetryType,intersectionFunctor> Tables;
 
     /** \brief Test if the face center is covered by the surface.
      *

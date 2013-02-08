@@ -20,6 +20,7 @@ public:
 IMPLEMENT_APP(MainApp);
 
 bool MainApp::OnInit() {
+  std::cout << "starting dune mc gui\n";
   const std::size_t N = 2;
   MainFrame<N> *frame = new MainFrame<N>(_("Marchings Cubes GUI"));
   frame->Show(true);

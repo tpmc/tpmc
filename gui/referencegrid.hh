@@ -4,6 +4,7 @@
 #define DUNE_MCGUI_REFERENCEGRID_HH
 
 #include <dune/grid/alugrid.hh>
+#include <dune/grid/yaspgrid.hh>
 
 namespace MCGui {
   namespace {
@@ -13,11 +14,30 @@ namespace MCGui {
     template <class ctype, int dim>
     struct SelectionTraits<Dune::GeometryType::simplex, ctype, dim> {
       typedef Dune::ALUGrid<dim,dim,Dune::simplex,Dune::conforming> GridType;
+      template <class Ref>
+      static Dune::shared_ptr<GridType> construct(const Ref& reference) {
+        Dune::GridFactory<GridType> factory;
+        std::vector<unsigned int> vertices;
+        for (int i = 0; i<reference.size(dim); ++i) {
+          vertices.push_back(i);
+          factory.insertVertex(reference.position(i,dim));
+        }
+        factory.insertElement(reference.type(), vertices);
+        return Dune::shared_ptr<GridType>(factory.createGrid());
+      }
     };
 
     template <class ctype, int dim>
     struct SelectionTraits<Dune::GeometryType::cube, ctype, dim> {
-      typedef Dune::ALUGrid<dim,dim,Dune::cube,Dune::conforming> GridType;
+      typedef Dune::YaspGrid<dim> GridType;
+
+      template <class Ref>
+      static Dune::shared_ptr<GridType> construct(const Ref& reference) {
+        Dune::FieldVector< ctype, dim > L(1.0);
+        Dune::FieldVector< int, dim > s(1);
+        Dune::FieldVector< bool, dim > periodic(false);
+        return Dune::shared_ptr<GridType>(new GridType(L,s,periodic,1));
+      }
     };
   }
 
@@ -41,14 +61,7 @@ namespace MCGui {
     }
 
     void reset() {
-      Dune::GridFactory<GridType> factory;
-      std::vector<unsigned int> vertices;
-      for (int i = 0; i<reference_.size(dim); ++i) {
-        vertices.push_back(i);
-        factory.insertVertex(reference_.position(i,dim));
-      }
-      factory.insertElement(reference_.type(), vertices);
-      grid_.reset(factory.createGrid());
+      grid_ = SelectionTraits<bt,ctype,dim>::construct(reference_);
     }
   private:
     const Dune::GenericReferenceElement<ctype,dim>& reference_;
