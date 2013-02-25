@@ -89,6 +89,26 @@ namespace Dune {
     void getCoordsFromNumber(const valueVector& vertex_values,
                              const sizeType vertex_count, const short number,
                              point& coord) const;
+    /** \brief gets coordinates of the vertex on the face with given id
+     */
+    template <typename valueVector>
+    void getCoordsFromFaceId(const valueVector& vertex_values,
+                             const sizeType vertex_count, short faceid,
+                             point& coord) const;
+    /** \brief gets coordinates of the vertex on the face with given ids
+     */
+    template <typename valueVector>
+    void getCoordsFromRectangularFace(const valueVector& vertex_values,
+                                      const sizeType vertex_count, short a,
+                                      short b, short c, short d, short faceid,
+                                      point& coord) const;
+    /** \brief gets coordinates of the vertex on the face with given ids
+     */
+    template <typename valueVector>
+    void getCoordsFromTriangularFace(const valueVector& vertex_values,
+                                     const sizeType vertex_count, short a,
+                                     short b, short c, short faceid,
+                                     point& coord) const;
     /** \brief gets coordinates of the first point of an edge given by its
      * <code>number</code>
      */

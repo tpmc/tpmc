@@ -343,31 +343,8 @@ namespace Dune {
         // should not use CP anymore
         //DUNE_THROW(IllegalArgumentException, "centerpoint found");
       } else if (number >= FA && number <= FF) {
-        int faceid = number - FA;
-        //std::cout << "its a face center with id=" << faceid << "\n";
-        static short faces[][4] = {{0,2,4,6}, {1,3,5,7}, {0,1,4,5},
-                                   {2,3,6,7}, {0,1,2,3}, {4,5,6,7}};
-        // const, first dir, second dir
-        static short dirs[][3] = {{0,1,2}, {0,1,2}, {1,0,2}, {1,0,2},
-                                  {2,0,1}, {2,0,1}};
-        static valueType constvalues[] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
-        valueType a = vertex_values[faces[faceid][0]],
-                  b = vertex_values[faces[faceid][1]],
-                  c = vertex_values[faces[faceid][2]],
-                  d = vertex_values[faces[faceid][3]];
-        // if its a face with no edge points, we use the geometric
-        // center, otherwise we use the center of the hyperbola
-        if (Dune::FloatCmp::ge(a*b,0.0) && Dune::FloatCmp::ge(b*c, 0.0)
-            && Dune::FloatCmp::ge(c*d,0.0)) {
-          coord[dirs[faceid][0]] = constvalues[faceid];
-          coord[dirs[faceid][1]] = 0.5;
-          coord[dirs[faceid][2]] = 0.5;
-        } else {
-          valueType factor = 1.0/(a-b-c+d);
-          coord[dirs[faceid][0]] = constvalues[faceid];
-          coord[dirs[faceid][1]] = factor*(a-c);
-          coord[dirs[faceid][2]] = factor*(a-b);
-        }
+        short faceid = number - FA;
+        getCoordsFromFaceId(vertex_values, vertex_count, faceid, coord);
       } else {
         getCoordsFromEdgeNumber(vertex_values, vertex_count,
                                 number, coord);
@@ -416,6 +393,128 @@ namespace Dune {
     }
     if (! std::isfinite(coord[0]))
       assert(false);
+  }
+
+
+  template <typename valueType, int dim, typename thresholdFunctor,
+      SymmetryType symmetryType, class intersectionFunctor>
+  template <typename valueVector>
+  void MarchingCubes33<valueType, dim, thresholdFunctor,
+      symmetryType, intersectionFunctor>::
+  getCoordsFromFaceId(const valueVector& vertex_values,
+                      const sizeType vertex_count, short faceid,
+                      point& coord) const
+  {
+    static short cube_faceoffsets[] = {0,4,8,12,16,20,24};
+    static short cube_faces[] = {0,2,4,6,1,3,5,7,0,1,4,5,2,3,6,7,0,1,2,3,4,
+                                 5,6,7};
+    static short pyramid_faceoffsets[] = {0,4,7,10,13,16};
+    static short pyramid_faces[] = {0,1,2,3,0,2,4,1,3,4,0,1,4,2,3,4};
+    static short prism_faceoffsets[] = {0,4,8,12,15,18};
+    static short prism_faces[] = {0,1,3,4,0,2,3,5,1,2,4,5,0,1,2,3,4,5};
+    static short simplex_faceoffsets[] = {0,3,6,9,12};
+    static short simplex_faces[] = {0,1,2,0,1,3,0,2,3,1,2,3};
+    static short* all_faceoffsets[] = {NULL, NULL, NULL, NULL,
+                                       simplex_faceoffsets,
+                                       pyramid_faceoffsets,
+                                       prism_faceoffsets, NULL,
+                                       cube_faceoffsets};
+    static short* all_faces[] = {NULL, NULL, NULL, NULL, simplex_faces,
+                                 pyramid_faces, prism_faces, NULL,
+                                 cube_faces};
+    short* faceoffsets = all_faceoffsets[vertex_count];
+    short* faces = all_faces[vertex_count];
+    if (faceoffsets == NULL || faces == NULL) {
+      DUNE_THROW(IllegalArgumentException, "Face Center only supported for cubes, prisms, pyramids or simplices");
+    }
+    short count = faceoffsets[faceid+1]-faceoffsets[faceid];
+    if (count == 3) {
+      short a = faces[faceoffsets[faceid]];
+      short b = faces[faceoffsets[faceid]+1];
+      short c = faces[faceoffsets[faceid]+2];
+      getCoordsFromTriangularFace(vertex_values, vertex_count, a, b, c, faceid, coord);
+    } else if (count == 4) {
+      short a = faces[faceoffsets[faceid]];
+      short b = faces[faceoffsets[faceid]+1];
+      short c = faces[faceoffsets[faceid]+2];
+      short d = faces[faceoffsets[faceid]+3];
+      getCoordsFromRectangularFace(vertex_values, vertex_count, a, b, c, d, faceid, coord);
+    } else {
+      DUNE_THROW(IllegalArgumentException, "Face Center only supported for triangular or rectangular faces");
+    }
+  }
+
+  template <typename valueType, int dim, typename thresholdFunctor,
+      SymmetryType symmetryType, class intersectionFunctor>
+  template <typename valueVector>
+  void MarchingCubes33<valueType, dim, thresholdFunctor,
+      symmetryType, intersectionFunctor>::
+  getCoordsFromRectangularFace(const valueVector& vertex_values,
+                               const sizeType vertex_count, short a,
+                               short b, short c, short d, short faceid,
+                               point& coord) const
+  {
+    // const, first dir, second dir
+    static short dirs[][3] = {{0,1,2}, {0,1,2}, {1,0,2}, {1,0,2},
+                              {2,0,1}, {2,0,1}};
+    static valueType constvalues[] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
+    valueType va = vertex_values[a],
+              vb = vertex_values[b],
+              vc = vertex_values[c],
+              vd = vertex_values[d];
+    // if its a face with no edge points, we use the geometric
+    // center, otherwise we use the center of the hyperbola
+    if (Dune::FloatCmp::ge(va*vb,0.0) && Dune::FloatCmp::ge(vb*vc, 0.0)
+        && Dune::FloatCmp::ge(vc*vd,0.0)) {
+      coord[dirs[faceid][0]] = constvalues[faceid];
+      coord[dirs[faceid][1]] = 0.5;
+      coord[dirs[faceid][2]] = 0.5;
+    } else {
+      valueType factor = 1.0/(va-vb-vc+vd);
+      coord[dirs[faceid][0]] = constvalues[faceid];
+      coord[dirs[faceid][1]] = factor*(va-vc);
+      coord[dirs[faceid][2]] = factor*(va-vb);
+    }
+  }
+
+  template <typename valueType, int dim, typename thresholdFunctor,
+      SymmetryType symmetryType, class intersectionFunctor>
+  template <typename valueVector>
+  void MarchingCubes33<valueType, dim, thresholdFunctor,
+      symmetryType, intersectionFunctor>::
+  getCoordsFromTriangularFace(const valueVector& vertex_values,
+                              const sizeType vertex_count, short a,
+                              short b, short c, short faceid,
+                              point& coord) const
+  {
+    short ind[] = {a,b,c};
+    valueType va = vertex_values[a];
+    valueType vb = vertex_values[b];
+    valueType vc = vertex_values[c];
+    bool ia = threshFunctor.isInside(va);
+    bool ib = threshFunctor.isInside(vb);
+    bool ic = threshFunctor.isInside(vc);
+    int key = ia+2*ib+4*ic;
+    if (key == 0 || key == 7) {
+      DUNE_THROW(IllegalArgumentException, "Face Center on triangular face not supported for plain faces");
+    }
+    // permute vertices so that (sign(v0) != sign(v1)) && (sign(v1) == sign(v2))
+    static short perm[][3] = {{0,1,2},{1,2,0},{2,0,1},{2,0,1},{1,2,0},{0,1,2}};
+    short* lperm = perm[key-1];
+    short nind[] = {ind[lperm[0]], ind[lperm[1]], ind[lperm[2]]};
+    short k01 = std::min(nind[0],nind[1])*FACTOR_FIRST_POINT+std::max(nind[0],nind[1])*FACTOR_SECOND_POINT;
+    short k02 = std::min(nind[0],nind[2])*FACTOR_FIRST_POINT+std::max(nind[0],nind[2])*FACTOR_SECOND_POINT;
+    point p01,p1,p02,p2;
+    getCoordsFromNumber(vertex_values, vertex_count, k01, p01);
+    getCoordsFromNumber(vertex_values, vertex_count, k02, p02);
+    getCoordsFromNumber(vertex_values, vertex_count, nind[1], p1);
+    getCoordsFromNumber(vertex_values, vertex_count, nind[2], p2);
+    coord = 0.0;
+    coord += p01;
+    coord += p02;
+    coord += p1;
+    coord += p2;
+    coord *= 0.25;
   }
 
   /**
