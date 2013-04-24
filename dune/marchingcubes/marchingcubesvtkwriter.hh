@@ -11,6 +11,7 @@
 #include <dune/grid/io/file/vtk/vtkwriter.hh>
 #include <dune/grid/io/file/vtk/vtuwriter.hh>
 #include "marchingcubes.hh"
+#include "thresholdfunctor.hh"
 
 /** @file
     @author Christian Engwer
@@ -105,8 +106,8 @@ namespace Dune
     }
 
     const VTKFunction<GridView> & levelset;
-    ThresholdFunctor<ctype> threshold;
-    MarchingCubes33<ctype, dim, ThresholdFunctor<ctype> > mc33;
+    MarchingCubes::ThresholdFunctor<ctype> threshold;
+    MarchingCubes33<ctype, dim, MarchingCubes::ThresholdFunctor<ctype> > mc33;
   };
 
   //! count the vertices, cells and corners
