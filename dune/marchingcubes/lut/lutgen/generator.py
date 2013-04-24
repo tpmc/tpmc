@@ -9,7 +9,8 @@ from pprint import pprint
 from transformation import Transformation
 from referenceelements import ReferenceElements
 from cases import Case, BaseCase
-from geomobj import GeomObject
+from geomobj import GeomObject, Face0
+from coordinates import flip, flipped
 
 LOGGER = logging.getLogger('lutgen.generator')
 
@@ -132,8 +133,18 @@ class LookupGenerator(object):
             for i in range(len(c.faces)):
                 # find interior element containing this face and use the numbering based on
                 # the elements reference element
-                iface = next(f for e in c.interior for f in GeomObject(self.dim, e, self.geometry_type).faces()
-                             if set(f) == set(c.faces[i]))
+                ielement = next(e for e in c.interior for f in GeomObject(self.dim, e, self.geometry_type).faces()
+                                if set(f) == set(c.faces[i]))
+                #if c.faces[i] == [(0, 2), (Face0, 3), ((1, 5), 2)]:
+                #    print ielement
+                #    print flip(self.geometry_type, ielement)
+                #    print c.faces[i]
+                #    print next(f for f in GeomObject(self.dim, ielement, self.geometry_type).faces() if set(f) == set(c.faces[i]))
+                #    raise RuntimeError
+                ielement = flip(self.geometry_type, ielement)
+                if flipped(self.geometry_type, ielement):
+                    raise RuntimeError("{} element {} still flipped".format(self.geometry_type, ielement))
+                iface = next(f for f in GeomObject(self.dim, ielement, self.geometry_type).faces() if set(f) == set(c.faces[i]))
                 c.faces[i] = iface
         for bc in self.base_cases:
             generate_vertex_group(bc)
@@ -144,6 +155,7 @@ class LookupGenerator(object):
             renumber_vertices(entry)
             generate_vertex_group(entry)
             for mc in entry.mc33:
+                renumber_vertices(mc)
                 generate_vertex_group(mc)
 
     def print_base(self, prefix="lut", face_count=0, cell_count=0):

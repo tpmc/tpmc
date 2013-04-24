@@ -58,7 +58,7 @@ ReferenceElements = {(0,"any"): ReferenceElement((0,"any"), [[]], [], []),
 					 (2,"simplex"):
 					 ReferenceElement((2,"simplex"),
 									  [[0,0],[1,0],[0,1]],
-									  [[1,2],[2,0],[0,1]],
+									  [[2,1],[0,2],[1,0]],
 									  [[2,1],[0,2],[1,0]]),
 					 (2,"cube")   :
 					 ReferenceElement((2,"cube"),
@@ -68,7 +68,7 @@ ReferenceElements = {(0,"any"): ReferenceElement((0,"any"), [[]], [], []),
 					 (3,"simplex"):
 					 ReferenceElement((3,"simplex"),
 									  [[0,0,0],[1,0,0],[0,1,0],[0,0,1]],
-									  [[1,2,3],[2,0,3],[0,1,3],[1,0,2]],
+									  [[0,2,1],[0,1,3],[0,3,2],[1,2,3]],
 									  [[0,1],[1,2],[0,2],[0,3],[1,3],[2,3]]),
 					 (3,"pyramid"):
 					 ReferenceElement((3,"pyramid"),

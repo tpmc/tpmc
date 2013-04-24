@@ -315,6 +315,50 @@ namespace Dune {
     }
   }
 
+  template <typename ctype, int dim>
+  struct NormalHelper {
+    typedef Dune::FieldVector<ctype, dim> V;
+    static void get(const std::vector<V>& element, V& out) {
+      DUNE_THROW(IllegalArgumentException, "normal not implemented for dim " << dim);
+    }
+  };
+
+  template <typename ctype>
+  struct NormalHelper<ctype, 2> {
+    typedef Dune::FieldVector<ctype, 2> V;
+    static void get(const std::vector<V>& element, V& out) {
+      assert(element.size() == 2);
+      // (y,-x)
+      out[0] = element[1][1]-element[0][1];
+      out[1] = element[0][0]-element[1][0];
+      out /= out.two_norm();
+    }
+  };
+
+  template <typename ctype>
+  struct NormalHelper<ctype, 3> {
+    typedef Dune::FieldVector<ctype, 3> V;
+    static void get(const std::vector<V>& element, V& out) {
+      // compute normal using right hand rule
+      V index = element[1], middle = element[2];
+      index -= element[0];
+      middle -= element[0];
+      // index x middle
+      out[0] = index[1]*middle[2]-index[2]*middle[1];
+      out[1] = index[2]*middle[0]-index[0]*middle[2];
+      out[2] = index[0]*middle[1]-index[1]*middle[0];
+      out /= out.two_norm();
+    }
+  };
+
+  template <typename valueType, int dim, typename thresholdFunctor,
+      SymmetryType symmetryType, class intersectionFunctor>
+  void MarchingCubes33<valueType, dim, thresholdFunctor,
+      symmetryType, intersectionFunctor>::getNormal(const std::vector<point>& element,
+                                                    point& coord) const {
+    NormalHelper<ctype, dim>::get(element, coord);
+  }
+
   /**
    * \brief Generates the coordinate for a point which is specified
    * by its vertex or edge number.

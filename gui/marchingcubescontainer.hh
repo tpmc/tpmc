@@ -21,7 +21,7 @@ public:
   const_iterator eend() const { return mExterior.end(); }
 private:
   typedef Dune::MarchingCubes::ThresholdFunctor<ctype> ThresholdFunctor;
-  typedef Dune::MarchingCubes33<ctype, dim, ThresholdFunctor, Dune::SymmetryType::symmetric> MCType;
+  typedef Dune::MarchingCubes33<ctype, dim, ThresholdFunctor, Dune::SymmetryType::nonsymmetric> MCType;
   MCType mMc;
   Triangulation<ctype, dim> mInterface, mInterior, mExterior;
 
@@ -57,9 +57,18 @@ void MarchingCubesContainer<ctype, dim>::computeTriangulation(const GridViewType
     mMc.getElements(vertex_values, corners, key, false, false, resInterior);
     mMc.getElements(vertex_values, corners, key, false, true, resExterior);
     // update local to global and compute gradient
-    update(resInterface, geometry, f, mInterface);
     update(resInterior, geometry, f, mInterior);
     update(resExterior, geometry, f, mExterior);
+    for (std::size_t i = 0; i<resInterface.size(); ++i) {
+      Element<ctype,dim> e;
+      FVType normal;
+      mMc.getNormal(resInterface[i], normal);
+      for (std::size_t j = 0; j<resInterface[i].size(); ++j) {
+        FVType vertex = geometry.global(resInterface[i][j]);
+        e.add(Vertex<ctype, dim>(vertex, normal));
+      }
+      mInterface.add(e);
+    }
   }
 }
 

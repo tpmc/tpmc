@@ -47,6 +47,7 @@ namespace Dune {
                           const sizeType key,
                           const bool exterior_not_interior,
                           std::vector<short>& element_groups) const;
+    void getNormal(const std::vector<point>& element, point& coord) const;
 
     MarchingCubes33(const thresholdFunctor & _threshFunctor = thresholdFunctor())
       : threshFunctor(_threshFunctor) {}
