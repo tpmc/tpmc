@@ -221,6 +221,17 @@ class Test(object):
             if len([e for e in interior_elements if e != vg])>0 or len([e for e in exterior_elements if e != vg])>0:
                 return 0
         return 1
+    def test_vertex_group_connectivity(self, triang, case):
+        """
+        if two vertices are on an edge of the reference element and have the
+        same sign, they have to be in the same group
+        """
+        for edge in (list(e) for e in self.generator.ref_elem.edges):
+            if case[edge[0]] == case[edge[1]]:
+                if not triang.vertex_groups[edge[0]] == triang.vertex_groups[edge[1]]:
+                    LOGGER.error("vertices {} and {} in case {} are in different groups ({} vs {})".format(edge[0], edge[1], case, triang.vertex_groups[edge[0]], triang.vertex_groups[edge[1]]));
+                    return 0
+        return 1
     def test_vertices(self, triang, case):
         """
         checks if all vertices of the reference-faces are in the right
@@ -300,6 +311,12 @@ class Test(object):
         result = self.test_vertex_groups(triang, base_case.case)
         if result == 0:
             LOGGER.error("vertex-groups test for triangulation {0} ({1}) "
+                         "FAILED".format(triang.name, base_case.case))
+        passed += result
+        count += 1
+        result = self.test_vertex_group_connectivity(triang, base_case.case)
+        if result == 0:
+            LOGGER.error("vertex-group-connectivity test for triangulation {0} ({1}) "
                          "FAILED".format(triang.name, base_case.case))
         passed += result
         count += 1
