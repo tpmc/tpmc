@@ -62,8 +62,8 @@ namespace Dune
      *
      * The datamode is always nonconforming.
      */
-    explicit MarchingCubesVTKWriter (const GridView &gridView, const VTKFunction<GridView> & levelset_, ctype interface)
-      : Base(gridView, VTK::nonconforming), levelset(levelset_), threshold(interface), mc33(threshold)
+    explicit MarchingCubesVTKWriter (const GridView &gridView, const VTKFunction<GridView> & levelset_, ctype interface, bool useMC33_ = true)
+      : Base(gridView, VTK::nonconforming), levelset(levelset_), threshold(interface), mc33(threshold), useMC33(useMC33_)
     { }
 
   protected:
@@ -101,13 +101,14 @@ namespace Dune
       for (unsigned int c = 0; c < refElem.size(dim); c++)
         values[c] = levelset.evaluate(0, e, refElem.position(c,dim));
 
-      size_t key = mc33.getKey(values, values.size(), true);
+      size_t key = mc33.getKey(values, values.size(), useMC33);
       mc33.getElements(values, values.size(), key, true, false, elements);
     }
 
     const VTKFunction<GridView> & levelset;
     MarchingCubes::ThresholdFunctor<ctype> threshold;
     MarchingCubes33<ctype, dim, MarchingCubes::ThresholdFunctor<ctype> > mc33;
+    bool useMC33;
   };
 
   //! count the vertices, cells and corners
