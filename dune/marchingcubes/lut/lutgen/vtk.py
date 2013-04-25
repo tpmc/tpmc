@@ -52,9 +52,11 @@ class Vtk(Output):
 					 "quad"    :[]}
 		points = []
 		data = []
+                grps = []
 		counter = 0
 		# create elements
-		for cell in cells:
+		for k in xrange(len(cells)):
+                        cell = cells[k]
 			if len(cell) == 0:
 				continue
 			offset = len(points)
@@ -64,11 +66,13 @@ class Vtk(Output):
 			elements[cellType].append([i+offset for i in range(len(cell))])
 			points += coords
 			data += [ counter for i in range(len(cell))]
+                        grps += [ groups[k] for i in range(len(cell))]
 			counter += 1
 		# avoid empty files
 		if len(points) == 0:
 			points.append([0,0,0])
 			data.append(0)
+                        grps.append(0)
 		# write vtk file
                 # to avoid warnings for empty celldata:
                 if len(groups)>0:
@@ -81,8 +85,7 @@ class Vtk(Output):
                                                  quad=elements["quad"],
                                                  triangle=elements["triangle"]
                                                  ),
-                                PointData(Scalars(data, "ElementID", 'default')),
-                                CellData(Scalars(groups, "groupID", 'default')),
+                                PointData(Scalars(data, "ElementID", 'default'), Scalars(grps, "groupID", 'default')),
                                 fname
                                 )
                 else:

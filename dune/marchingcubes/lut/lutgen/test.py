@@ -263,9 +263,33 @@ class Test(object):
                 LOGGER.error("evil pyramid found: {0}".format(e))
                 return 0
         return 1
+    def test_group_connectivity(self, name, elements, groups):
+        """ if two elements in the same region share a node, they belong to the same group """
+        if not len(elements) == len(groups):
+            LOGGER.error("group connectivity test for {} failed since the number of groups ({}) does not correspong to the number of elements ({})".format(name, len(groups), len(elements)))
+            return 0
+        for i in xrange(len(elements)):
+            for j in xrange(i+1,len(elements)):
+                if len(set(elements[i]) & set(elements[j])) > 0:
+                    if not groups[i] == groups[j]:
+                        LOGGER.error("group connectivity test for {} for elements {} and groups {} failed\nelement {} and {} do not have the same groups {} != {}".format(name, elements, groups, elements[i], elements[j], groups[i], groups[j]))
+                        return 0
+        return 1
     def test_triangulation(self, triang, base_case, mc33_index):
         """ performs tests on the triangulation triang belonging to case """
         count, passed = 0, 0
+        count += 1
+        result = self.test_group_connectivity(triang.name, triang.exterior, triang.exterior_groups)
+        if result == 0:
+            LOGGER.error("connectivity test for triangulation {} exterior "
+                         "FAILED".format(triang.name))
+        passed += result
+        count += 1
+        result = self.test_group_connectivity(triang.name, triang.interior, triang.interior_groups)
+        if result == 0:
+            LOGGER.error("connectivity test for triangulation {} interior "
+                         "FAILED".format(triang.name))
+        passed += result
         count += 1
         result = self.test_vertices(triang, base_case.case)
         if result == 0:
