@@ -5,7 +5,13 @@ SUBDIRS = lut test
 include $(top_srcdir)/am/global-rules
 
 marchingcubesincludedir = $(includedir)/dune/marchingcubes
-marchingcubesinclude_HEADERS = isdegenerated.hh marchingcubes.hh	\
+marchingcubesinclude_HEADERS = aberthfunctor.hh \
+                               isdegenerated.hh \
+                               marchingcubes.cc \
+                               marchingcubes.hh \
                                marchingcubesrefinement.hh \
-	thresholdfunctor.hh
-
+                               marchingcubesvtkwriter.hh \
+                               newtonfunctor.hh \
+                               thresholdfunctor.hh \
+                               trilinearfunction.hh \
+                               univariatepolynomial.hh

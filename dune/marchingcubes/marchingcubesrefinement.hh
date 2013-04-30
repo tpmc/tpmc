@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include <dune/grid/genericgeometry/geometry.hh>
+#include <dune/geometry/genericgeometry/geometry.hh>
 
 #include <dune/marchingcubes/marchingcubes.hh>
 #include <dune/marchingcubes/thresholdfunctor.hh>
@@ -24,7 +24,7 @@ namespace Dune {
    * \tparam ctype Type used for coordinates
    * \tparam dim Element dimension
    */
-  template <class ctype, int dim>
+  template <class ctype, int dim, class thresholdFunctor = MarchingCubes::ThresholdFunctor<double> >
   class MarchingCubesRefinement
   {
 
@@ -32,6 +32,9 @@ namespace Dune {
 
     /** \brief Type of the geometries resulting from the splitting */
     typedef GenericGeometry::BasicGeometry<dim, GenericGeometry::DefaultGeometryTraits<ctype,dim,dim> > RefinementGeometryType;
+
+    /** \brief Container type */
+    typedef std::vector<RefinementGeometryType> RefinementGeometries;
 
     /** \brief Type of the iterator over all the geometries resulting from the splitting */
     typedef typename std::vector<RefinementGeometryType>::const_iterator const_iterator;
@@ -43,7 +46,9 @@ namespace Dune {
      * \param values Values of the level set function at the element corners
      */
     MarchingCubesRefinement(const GeometryType& type,
-                            std::vector<double> values);
+                            std::vector<double> values,
+                            bool exterior_not_interior = false,
+                            const thresholdFunctor & threshFunctor = thresholdFunctor() );
 
     /** \brief Get iterator to the first element of the refinement */
     const_iterator begin() const {
@@ -55,73 +60,41 @@ namespace Dune {
       return geometries_.end();
     }
 
+    /** \brief Access to the refinement geometries container */
+    RefinementGeometries & geometries()
+    { return geometries_; }
 
   private:
 
     /** \brief Container for the geometries that we have created */
-    std::vector<RefinementGeometryType> geometries_;
+    RefinementGeometries geometries_;
 
   };
 
 }
 
 
-template <class ctype, int dim>
-Dune::MarchingCubesRefinement<ctype,dim>::
-MarchingCubesRefinement(const GeometryType& type,std::vector<double> values)
+template <class ctype, int dim, class thresholdFunctor>
+Dune::MarchingCubesRefinement<ctype,dim,thresholdFunctor>::
+MarchingCubesRefinement(const GeometryType& type,std::vector<double> values,
+                        bool exterior_not_interior,
+                        const thresholdFunctor & threshFunctor)
 {
   std::vector<std::vector<FieldVector<double,dim> > > elementCorners;
 
   // Call the actual marching cubes algorithm
-  MarchingCubes33<double,dim,MarchingCubes::ThresholdFunctor> marchingcubes33;
+  MarchingCubes33<double,dim,thresholdFunctor> marchingcubes33(threshFunctor);
   size_t key = marchingcubes33.getKey(values, values.size(), true);
-  marchingcubes33.getElements(values, values.size(), key, false, elementCorners);
+  marchingcubes33.getElements
+    (values, values.size(), key, false, exterior_not_interior, elementCorners);
 
   // set up the list of BasicGeometries which is the output of this class
   geometries_.resize(elementCorners.size());
 
   // Construct the Dune GeometryType from the number of corners and the space dimension
   for (size_t i=0; i<elementCorners.size(); i++) {
-
-    GeometryType type;
-    if (dim==2) {
-
-      switch (elementCorners[i].size()) {
-      case 3 :
-        type.makeSimplex(dim);
-        break;
-      case 4 :
-        type.makeCube(dim);
-        break;
-      default :
-        DUNE_THROW(NotImplemented, "2d elements with " << elementCorners[i].size() << " corners are not supported!");
-      }
-
-    } else if (dim==3) {
-
-      switch (elementCorners[i].size()) {
-      case 4 :
-        type.makeSimplex(dim);
-        break;
-      case 5 :
-        type.makePyramid();
-        break;
-      case 6 :
-        type.makePrism();
-        break;
-      case 8 :
-        type.makeCube(dim);
-        break;
-      default :
-        DUNE_THROW(NotImplemented, "3d elements with " << elementCorners[i].size() << " corners are not supported!");
-      }
-
-
-    } else
-      DUNE_THROW(NotImplemented, "MarchingCubesRefinement only implemented for 2d and 3d");
-
     // Make BasicGeometry from the element type and the corner positions
-    geometries_[i] = RefinementGeometryType(type, elementCorners[i]);
+    geometries_[i] = RefinementGeometryType(elementCorners[i]);
   }
 
 }

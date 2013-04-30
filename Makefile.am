@@ -3,7 +3,7 @@
 # we need the module file to be able to build via dunecontrol
 EXTRA_DIST=dune.module
 
-SUBDIRS = dune lib m4 doc
+SUBDIRS = dune lib gui m4 doc
 
 # don't follow the full GNU-standard
 # we need automake 1.5

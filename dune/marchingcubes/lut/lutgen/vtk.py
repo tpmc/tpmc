@@ -2,28 +2,39 @@ from lutgen.output import Output
 
 from lutgen.referenceelements import GeometryType
 from lutgen.referenceelements import ReferenceElements
+from lutgen.geomobj import CenterPoint, FacePoint
 
 from pyvtk import *
 
 class Vtk(Output):
 	def __init__(self, lg):
 		self.lg = lg
-		
-	def write_case(self, case, triang, dim, element, fname):
+	def write_cells(self, cells, groups, dim, element, fname):
 		def vertex(v, points):
 			if type(v) is int:
 				return points[v] + [0]*(3-dim) # vtk assumes dim=3
-			else:
-				try:
-					return [ (1.0*points[v[0]][i] + points[v[1]][i]) / 2.0
-							 for i in range(dim) ] + [0]*(3-dim) # vtk assumes dim=3
-				except KeyError:
-					return [ 0.5 for i in range(dim) ] + [0]*(3-dim)
+                        if type(v) is CenterPoint:
+                                return [0.5 for i in range(dim) ] + [0]*(3-dim)
+			if type(v) is FacePoint:
+				soliddims = [(0,0), (0,1), (1,0), (1,1), (2,0), (2,1)]
+				res = [0.5]*dim
+				res[soliddims[v.id][0]] = soliddims[v.id][1]
+				return res
+                        else:
+                                w = 0.5
+                                p1 = vertex(v[0],points)
+                                p2 = vertex(v[1],points)
+                                # different weighting for face points (just solving display issues
+                                if type(v[0]) is FacePoint:
+                                        w = 0.85
+                                if type(v[1]) is FacePoint:
+                                        w = 0.15
+                                return [w*p1[i]+(1-w)*p2[i] for i in range(len(p1))]
 
 		if dim == 3:
 			renumber = [ None, None, None, None,
 						 ("simplex", range(4)),
-						 ("pyramid", range(5)),
+						 ("pyramid", [0, 1, 3, 2, 4]),
 						 ("prism", [0,2,1,3,5,4]),
 						 None,
 						 ("cube", [0,1,3,2,4,5,7,6])]
@@ -41,9 +52,11 @@ class Vtk(Output):
 					 "quad"    :[]}
 		points = []
 		data = []
+                grps = []
 		counter = 0
 		# create elements
-		for cell in triang.cells:
+		for k in xrange(len(cells)):
+                        cell = cells[k]
 			if len(cell) == 0:
 				continue
 			offset = len(points)
@@ -53,22 +66,42 @@ class Vtk(Output):
 			elements[cellType].append([i+offset for i in range(len(cell))])
 			points += coords
 			data += [ counter for i in range(len(cell))]
+                        grps += [ groups[k] for i in range(len(cell))]
 			counter += 1
 		# avoid empty files
 		if len(points) == 0:
 			points.append([0,0,0])
 			data.append(0)
+                        grps.append(0)
 		# write vtk file
-		vtk = VtkData(
-			UnstructuredGrid(points,
-							 hexahedron=elements["cube"],
-							 tetra=elements["simplex"],
-							 wedge=elements["prism"],
-							 pyramid=elements["pyramid"],
-							 quad=elements["quad"],
-							 triangle=elements["triangle"]
-							 ),
-			PointData(Scalars(data, "ElementID", 'default')),
-			fname
-			)
+                # to avoid warnings for empty celldata:
+                if len(groups)>0:
+                        vtk = VtkData(
+                                UnstructuredGrid(points,
+                                                 hexahedron=elements["cube"],
+                                                 tetra=elements["simplex"],
+                                                 wedge=elements["prism"],
+                                                 pyramid=elements["pyramid"],
+                                                 quad=elements["quad"],
+                                                 triangle=elements["triangle"]
+                                                 ),
+                                PointData(Scalars(data, "ElementID", 'default'), Scalars(grps, "groupID", 'default')),
+                                fname
+                                )
+                else:
+                        vtk = VtkData(
+                                UnstructuredGrid(points,
+                                                 hexahedron=elements["cube"],
+                                                 tetra=elements["simplex"],
+                                                 wedge=elements["prism"],
+                                                 pyramid=elements["pyramid"],
+                                                 quad=elements["quad"],
+                                                 triangle=elements["triangle"]
+                                                 ),
+                                PointData(Scalars(data, "ElementID", 'default')),
+                                fname
+                                )
 		vtk.tofile(fname)
+	def write_case(self, case, triang, dim, element, fname):		
+		self.write_cells(triang.interior, triang.interior_groups, dim, element, fname+'_interior');	
+		self.write_cells(triang.exterior, triang.exterior_groups, dim, element, fname+'_exterior');

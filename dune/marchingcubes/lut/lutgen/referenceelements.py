@@ -22,10 +22,10 @@ class GeometryType(tuple):
 		t = None
 		if dim == 0:
 			assert v == 1
-			t = (dim,"any")
+			t = "any"
 		elif dim == 1:
 			assert v == 2
-			t = (dim,"any")
+			t = "any"
 		elif dim == 2:
 			t = [None, None, None,
 				 "simplex", "cube"][v]
@@ -46,6 +46,9 @@ class ReferenceElement(list):
 		self.faces = faces
 		self.edges = [ set(x) for x in edges ]
 
+# Reference Elements. Vertex-numbering follows the numbering in DUNE
+# faces are numbered so that the normal points outward (using right hand
+# rule starting with first to vertices (according to DUNE numbering)
 ReferenceElements = {(0,"any"): ReferenceElement((0,"any"), [[]], [], []),
 					 (1,"any"):
 					 ReferenceElement((1,"any"),
@@ -60,33 +63,34 @@ ReferenceElements = {(0,"any"): ReferenceElement((0,"any"), [[]], [], []),
 					 (2,"cube")   :
 					 ReferenceElement((2,"cube"),
 									  [[0,0],[1,0],[0,1],[1,1]],
-									  [[0,2],[3,1],[1,0],[2,3]],
+									  [[2,0],[1,3],[0,1],[3,2]],
 									  [[0,2],[3,1],[1,0],[2,3]]),
 					 (3,"simplex"):
 					 ReferenceElement((3,"simplex"),
 									  [[0,0,0],[1,0,0],[0,1,0],[0,0,1]],
-									  [[2,1,3],[0,2,3],[1,0,3],[0,1,2]],
+									  [[0,2,1],[0,1,3],[0,3,2],[1,2,3]],
 									  [[0,1],[1,2],[0,2],[0,3],[1,3],[2,3]]),
 					 (3,"pyramid"):
 					 ReferenceElement((3,"pyramid"),
 									  [[0,0,0],[1,0,0],[0,1,0],[1,1,0],[0,0,1]],
-									  [[0,1,3,2],[2,1,4],[3,2,4],[0,3,4]],
-									  [[0,1],[1,2],[2,3],[3,0],
+									  [[1,0,3,2],[0,1,4],[1,3,4],[3,2,4],[2,0,4]],
+									  [[0,2],[3,1],[1,0],[2,3],
 									   [0,4],[1,4],[2,4],[3,4]]),
 					 (3,"prism")  :
 					 ReferenceElement((3,"prism"),
 									  [[0,0,0],[1,0,0],[0,1,0],
 									   [0,0,1],[1,0,1],[0,1,1]],
-									  [[0,1,2],[1,0,4,3],[2,1,5,4],
-									   [0,2,3,5],[4,3,5]],
+									  [[0,1,3,4],[2,0,5,3],[1,2,4,5],
+                                                                           [1,0,2],[3,4,5]],
 									  [[0,1],[1,2],[2,0],[0,3],[1,4],[2,5],
 									   [3,4],[4,5],[5,3]]),
 					 (3,"cube")   :
 					 ReferenceElement((3,"cube"),
 									  [[0,0,0],[1,0,0],[0,1,0],[1,1,0],
 									   [0,0,1],[1,0,1],[0,1,1],[1,1,1]],
-									  [[0,2,4,6],[3,1,7,5],[1,0,5,4],
-                                       [2,3,6,7],[0,1,2,3],[4,5,6,7]],
+									  [[2,0,6,4],[1,3,5,7],[0,1,4,5],
+									   [3,2,7,6],[1,0,3,2],[4,5,6,7]],
 									  [[0,4],[1,5],[2,6],[3,7],
 									   [0,2],[1,3],[4,6],[5,7],
 									   [0,1],[2,3],[4,5],[6,7]])}
+

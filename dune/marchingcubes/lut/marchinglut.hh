@@ -2,8 +2,8 @@
 // vi: set et ts=4 sw=2 sts=2:
 /*
  * This file contains the lookup tables for marching cubes' algorithms
- * for the 1D and 2D cases. The 2D case has additional tables for the
- * Marching Cubes' 33 algorithm.
+ * for the 1D, 2D and 3D cases along with their marching cubes' 33 tables for
+ * ambiguous cases.
  *
  * == Names for vertices and edges ==
  * For every vertex exists a constant begining with V and followed
@@ -11,28 +11,36 @@
  * a G and a following big letter, too.
  * Here is the naming scheme for a square and a cube. Lines,
  * triangles and tetrahedrons follow this scheme. They always
- * contain vertex A and edge J.
+ * contain vertex A and edge I.
  *
  * Square:
  *
- * C--K--D
+ * C--J--D
  * |     |
- * L     M
+ * K     L
  * |     |
- * A--J--B
+ * A--I--B
  *
  * Cube:
- *         G ________ H           _____S__
+ *         G ________ H           _____R__
  *         /|       /|          /|       /|
- *       /  |     /  |       T/  |     /U |
- *   E /_______ /    |    E /__R____ /    Q
- *    |     |  |F    |     |     P  |     |
- *    |    C|__|_____|D    |     |__|__K__|
- *    |    /   |    /      N   L/   O    /
- *    |  /     |  /        |  /     |  /M
- *    |/_______|/          |/___J___|/    Cube center: V
+ *       /  |     /  |       S/  |     /T |
+ *   E /_______ /    |    E /__Q____ /    P
+ *    |     |  |F    |     |     O  |     |
+ *    |    C|__|_____|D    |     |__|__J__|
+ *    |    /   |    /      M   K/   N    /
+ *    |  /     |  /        |  /     |  /L
+ *    |/_______|/          |/___I___|/    Cube center: Z
  *   A          B         A          B
  *
+ * Simplex:
+ * Vertices: [A,B,C,E]
+ *
+ * Pyramid:
+ * Vertices: [A,B,C,D,E], (A,B,C,D) form the bottom square-face
+ *
+ * Prism:
+ * Vertices: [A,B,C,E,F,G], (A,B,C) and (E,F,G) form the two triangular faces
  *
  * To describe vertices and edges of lines, triangles, squares,
  * terahedrons and cubes every element has its own number.
@@ -52,12 +60,12 @@
 #define MARCHING_LUT
 
 // constants for vertex and edge numbering
-static const short NO_VERTEX = 1<<6;
+static const short NO_VERTEX = 1<<8;
 static const short VERTEX_GO_RIGHT = 1;     // x1 = 1
 static const short VERTEX_GO_DEPTH = 2;     // x2 = 1
 static const short VERTEX_GO_UP = 4;     // x3 = 1
 static const short FACTOR_FIRST_POINT = 1;
-static const short FACTOR_SECOND_POINT = 8;
+static const short FACTOR_SECOND_POINT = 16;
 // vertices start with V
 static const short VA = 0;
 static const short VB = VERTEX_GO_RIGHT;
@@ -67,29 +75,21 @@ static const short VE = VERTEX_GO_UP;
 static const short VF = VERTEX_GO_RIGHT + VERTEX_GO_UP;
 static const short VG = VERTEX_GO_DEPTH + VERTEX_GO_UP;
 static const short VH = VERTEX_GO_RIGHT + VERTEX_GO_DEPTH + VERTEX_GO_UP;
-// edges start with E
-static const short EJ = VA * FACTOR_FIRST_POINT + VB * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EK = VC * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EL = VA * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EM = VB * FACTOR_FIRST_POINT + VD * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EN = VA * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EO = VB * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EP = VC * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EQ = VD * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short ER = VE * FACTOR_FIRST_POINT + VF * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short ES = VG * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short ET = VE * FACTOR_FIRST_POINT + VG * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EU = VF * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EV = VB * FACTOR_FIRST_POINT + VC * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EW = VB * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
-static const short EX = VC * FACTOR_FIRST_POINT + VE * FACTOR_SECOND_POINT + NO_VERTEX;
-// Center point is in the center of a cube or tetrahedron
-static const short EY = VA * FACTOR_FIRST_POINT + VH * FACTOR_SECOND_POINT + NO_VERTEX;
+// faces
+static const short FA = VH + 1;
+static const short FB = VH + 2;
+static const short FC = VH + 3;
+static const short FD = VH + 4;
+static const short FE = VH + 5;
+static const short FF = VH + 6;
+// center
+static const short CP = FF + 1;
 
 /* Constants indicating whether case special treatment when marching cubes' 33 is used. */
 static const short CASE_UNIQUE_MC33 = 0;
 static const short CASE_AMBIGUOUS_MC33 = 1;
 /* Face tests */
+/* \todo could lead to problems if index is a valid index of the offset table */
 static const short CASE_IS_REGULAR = (1<<8);
 static const short TEST_FACE = (1<<9);
 static const short TEST_INTERIOR = (1<<10);
@@ -107,22 +107,43 @@ static const short TEST_FACE_2_1 = -(TEST_FACE | TEST_FACE_FLIP | 2);
 static const short TEST_FACE_3_1 = -(TEST_FACE | TEST_FACE_FLIP | 3);
 static const short TEST_FACE_4_1 = -(TEST_FACE | TEST_FACE_FLIP | 4);
 static const short TEST_FACE_5_1 = -(TEST_FACE | TEST_FACE_FLIP | 5);
-static const short TEST_INTERIOR_0 = -(TEST_INTERIOR | 0);
-static const short TEST_INTERIOR_1 = -(TEST_INTERIOR | 1);
-static const short TEST_INTERIOR_2 = -(TEST_INTERIOR | 2);
-static const short TEST_INTERIOR_3 = -(TEST_INTERIOR | 3);
+static const short TEST_INTERIOR_0_0 = -(TEST_INTERIOR | (0 << 3) | 0);
+static const short TEST_INTERIOR_1_0 = -(TEST_INTERIOR | (1 << 3) | 0);
+static const short TEST_INTERIOR_2_0 = -(TEST_INTERIOR | (2 << 3) | 0);
+static const short TEST_INTERIOR_3_0 = -(TEST_INTERIOR | (3 << 3) | 0);
+static const short TEST_INTERIOR_0_2 = -(TEST_INTERIOR | (0 << 3) | 2);
+static const short TEST_INTERIOR_1_2 = -(TEST_INTERIOR | (1 << 3) | 2);
+static const short TEST_INTERIOR_2_2 = -(TEST_INTERIOR | (2 << 3) | 2);
+static const short TEST_INTERIOR_3_2 = -(TEST_INTERIOR | (3 << 3) | 2);
+static const short TEST_INTERIOR_0_4 = -(TEST_INTERIOR | (0 << 3) | 4);
+static const short TEST_INTERIOR_1_4 = -(TEST_INTERIOR | (1 << 3) | 4);
+static const short TEST_INTERIOR_2_4 = -(TEST_INTERIOR | (2 << 3) | 4);
+static const short TEST_INTERIOR_3_4 = -(TEST_INTERIOR | (3 << 3) | 4);
 
 /* Indices for access to cube2d_case_offsets */
-static const int INDEX_OFFSET_CODIM_0 = 0;
-static const int INDEX_COUNT_CODIM_0 = 1;
-static const int INDEX_OFFSET_CODIM_1 = 2;
-static const int INDEX_COUNT_CODIM_1 = 3;
-static const int INDEX_UNIQUE_CASE = 4;
+static const int INDEX_OFFSET_CODIM_0[] = {3, 0};
+static const int INDEX_OFFSET_ELEMENT_GROUPS[] = {4, 1};
+static const int INDEX_COUNT_CODIM_0[] = {5, 2};
+static const int INDEX_OFFSET_CODIM_1 = 6;
+static const int INDEX_COUNT_CODIM_1 = 7;
+static const int INDEX_VERTEX_GROUPS = 8;
+static const int INDEX_UNIQUE_CASE = 9;
+
+/* Mappings for vertex number to linear index in value array */
+static const short table_any1d_vertex_to_index[] = {0};
+static const short table_simplex2d_vertex_to_index[] = {0,1,2};
+static const short table_cube2d_vertex_to_index[] = {0,1,2,3};
+static const short table_simplex3d_vertex_to_index[] = {0,1,2,0,3};
+static const short table_pyramid3d_vertex_to_index[] = {0,1,2,3,4};
+static const short table_prism3d_vertex_to_index[] = {0,1,2,0,3,4,5};
+static const short table_cube3d_vertex_to_index[] = {0,1,2,3,4,5,6,7};
 
 #ifndef _MARCHING_LUT_CC_
 
 extern "C"
 {
+
+  extern const short table_cube2d_vertices[];
   /*
    * Lookup table for 2D cases. The first entry is the offset
    * for
@@ -139,7 +160,12 @@ extern "C"
    * Basic case 2: 0 0 1 1
    * Basic case 3: 0 1 0 1
    */
-  extern const short table_cube2d_cases_offsets[][5];
+  extern const unsigned short table_cube2d_cases_offsets[][10];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube2d_vertex_groups[];
 
   /*
    * Contains all lines for Cube 2D.
@@ -173,8 +199,19 @@ extern "C"
    *  |   |
    *  0-5-1
    */
-  extern const short table_cube2d_codim_0[];
-
+  extern const short table_cube2d_codim_0_exterior[];
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube2d_codim_0_interior[];
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube2d_exterior_groups[];
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube2d_interior_groups[];
   /*
    * TODO: Comment
    */
@@ -185,15 +222,35 @@ extern "C"
    */
   extern const short table_cube2d_mc33_face_test_order[];
 
+  extern const short table_cube3d_vertices[];
   /*
    * TODO: Comment 3D cube
    */
-  extern const short table_cube3d_cases_offsets[][5];
+  extern const unsigned short table_cube3d_cases_offsets[][10];
 
   /*
    * TODO: Comment
    */
-  extern const short table_cube3d_codim_0[];
+  extern const short table_cube3d_vertex_groups[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3d_codim_0_exterior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3d_codim_0_interior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3d_exterior_groups[];
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3d_interior_groups[];
 
   /*
    * TODO: Comment
@@ -210,45 +267,240 @@ extern "C"
    */
   extern const short table_cube3d_mc33_face_test_order[];
 
+  extern const short table_cube3dsym_vertices[];
   /*
-   * TODO: Comment 2D simplex
+   * TODO: Comment 3D cube
    */
-  extern const short table_simplex2d_cases_offsets[][5];
+  extern const unsigned short table_cube3dsym_cases_offsets[][10];
 
   /*
    * TODO: Comment
    */
-  extern const short table_simplex2d_codim_0[];
+  extern const short table_cube3dsym_vertex_groups[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3dsym_codim_0_exterior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3dsym_codim_0_interior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3dsym_exterior_groups[];
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3dsym_interior_groups[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3dsym_codim_1[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3dsym_mc33_offsets[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_cube3dsym_mc33_face_test_order[];
+
+  extern const short table_simplex2d_vertices[];
+  /*
+   * TODO: Comment 2D simplex
+   */
+  extern const unsigned short table_simplex2d_cases_offsets[][10];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_simplex2d_vertex_groups[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_simplex2d_codim_0_exterior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_simplex2d_exterior_groups[];
+  /*
+   * TODO: Comment
+   */
+  extern const short table_simplex2d_interior_groups[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_simplex2d_codim_0_interior[];
 
   /*
    * TODO: Comment
    */
   extern const short table_simplex2d_codim_1[];
 
+  extern const short table_simplex3d_vertices[];
   /*
    * TODO: Comment 3D simplex
    */
-  extern const short table_simplex3d_cases_offsets[][5];
+  extern const unsigned short table_simplex3d_cases_offsets[][10];
 
   /*
    * TODO: Comment
    */
-  extern const short table_simplex3d_codim_0[];
+  extern const short table_simplex3d_vertex_groups[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_simplex3d_codim_0_exterior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_simplex3d_codim_0_interior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_simplex3d_exterior_groups[];
+  /*
+   * TODO: Comment
+   */
+  extern const short table_simplex3d_interior_groups[];
 
   /*
    * TODO: Comment
    */
   extern const short table_simplex3d_codim_1[];
 
+  extern const short table_pyramid3d_vertices[];
   /*
-   * TODO: Comment
+   * TODO: Comment 3D pyramid
    */
-  extern const short table_any1d_cases_offsets[][5];
+  extern const unsigned short table_pyramid3d_cases_offsets[][10];
 
   /*
    * TODO: Comment
    */
-  extern const short table_any1d_codim_0[];
+  extern const short table_pyramid3d_vertex_groups[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_pyramid3d_codim_0_exterior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_pyramid3d_codim_0_interior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_pyramid3d_exterior_groups[];
+  /*
+   * TODO: Comment
+   */
+  extern const short table_pyramid3d_interior_groups[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_pyramid3d_codim_1[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_pyramid3d_mc33_offsets[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_pyramid3d_mc33_face_test_order[];
+
+  extern const short table_prism3d_vertices[];
+  /*
+   * TODO: Comment 3D prism
+   */
+  extern const unsigned short table_prism3d_cases_offsets[][10];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_prism3d_vertex_groups[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_prism3d_codim_0_exterior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_prism3d_codim_0_interior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_prism3d_exterior_groups[];
+  /*
+   * TODO: Comment
+   */
+  extern const short table_prism3d_interior_groups[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_prism3d_codim_1[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_prism3d_mc33_offsets[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_prism3d_mc33_face_test_order[];
+
+  extern const short table_any1d_vertices[];
+  /*
+   * TODO: Comment
+   */
+  extern const unsigned short table_any1d_cases_offsets[][10];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_any1d_vertex_groups[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_any1d_codim_0_exterior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_any1d_codim_0_interior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_any1d_exterior_groups[];
+  /*
+   * TODO: Comment
+   */
+  extern const short table_any1d_interior_groups[];
 
   /*
    * TODO: Comment

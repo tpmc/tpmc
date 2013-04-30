@@ -76,7 +76,7 @@ input{style.sk}
 					skfile.write("  def x%i (v%i)\n" % (v, cell[v]))
 				else:
 					try:
-						key = tuple(set(cell[v]))
+						key = tuple(new_group(cell[v]))
 						skfile.write("  def x%i (e%i)\n" % (v, edges[key]))
 					# QUICKHACK CUBE MC33
 					except KeyError:
@@ -151,7 +151,7 @@ put { view((eye3), (look_at), [0,0,1]) then perspective(12)
 """)
 		skfile.write("""
 global { 
-  set [cull=false, line style=thick]
+  new_group [cull=false, line style=thick]
   language tikz
 %  camera scale(1.0)
 }
