@@ -3,7 +3,7 @@
 check: all
 
 #check_PROGRAMS=testmc33 testmarchingcubesrefinement test_mc33
-check_PROGRAMS=testmarchingcubesrefinement test_mc33 testmc33
+check_PROGRAMS=testmarchingcubesrefinement test_mc33 testmc33 testmarchingcubesnormals
 
 # we do not build testmc33, so ignore the source file
 # sourcescheck_NOSOURCES=testmc33.cc
@@ -17,6 +17,11 @@ testmarchingcubesrefinement_SOURCES=testmarchingcubesrefinement.cc
 testmarchingcubesrefinement_CPPFLAGS=$(AM_CPPFLAGS) -g -Wall -O0
 testmarchingcubesrefinement_LDFLAGS=-L$(top_builddir)/dune/marchingcubes/lut -lmclut
 testmarchingcubesrefinement_DEPENDENCIES = $(top_builddir)/dune/marchingcubes/lut/libmclut.la
+
+testmarchingcubesnormals_SOURCES=testmarchingcubesnormals.cc
+testmarchingcubesnormals_CPPFLAGS=$(AM_CPPFLAGS) -g -Wall -O0
+testmarchingcubesnormals_LDFLAGS=-L$(top_builddir)/dune/marchingcubes/lut -lmclut
+testmarchingcubesnormals_DEPENDENCIES = $(top_builddir)/dune/marchingcubes/lut/libmclut.la
 
 test_mc33_SOURCES=test_mc33.cc
 test_mc33_CPPFLAGS=$(AM_CPPFLAGS) -g -Wall -O0
