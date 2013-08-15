@@ -137,6 +137,8 @@ namespace Dune {
     {
     public:
 
+      using ThresholdFunctor<vtype>::getDistance;
+
       //! constructor
       NonDegeneratingThresholdFunctor(const Geometry & _embedding, const vtype _minLength)
         : ThresholdFunctor<vtype>(0), embedding(_embedding), minLength(_minLength)
