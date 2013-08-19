@@ -36,7 +36,8 @@ public:
   typedef GeoContainer::geo_iterator geo_iterator;
   static const int TRIANGULATION_COUNT = N;
 
-  MarchingCubesGUI();
+  template <class I>
+  MarchingCubesGUI(I begin, I end);
   void computeTriangulations();
   void getFaceCenter(std::size_t i, VectorType& result) const;
   std::size_t getFaceCount() const { return 6; }
@@ -77,11 +78,16 @@ private:
 };
 
 template <std::size_t N>
-MarchingCubesGUI<N>::MarchingCubesGUI()
+template <class I>
+MarchingCubesGUI<N>::MarchingCubesGUI(I begin, I end)
   : mPlanePosition(0), mPlaneFirst(0), mPlaneSecond(0),
     mPlaneGridRefinements(4), mPlaneGridValid(false) {
   mValues.resize(mBoundingGrid.vertexCount());
-  std::fill(mValues.begin(), mValues.end(), 1);
+  std::size_t index = 0;
+  for (; index<mValues.size() && begin != end; ++index, ++begin) {
+    mValues[index] = *begin;
+  }
+  std::fill(mValues.begin()+index, mValues.end(), 1);
   std::fill(mGridValid, mGridValid+N, false);
   std::fill(mRefinements, mRefinements+N, 0);
   mRefinements[0] = 4;

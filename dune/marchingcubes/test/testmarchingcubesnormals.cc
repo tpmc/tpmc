@@ -89,11 +89,6 @@ bool testNormal(const V& values,
                 std::size_t size,
                 bool useMc33) {
   // create interface refinement
-  std::cout << "values:";
-  for (std::size_t i = 0; i<size; ++i) {
-    std::cout << " " << values[i];
-  }
-  std::cout << "\n";
   MultilinearFunctor<ctype,dim> functor(values.begin(), values.end());
   Dune::MarchingCubes33<ctype,dim, Dune::MarchingCubes::ThresholdFunctor<ctype> > mc;
   std::size_t key = mc.getKey(values, size, useMc33);
@@ -105,22 +100,32 @@ bool testNormal(const V& values,
     // first retrieve normal from mc
     Dune::FieldVector<ctype,dim> normal;
     mc.getNormal(*it, normal);
-    std::cout << "element corners:\n";
     // and now from the multi linear functor by taking the mean of the gradient at the element corners
+    // \TODO note: linear interpolation of gradient in general not applicable!!
     Dune::FieldVector<ctype,dim> centerNormal(0.0);
     typename std::vector<Dune::FieldVector<ctype,dim> >::const_iterator eit = it->begin();
     for (; eit != it->end(); ++eit) {
       Dune::FieldVector<ctype,dim> g = functor.gradient(*eit);
       centerNormal += g;
-      std::cout << *eit << " value: " << functor(*eit) << " gradient: " << g << "\n";
     }
     centerNormal /= centerNormal.two_norm();
     // check if test is successfull and normals match
-    std::cout << "normal: " << normal << "\tcalculated: " << centerNormal << "\n";
     ctype dot = normal*centerNormal;
-    std::cout << "dot: " << dot << "\n";
     if (dot < 1e-5) {
-      std::cout << "TEST FAILED!\n";
+      std::cout << "TEST FAILED:\n";
+      std::cout << "values:";
+      for (std::size_t i = 0; i<size; ++i) {
+        std::cout << " " << values[i];
+      }
+      std::cout << "\n";
+      std::cout << "element corners:\n";
+      typename std::vector<Dune::FieldVector<ctype,dim> >::const_iterator eit = it->begin();
+      for (; eit != it->end(); ++eit) {
+        Dune::FieldVector<ctype,dim> g = functor.gradient(*eit);
+        std::cout << *eit << " value: " << functor(*eit) << " gradient: " << g << "\n";
+      }
+      std::cout << "normal: " << normal << "\tcalculated: " << centerNormal << "\n";
+      std::cout << "dot: " << dot << "\n";
       return false;
     }
   }

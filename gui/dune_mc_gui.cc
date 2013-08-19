@@ -21,8 +21,18 @@ IMPLEMENT_APP(MainApp);
 
 bool MainApp::OnInit() {
   std::cout << "starting dune mc gui\n";
+  // parse command line parameters
+  std::vector<double> vertex_values;
+  for (int i = 1; i<wxApp::argc; ++i) {
+    wxCharBuffer buffer = wxString(wxApp::argv[i]).ToUTF8();
+    std::stringstream ss(buffer.data());
+    double value;
+    ss >> value;
+    vertex_values.push_back(value);
+  }
   const std::size_t N = 2;
-  MainFrame<N> *frame = new MainFrame<N>(_("Marchings Cubes GUI"));
+  MainFrame<N> *frame;
+  frame = new MainFrame<N>(_("Marching Cubes GUI"), vertex_values.begin(), vertex_values.end());
   frame->Show(true);
   return true;
 }

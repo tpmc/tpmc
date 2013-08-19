@@ -356,7 +356,9 @@ namespace Dune {
   void MarchingCubes33<valueType, dim, thresholdFunctor,
       symmetryType, intersectionFunctor>::getNormal(const std::vector<point>& element,
                                                     point& coord) const {
+#ifndef NDEBUG
     std::cout << "WARNING: MarchingCubes33::getNormal is currently in experimental stage. Use at own risk!\n";
+#endif
     NormalHelper<ctype, dim>::get(element, coord);
   }
 

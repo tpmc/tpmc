@@ -17,7 +17,8 @@ public:
   typedef typename MarchingCubesGUI<N>::GeoContainer GeoContainer;
   typedef typename GeoContainer::TriangulationType TriangulationType;
 
-  MainFrame(const wxString& title);
+  template <class I>
+  MainFrame(const wxString& title, I begin, I end);
   bool getShowInterface(std::size_t i) const { return mShowInterface[i]; }
   void setShowInterface(std::size_t i, bool v) { mShowInterface[i] = v; }
   bool getShowCube() const { return mShowCube; }
@@ -57,10 +58,12 @@ private:
 };
 
 template <std::size_t N>
-MainFrame<N>::MainFrame(const wxString& title)
+template <class I>
+MainFrame<N>::MainFrame(const wxString& title, I begin, I end)
   : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(1000,800)),
     mShowCube(true), mShowFaceCenter(false), mShowPlane(false),
-    mShowGeoInterface(true), mShowGeoInterior(true), mShowGeoExterior(true) {
+    mShowGeoInterface(true), mShowGeoInterior(true), mShowGeoExterior(true),
+    mGui(begin, end) {
   std::fill(mShowInterface, mShowInterface+N, true);
 
   wxPanel *panel = new wxPanel(this, -1);
@@ -88,6 +91,7 @@ MainFrame<N>::MainFrame(const wxString& title)
   panel->SetSizer(hbox);
 
   Centre();
+  ctlpanel->startComputation();
 }
 
 template <std::size_t N>

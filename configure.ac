@@ -14,7 +14,7 @@ DUNE_CHECK_ALL
 
 # stuff for gui program
 # install libwxgtk2.X-dev
-m4_ifdef(AM_OPTIONS_WXCONFIG, [
+m4_ifdef([AM_OPTIONS_WXCONFIG], [
   AM_OPTIONS_WXCONFIG
   reqwx=2.4.0
   AM_PATH_WXCONFIG($reqwx, wxWin=1)
