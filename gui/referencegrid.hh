@@ -48,7 +48,7 @@ namespace MCGui {
     typedef typename GridType::LeafGridView GridViewType;
 
     ReferenceGrid()
-      : reference_(Dune::GenericReferenceElements<ctype,dim>::general(Dune::GeometryType(bt,dim))) {
+      : reference_(Dune::ReferenceElements<ctype,dim>::general(Dune::GeometryType(bt,dim))) {
       reset();
     }
 
@@ -64,7 +64,7 @@ namespace MCGui {
       grid_ = SelectionTraits<bt,ctype,dim>::construct(reference_);
     }
   private:
-    const Dune::GenericReferenceElement<ctype,dim>& reference_;
+    const Dune::ReferenceElement<ctype,dim>& reference_;
     Dune::shared_ptr<GridType> grid_;
   };
 }

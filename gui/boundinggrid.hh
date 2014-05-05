@@ -13,7 +13,7 @@ namespace MCGui {
     typedef typename std::vector<EdgeType>::const_iterator ConstEdgeIterator;
 
     BoundingGrid() {
-      const Dune::GenericReferenceElement<ctype, dim>& ref = Dune::GenericReferenceElements<ctype,dim>::general(Dune::GeometryType(bt,dim));
+      const Dune::ReferenceElement<ctype, dim>& ref = Dune::ReferenceElements<ctype,dim>::general(Dune::GeometryType(bt,dim));
       for (int i = 0; i<ref.size(dim-1); ++i) {
         int a = ref.subEntity(i,dim-1,0,dim);
         int b = ref.subEntity(i,dim-1,1,dim);

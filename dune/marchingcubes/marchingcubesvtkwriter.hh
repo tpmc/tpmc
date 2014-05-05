@@ -96,7 +96,7 @@ namespace Dune
     template<class Entity>
     void getFaces(const Entity & e, std::vector< std::vector< FieldVector<ctype, dim> > > & elements) const
     {
-      const GenericReferenceElement<ctype,dim> & refElem = GenericReferenceElements<ctype,dim>::general(e.type());
+      const ReferenceElement<ctype,dim> & refElem = ReferenceElements<ctype,dim>::general(e.type());
       std::vector<ctype> values(refElem.size(dim));
       for (unsigned int c = 0; c < refElem.size(dim); c++)
         values[c] = levelset.evaluate(0, e, refElem.position(c,dim));

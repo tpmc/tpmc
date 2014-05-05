@@ -89,8 +89,8 @@ namespace Dune {
       case 6 : geo_type.makePrism(); break;
       default : geo_type.makeCube(dim);
       }
-      const GenericReferenceElement<ctype, dim> & ref_element =
-        GenericReferenceElements<ctype, dim>::general(geo_type);
+      const ReferenceElement<ctype, dim> & ref_element =
+        ReferenceElements<ctype, dim>::general(geo_type);
       valueType corner_a, corner_b, corner_c, corner_d;
 #ifndef NDEBUG
       std::cout << "---- AMBIGUOUS:";
