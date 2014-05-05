@@ -34,9 +34,9 @@ namespace MCGui {
       template <class Ref>
       static Dune::shared_ptr<GridType> construct(const Ref& reference) {
         Dune::FieldVector< ctype, dim > L(1.0);
-        Dune::FieldVector< int, dim > s(1);
-        Dune::FieldVector< bool, dim > periodic(false);
-        return Dune::shared_ptr<GridType>(new GridType(L,s,periodic,1));
+        std::array< int, dim > s;
+        for (std::size_t i=0; i<dim; i++) s[i] = 1;
+        return Dune::shared_ptr<GridType>(new GridType(L,s));
       }
     };
   }

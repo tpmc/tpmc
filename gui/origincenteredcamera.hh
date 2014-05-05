@@ -3,6 +3,8 @@
 #ifndef __ORIGINCENTEREDCAMERA_HH__
 #define __ORIGINCENTEREDCAMERA_HH__
 
+#include <GL/glu.h>
+
 class OriginCenteredCamera {
 public:
   typedef Dune::FieldVector<double, 3> VectorType;

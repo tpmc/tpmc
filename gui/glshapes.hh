@@ -3,6 +3,7 @@
 #ifndef GLSHAPES_HH
 #define GLSHAPES_HH
 
+#include <GL/gl.h>
 #include <dune/common/exceptions.hh>
 
 class UnknownShapeException : public Dune::Exception {};

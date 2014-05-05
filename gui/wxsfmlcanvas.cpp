@@ -25,7 +25,11 @@ void wxSFMLCanvas::OnIdle(wxIdleEvent&) {
 void wxSFMLCanvas::OnPaint(wxPaintEvent&) {
   wxPaintDC Dc(this);
   OnUpdate();
+#if SFML_VERSION_MAJOR >= 2
+  display();
+#else
   Display();
+#endif
 }
 
 void wxSFMLCanvas::OnKeyDown(wxKeyEvent&) {}
@@ -41,7 +45,6 @@ void wxSFMLCanvas::OnEraseBackground(wxEraseEvent&) {}
 wxSFMLCanvas::wxSFMLCanvas(wxWindow* Parent, wxWindowID Id, const wxPoint& Position, const wxSize& Size, long Style) :
   wxControl(Parent, Id, Position, Size, Style)
 {
-  sf::WindowSettings Settings;
     #ifdef __WXGTK__
 
   // GTK implementation requires to go deeper to find the
@@ -50,13 +53,21 @@ wxSFMLCanvas::wxSFMLCanvas(wxWindow* Parent, wxWindowID Id, const wxPoint& Posit
   gtk_widget_set_double_buffered(m_wxwindow, false);
   GdkWindow* Win = GTK_PIZZA(m_wxwindow)->bin_window;
   XFlush(GDK_WINDOW_XDISPLAY(Win));
+      #if SFML_VERSION_MAJOR >= 2
+  sf::RenderWindow::create(GDK_WINDOW_XWINDOW(Win));
+      #else
   sf::RenderWindow::Create(GDK_WINDOW_XWINDOW(Win));
+      #endif
 
     #else
 
   // Tested under Windows XP only (should work with X11
   // and other Windows versions - no idea about MacOS)
+      #if SFML_VERSION_MAJOR >= 2
   sf::RenderWindow::Create(GetHandle());
+      #else
+  sf::RenderWindow::create(GetHandle());
+      #endif
 
     #endif
 }

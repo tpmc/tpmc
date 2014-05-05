@@ -105,7 +105,9 @@ MCCanvas<N>::MCCanvas(MarchingCubesGUI<N> *gui, MainFrame<N> *parentFrame,
     mKeySpacePressed(false),
     mAspectRatio(1.f), mOrthoBottom(-0.1f), mOrthoTop(1.1f),
     mOrthoLeft(-0.1f), mOrthoRight(1.1f) {
+#if SFML_VERSION_MAJOR < 2
   PreserveOpenGLStates(true);
+#endif
   glClearDepth(1.f);
   glClearColor(1.f, 1.f, 1.f, 0.f);
   glEnable(GL_DEPTH_TEST);
@@ -151,24 +153,52 @@ void MCCanvas<N>::projectOrigin(V& result) {
 template <std::size_t N>
 void MCCanvas<N>::OnUpdate() {
   sf::Event Event;
-  while (GetEvent(Event)) {
-    if (Event.Type == sf::Event::Resized) {
-      glViewport(0,0,Event.Size.Width, Event.Size.Height);
-      //sf::FloatRect r(0,Event.Size.Height, Event.Size.Width, 0);
-      sf::FloatRect r(0,0, Event.Size.Width, Event.Size.Height);
+#if SFML_VERSION_MAJOR >= 2
+  while (this->pollEvent(Event))
+#else
+  while (this->GetEvent(Event))
+#endif
+  {
+#if SFML_VERSION_MAJOR >= 2
+    if (Event.type == sf::Event::Resized)
+#else
+    if (Event.Type == sf::Event::Resized)
+#endif
+    {
+#if SFML_VERSION_MAJOR >= 2
+      double w = Event.size.width;
+      double h = Event.size.height;
+#else
+      double w = Event.Size.Width;
+      double h = Event.Size.Height;
+#endif
+      glViewport(0,0,w,h);
+      sf::FloatRect r(0,0,w,h);
+#if SFML_VERSION_MAJOR >= 2
+      sf::View view = getDefaultView();
+      view.reset(r);
+      // view.setViewport(sf::FloatRect(0,0,1,1));
+      setView(view);
+#else
       GetDefaultView().SetFromRect(r);
+#endif
       // compute new aspect ratio
-      mAspectRatio = static_cast<float>(Event.Size.Width)/Event.Size.Height;
-      double s = PLANE_PERCENT*std::min(Event.Size.Width, Event.Size.Height);
+      mAspectRatio = w/h;
+      double s = PLANE_PERCENT*std::min(w,h);
       mOrthoLeft = 0;
-      mOrthoRight = Event.Size.Width/s;
-      mOrthoBottom = 1.0-Event.Size.Height/s;
+      mOrthoRight = w/s;
+      mOrthoBottom = 1.0-h/s;
       mOrthoTop = 1.0;
     }
   }
   // update rotation if key is pressed
+#if SFML_VERSION_MAJOR >= 2
+  float Time = mClock.getElapsedTime().asSeconds();
+  mClock.restart();
+#else
   float Time = mClock.GetElapsedTime();
   mClock.Reset();
+#endif
   if (mKeyLeftPressed) {
     mCamera.rotateRight(-Time*ROTATIONS_PER_SECOND*2.f*M_PI);
   }
@@ -200,8 +230,16 @@ void MCCanvas<N>::OnUpdate() {
     //mCamera.moveUp(-Time*STEPS_PER_SECOND);
   }
 
-  std::vector<sf::String> strings;
+  // Activate the window before using OpenGL commands.
+  // This is useless here because we have only one window which is
+  // always the active one, but don't forget it if you use multiple windows
+#if SFML_VERSION_MAJOR >= 2
+  setActive();
+  std::vector<sf::Text> strings;
+#else
   SetActive();
+  std::vector<sf::String> strings;
+#endif
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glMatrixMode(GL_PROJECTION);
@@ -231,12 +269,27 @@ void MCCanvas<N>::OnUpdate() {
                INDICATOR_CUBE_SIZE);
       double pr[2];
       projectOrigin(pr);
+#if SFML_VERSION_MAJOR >= 2
+      sf::Vector2i px(pr[0], getSize().y-pr[1]);
+      sf::Vector2f vco = mapPixelToCoords(px, getDefaultView());
+#else
       sf::Vector2f vco = ConvertCoords(pr[0], GetHeight()-pr[1], &GetDefaultView());
+#endif
       std::stringstream id;
       id << i;
+#if SFML_VERSION_MAJOR >= 2
+      // Declare and load a font
+      sf::Font font;
+      font.loadFromFile("/usr/share/fonts/truetype/ttf-dejavu/DejaVuSansCondensed.ttf");
+      // Create a text
+      sf::Text text(id.str(), font, 150.0/(std::abs(mCamera.getDist())+1));
+      text.setColor(sf::Color(0,0,255));
+      text.move(vco.x, vco.y);
+#else
       sf::String text(id.str(),sf::Font::GetDefaultFont(), 150.0/(std::abs(mCamera.getDist())+1));
       text.SetColor(sf::Color(0,0,255));
       text.Move(vco.x, vco.y);
+#endif
       strings.push_back(text);
       if (mGui->getVertexValue(i) >=0) {
         glTranslatef(-0.5f,-0.5f,-0.5f);
@@ -270,9 +323,15 @@ void MCCanvas<N>::OnUpdate() {
     drawPlane();
   }
   glPushMatrix();
+#if SFML_VERSION_MAJOR >= 2
+  for (std::vector<sf::Text>::const_iterator it = strings.begin();
+       it != strings.end(); ++it)
+    draw(*it);
+#else
   for (std::vector<sf::String>::const_iterator it = strings.begin();
        it != strings.end(); ++it)
     Draw(*it);
+#endif
   glPopMatrix();
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
@@ -293,7 +352,11 @@ void MCCanvas<N>::OnUpdate() {
 
   glPopMatrix();
 
+#if SFML_VERSION_MAJOR >= 2
+  display();
+#else
   Display();
+#endif
 }
 
 template <std::size_t N>

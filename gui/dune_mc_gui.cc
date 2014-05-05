@@ -5,8 +5,9 @@
 #endif
 
 #include <iostream>
-#include "dune/common/parallel/mpihelper.hh" // An initializer of MPI
-#include "dune/common/exceptions.hh" // We use exceptions
+
+#include <dune/common/parallel/mpihelper.hh> // An initializer of MPI
+#include <dune/common/exceptions.hh> // We use exceptions
 
 #include <iostream>
 #include <wx/wx.h>
@@ -20,6 +21,9 @@ public:
 IMPLEMENT_APP(MainApp);
 
 bool MainApp::OnInit() {
+  int argc = 0;
+  char **argv = {};
+  Dune::MPIHelper::instance(argc, argv);
   std::cout << "starting dune mc gui\n";
   // parse command line parameters
   std::vector<double> vertex_values;

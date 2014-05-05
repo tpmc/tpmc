@@ -13,7 +13,6 @@ dune_mc_gui_SOURCES = dune_mc_gui.cc ctlpanel.hh geometries.hh \
 	triangulation.hh trilinearfunctor.hh viewpanel.hh wxsfmlcanvas.cpp
 
 dune_mc_gui_CPPFLAGS = $(AM_CPPFLAGS) \
-	$(DUNEMPICPPFLAGS) \
 	$(ALUGRID_CPPFLAGS) \
 	$(GTK_CFLAGS) \
 	$(WX_CPPFLAGS)
@@ -23,14 +22,12 @@ dune_mc_gui_CPPFLAGS = $(AM_CPPFLAGS) \
 # here as well.
 dune_mc_gui_LDADD = \
 	$(DUNE_LDFLAGS) $(DUNE_LIBS) \
-	$(DUNEMPILIBS)	\
 	$(ALUGRID_LDFLAGS) $(ALUGRID_LIBS) \
 	$(GTK_LIBS) \
 	$(WX_LIBS) \
 	-lsfml-system -lsfml-window -lsfml-graphics -lX11 \
 	$(GL_LIBS) -lGLU
 dune_mc_gui_LDFLAGS = $(AM_LDFLAGS) \
-	$(DUNEMPILDFLAGS) \
 	-L$(top_builddir)/dune/marchingcubes/lut -lmclut \
 	$(DUNE_LDFLAGS)
 dune_mc_gui_DEPENDENCIES = $(top_builddir)/dune/marchingcubes/lut/libmclut.la
@@ -38,4 +35,3 @@ dune_mc_gui_DEPENDENCIES = $(top_builddir)/dune/marchingcubes/lut/libmclut.la
 endif # GUI
 
 include $(top_srcdir)/am/global-rules
-
