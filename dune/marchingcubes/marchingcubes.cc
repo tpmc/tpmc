@@ -385,9 +385,10 @@ namespace Dune {
   void MarchingCubes33<valueType, dim, thresholdFunctor,
       symmetryType, intersectionFunctor>::
   getCoordsFromNumber(const valueVector& vertex_values,
-                      const sizeType vertex_count, short number,
+                      const sizeType vertex_count, short number_,
                       point& coord) const
   {
+    short number = number_;
     // get position in the vertex table
     //std::cout << "getting coords for number " << number << "\n";
     if (number <= 0) {     // we have a single point
