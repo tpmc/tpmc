@@ -177,8 +177,8 @@ namespace MarchingCubesTest {
       Dune::ReferenceElements<ctype, dim>::general(geometryType);
     Dune::MarchingCubesRefinement<ctype, dim> refInterior(geometryType, values_, false);
     Dune::MarchingCubesRefinement<ctype, dim> refExterior(geometryType, values_, true);
-    result_ = match(refInterior.begin(), refInterior.end(),
-                    refExterior.begin(), refExterior.end(),
+    result_ = match(refInterior.interiorBegin(), refInterior.interiorEnd(),
+                    refExterior.interiorBegin(), refExterior.interiorEnd(),
                     referenceElement.volume());
   }
 
@@ -243,10 +243,10 @@ namespace MarchingCubesTest {
       Dune::MarchingCubesRefinement<ctype, dim> refExterior(geometryType, values, true);
       Dune::MarchingCubesRefinement<ctype, dim> refInteriorRotated(geometryType, rotatedValues, false);
       Dune::MarchingCubesRefinement<ctype, dim> refExteriorRotated(geometryType, rotatedValues, true);
-      ctype vi = sumVolume(refInterior.begin(), refInterior.end());
-      ctype ve = sumVolume(refExterior.begin(), refExterior.end());
-      ctype vir = sumVolume(refInteriorRotated.begin(), refInteriorRotated.end());
-      ctype ver = sumVolume(refExteriorRotated.begin(), refExteriorRotated.end());
+      ctype vi = sumVolume(refInterior.interiorBegin(), refInterior.interiorEnd());
+      ctype ve = sumVolume(refExterior.interiorBegin(), refExterior.interiorEnd());
+      ctype vir = sumVolume(refInteriorRotated.interiorBegin(), refInteriorRotated.interiorEnd());
+      ctype ver = sumVolume(refExteriorRotated.interiorBegin(), refExteriorRotated.interiorEnd());
       if (Dune::FloatCmp::ne(vi, vir) || Dune::FloatCmp::ne(ve, ver)) {
         result_ = false;
         std::cout << "TransformationTest: i: " << vi << " ir: " << vir
