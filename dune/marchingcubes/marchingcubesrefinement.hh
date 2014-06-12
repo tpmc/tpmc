@@ -40,7 +40,7 @@ namespace Dune {
     typedef std::vector<VolumeGeometryType> VolumeGeometries;
 
     /** \brief Container type for the interface geometries */
-    typedef std::vector<InterfaceGeometryType> InterfaceGeoemtries;
+    typedef std::vector<InterfaceGeometryType> InterfaceGeometries;
 
     /** \brief Type of the iterator over all the volume geometries resulting from the splitting */
     typedef typename std::vector<VolumeGeometryType>::const_iterator const_volume_iterator;
@@ -84,7 +84,7 @@ namespace Dune {
     { return interiorGeometries_; }
 
     /** \brief Access to the refinement geometries container */
-    InterfaceGeoemtries & interfaceGeometries()
+    InterfaceGeometries & interfaceGeometries()
     { return interfaceGeometries_; }
 
   private:
@@ -93,7 +93,7 @@ namespace Dune {
     VolumeGeometries interiorGeometries_;
 
     /** \brief Container for the geometries that we have created for the interior volume */
-    InterfaceGeoemtries interfaceGeometries_;
+    InterfaceGeometries interfaceGeometries_;
 
   };
 
