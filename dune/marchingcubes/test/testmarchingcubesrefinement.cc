@@ -31,7 +31,7 @@ void integralTest(GeometryType type,
   for (; it!=interiorRefinement.interiorEnd(); ++it)
   {
     // Get zero-order quadrature rule
-    const Dune::QuadratureRule<double,dim>& quad = Dune::QuadratureRules<double,dim>::rule(it->type(),0);
+    const QuadratureRule<double,dim>& quad = QuadratureRules<double,dim>::rule(it->type(),0);
 
     for (size_t i=0; i<quad.size(); i++)
       volume += quad[i].weight() * it->integrationElement(quad[i].position());
@@ -46,7 +46,7 @@ void integralTest(GeometryType type,
   for (it = exteriorRefinement.interiorBegin(); it!=exteriorRefinement.interiorEnd(); ++it)
   {
     // Get zero-order quadrature rule
-    const QuadratureRule<double,dim>& quad = Dune::QuadratureRules<double,dim>::rule(it->type(),0);
+    const QuadratureRule<double,dim>& quad = QuadratureRules<double,dim>::rule(it->type(),0);
 
     for (size_t i=0; i<quad.size(); i++)
       volume += quad[i].weight() * it->integrationElement(quad[i].position());
@@ -59,26 +59,18 @@ void integralTest(GeometryType type,
   }
 }
 
-// Very primitive testing of the Dune wrapper for the marching cubes algorithm
-int main(int argc, char* argv[]) try
+template <int dim>
+void cornerTest(GeometryType type,
+                const std::vector<double> values)
 {
-  GeometryType quadrilateral;
-  quadrilateral.makeQuadrilateral();
-
-  std::vector<double> values(4);
-  values[0] = values[1] = -1;
-  values[2] = values[3] =  1;
-
-  integralTest<2>(quadrilateral, values);
-
-  MarchingCubesRefinement<double,2> refinement(quadrilateral,values);
+  MarchingCubesRefinement<double,dim> refinement(type,values);
 
   ////////////////////////////////////////////////////////////////////////////////
   //  Test the interior volume
   ////////////////////////////////////////////////////////////////////////////////
 
   std::cout << "Elements:" << std::endl;
-  MarchingCubesRefinement<double,2>::const_volume_iterator it = refinement.interiorBegin();
+  typename MarchingCubesRefinement<double,dim>::const_volume_iterator it = refinement.interiorBegin();
 
   for (; it!=refinement.interiorEnd(); ++it) {
 
@@ -93,7 +85,7 @@ int main(int argc, char* argv[]) try
   ////////////////////////////////////////////////////////////////////////////////
 
   std::cout << "Interface:" << std::endl;
-  MarchingCubesRefinement<double,2>::const_interface_iterator iIt = refinement.interfaceBegin();
+  typename MarchingCubesRefinement<double,dim>::const_interface_iterator iIt = refinement.interfaceBegin();
 
   for (; iIt!=refinement.interfaceEnd(); ++iIt) {
 
@@ -103,6 +95,21 @@ int main(int argc, char* argv[]) try
     }
 
   }
+
+}
+
+// Very primitive testing of the Dune wrapper for the marching cubes algorithm
+int main(int argc, char* argv[]) try
+{
+  GeometryType quadrilateral;
+  quadrilateral.makeQuadrilateral();
+
+  std::vector<double> values(4);
+  values[0] = values[1] = -1;
+  values[2] = values[3] =  1;
+
+  integralTest<2>(quadrilateral, values);
+  cornerTest<2>(quadrilateral, values);
 
 }
 catch (Exception e) {
