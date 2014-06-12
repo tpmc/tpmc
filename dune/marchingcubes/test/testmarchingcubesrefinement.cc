@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) try
   values[0] = values[1] = -1;
   values[2] = values[3] =  1;
 
-  MarchingCubesRefinement<double,2> refinement(values);
+  MarchingCubesRefinement<double,2> refinement(quadrilateral,values);
 
   ////////////////////////////////////////////////////////////////////////////////
   //  Test the interior volume

@@ -54,7 +54,8 @@ namespace Dune {
      * \param values Values of the level set function at the element corners
      * \param exterior_not_interior Defines whether elements of the interior or exterior are generated
      */
-    MarchingCubesRefinement(std::vector<double> values,
+    MarchingCubesRefinement(const GeometryType& type,
+                            std::vector<double> values,
                             bool exterior_not_interior = false,
                             const thresholdFunctor & threshFunctor = thresholdFunctor() );
 
@@ -101,7 +102,8 @@ namespace Dune {
 
 template <class ctype, int dim, class thresholdFunctor>
 Dune::MarchingCubesRefinement<ctype,dim,thresholdFunctor>::
-MarchingCubesRefinement(std::vector<double> values,
+MarchingCubesRefinement(const GeometryType& type,
+                        std::vector<double> values,
                         bool exterior_not_interior,
                         const thresholdFunctor & threshFunctor)
 {
