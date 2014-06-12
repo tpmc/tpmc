@@ -6,13 +6,8 @@
 
 #include <dune/common/version.hh>
 
-#if DUNE_VERSION_NEWER(DUNE_COMMON,2,1)
 #include <dune/geometry/type.hh>
 #include <dune/geometry/referenceelements.hh>
-#else
-#include <dune/common/geometrytype.hh>
-#include <dune/grid/common/genericreferenceelements.hh>
-#endif
 
 #include <fstream>
 #include <cmath>
