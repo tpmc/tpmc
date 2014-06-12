@@ -1,4 +1,4 @@
 Module: dune-mc
 Version: 0.1
 Maintainer: christi@dune-project.org
-Depends: dune-common dune-grid
+Depends: dune-common (>= 2.3) dune-grid (>= 2.3)
