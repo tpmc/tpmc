@@ -41,7 +41,7 @@ void integralTest(GeometryType type,
   ///////////////////////////
   // Sum over outside
   ///////////////////////////
-  MarchingCubesRefinement<double,2> exteriorRefinement(type,values,true);
+  MarchingCubesRefinement<double,dim> exteriorRefinement(type,values,true);
 
   for (it = exteriorRefinement.interiorBegin(); it!=exteriorRefinement.interiorEnd(); ++it)
   {
@@ -101,15 +101,49 @@ void cornerTest(GeometryType type,
 // Very primitive testing of the Dune wrapper for the marching cubes algorithm
 int main(int argc, char* argv[]) try
 {
+  //////////////////////////////////////////////////////
+  //   Test subdividing a triangle
+  //////////////////////////////////////////////////////
+  GeometryType triangle;
+  triangle.makeTriangle();
+
+  std::vector<double> values = {-1, 1, 1};
+
+  integralTest<2>(triangle, values);
+  cornerTest<2>(triangle, values);
+
+  //////////////////////////////////////////////////////
+  //   Test subdividing a quadrilateral
+  //////////////////////////////////////////////////////
   GeometryType quadrilateral;
   quadrilateral.makeQuadrilateral();
 
-  std::vector<double> values(4);
-  values[0] = values[1] = -1;
-  values[2] = values[3] =  1;
+  values = {-1, -1, 1, 1};
 
   integralTest<2>(quadrilateral, values);
   cornerTest<2>(quadrilateral, values);
+
+  //////////////////////////////////////////////////////
+  //   Test subdividing a tetrahedron
+  //////////////////////////////////////////////////////
+  GeometryType tetrahedron;
+  tetrahedron.makeTetrahedron();
+
+  values = {-1, -1, 1, 1};
+
+  integralTest<3>(tetrahedron, values);
+  cornerTest<3>(tetrahedron, values);
+
+  //////////////////////////////////////////////////////
+  //   Test subdividing a hexahedron
+  //////////////////////////////////////////////////////
+  GeometryType hexahedron;
+  hexahedron.makeHexahedron();
+
+  values = {-1, 1, 1, -1, 2, 2, -2, 2};
+
+  integralTest<3>(hexahedron, values);
+  cornerTest<3>(hexahedron, values);
 
 }
 catch (Exception e) {
