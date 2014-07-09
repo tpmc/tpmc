@@ -173,8 +173,13 @@ namespace MarchingCubesTest {
     const int dim = Geometry::dimension;
     Dune::GeometryType geometryType(Geometry::basicType, Geometry::dimension);
 
+#if DUNE_VERSION_NEWER(DUNE_COMMON,2,3)
     const Dune::ReferenceElement<ctype, dim>& referenceElement =
       Dune::ReferenceElements<ctype, dim>::general(geometryType);
+#else
+    const Dune::GenericReferenceElement<ctype, dim>& referenceElement =
+      Dune::GenericReferenceElements<ctype, dim>::general(geometryType);
+#endif
     Dune::MarchingCubesRefinement<ctype, dim> refInterior(geometryType, values_, false);
     Dune::MarchingCubesRefinement<ctype, dim> refExterior(geometryType, values_, true);
     result_ = match(refInterior.interiorBegin(), refInterior.interiorEnd(),

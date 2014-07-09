@@ -53,7 +53,13 @@ void integralTest(GeometryType type,
 
   }
 
-  if ( std::fabs(volume - ReferenceElements<double,dim>::general(type).volume()) > 1e-5 )
+  if ( std::fabs(volume -
+#if DUNE_VERSION_NEWER(DUNE_COMMON,2,3)
+      ReferenceElements<double,dim>::general(type).volume()) > 1e-5
+#else
+      GenericReferenceElements<double,dim>::general(type).volume()) > 1e-5
+#endif
+    )
   {
     std::cout << "Integration over the entire refinement does not yield the correct element volume!" << std::endl;
   }
