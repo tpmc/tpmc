@@ -170,6 +170,51 @@ MarchingCubesRefinement(const GeometryType& type,
   }
 }
 #else
+Dune::GeometryType guessGeometryType(unsigned int dim, unsigned int vertices)
+{
+  Dune::GeometryType type;
+  switch (dim)
+  {
+    case 0 :
+      type.makeVertex();
+      return type;
+    case 1 :
+      type.makeLine();
+      return type;
+    case 2 :
+      switch (vertices) {
+        case 3 :
+          type.makeSimplex(2);
+          return type;
+        case 4 :
+          type.makeCube(2);
+          return type;
+        default :
+          DUNE_THROW(Dune::NotImplemented, "2d elements with " << vertices << " corners are not supported!");
+      }
+    case 3 :
+      switch (vertices) {
+        case 4 :
+          type.makeSimplex(2);
+          return type;
+        case 5 :
+          type.makePyramid();
+          return type;
+        case 6 :
+          type.makePrism();
+          return type;
+        case 8 :
+          type.makeCube(3);
+          return type;
+        default :
+          DUNE_THROW(Dune::NotImplemented, "3d elements with " << vertices << " corners are not supported!");
+      }
+    default :
+      DUNE_THROW(Dune::NotImplemented, "guessGeometryType only implemented up to 3d");
+  }
+}
+
+
 template <class ctype, int dim, class thresholdFunctor>
 Dune::MarchingCubesRefinement<ctype,dim,thresholdFunctor>::
 MarchingCubesRefinement(const GeometryType& type,
@@ -177,8 +222,6 @@ MarchingCubesRefinement(const GeometryType& type,
                         bool exterior_not_interior,
                         const thresholdFunctor & threshFunctor)
 {
-  Dune::GeometryType simplex(Dune::GeometryType::simplex, dim);
-  Dune::GeometryType face_simplex(Dune::GeometryType::simplex, dim-1);
   std::vector<std::vector<FieldVector<double,dim> > > elementCorners;
 
   // Call the actual marching cubes algorithm
@@ -196,8 +239,8 @@ MarchingCubesRefinement(const GeometryType& type,
   // Construct the Dune GeometryType from the number of corners and the space dimension
   for (size_t i=0; i<elementCorners.size(); i++) {
     // Make BasicGeometry from the element type and the corner positions
-    assert(elementCorners[i].size() == dim); // make sure we have simplices
-    interiorGeometries_[i] = VolumeGeometryType(simplex, elementCorners[i]);
+    Dune::GeometryType geomType = guessGeometryType(dim, elementCorners[i].size());
+    interiorGeometries_[i] = VolumeGeometryType(geomType, elementCorners[i]);
   }
 
   elementCorners.clear();
@@ -214,8 +257,8 @@ MarchingCubesRefinement(const GeometryType& type,
   // Construct the Dune GeometryType from the number of corners and the space dimension
 
   for (size_t i=0; i<elementCorners.size(); i++) {
-    assert(elementCorners[i].size() == dim-1); // make sure we have simplices
-    interfaceGeometries_[i] = InterfaceGeometryType(face_simplex, elementCorners[i]);
+    Dune::GeometryType geomType = guessGeometryType(dim-1, elementCorners[i].size());
+    interfaceGeometries_[i] = InterfaceGeometryType(geomType, elementCorners[i]);
   }
 }
 
