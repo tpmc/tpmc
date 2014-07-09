@@ -3,6 +3,7 @@
 #ifndef DUNE_MCGUI_REFERENCEGRID_HH
 #define DUNE_MCGUI_REFERENCEGRID_HH
 
+#include <dune/common/version.hh>
 #include <dune/grid/alugrid.hh>
 #include <dune/grid/yaspgrid.hh>
 
@@ -34,13 +35,18 @@ namespace MCGui {
       template <class Ref>
       static Dune::shared_ptr<GridType> construct(const Ref& reference) {
         Dune::FieldVector< ctype, dim > L(1.0);
+#if DUNE_VERSION_NEWER(DUNE_COMMON,2,3)
         std::array< int, dim > s;
         for (std::size_t i=0; i<dim; i++) s[i] = 1;
         return Dune::shared_ptr<GridType>(new GridType(L,s));
+#else
+        Dune::FieldVector< int, dim > s(1);
+        Dune::FieldVector< bool, dim > p(0);
+        return Dune::shared_ptr<GridType>(new GridType(L,s,p,0));
+#endif
       }
     };
   }
-
   template <Dune::GeometryType::BasicType bt, class ctype, int dim>
   class ReferenceGrid {
   public:
@@ -48,7 +54,13 @@ namespace MCGui {
     typedef typename GridType::LeafGridView GridViewType;
 
     ReferenceGrid()
-      : reference_(Dune::ReferenceElements<ctype,dim>::general(Dune::GeometryType(bt,dim))) {
+      : reference_(
+#if DUNE_VERSION_NEWER(DUNE_COMMON,2,3)
+        Dune::ReferenceElements<ctype,dim>::general(Dune::GeometryType(bt,dim))
+#else
+        Dune::GenericReferenceElements<ctype,dim>::general(Dune::GeometryType(bt,dim))
+#endif
+        ){
       reset();
     }
 
@@ -64,7 +76,11 @@ namespace MCGui {
       grid_ = SelectionTraits<bt,ctype,dim>::construct(reference_);
     }
   private:
+#if DUNE_VERSION_NEWER(DUNE_COMMON,2,3)
     const Dune::ReferenceElement<ctype,dim>& reference_;
+#else
+    const Dune::GenericReferenceElement<ctype,dim>& reference_;
+#endif
     Dune::shared_ptr<GridType> grid_;
   };
 }

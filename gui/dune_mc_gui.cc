@@ -6,7 +6,12 @@
 
 #include <iostream>
 
+#include <dune/common/version.hh>
+#if DUNE_VERSION_NEWER(DUNE_COMMON,2,3)
 #include <dune/common/parallel/mpihelper.hh> // An initializer of MPI
+#else
+#include <dune/common/mpihelper.hh> // An initializer of MPI
+#endif
 #include <dune/common/exceptions.hh> // We use exceptions
 
 #include <iostream>

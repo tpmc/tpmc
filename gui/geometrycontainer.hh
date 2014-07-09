@@ -116,8 +116,13 @@ void GeometryContainer<ctype, dim>::computeTriangulation(const FunctorType& f,
     }
   }
   Dune::GeometryType gt(bt, dim);
+#if DUNE_VERSION_NEWER(DUNE_COMMON,2,3)
   const Dune::ReferenceElement<ctype, dim>& ref =
     Dune::ReferenceElements<ctype, dim>::general(gt);
+#else
+  const Dune::GenericReferenceElement<ctype, dim>& ref =
+    Dune::GenericReferenceElements<ctype, dim>::general(gt);
+#endif
   std::vector<ctype> vertexValues;
   for (int i = 0; i<ref.size(dim); ++i) {
     vertexValues.push_back(f(ref.position(i,dim)));
