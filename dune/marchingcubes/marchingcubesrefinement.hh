@@ -9,7 +9,12 @@
 
 #include <vector>
 
+#include <dune/common/version.hh>
+#if DUNE_VERSION_NEWER(DUNE_COMMON,2,3)
+#include <dune/geometry/multilineargeometry.hh>
+#else
 #include <dune/geometry/genericgeometry/geometry.hh>
+#endif
 
 #include <dune/marchingcubes/marchingcubes.hh>
 #include <dune/marchingcubes/thresholdfunctor.hh>
@@ -31,10 +36,18 @@ namespace Dune {
   public:
 
     /** \brief Type of the volume geometries resulting from the splitting */
+#if DUNE_VERSION_NEWER(DUNE_COMMON,2,3)
+    typedef MultiLinearGeometry<ctype,dim,dim> VolumeGeometryType;
+#else
     typedef GenericGeometry::BasicGeometry<dim, GenericGeometry::DefaultGeometryTraits<ctype,dim,dim> > VolumeGeometryType;
+#endif
 
     /** \brief Type of the interface geometries resulting from the splitting */
+#if DUNE_VERSION_NEWER(DUNE_COMMON,2,3)
+    typedef MultiLinearGeometry<ctype,dim-1,dim> InterfaceGeometryType;
+#else
     typedef GenericGeometry::BasicGeometry<dim-1, GenericGeometry::DefaultGeometryTraits<ctype,dim-1,dim> > InterfaceGeometryType;
+#endif
 
     /** \brief Container type for the volume geometries */
     typedef std::vector<VolumeGeometryType> VolumeGeometries;
@@ -100,6 +113,63 @@ namespace Dune {
 }
 
 
+#if DUNE_VERSION_NEWER(DUNE_COMMON,2,3)
+template <class ctype, int dim, class thresholdFunctor>
+Dune::MarchingCubesRefinement<ctype,dim,thresholdFunctor>::
+MarchingCubesRefinement(const GeometryType& type,
+                        std::vector<double> values,
+                        bool exterior_not_interior,
+                        const thresholdFunctor & threshFunctor)
+// The MultiLinearGeometries given here are dummies, because MultiLinearGeometry is not default-constructible
+  : interiorGeometries_(0, MultiLinearGeometry<ctype,dim,dim>(type, std::vector<FieldVector<double,dim> >()) ),
+    interfaceGeometries_(0, MultiLinearGeometry<ctype,dim-1,dim>(GeometryType(GeometryType::simplex,dim-1), std::vector<FieldVector<double,dim> >()) )
+{
+  std::vector<std::vector<FieldVector<double,dim> > > elementCorners;
+
+  // Call the actual marching cubes algorithm
+  MarchingCubes33<double,dim,thresholdFunctor> marchingcubes33(threshFunctor);
+  size_t key = marchingcubes33.getKey(values, values.size(), true);
+
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  //  Extract the interior volume elements
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  marchingcubes33.getElements(values, values.size(), key, false, exterior_not_interior, elementCorners);
+
+  // set up the list of geometries
+  // The MultiLinearGeometry given here is a dummy, because MultiLinearGeometry is not default-constructible
+  interiorGeometries_.resize(elementCorners.size(),
+                             MultiLinearGeometry<ctype,dim,dim>(type, std::vector<FieldVector<double,dim> >()));
+
+  // Construct the Dune Geometry from the number of corners and the space dimension
+  GeometryType volumeGeometryType;
+  for (size_t i=0; i<elementCorners.size(); i++)
+  {
+    volumeGeometryType.makeFromVertices(dim, elementCorners[i].size());
+    interiorGeometries_[i] = VolumeGeometryType(volumeGeometryType, elementCorners[i]);
+  }
+
+  elementCorners.clear();
+
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  //  Extract the interface elements
+  /////////////////////////////////////////////////////////////////////////////////////////////
+
+  marchingcubes33.getElements(values, values.size(), key, true,  exterior_not_interior, elementCorners);
+
+  // set up the list of geometries
+  // The MultiLinearGeometry given here is a dummy, because MultiLinearGeometry is not default-constructible
+  interfaceGeometries_.resize(elementCorners.size(),
+                              MultiLinearGeometry<ctype,dim-1,dim>(GeometryType(GeometryType::simplex,dim-1), std::vector<FieldVector<double,dim> >()) );
+
+  // Construct the Dune Geometry from the number of corners and the space dimension
+  GeometryType interfaceSegmentType;
+  for (size_t i=0; i<elementCorners.size(); i++)
+  {
+    interfaceSegmentType.makeFromVertices(dim-1, elementCorners[i].size());
+    interfaceGeometries_[i] = InterfaceGeometryType(interfaceSegmentType, elementCorners[i]);
+  }
+}
+#else
 template <class ctype, int dim, class thresholdFunctor>
 Dune::MarchingCubesRefinement<ctype,dim,thresholdFunctor>::
 MarchingCubesRefinement(const GeometryType& type,
@@ -107,6 +177,8 @@ MarchingCubesRefinement(const GeometryType& type,
                         bool exterior_not_interior,
                         const thresholdFunctor & threshFunctor)
 {
+  Dune::GeometryType simplex(Dune::GeometryType::simplex, dim);
+  Dune::GeometryType face_simplex(Dune::GeometryType::simplex, dim-1);
   std::vector<std::vector<FieldVector<double,dim> > > elementCorners;
 
   // Call the actual marching cubes algorithm
@@ -124,7 +196,8 @@ MarchingCubesRefinement(const GeometryType& type,
   // Construct the Dune GeometryType from the number of corners and the space dimension
   for (size_t i=0; i<elementCorners.size(); i++) {
     // Make BasicGeometry from the element type and the corner positions
-    interiorGeometries_[i] = VolumeGeometryType(elementCorners[i]);
+    assert(elementCorners[i].size() == dim); // make sure we have simplices
+    interiorGeometries_[i] = VolumeGeometryType(simplex, elementCorners[i]);
   }
 
   elementCorners.clear();
@@ -141,9 +214,11 @@ MarchingCubesRefinement(const GeometryType& type,
   // Construct the Dune GeometryType from the number of corners and the space dimension
 
   for (size_t i=0; i<elementCorners.size(); i++) {
-    interfaceGeometries_[i] = InterfaceGeometryType(elementCorners[i]);
+    assert(elementCorners[i].size() == dim-1); // make sure we have simplices
+    interfaceGeometries_[i] = InterfaceGeometryType(face_simplex, elementCorners[i]);
   }
-
 }
+
+#endif
 
 #endif
