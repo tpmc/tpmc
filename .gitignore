@@ -18,7 +18,7 @@ dune-mc.pc
 dune-mc-*.tar.gz
 dune-mc-?.?
 ltmain.sh
-dune
 .libs
 dependencies.m4
 am
+build.*

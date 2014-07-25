@@ -472,6 +472,41 @@ extern "C"
    */
   extern const short table_prism3d_mc33_face_test_order[];
 
+  extern const short table_any0d_vertices[];
+  /*
+   * TODO: Comment
+   */
+  extern const unsigned short table_any0d_cases_offsets[][10];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_any0d_vertex_groups[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_any0d_codim_0_exterior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_any0d_codim_0_interior[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_any0d_exterior_groups[];
+  /*
+   * TODO: Comment
+   */
+  extern const short table_any0d_interior_groups[];
+
+  /*
+   * TODO: Comment
+   */
+  extern const short table_any0d_codim_1[];
+
   extern const short table_any1d_vertices[];
   /*
    * TODO: Comment
