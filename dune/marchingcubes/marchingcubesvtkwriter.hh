@@ -8,9 +8,11 @@
 
 #include <dune/geometry/type.hh>
 #include <dune/common/indent.hh>
+#include <dune/common/version.hh>
 #include <dune/grid/io/file/vtk/vtkwriter.hh>
 #include <dune/grid/io/file/vtk/vtuwriter.hh>
 #include "marchingcubes.hh"
+#include "marchingcubesrefinement.hh"
 #include "thresholdfunctor.hh"
 
 /** @file
@@ -96,7 +98,11 @@ namespace Dune
     template<class Entity>
     void getFaces(const Entity & e, std::vector< std::vector< FieldVector<ctype, dim> > > & elements) const
     {
+#if DUNE_VERSION_NEWER(DUNE_GEOMETRY,2,3)
       const ReferenceElement<ctype,dim> & refElem = ReferenceElements<ctype,dim>::general(e.type());
+#else
+      const GenericReferenceElement<ctype,dim> & refElem = GenericReferenceElements<ctype,dim>::general(e.type());
+#endif
       std::vector<ctype> values(refElem.size(dim));
       for (unsigned int c = 0; c < refElem.size(dim); c++)
         values[c] = levelset.evaluate(0, e, refElem.position(c,dim));
@@ -298,7 +304,11 @@ namespace Dune
           {
             for (size_t c=0; c<elements[e].size(); c++)
             {
+#if DUNE_VERSION_NEWER(DUNE_GEOMETRY,2,3)
               type.makeFromVertices(dim-1,elements[e].size());
+#else
+              type = guessGeometryType(dim-1,elements[e].size());
+#endif
               p1->write(offset+VTK::renumber(type,c));
             }
             offset += elements[e].size();
@@ -342,7 +352,11 @@ namespace Dune
 
           for (size_t e=0; e<elements.size(); e++)
           {
-            type.makeFromVertices(dim-1,elements[e].size());
+#if DUNE_VERSION_NEWER(DUNE_GEOMETRY,2,3)
+              type.makeFromVertices(dim-1,elements[e].size());
+#else
+              type = guessGeometryType(dim-1,elements[e].size());
+#endif
             int vtktype = VTK::geometryType(type);
             p3->write(vtktype);
           }
