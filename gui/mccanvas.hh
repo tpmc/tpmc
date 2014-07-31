@@ -325,8 +325,11 @@ void MCCanvas<N>::OnUpdate() {
   glPushMatrix();
 #if SFML_VERSION_MAJOR >= 2
   for (std::vector<sf::Text>::const_iterator it = strings.begin();
-       it != strings.end(); ++it)
+       it != strings.end(); ++it) {
+    pushGLStates();
     draw(*it);
+    popGLStates();
+  }
 #else
   for (std::vector<sf::String>::const_iterator it = strings.begin();
        it != strings.end(); ++it)
