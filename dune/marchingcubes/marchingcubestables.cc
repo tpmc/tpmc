@@ -127,7 +127,7 @@ namespace Dune {
   all_codim_1[] = {NULL, NULL, NULL, table_any1d_codim_1,
                    NULL, table_simplex2d_codim_1,
                    table_cube2d_codim_1, table_simplex3d_codim_1,
-                   table_pyramid3d_codim_1, table_pyramid3d_codim_1, NULL,
+                   table_pyramid3d_codim_1, table_prism3d_codim_1, NULL,
                    table_cube3d_codim_1};
 
   /*
@@ -285,7 +285,7 @@ namespace Dune {
   all_codim_1[] = {NULL, NULL, NULL, table_any1d_codim_1,
                    NULL, table_simplex2d_codim_1,
                    table_cube2d_codim_1, table_simplex3d_codim_1,
-                   table_pyramid3d_codim_1, table_pyramid3d_codim_1, NULL,
+                   table_pyramid3d_codim_1, table_prism3d_codim_1, NULL,
                    table_cube3dsym_codim_1};
 
   /*
