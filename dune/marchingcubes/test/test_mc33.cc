@@ -130,7 +130,7 @@ namespace MarchingCubesTest {
     for (int i = 0; i< count; ++i) {
       testData_[i].resize(Geometry::vertexCount);
       for (int j = 0; j<Geometry::vertexCount; ++j)
-        testData_[i][j] = ((i>>j)&1)*2 - 1;
+        testData_[i][j] = ((i>>j)&1)*2 - 1+(2.0*my_rand<typename Geometry::ValueType>()-1)*0.3;
     }
   }
 
@@ -210,6 +210,57 @@ namespace MarchingCubesTest {
                 << referenceVolume << std::endl;
     }
     return result;
+  }
+
+  template <typename Geometry>
+  class ValidCoordinatesTest {
+    bool result_;
+  public:
+    typedef Geometry GeometryType;
+
+    ValidCoordinatesTest(const typename Geometry::VectorType& values);
+    bool successful() const { return result_; }
+    static std::string name() {
+      std::stringstream name_stream;
+      name_stream << "TransformationTest[" << Geometry::name << Geometry::dimension << "d]";
+      return name_stream.str();
+    }
+  private:
+    template <class I>
+    bool check(I begin, I end) const;
+  };
+  template <typename Geometry>
+  ValidCoordinatesTest<Geometry>::ValidCoordinatesTest(const typename Geometry::VectorType& values)
+    : result_(true) {
+    typedef typename Geometry::ValueType ctype;
+    const int dim = Geometry::dimension;
+    Dune::GeometryType geometryType(Geometry::basicType, Geometry::dimension);
+    Dune::MarchingCubesRefinement<ctype, dim> refInterior(geometryType, values, false);
+    Dune::MarchingCubesRefinement<ctype, dim> refExterior(geometryType, values, true);
+    result_ = check(refInterior.interiorBegin(), refInterior.interiorEnd())
+      && check(refExterior.interiorBegin(), refExterior.interiorEnd());
+  }
+  template <typename Geometry>
+  template <class I>
+  bool ValidCoordinatesTest<Geometry>::check(I begin, I end) const {
+    typedef typename Geometry::ValueType ctype;
+    const int dim = Geometry::dimension;
+    Dune::GeometryType geometryType(Geometry::basicType, Geometry::dimension);
+#if DUNE_VERSION_NEWER(DUNE_COMMON,2,3)
+    const Dune::ReferenceElement<ctype, dim>& referenceElement =
+      Dune::ReferenceElements<ctype, dim>::general(geometryType);
+#else
+    const Dune::GenericReferenceElement<ctype, dim>& referenceElement =
+      Dune::GenericReferenceElements<ctype, dim>::general(geometryType);
+#endif
+    for (; begin != end; ++begin) {
+      for (int i = 0; i<begin->corners(); ++i) {
+        if (!referenceElement.checkInside(begin->corner(i))) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   template <typename Geometry>
@@ -397,7 +448,21 @@ int main(int argc, char* argv[]) {
   transformationtest.run<RandomDataGenerator<SimplexGeometry<2>, N>, TransformationTest<SimplexGeometry<2> > >();
   transformationtest.run<RandomDataGenerator<PrismGeometry, N>, TransformationTest<PrismGeometry> >();
   transformationtest.run<RandomDataGenerator<PyramidGeometry, N>, TransformationTest<PyramidGeometry> >();
+  Test validcoordinatestest("validcoordinates");
+  validcoordinatestest.run<AllCombinationGenerator<CubeGeometry<3> >, ValidCoordinatesTest<CubeGeometry<3> > >();
+  validcoordinatestest.run<AllCombinationGenerator<CubeGeometry<2> >, ValidCoordinatesTest<CubeGeometry<2> > >();
+  validcoordinatestest.run<AllCombinationGenerator<SimplexGeometry<3> >, ValidCoordinatesTest<SimplexGeometry<3> > >();
+  validcoordinatestest.run<AllCombinationGenerator<SimplexGeometry<2> >, ValidCoordinatesTest<SimplexGeometry<2> > >();
+  validcoordinatestest.run<AllCombinationGenerator<PrismGeometry>, ValidCoordinatesTest<PrismGeometry> >();
+  validcoordinatestest.run<AllCombinationGenerator<PyramidGeometry>, ValidCoordinatesTest<PyramidGeometry> >();
+  validcoordinatestest.run<RandomDataGenerator<CubeGeometry<3>, N>, ValidCoordinatesTest<CubeGeometry<3> > >();
+  validcoordinatestest.run<RandomDataGenerator<CubeGeometry<2>, N>, ValidCoordinatesTest<CubeGeometry<2> > >();
+  validcoordinatestest.run<RandomDataGenerator<SimplexGeometry<3>, N>, ValidCoordinatesTest<SimplexGeometry<3> > >();
+  validcoordinatestest.run<RandomDataGenerator<SimplexGeometry<2>, N>, ValidCoordinatesTest<SimplexGeometry<2> > >();
+  validcoordinatestest.run<RandomDataGenerator<PrismGeometry, N>, ValidCoordinatesTest<PrismGeometry> >();
+  validcoordinatestest.run<RandomDataGenerator<PyramidGeometry, N>, ValidCoordinatesTest<PyramidGeometry> >();
   volumetest.report(std::cout);
   transformationtest.report(std::cout);
-  return !(volumetest.successful() && transformationtest.successful());
+  validcoordinatestest.report(std::cout);
+  return !(volumetest.successful() && transformationtest.successful() && validcoordinatestest.successful());
 }
