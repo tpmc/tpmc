@@ -14,12 +14,18 @@ from disambiguate import permute_faceid
 LOGGER = logging.getLogger('lutgen.geomobject')
 
 class CenterPoint(object):
+    def __init__(self, id):
+        self.id = id
     def __repr__(self):
-        return "CenterPoint"
-    def __eq__(self, other):
-        return type(other) is CenterPoint
+        return "CenterPoint{0}".format(self.id)
+    def __cmp__(self, other):
+        if type(other) is CenterPoint:
+            return self.id - other.id
+        if type(other) is FacePoint:
+            return 1
+        return -1
     def __hash__(self):
-        return hash("CenterPoint")
+        return hash("CenterPoint{0}".format(self.id))
 
 class FacePoint(object):
     def __init__(self, id):
@@ -29,6 +35,8 @@ class FacePoint(object):
     def __cmp__(self, other):
         if type(other) is FacePoint:
             return self.id - other.id
+        if type(other) is CenterPoint:
+            return -1
         return -1
     def __hash__(self):
         return hash("FacePoint{0}".format(self.id))
@@ -129,9 +137,9 @@ class GeomObject(object):
                 return perm[vertex]
             if type(vertex) is CenterPoint:
                 return vertex
-            if type(vertex) is FacePoint:
+            if type(vertex) is FacePoint or type(vertex) is CenterPoint:
                 cubereffaces = ReferenceElements[self.global_type].faces
-                return FacePoint(permute_faceid(vertex.id, perm, cubereffaces))
+                return type(vertex)(permute_faceid(vertex.id, perm, cubereffaces))
             l = [apply_perm(vertex[0]), apply_perm(vertex[1])];
             if type(vertex[0]) is tuple or type(vertex[1]) is tuple:
                 return tuple(l)
@@ -172,7 +180,12 @@ def permute_geom_list(dim, global_type, entities, perm):
     return [ GeomObject(dim, e, global_type) * perm for e in entities ]
 
 
-Center = CenterPoint()
+Center0 = CenterPoint(0)
+Center1 = CenterPoint(1)
+Center2 = CenterPoint(2)
+Center3 = CenterPoint(3)
+Center4 = CenterPoint(4)
+Center5 = CenterPoint(5)
 Face0 = FacePoint(0)
 Face1 = FacePoint(1)
 Face2 = FacePoint(2)

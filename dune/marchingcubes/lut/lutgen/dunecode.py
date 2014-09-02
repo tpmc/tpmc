@@ -31,11 +31,17 @@ FD = VH + 4
 FE = VH + 5
 FF = VH + 6
 # center point
-CP = FF + 1
+CA = FF + 1
+CB = FF + 2
+CC = FF + 3
+CD = FF + 4
+CE = FF + 5
+CF = FF + 6
 # dictionary to get constant names from integers
 CONST_NAMES = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", 
                VF:"VF", VG:"VG", VH:"VH", FA:"FA", FB:"FB", 
-               FC:"FC", FD:"FD", FE:"FE", FF:"FF", CP:"CP"}
+               FC:"FC", FD:"FD", FE:"FE", FF:"FF", CA:"CA",
+               CB:"CB", CC:"CC", CD:"CD", CE:"CE", CF:"CF"}
 # Constants indicating whether case special treatment when 
 # marching cubes' 33 is used.
 CASE_UNIQUE_MC33 = 0
@@ -77,9 +83,10 @@ class VertexMapper:
                 return offset
             else:
                 faceids = [FA, FB, FC, FD, FE, FF]
+                centerids = [CA, CB, CC, CD, CE, CF]
                 val = vertex
                 if type(vertex) is CenterPoint:
-                    val = CP
+                    val = centerids[vertex.id]
                 if type(vertex) is FacePoint:
                     val = faceids[vertex.id]
                 return -val;
