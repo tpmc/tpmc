@@ -95,17 +95,17 @@ class DuneCode:
         def create_codim0_line(vmapper, table, table_groups, entry, new_elements, new_elements_groups):
             """ create a table line for codimX tables """
             # change 3D simplex, prism & pyramid numbering scheme to 3D cube's one
-            rename_vertices = {(3,"simplex"): [0,1,2,4],
-                               (3,"prism"): [0,1,2,4,5,6]}
-            if self.generator.geometry_type in rename_vertices:
-                rename = rename_vertices[self.generator.geometry_type]
-                for i in range(len(new_elements)):
-                    for j in range(len(new_elements[i])):
-                        if type(new_elements[i][j]) is int:
-                            new_elements[i][j] = rename[new_elements[i][j]]
-                        else:
-                            new_elements[i][j] = (rename[new_elements[i][j][0]],
-                                                  rename[new_elements[i][j][1]])
+            def renameVertex(gt,v):
+              rename_vertices = {(3,"simplex"): [0,1,2,4],
+                                 (3,"prism"): [0,1,2,4,5,6]}
+              if gt in rename_vertices:
+                rn = rename_vertices[gt]
+                if type(v) is int:
+                  return rn[v]
+                elif type(v) is tuple:
+                  return (renameVertex(gt,v[0]),renameVertex(gt,v[1]))
+              return v
+            new_elements = [[renameVertex(self.generator.geometry_type,v) for v in t] for t in new_elements]
             # write comment in front of data
             assert entry.base_case in self.generator.base_cases
             base_case_number = self.generator.base_cases.index(entry.base_case)
@@ -137,17 +137,17 @@ class DuneCode:
         def create_codim1_line(vmapper,table, entry, new_elements):
             """ create a table line for codimX tables """
             # change 3D simplex, prism & pyramid numbering scheme to 3D cube's one
-            rename_vertices = {(3,"simplex"): [0,1,2,4],
-                               (3,"prism"): [0,1,2,4,5,6]}
-            if self.generator.geometry_type in rename_vertices:
-                rename = rename_vertices[self.generator.geometry_type]
-                for i in range(len(new_elements)):
-                    for j in range(len(new_elements[i])):
-                        if type(new_elements[i][j]) is int:
-                            new_elements[i][j] = rename[new_elements[i][j]]
-                        else:
-                            new_elements[i][j] = (rename[new_elements[i][j][0]],
-                                                  rename[new_elements[i][j][1]])
+            def renameVertex(gt,v):
+              rename_vertices = {(3,"simplex"): [0,1,2,4],
+                                 (3,"prism"): [0,1,2,4,5,6]}
+              if gt in rename_vertices:
+                rn = rename_vertices[gt]
+                if type(v) is int:
+                  return rn[v]
+                elif type(v) is tuple:
+                  return (renameVertex(gt,v[0]),renameVertex(gt,v[1]))
+              return v
+            new_elements = [[renameVertex(self.generator.geometry_type,v) for v in t] for t in new_elements]
             # write comment in front of data
             assert entry.base_case in self.generator.base_cases
             base_case_number = self.generator.base_cases.index(entry.base_case)
