@@ -267,6 +267,7 @@ void MCCanvas<N>::OnUpdate() {
       glTranslatef((*vit)[0], (*vit)[2], 1.f-(*vit)[1]);
       glScalef(INDICATOR_CUBE_SIZE,INDICATOR_CUBE_SIZE,
                INDICATOR_CUBE_SIZE);
+      /*
       double pr[2];
       projectOrigin(pr);
 #if SFML_VERSION_MAJOR >= 2
@@ -291,6 +292,7 @@ void MCCanvas<N>::OnUpdate() {
       text.Move(vco.x, vco.y);
 #endif
       strings.push_back(text);
+      */
       if (mGui->getVertexValue(i) >=0) {
         glTranslatef(-0.5f,-0.5f,-0.5f);
         glColor3f(0.f, 0.f, 0.f);
