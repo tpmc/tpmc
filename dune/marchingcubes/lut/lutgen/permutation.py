@@ -11,6 +11,11 @@ class Permutation(tuple):
             return Permutation(self.orientation*other.orientation, 
                                (other[x] for x in self))
         return type(other)(other[x] for x in self)
+    def toBaseCase(self, other):
+        return type(other)(other[x] for x in self)
+    def fromBaseCase(self, other):
+        inverse = [b for (a,b) in sorted([(self[i],i) for i in range(len(self))])]
+        return type(other)(other[x] for x in inverse)
     def __pow__(self, other):
         assert type(other) is int
         if other == 1:
