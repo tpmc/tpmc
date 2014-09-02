@@ -416,24 +416,15 @@ namespace Dune {
           && -vertex_index[1] >= VA && -vertex_index[1] <= VH) {       // we have a simple edge
         sizeType index_a = Tables::all_vertex_to_index[vertex_count+dim][-vertex_index[0]];
         sizeType index_b = Tables::all_vertex_to_index[vertex_count+dim][-vertex_index[1]];
-        // if theres no intersection along the edge, there is no vertex
-        if (threshFunctor.isInside(vertex_values[index_a]) ==
+        // if theres no intersection along the edge, we use the middle as a
+        // helper vertex. otherwise, use linear interpolation
+        valueType interpol_factor = -0.5;
+        if (threshFunctor.isInside(vertex_values[index_a]) !=
             threshFunctor.isInside(vertex_values[index_b])) {
-#ifndef NDEBUG
-          std::cout << "vertex values: ";
-          for (std::size_t i = 0; i<vertex_count; ++i)
-            std::cout << " " << vertex_values[i];
-          std::cout << "\nfirst: " << vertex_index[0] << " a: " << index_a
-                    << " second: " << vertex_index[1] << " b: " << index_b << "\n";
-#endif
-          //DUNE_THROW(IllegalArgumentException, "no vertex on edge found");
+          // factor for interpolation
+          interpol_factor = threshFunctor.interpolationFactor
+                                  (point_a,point_b,vertex_values[index_a],vertex_values[index_b]);
         }
-
-        // factor for interpolation
-        valueType interpol_factor = threshFunctor.interpolationFactor
-                                      (point_a,point_b,vertex_values[index_a],vertex_values[index_b]);
-
-
         // calculate interpolation point
         for (sizeType i = 0; i < dim; i++) {
           coord[i] = point_a[i] - interpol_factor * (point_b[i] - point_a[i]);
