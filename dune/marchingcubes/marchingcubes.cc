@@ -394,12 +394,12 @@ namespace Dune {
     if (number <= 0) {     // we have a single point
       number *= -1;
 
-      if (number == CP && dim == 3 && vertex_count == 8) {
-        // should not use CP anymore
-        //DUNE_THROW(IllegalArgumentException, "centerpoint found");
-      } else if (number >= FA && number <= FF) {
+      if (number >= FA && number <= FF) {
         short faceid = number - FA;
         getCoordsFromFaceId(vertex_values, vertex_count, faceid, coord);
+      } else if (number >= CA && number <= CF) {
+        short faceid = number - CA;
+        getCoordsFromCenterId(vertex_values, vertex_count, faceid, coord);
       } else {
         getCoordsFromEdgeNumber(vertex_values, vertex_count,
                                 number, coord);
@@ -441,6 +441,36 @@ namespace Dune {
       assert(false);
   }
 
+  template <typename valueType, int dim, typename thresholdFunctor,
+      SymmetryType symmetryType, class intersectionFunctor>
+  template <typename valueVector>
+  void MarchingCubes33<valueType, dim, thresholdFunctor,
+      symmetryType, intersectionFunctor>::
+  getCoordsFromCenterId(const valueVector& vertex_values,
+                        const sizeType vertex_count, short centerid,
+                        point& coord) const
+  {
+    // CenterPoints only supported in 3d cubes
+    assert(dim == 3 && vertex_count == 8);
+    static unsigned short permutations[][8] = {{0,2,4,6,1,3,5,7}, {0,1,4,5,2,3,6,7}, {0,1,2,3,4,5,6,7}};
+    // x dir, y dir, z dir
+    static unsigned short coordPerm[][3] = {{1,2,0}, {0,2,1}, {0,1,2}};
+    unsigned short * currentPermutation = permutations[centerid/2];
+    unsigned short * currentCoordPerm = coordPerm[centerid/2];
+    double v[vertex_count];
+    for (int i = 0; i<vertex_count; ++i) {
+      v[i] = vertex_values[currentPermutation[i]];
+    }
+    const double C = v[0]*v[7]-v[1]*v[6]-v[2]*v[5]+v[3]*v[4];
+    const double A = C-2*(v[4]*v[7]-v[5]*v[6]);
+    const double B = C-2*(v[0]*v[3]-v[1]*v[2]);
+    const double D = A*(v[0]-v[1]-v[2]+v[3])
+      + B*(v[4]-v[5]-v[6]+v[7]);
+    coord[currentCoordPerm[0]] = (A*(v[0]-v[2])+B*(v[4]-v[6]))/D;
+    coord[currentCoordPerm[1]] = (A*(v[0]-v[1])+B*(v[4]-v[5]))/D;
+    coord[currentCoordPerm[2]] = B/(A+B);
+  }
+
 
   template <typename valueType, int dim, typename thresholdFunctor,
       SymmetryType symmetryType, class intersectionFunctor>
@@ -451,6 +481,8 @@ namespace Dune {
                       const sizeType vertex_count, short faceid,
                       point& coord) const
   {
+    // FacePoints only supported in 3d
+    assert(dim == 3);
     static short cube_faceoffsets[] = {0,4,8,12,16,20,24};
     static short cube_faces[] = {0,2,4,6,1,3,5,7,0,1,4,5,2,3,6,7,0,1,2,3,4,
                                  5,6,7};
