@@ -509,27 +509,54 @@ namespace Dune {
                                short b, short c, short d, short faceid,
                                point& coord) const
   {
-    // const, first dir, second dir
-    static short dirs[][3] = {{0,1,2}, {0,1,2}, {1,0,2}, {1,0,2},
-                              {2,0,1}, {2,0,1}};
-    static valueType constvalues[] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
+    point pa,pb,pc,pd;
     valueType va = vertex_values[a],
               vb = vertex_values[b],
               vc = vertex_values[c],
               vd = vertex_values[d];
-    // if its a face with no edge points, we use the geometric
-    // center, otherwise we use the center of the hyperbola
-    if (Dune::FloatCmp::ge(va*vb,0.0) && Dune::FloatCmp::ge(vb*vc, 0.0)
-        && Dune::FloatCmp::ge(vc*vd,0.0)) {
-      coord[dirs[faceid][0]] = constvalues[faceid];
-      coord[dirs[faceid][1]] = 0.5;
-      coord[dirs[faceid][2]] = 0.5;
-    } else {
-      valueType factor = 1.0/(va-vb-vc+vd);
-      coord[dirs[faceid][0]] = constvalues[faceid];
-      coord[dirs[faceid][1]] = factor*(va-vc);
-      coord[dirs[faceid][2]] = factor*(va-vb);
+    // map prism and simplex indices to cube (i.e. skip vertex 3)
+    if (vertex_count == 4 || vertex_count == 6) {
+      if (a > 2) ++a;
+      if (b > 2) ++b;
+      if (c > 2) ++c;
+      if (d > 2) ++d;
     }
+    getCoordsFromEdgeNumber(vertex_values, vertex_count, a, pa);
+    getCoordsFromEdgeNumber(vertex_values, vertex_count, b, pb);
+    getCoordsFromEdgeNumber(vertex_values, vertex_count, c, pc);
+    getCoordsFromEdgeNumber(vertex_values, vertex_count, d, pd);
+#ifndef NDEBUG
+    std::cout << "getting coords for rectangular face:\n";
+    std::cout << "pa = " << pa << " va = " << va << "\n";
+    std::cout << "pb = " << pb << " vb = " << vb << "\n";
+    std::cout << "pc = " << pc << " vc = " << vc << "\n";
+    std::cout << "pd = " << pd << " vd = " << vd << "\n";
+#endif
+    valueType cx = 0.5, cy = 0.5;
+    if (Dune::FloatCmp::ge(va*vd,0.0) && Dune::FloatCmp::ge(vb*vc,0.0) && Dune::FloatCmp::lt(va*vb,0.0)) {
+      valueType factor = 1.0/(va-vb-vc+vd);
+      cx = factor*(va-vc);
+      cy = factor*(va-vb);
+    } else if (Dune::FloatCmp::ge(va*vb,0.0) && Dune::FloatCmp::ge(vc*vd,0.0) && Dune::FloatCmp::lt(va*vc,0.0)) {
+      cy = (va+vb)/(va+vb-vc-vd);
+    } else if (Dune::FloatCmp::ge(va*vc,0.0) && Dune::FloatCmp::ge(vb*vd,0.0) && Dune::FloatCmp::lt(va*vb,0.0)) {
+      cx = (va+vc)/(va-vb+vc-vd);
+    }
+#ifndef NDEBUG
+    std::cout << "local coordinates of center: " << cx << ", " << cy << "\n";
+#endif
+    pa *= (1-cx)*(1-cy);
+    pb *= cx*(1-cy);
+    pc *= (1-cx)*cy;
+    pd *= cx*cy;
+    coord = pa;
+    coord += pb;
+    coord += pc;
+    coord += pd;
+#ifndef NDEBUG
+    std::cout << "result = " << coord << "\n";
+    std::cout << "value at center : " << (1-cx)*(1-cy)*va+cx*(1-cy)*vb+(1-cx)*cy*vc+cx*cy*vd << "\n";
+#endif
   }
 
   template <typename valueType, int dim, typename thresholdFunctor,
