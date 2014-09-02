@@ -137,12 +137,6 @@ namespace Dune {
   template <int po, class I>
   void AberthFunctor<ctype, StopPolicy>::apply(const I& begin, const I& end, ctype& result) {
     UnivariatePolynomial<po, ctype > p(begin, end);
-    // if both starting points are zero, we use the middle point
-    // \todo use real center on the interface
-    if (Dune::FloatCmp::eq(p(0),0.0) && Dune::FloatCmp::eq(p(1),0.0)) {
-      result = 0.5;
-      return;
-    }
     ctype roots[po];
     AberthMethod<StopPolicy>::apply(p,roots);
 #ifndef NDEBUG
