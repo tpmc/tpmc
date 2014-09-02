@@ -16,10 +16,16 @@ class Vtk(Output):
                         if type(v) is CenterPoint:
                                 return [0.5 for i in range(dim) ] + [0]*(3-dim)
 			if type(v) is FacePoint:
-				soliddims = [(0,0), (0,1), (1,0), (1,1), (2,0), (2,1)]
-				res = [0.5]*dim
-				res[soliddims[v.id][0]] = soliddims[v.id][1]
-				return res
+                                assert(dim == 3)
+                                if len(points) == 8:
+                                    facecenters = [[0,.5,.5],[1,.5,.5],[.5,0,.5],
+                                                   [.5,1,.5],[.5,.5,0],[.5,.5,1]]
+                                elif len(points) == 6:
+                                    facecenters = [[.5,0,.5],[0,.5,.5],[.5,.5,.5],
+                                                   [1./3.,1./3.,0],[1./3.,1./3.,1]]
+                                else:
+                                    assert(False)
+				return facecenters[v.id]
                         else:
                                 w = 0.5
                                 p1 = vertex(v[0],points)
