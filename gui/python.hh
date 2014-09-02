@@ -17,6 +17,7 @@ public:
   void visitElement(const Geometry::Element<ctype, dim>& e);
   void visitReferenceVertex(const Geometry::ReferenceVertex<ctype, dim>& v);
   void visitFaceVertex(const Geometry::FaceVertex<ctype, dim>& v);
+  void visitCenterVertex(const Geometry::CenterVertex<ctype, dim>& v);
   void visitIntersectionVertex(const Geometry::IntersectionVertex<ctype, dim>& v);
 
   template <typename ct, int d>
@@ -56,6 +57,11 @@ void PythonAdapter<ctype, dim>::visitReferenceVertex(const Geometry::ReferenceVe
 template <typename ctype, int dim>
 void PythonAdapter<ctype, dim>::visitFaceVertex(const Geometry::FaceVertex<ctype, dim>& v) {
   s_ << "Face" << v.id();
+}
+
+template <typename ctype, int dim>
+void PythonAdapter<ctype, dim>::visitCenterVertex(const Geometry::CenterVertex<ctype, dim>& v) {
+  s_ << "Center" << v.id();
 }
 
 template <typename ctype, int dim>
