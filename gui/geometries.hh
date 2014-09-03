@@ -92,6 +92,25 @@ namespace Geometry {
   };
 
   template <typename ctype, int dim>
+  class RootVertex : public Vertex<ctype, dim> {
+  public:
+    typedef typename Vertex<ctype, dim>::SizeType SizeType;
+    typedef typename Vertex<ctype, dim>::VectorType VectorType;
+
+    RootVertex(SizeType id) : mId(id) {}
+
+    void evaluate(const VectorType& vertexValues, SizeType vertexCount,
+                  Dune::FieldVector<ctype, dim>& result) const;
+    SizeType id() const { return mId; }
+
+    void takeVisitor(GeometryVisitor<ctype, dim>& visitor) const {
+      visitor.visitRootVertex(*this);
+    }
+  private:
+    SizeType mId;
+  };
+
+  template <typename ctype, int dim>
   class IntersectionVertex : public Vertex<ctype, dim> {
   public:
     typedef typename Vertex<ctype, dim>::SizeType SizeType;
@@ -156,6 +175,7 @@ namespace Geometry {
     virtual void visitElement(const Element<ctype, dim>& e) = 0;
     virtual void visitReferenceVertex(const ReferenceVertex<ctype, dim>& v) = 0;
     virtual void visitFaceVertex(const FaceVertex<ctype, dim>& v) = 0;
+    virtual void visitRootVertex(const RootVertex<ctype, dim>& v) = 0;
     virtual void visitCenterVertex(const CenterVertex<ctype, dim>& v) = 0;
     virtual void visitIntersectionVertex(const IntersectionVertex<ctype, dim>& v) = 0;
   };
@@ -179,6 +199,37 @@ namespace Geometry {
     for (int i = 0; i<dim; ++i) {
       result[i] = 1 & (id >> i);
     }
+  }
+
+  template <typename ctype, int dim>
+  void RootVertex<ctype, dim>::evaluate(const VectorType& vertexValues, SizeType vertexCount,
+                                        Dune::FieldVector<ctype, dim>& result) const {
+    assert(dim == 3 && vertexCount == 8);
+    static unsigned short permutations[][8] = {{0,2,4,6,1,3,5,7}, {0,1,4,5,2,3,6,7}, {0,1,2,3,4,5,6,7}};
+    // x dir, y dir, z dir
+    static unsigned short coordPerm[][3] = {{1,2,0}, {0,2,1}, {0,1,2}};
+    unsigned short * currentPermutation = permutations[mId/2];
+    unsigned short * currentCoordPerm = coordPerm[mId/2];
+    double v[vertexCount];
+    for (int i = 0; i<vertexCount; ++i) {
+      v[i] = vertexValues[currentPermutation[i]];
+    }
+    const double C = v[0]*v[7]-v[1]*v[6]-v[2]*v[5]+v[3]*v[4];
+    const double A = C-2*(v[4]*v[7]-v[5]*v[6]);
+    const double B = C-2*(v[0]*v[3]-v[1]*v[2]);
+    const double D = std::sqrt(-A*B+C*(A+B));
+    double root = (B+D)/(A+B);
+    double factor0 = A-D;
+    double factor1 = B+D;
+    if (Dune::FloatCmp::lt(root,0.0) || Dune::FloatCmp::gt(root,1.0)) {
+      factor0 = A+D;
+      factor1 = B-D;
+      root = (B-D)/(A+B);
+    }
+    const double denom = factor0*(v[0]-v[1]-v[2]+v[3]) + factor1*(v[4]-v[5]-v[6]+v[7]);
+    result[currentCoordPerm[0]] = (factor0*(v[0]-v[2])+factor1*(v[4]-v[6]))/denom;
+    result[currentCoordPerm[1]] = (factor0*(v[0]-v[1])+factor1*(v[4]-v[5]))/denom;
+    result[currentCoordPerm[2]] = root;
   }
 
   template <typename ctype, int dim>

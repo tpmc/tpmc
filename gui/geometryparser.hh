@@ -19,7 +19,7 @@ template <char sep>
 class GeometryParser {
   enum L_OBJ {
     L_0, L_1, L_2, L_3, L_4, L_5, L_6, L_7, L_8, L_9,
-    L_FACE, L_SEP, L_BRACO, L_BRACC, L_CENTER
+    L_FACE, L_SEP, L_BRACO, L_BRACC, L_CENTER, L_ROOT
   };
 public:
   template <typename ctype, int dim>
@@ -91,6 +91,16 @@ void GeometryParser<sep>::lex(const std::string& s,
         }
       }
       break;
+    case 'r' : result.push(L_ROOT);
+      // ignore following letters
+      while (ss >> c) {
+        c = tolower(c);
+        if (c < 'a' || c > 'z') {
+          ss.unget();
+          break;
+        }
+      }
+      break;
     case '(' : result.push(L_BRACO); break;
     case ')' : result.push(L_BRACC); break;
     case sep : result.push(L_SEP); break;
@@ -140,6 +150,9 @@ Dune::shared_ptr<Geometry::Vertex<ctype, dim> > GeometryParser<sep>::point(std::
   } else if (accept(l, L_CENTER)) {
     int i = number(l);
     return Dune::shared_ptr<Geometry::Vertex<ctype, dim> >(new Geometry::CenterVertex<ctype, dim>(i));
+  } else if (accept(l, L_ROOT)) {
+    int i = number(l);
+    return Dune::shared_ptr<Geometry::Vertex<ctype, dim> >(new Geometry::RootVertex<ctype, dim>(i));
   } else {
     int i = number(l);
     return Dune::shared_ptr<Geometry::Vertex<ctype, dim> >(new Geometry::ReferenceVertex<ctype, dim>(i));
