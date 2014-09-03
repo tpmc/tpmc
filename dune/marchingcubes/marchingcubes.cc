@@ -400,6 +400,9 @@ namespace Dune {
       } else if (number >= CA && number <= CF) {
         short faceid = number - CA;
         getCoordsFromCenterId(vertex_values, vertex_count, faceid, coord);
+      } else if (number >= RA && number <= RF) {
+        short faceid = number - RA;
+        getCoordsFromRootId(vertex_values, vertex_count, faceid, coord);
       } else {
         getCoordsFromEdgeNumber(vertex_values, vertex_count,
                                 number, coord);
@@ -469,6 +472,45 @@ namespace Dune {
     coord[currentCoordPerm[0]] = (A*(v[0]-v[2])+B*(v[4]-v[6]))/D;
     coord[currentCoordPerm[1]] = (A*(v[0]-v[1])+B*(v[4]-v[5]))/D;
     coord[currentCoordPerm[2]] = B/(A+B);
+  }
+
+  template <typename valueType, int dim, typename thresholdFunctor,
+      SymmetryType symmetryType, class intersectionFunctor>
+  template <typename valueVector>
+  void MarchingCubes33<valueType, dim, thresholdFunctor,
+      symmetryType, intersectionFunctor>::
+  getCoordsFromRootId(const valueVector& vertex_values,
+                      const sizeType vertex_count, short centerid,
+                      point& coord) const
+  {
+    assert(dim == 3 && vertexCount == 8);
+    static unsigned short permutations[][8] = {{0,2,4,6,1,3,5,7}, {0,1,4,5,2,3,6,7}, {0,1,2,3,4,5,6,7}};
+    // x dir, y dir, z dir
+    static unsigned short coordPerm[][3] = {{1,2,0}, {0,2,1}, {0,1,2}};
+    unsigned short * currentPermutation = permutations[mId/2];
+    unsigned short * currentCoordPerm = coordPerm[mId/2];
+    double v[vertexCount];
+    for (int i = 0; i<vertexCount; ++i) {
+      v[i] = vertexValues[currentPermutation[i]];
+    }
+    const double C = v[0]*v[7]-v[1]*v[6]-v[2]*v[5]+v[3]*v[4];
+    const double A = C-2*(v[4]*v[7]-v[5]*v[6]);
+    const double B = C-2*(v[0]*v[3]-v[1]*v[2]);
+    const double D = std::sqrt(-A*B+C*(A+B));
+    // first try the smaller root
+    double root = (B-D)/(A+B);
+    double factor0 = A+D;
+    double factor1 = B-D;
+    // if the smaller root is not valid, take the other
+    if (Dune::FloatCmp::lt(root,0.0) || Dune::FloatCmp::gt(root,1.0)) {
+      factor0 = A-D;
+      factor1 = B+D;
+      root = (B+D)/(A+B);
+    }
+    const double denom = factor0*(v[0]-v[1]-v[2]+v[3]) + factor1*(v[4]-v[5]-v[6]+v[7]);
+    coord[currentCoordPerm[0]] = (factor0*(v[0]-v[2])+factor1*(v[4]-v[6]))/denom;
+    coord[currentCoordPerm[1]] = (factor0*(v[0]-v[1])+factor1*(v[4]-v[5]))/denom;
+    coord[currentCoordPerm[2]] = root;
   }
 
 

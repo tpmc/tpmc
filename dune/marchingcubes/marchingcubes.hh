@@ -105,6 +105,12 @@ namespace Dune {
     void getCoordsFromCenterId(const valueVector& vertex_values,
                                const sizeType vertex_count, short faceid,
                                point& coord) const;
+    /** \brief gets coordinates of root vertex with given id
+     */
+    template <typename valueVector>
+    void getCoordsFromRootId(const valueVector& vertex_values,
+                             const sizeType vertex_count, short faceid,
+                             point& coord) const;
     /** \brief gets coordinates of the vertex on the face with given ids
      */
     template <typename valueVector>

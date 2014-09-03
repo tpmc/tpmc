@@ -218,13 +218,15 @@ namespace Geometry {
     const double A = C-2*(v[4]*v[7]-v[5]*v[6]);
     const double B = C-2*(v[0]*v[3]-v[1]*v[2]);
     const double D = std::sqrt(-A*B+C*(A+B));
-    double root = (B+D)/(A+B);
-    double factor0 = A-D;
-    double factor1 = B+D;
+    // first try the smaller root
+    double root = (B-D)/(A+B);
+    double factor0 = A+D;
+    double factor1 = B-D;
+    // if the smaller root is not valid, take the other
     if (Dune::FloatCmp::lt(root,0.0) || Dune::FloatCmp::gt(root,1.0)) {
-      factor0 = A+D;
-      factor1 = B-D;
-      root = (B-D)/(A+B);
+      factor0 = A-D;
+      factor1 = B+D;
+      root = (B+D)/(A+B);
     }
     const double denom = factor0*(v[0]-v[1]-v[2]+v[3]) + factor1*(v[4]-v[5]-v[6]+v[7]);
     result[currentCoordPerm[0]] = (factor0*(v[0]-v[2])+factor1*(v[4]-v[6]))/denom;
