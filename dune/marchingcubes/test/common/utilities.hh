@@ -1,6 +1,7 @@
 #ifndef MARCHINGCUBESTEST_UTILITIES_HH
 #define MARCHINGCUBESTEST_UTILITIES_HH
 
+#include <set>
 #include <dune/grid/io/file/vtk/vtkwriter.hh>
 #include <dune/grid/uggrid.hh>
 
@@ -55,6 +56,7 @@ namespace MarchingCubesTest
     T high;
   };
 
+#if HAVE_UGGRID
   template <typename ctype, int dim>
   void toVTK(const std::string& name, const Dune::GenericReferenceElement<ctype,dim>& ref) {
     typedef Dune::UGGrid<dim> Grid;
@@ -90,6 +92,7 @@ namespace MarchingCubesTest
     Dune::VTKWriter<GV> vtkwriter(gv);
     vtkwriter.write(name);
   }
+#endif
 
   struct FieldVectorLexicographicComparator {
     template <typename ctype,int dim>
