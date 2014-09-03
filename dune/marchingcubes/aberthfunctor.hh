@@ -29,7 +29,7 @@ namespace Dune {
     template <int po, class X, class R>
     static void apply(const UnivariatePolynomial<po,X>& p, R& result) {
       typedef typename UnivariatePolynomial<po,X>::Domain Domain;
-      Domain bound(0);
+      /*Domain bound(0);
       for (SizeType i = 0; i<po; ++i)
         if (FloatCmp::ne(std::abs(p.coeff(i+1)), 0.0))
           bound += std::abs(p.coeff(i))/std::abs(p.coeff(i+1));
@@ -41,6 +41,11 @@ namespace Dune {
         roots[i] = 2*static_cast<int>(i)-po+1;
         roots[i] /= std::max(po-1,1);
         roots[i] *= bound;
+      }
+      */
+      array<Domain, po> roots;
+      for (SizeType i = 0; i<po; ++i) {
+        roots[i] = static_cast<Domain>(i)/std::max(po-1,1);
       }
       array<Domain, po> value, derivative, weight;
       Domain residuum;
