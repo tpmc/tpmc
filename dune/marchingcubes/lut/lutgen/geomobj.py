@@ -23,6 +23,8 @@ class CenterPoint(object):
             return self.id - other.id
         if type(other) is FacePoint:
             return 1
+        if type(other) is RootPoint:
+            return 1
         return -1
     def __hash__(self):
         return hash("CenterPoint{0}".format(self.id))
@@ -37,9 +39,27 @@ class FacePoint(object):
             return self.id - other.id
         if type(other) is CenterPoint:
             return -1
+        if type(other) is RootPoint:
+            return 1
         return -1
     def __hash__(self):
         return hash("FacePoint{0}".format(self.id))
+
+class RootPoint(object):
+    def __init__(self, id):
+        self.id = id
+    def __repr__(self):
+        return "RootPoint{0}".format(self.id)
+    def __cmp__(self, other):
+        if type(other) is RootPoint:
+            return self.id - other.id
+        if type(other) is FacePoint:
+            return -1
+        if type(other) is CenterPoint:
+            return -1
+        return -1
+    def __hash__(self):
+        return hash("RootPoint{0}".format(self.id))
 
 class GeomObject(object):
     """ class representing a geometric object, eg a 3d cube, 2d simplex, etc """
@@ -135,9 +155,7 @@ class GeomObject(object):
             """ permutates vertex """
             if type(vertex) is int:
                 return perm[vertex]
-            if type(vertex) is CenterPoint:
-                return vertex
-            if type(vertex) is FacePoint or type(vertex) is CenterPoint:
+            if type(vertex) in [FacePoint,CenterPoint,RootPoint]:
                 cubereffaces = ReferenceElements[self.global_type].faces
                 return type(vertex)(permute_faceid(vertex.id, perm, cubereffaces))
             l = [apply_perm(vertex[0]), apply_perm(vertex[1])];
@@ -192,3 +210,9 @@ Face2 = FacePoint(2)
 Face3 = FacePoint(3)
 Face4 = FacePoint(4)
 Face5 = FacePoint(5)
+Root0 = RootPoint(0)
+Root1 = RootPoint(1)
+Root2 = RootPoint(2)
+Root3 = RootPoint(3)
+Root4 = RootPoint(4)
+Root5 = RootPoint(5)

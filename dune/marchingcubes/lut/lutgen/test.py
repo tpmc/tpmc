@@ -7,7 +7,7 @@ import logging
 from base_case_triangulation import LookupGenerators
 from disambiguate import TestFace, TestRegular
 from polygon import PolygonList
-from geomobj import GeomObject, CenterPoint, FacePoint
+from geomobj import GeomObject, CenterPoint, FacePoint, RootPoint
 
 LOGGER = logging.getLogger('lutgen.test')
 

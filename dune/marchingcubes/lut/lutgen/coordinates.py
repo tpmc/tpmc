@@ -1,5 +1,5 @@
 from referenceelements import ReferenceElements
-from geomobj import CenterPoint, FacePoint
+from geomobj import CenterPoint, FacePoint, RootPoint
 
 class NotImplementedException(Exception):
     def __init__(self, value):

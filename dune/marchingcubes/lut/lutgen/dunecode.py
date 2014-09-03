@@ -4,7 +4,7 @@ Contains classes/constants for export to dune marchinglut.cc
 
 import math
 from referenceelements import ReferenceElements
-from geomobj import FacePoint, CenterPoint
+from geomobj import FacePoint, CenterPoint, RootPoint
 
 # Following constants are copied from marchinglut.hh
 # constants for vertex and edge numbering
@@ -37,11 +37,20 @@ CC = FF + 3
 CD = FF + 4
 CE = FF + 5
 CF = FF + 6
+# root point
+RA = CF + 1
+RB = CF + 2
+RC = CF + 3
+RD = CF + 4
+RE = CF + 5
+RF = CF + 6
 # dictionary to get constant names from integers
 CONST_NAMES = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", 
                VF:"VF", VG:"VG", VH:"VH", FA:"FA", FB:"FB", 
                FC:"FC", FD:"FD", FE:"FE", FF:"FF", CA:"CA",
-               CB:"CB", CC:"CC", CD:"CD", CE:"CE", CF:"CF"}
+               CB:"CB", CC:"CC", CD:"CD", CE:"CE", CF:"CF",
+               RA:"RA", RB:"RB", RC:"RC", RD:"RD", RE:"RE",
+               RF:"RF"}
 # Constants indicating whether case special treatment when 
 # marching cubes' 33 is used.
 CASE_UNIQUE_MC33 = 0
@@ -84,11 +93,14 @@ class VertexMapper:
             else:
                 faceids = [FA, FB, FC, FD, FE, FF]
                 centerids = [CA, CB, CC, CD, CE, CF]
+                rootids = [RA, RB, RC, RD, RE, RF]
                 val = vertex
                 if type(vertex) is CenterPoint:
                     val = centerids[vertex.id]
-                if type(vertex) is FacePoint:
+                elif type(vertex) is FacePoint:
                     val = faceids[vertex.id]
+                elif type(vertex) is RootPoint:
+                    val = rootids[vertex.id]
                 return -val;
 
 class DuneCode:
