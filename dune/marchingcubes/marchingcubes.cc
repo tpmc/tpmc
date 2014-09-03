@@ -498,20 +498,22 @@ namespace Dune {
     const double A = C-2*(v[4]*v[7]-v[5]*v[6]);
     const double B = C-2*(v[0]*v[3]-v[1]*v[2]);
     const double D = std::sqrt(-A*B+C*(A+B));
-    // first try the smaller root
-    double root = (B-D)/(A+B);
+    const double root0 = (B-D)/(A+B);
+    const double root1 = (B+D)/(A+B);
     double factor0 = A+D;
     double factor1 = B-D;
-    // if the smaller root is not valid, take the other
-    if (Dune::FloatCmp::lt(root,0.0) || Dune::FloatCmp::gt(root,1.0)) {
+    const bool root0_invalid = Dune::FloatCmp::lt(root0,0.0) || Dune::FloatCmp::gt(root0,1.0);
+    const bool root1_invalid = Dune::FloatCmp::lt(root1,0.0) || Dune::FloatCmp::gt(root1,1.0);
+    if (root0_invalid || (!root1_invalid && root1 < root0)) {
       factor0 = A-D;
       factor1 = B+D;
-      root = (B+D)/(A+B);
+      coord[currentCoordPerm[2]] = faceid%2==0 ? root1 : 1.0-root1;
+    } else {
+      coord[currentCoordPerm[2]] = faceid%2==0 ? root0 : 1.0-root0;
     }
     const double denom = factor0*(v[0]-v[1]-v[2]+v[3]) + factor1*(v[4]-v[5]-v[6]+v[7]);
     coord[currentCoordPerm[0]] = (factor0*(v[0]-v[2])+factor1*(v[4]-v[6]))/denom;
     coord[currentCoordPerm[1]] = (factor0*(v[0]-v[1])+factor1*(v[4]-v[5]))/denom;
-    coord[currentCoordPerm[2]] = faceid%2==0 ? root : 1.0-root;
   }
 
 
