@@ -103,7 +103,7 @@ namespace MarchingCubesTest {
     : testData_(count) {
     for (int i = 0; i<count; ++i) {
       testData_[i].resize(Geometry::vertexCount);
-      std::generate(testData_[i].begin(), testData_[i].end(), IntervalRandom<double>(-1,1));
+      std::generate(testData_[i].begin(), testData_[i].end(), RingRandom<double>(1e-1,1));
     }
   }
 

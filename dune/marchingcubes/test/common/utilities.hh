@@ -56,6 +56,24 @@ namespace MarchingCubesTest
     T high;
   };
 
+  template <typename T>
+  struct RingRandom {
+    RingRandom(T low_, T high_)
+      : low(low_), high(high_)
+    {}
+    T operator()() const {
+      // generate random between -(high-low) and (high-low)
+      T r = (high-low)*(2.0*static_cast<T>(rand())/RAND_MAX-1.0);
+      if (Dune::FloatCmp::lt(r,0.0)) {
+        return r-low;
+      } else {
+        return r+low;
+      }
+    }
+    T low;
+    T high;
+  };
+
 #if HAVE_UGGRID
   template <typename ctype, int dim>
   void toVTK(const std::string& name, const Dune::GenericReferenceElement<ctype,dim>& ref) {
