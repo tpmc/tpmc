@@ -511,7 +511,7 @@ namespace Dune {
     const double denom = factor0*(v[0]-v[1]-v[2]+v[3]) + factor1*(v[4]-v[5]-v[6]+v[7]);
     coord[currentCoordPerm[0]] = (factor0*(v[0]-v[2])+factor1*(v[4]-v[6]))/denom;
     coord[currentCoordPerm[1]] = (factor0*(v[0]-v[1])+factor1*(v[4]-v[5]))/denom;
-    coord[currentCoordPerm[2]] = root;
+    coord[currentCoordPerm[2]] = faceid%2==0 ? root : 1.0-root;
   }
 
 
