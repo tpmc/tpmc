@@ -205,10 +205,11 @@ namespace Geometry {
   void RootVertex<ctype, dim>::evaluate(const VectorType& vertexValues, SizeType vertexCount,
                                         Dune::FieldVector<ctype, dim>& result) const {
     assert(dim == 3 && vertexCount == 8);
-    static unsigned short permutations[][8] = {{0,2,4,6,1,3,5,7}, {0,1,4,5,2,3,6,7}, {0,1,2,3,4,5,6,7}};
+    static unsigned short permutations[][8] = {{0,2,4,6,1,3,5,7}, {1,3,5,7,0,2,4,6}, {0,1,4,5,2,3,6,7},
+                                               {2,3,6,7,0,1,4,5}, {0,1,2,3,4,5,6,7}, {4,5,6,7,0,1,2,3}};
     // x dir, y dir, z dir
     static unsigned short coordPerm[][3] = {{1,2,0}, {0,2,1}, {0,1,2}};
-    unsigned short * currentPermutation = permutations[mId/2];
+    unsigned short * currentPermutation = permutations[mId];
     unsigned short * currentCoordPerm = coordPerm[mId/2];
     double v[vertexCount];
     for (int i = 0; i<vertexCount; ++i) {

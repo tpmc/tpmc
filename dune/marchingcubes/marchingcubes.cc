@@ -480,18 +480,19 @@ namespace Dune {
   void MarchingCubes33<valueType, dim, thresholdFunctor,
       symmetryType, intersectionFunctor>::
   getCoordsFromRootId(const valueVector& vertex_values,
-                      const sizeType vertex_count, short centerid,
+                      const sizeType vertex_count, short faceid,
                       point& coord) const
   {
-    assert(dim == 3 && vertexCount == 8);
-    static unsigned short permutations[][8] = {{0,2,4,6,1,3,5,7}, {0,1,4,5,2,3,6,7}, {0,1,2,3,4,5,6,7}};
+    assert(dim == 3 && vertex_count == 8);
+    static unsigned short permutations[][8] = {{0,2,4,6,1,3,5,7}, {1,3,5,7,0,2,4,6}, {0,1,4,5,2,3,6,7},
+                                               {2,3,6,7,0,1,4,5}, {0,1,2,3,4,5,6,7}, {4,5,6,7,0,1,2,3}};
     // x dir, y dir, z dir
     static unsigned short coordPerm[][3] = {{1,2,0}, {0,2,1}, {0,1,2}};
-    unsigned short * currentPermutation = permutations[mId/2];
-    unsigned short * currentCoordPerm = coordPerm[mId/2];
-    double v[vertexCount];
-    for (int i = 0; i<vertexCount; ++i) {
-      v[i] = vertexValues[currentPermutation[i]];
+    unsigned short * currentPermutation = permutations[faceid];
+    unsigned short * currentCoordPerm = coordPerm[faceid/2];
+    double v[vertex_count];
+    for (int i = 0; i<vertex_count; ++i) {
+      v[i] = vertex_values[currentPermutation[i]];
     }
     const double C = v[0]*v[7]-v[1]*v[6]-v[2]*v[5]+v[3]*v[4];
     const double A = C-2*(v[4]*v[7]-v[5]*v[6]);
