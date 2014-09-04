@@ -215,27 +215,33 @@ namespace Geometry {
     for (int i = 0; i<vertexCount; ++i) {
       v[i] = vertexValues[currentPermutation[i]];
     }
-    const double C = v[0]*v[7]-v[1]*v[6]-v[2]*v[5]+v[3]*v[4];
-    const double A = C-2*(v[4]*v[7]-v[5]*v[6]);
-    const double B = C-2*(v[0]*v[3]-v[1]*v[2]);
-    const double D = std::sqrt(-A*B+C*(A+B));
-    // first try the smaller root
-    const double root0 = (B-D)/(A+B);
-    const double root1 = (B+D)/(A+B);
-    double factor0 = A+D;
-    double factor1 = B-D;
-    const bool root0_invalid = Dune::FloatCmp::lt(root0,0.0) || Dune::FloatCmp::gt(root0,1.0);
-    const bool root1_invalid = Dune::FloatCmp::lt(root1,0.0) || Dune::FloatCmp::gt(root1,1.0);
-    if (root0_invalid || (!root1_invalid && root1 < root0)) {
-      factor0 = A-D;
-      factor1 = B+D;
-      result[currentCoordPerm[2]] = mId%2==0 ? root1 : 1.0-root1;
+    double edges[] = {v[4]-v[0], v[5]-v[1], v[6]-v[2], v[7]-v[3]};
+    double A = edges[0]*edges[3]-edges[1]*edges[2];
+    double B = edges[3]*v[0]+edges[0]*v[3]-edges[2]*v[1]-edges[1]*v[2];
+    double C = edges[1]*v[6]+edges[2]*v[5]-edges[0]*v[7]-edges[3]*v[4];
+    double D = v[0]*v[3]-v[1]*v[2];
+    double E = -std::sqrt(-4*A*D+B*B);
+    if (Dune::FloatCmp::eq(A,0.0)) {
+      double root = -D/B;
+      double denom = -(edges[0]-edges[1]-edges[2]+edges[3])*D+(v[0]-v[1]-v[2]+v[3])*B;
+      result[currentCoordPerm[0]] = ((edges[2]-edges[0])*D+(v[0]-v[2])*B)/denom;
+      result[currentCoordPerm[1]] = ((edges[1]-edges[0])*D+(v[0]-v[1])*B)/denom;
+      result[currentCoordPerm[2]] = mId%2==0? root : 1.0-root;
     } else {
-      result[currentCoordPerm[2]] = mId%2==0 ? root0 : 1.0-root0;
+      double root0 = 0.5*(-E-B)/A;
+      double root1 = 0.5*(E-B)/A;
+      const bool root0_invalid = Dune::FloatCmp::lt(root0,0.0) || Dune::FloatCmp::gt(root0,1.0);
+      const bool root1_invalid = Dune::FloatCmp::lt(root1,0.0) || Dune::FloatCmp::gt(root1,1.0);
+      if (root0_invalid || (!root1_invalid && root1 < root0)) {
+        E *= -1;
+        result[currentCoordPerm[2]] = mId%2==0 ? root1 : 1.0-root1;
+      } else {
+        result[currentCoordPerm[2]] = mId%2==0 ? root0 : 1.0-root0;
+      }
+      const double denom = -(edges[0]-edges[1]-edges[2]+edges[3])*E-(v[4]-v[5]-v[6]+v[7])*B-(v[0]-v[1]-v[2]+v[3])*C;
+      result[currentCoordPerm[0]] = (-(edges[0]-edges[2])*E-(v[4]-v[6])*B-(v[0]-v[2])*C)/denom;
+      result[currentCoordPerm[1]] = (-(edges[0]-edges[1])*E-(v[4]-v[5])*B-(v[0]-v[1])*C)/denom;
     }
-    const double denom = factor0*(v[0]-v[1]-v[2]+v[3]) + factor1*(v[4]-v[5]-v[6]+v[7]);
-    result[currentCoordPerm[0]] = (factor0*(v[0]-v[2])+factor1*(v[4]-v[6]))/denom;
-    result[currentCoordPerm[1]] = (factor0*(v[0]-v[1])+factor1*(v[4]-v[5]))/denom;
   }
 
   template <typename ctype, int dim>
@@ -290,14 +296,13 @@ namespace Geometry {
     for (int i = 0; i<vertexCount; ++i) {
       v[i] = vertexValues[currentPermutation[i]];
     }
-    const double C = v[0]*v[7]-v[1]*v[6]-v[2]*v[5]+v[3]*v[4];
-    const double A = C-2*(v[4]*v[7]-v[5]*v[6]);
-    const double B = C-2*(v[0]*v[3]-v[1]*v[2]);
-    const double D = A*(v[0]-v[1]-v[2]+v[3])
-      + B*(v[4]-v[5]-v[6]+v[7]);
-    result[currentCoordPerm[0]] = (A*(v[0]-v[2])+B*(v[4]-v[6]))/D;
-    result[currentCoordPerm[1]] = (A*(v[0]-v[1])+B*(v[4]-v[5]))/D;
-    result[currentCoordPerm[2]] = B/(A+B);
+    double edges[] = {v[4]-v[0], v[5]-v[1], v[6]-v[2], v[7]-v[3]};
+    double A = edges[3]*v[0]+edges[0]*v[3]-edges[2]*v[1]-edges[1]*v[2];
+    double B = edges[1]*v[6]+edges[2]*v[5]-edges[0]*v[7]-edges[3]*v[4];
+    double denom = (v[0]-v[1]-v[2]+v[3])*B+(v[4]-v[5]-v[6]+v[7])*A;
+    result[currentCoordPerm[0]] = (B*(v[0]-v[2])+A*(v[4]-v[6]))/denom;
+    result[currentCoordPerm[1]] = (B*(v[0]-v[1])+A*(v[4]-v[5]))/denom;
+    result[currentCoordPerm[2]] = A/(A+B);
   }
 
   template <typename ctype, int dim>
