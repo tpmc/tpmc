@@ -22,3 +22,4 @@ ltmain.sh
 dependencies.m4
 am
 build.*
+*.swp
