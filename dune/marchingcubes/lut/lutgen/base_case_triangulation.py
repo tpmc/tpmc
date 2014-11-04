@@ -207,11 +207,11 @@ BCTcube3d.base_cases[6].mc33[-1].interior_groups = BCTcube3d.base_cases[6].mc33[
 # 0,1,1,0,1,0,0,0 -> 00010110 # MC33 Case 7.3 (face 0 inside; face 2, 4 outside)
 BCTcube3d.base_cases[6].mc33.append(Triangulation())
 BCTcube3d.base_cases[6].mc33[-1].name = "MC33 Case 7.3 face 0 inside"
-BCTcube3d.base_cases[6].mc33[-1].faces = [[(1, 3), (1, 5), (Face0, 1)], [(4, 5), (1, 5), (Face0, 1)], [(4, 6), (4, 5), (Face0, 1)], [(4, 6), (0, 4), (Face0, 1)], [(0, 2), (2, 6), (Face0, 1)], [(0, 4), (0, 1), (Face0, 1)], [(0, 1), (0, 2), (Face0, 1)], [(2, 3), (2, 6), (Face0, 1)], [(2, 3), (1, 3), (Face0, 1)]]
-BCTcube3d.base_cases[6].mc33[-1].exterior = [[(0, 4), (4, 5), (4, 6), (Face0, 1)], [(0, 4), (4, 5), (4, 6), 4], [(0, 4), (4, 5), (1, 5), (Face0, 1)], [(0, 4), (0, 1), (1, 5), (Face0, 1)], [(0, 1), (1, 3), (1, 5), (Face0, 1)], [(0, 1), (1, 3), (1, 5), 1], [(0, 1), (1, 3), (0, 2), (Face0, 1)], [(1, 3), (0, 2), (2, 3), (Face0, 1)], [(0, 2), (2, 3), (2, 6), (Face0, 1)], [(0, 2), (2, 3), (2, 6), 2]]
-BCTcube3d.base_cases[6].mc33[-1].exterior_groups = [0,0,0,0,0,0,0,0,0,0]
-BCTcube3d.base_cases[6].mc33[-1].interior = [[(0, 1), 0, (0, 4), (Face0, 1)], [(0, 1), (0, 2), 0, (Face0, 1)], [(0, 2), (2, 6), (Face0, 1), (4, 6)], [(0, 2), (0, 4), 0, (Face0, 1)], [(0, 2), (0, 4), (4, 6), (Face0, 1)], [(1, 3), (2, 3), (Face0, 1), 7], [(2, 3), (2, 6), (Face0, 1), 7], [(1, 3), (1, 5), (Face0, 1), 7], [(4, 5), (4, 6), (Face0, 1), 7], [(4, 5), (1, 5), 7, (Face0, 1)], [(4, 5), (1, 5), 5, 7], [(4, 6), (2, 6), 7, (Face0, 1)], [(4, 6), (2, 6), 6, 7], [(2, 3), (1, 3), 3, 7]]
-BCTcube3d.base_cases[6].mc33[-1].interior_groups = [1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+BCTcube3d.base_cases[6].mc33[-1].faces = [[(0, 2), (2, 6), Root4], [(2, 6), (2, 3), Root4], [(0, 4), (4, 6), Root2], [(4, 6), (4, 5), Root2], [(0, 2), (0, 1), Root4], [(2, 3), (1, 3), Root4], [(0, 1), (0, 4), Root2], [(1, 5), (4, 5), Root2], [(0, 1), Root2, Root4], [Root2, Root4, (1, 5)], [(1, 5), Root4, (1, 3)]]
+BCTcube3d.base_cases[6].mc33[-1].exterior = [[(0, 4), (4, 6), 4, Root2], [4, (4, 6), Root2, (4, 5)], [(0, 4), (4, 5), 4, Root2], [(0, 1), (4, 5), (0, 4), Root2], [(0, 1), (1, 5), (4, 5), Root2], [(0, 2), 2, (2, 6), Root4], [(2, 3), (2, 6), 2, Root4], [(2, 3), (0, 2), 2, Root4], [(2, 3), (1, 3), (0, 2), Root4], [(0, 2), (1, 3), (0, 1), Root4], [Root4, Root2, (0, 1), (1, 5)], [(0, 1), (1, 3), (1, 5), Root4], [(0, 1), (1, 3), (1, 5), 1]]
+BCTcube3d.base_cases[6].mc33[-1].exterior_groups = [0,0,0,0,0,0,0,0,0,0,0,0,0]
+BCTcube3d.base_cases[6].mc33[-1].interior = [[Root2, Root4, (0, 1), 0], [(0, 1), (0, 4), 0, Root2], [(0, 1), (0, 2), 0, Root4], [0, 6, Root2, Root4], [(0, 4), 0, Root2, 6], [(0, 4), Root2, (4, 6), 6], [0, (0, 2), Root4, 6], [(0, 2), Root4, (2, 6), 6], [(2, 6), 6, Root4, 7], [Root4, Root2, 6, 7], [(4, 6), 6, 7, Root2], [(4, 5), (4, 6), Root2, 7], [(2, 3), (2, 6), Root4, 7], [(1, 5), Root2, Root4, 7], [(1, 5), (1, 3), Root4, 7], [(1, 3), (2, 3), Root4, 7], [(1, 3), (2, 3), 3, 7], [(4, 5), (1, 5), 5, 7], [(1, 5), (4, 5), Root2, 7]]
+BCTcube3d.base_cases[6].mc33[-1].interior_groups = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 # 0,1,1,0,1,0,0,0 -> 00010110 # MC33 Case 7.3 (face 2 inside; face 0, 4 outside)
 BCTcube3d.base_cases[6].mc33.append(Triangulation())
 BCTcube3d.base_cases[6].mc33[-1].name = "MC33 Case 7.3, face 2 inside"
