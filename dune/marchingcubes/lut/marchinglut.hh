@@ -83,7 +83,19 @@ static const short FD = VH + 4;
 static const short FE = VH + 5;
 static const short FF = VH + 6;
 // center
-static const short CP = FF + 1;
+static const short CA = FF + 1;
+static const short CB = FF + 2;
+static const short CC = FF + 3;
+static const short CD = FF + 4;
+static const short CE = FF + 5;
+static const short CF = FF + 6;
+// root
+static const short RA = CF + 1;
+static const short RB = CF + 2;
+static const short RC = CF + 3;
+static const short RD = CF + 4;
+static const short RE = CF + 5;
+static const short RF = CF + 6;
 
 /* Constants indicating whether case special treatment when marching cubes' 33 is used. */
 static const short CASE_UNIQUE_MC33 = 0;

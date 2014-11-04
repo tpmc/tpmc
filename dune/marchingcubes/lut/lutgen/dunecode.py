@@ -4,7 +4,7 @@ Contains classes/constants for export to dune marchinglut.cc
 
 import math
 from referenceelements import ReferenceElements
-from geomobj import FacePoint, CenterPoint
+from geomobj import FacePoint, CenterPoint, RootPoint
 
 # Following constants are copied from marchinglut.hh
 # constants for vertex and edge numbering
@@ -31,11 +31,26 @@ FD = VH + 4
 FE = VH + 5
 FF = VH + 6
 # center point
-CP = FF + 1
+CA = FF + 1
+CB = FF + 2
+CC = FF + 3
+CD = FF + 4
+CE = FF + 5
+CF = FF + 6
+# root point
+RA = CF + 1
+RB = CF + 2
+RC = CF + 3
+RD = CF + 4
+RE = CF + 5
+RF = CF + 6
 # dictionary to get constant names from integers
 CONST_NAMES = {VA:"VA", VB:"VB", VC:"VC", VD:"VD", VE:"VE", 
                VF:"VF", VG:"VG", VH:"VH", FA:"FA", FB:"FB", 
-               FC:"FC", FD:"FD", FE:"FE", FF:"FF", CP:"CP"}
+               FC:"FC", FD:"FD", FE:"FE", FF:"FF", CA:"CA",
+               CB:"CB", CC:"CC", CD:"CD", CE:"CE", CF:"CF",
+               RA:"RA", RB:"RB", RC:"RC", RD:"RD", RE:"RE",
+               RF:"RF"}
 # Constants indicating whether case special treatment when 
 # marching cubes' 33 is used.
 CASE_UNIQUE_MC33 = 0
@@ -77,11 +92,15 @@ class VertexMapper:
                 return offset
             else:
                 faceids = [FA, FB, FC, FD, FE, FF]
+                centerids = [CA, CB, CC, CD, CE, CF]
+                rootids = [RA, RB, RC, RD, RE, RF]
                 val = vertex
                 if type(vertex) is CenterPoint:
-                    val = CP
-                if type(vertex) is FacePoint:
+                    val = centerids[vertex.id]
+                elif type(vertex) is FacePoint:
                     val = faceids[vertex.id]
+                elif type(vertex) is RootPoint:
+                    val = rootids[vertex.id]
                 return -val;
 
 class DuneCode:
@@ -95,17 +114,17 @@ class DuneCode:
         def create_codim0_line(vmapper, table, table_groups, entry, new_elements, new_elements_groups):
             """ create a table line for codimX tables """
             # change 3D simplex, prism & pyramid numbering scheme to 3D cube's one
-            rename_vertices = {(3,"simplex"): [0,1,2,4],
-                               (3,"prism"): [0,1,2,4,5,6]}
-            if self.generator.geometry_type in rename_vertices:
-                rename = rename_vertices[self.generator.geometry_type]
-                for i in range(len(new_elements)):
-                    for j in range(len(new_elements[i])):
-                        if type(new_elements[i][j]) is int:
-                            new_elements[i][j] = rename[new_elements[i][j]]
-                        else:
-                            new_elements[i][j] = (rename[new_elements[i][j][0]],
-                                                  rename[new_elements[i][j][1]])
+            def renameVertex(gt,v):
+              rename_vertices = {(3,"simplex"): [0,1,2,4],
+                                 (3,"prism"): [0,1,2,4,5,6]}
+              if gt in rename_vertices:
+                rn = rename_vertices[gt]
+                if type(v) is int:
+                  return rn[v]
+                elif type(v) is tuple:
+                  return (renameVertex(gt,v[0]),renameVertex(gt,v[1]))
+              return v
+            new_elements = [[renameVertex(self.generator.geometry_type,v) for v in t] for t in new_elements]
             # write comment in front of data
             assert entry.base_case in self.generator.base_cases
             base_case_number = self.generator.base_cases.index(entry.base_case)
@@ -137,17 +156,17 @@ class DuneCode:
         def create_codim1_line(vmapper,table, entry, new_elements):
             """ create a table line for codimX tables """
             # change 3D simplex, prism & pyramid numbering scheme to 3D cube's one
-            rename_vertices = {(3,"simplex"): [0,1,2,4],
-                               (3,"prism"): [0,1,2,4,5,6]}
-            if self.generator.geometry_type in rename_vertices:
-                rename = rename_vertices[self.generator.geometry_type]
-                for i in range(len(new_elements)):
-                    for j in range(len(new_elements[i])):
-                        if type(new_elements[i][j]) is int:
-                            new_elements[i][j] = rename[new_elements[i][j]]
-                        else:
-                            new_elements[i][j] = (rename[new_elements[i][j][0]],
-                                                  rename[new_elements[i][j][1]])
+            def renameVertex(gt,v):
+              rename_vertices = {(3,"simplex"): [0,1,2,4],
+                                 (3,"prism"): [0,1,2,4,5,6]}
+              if gt in rename_vertices:
+                rn = rename_vertices[gt]
+                if type(v) is int:
+                  return rn[v]
+                elif type(v) is tuple:
+                  return (renameVertex(gt,v[0]),renameVertex(gt,v[1]))
+              return v
+            new_elements = [[renameVertex(self.generator.geometry_type,v) for v in t] for t in new_elements]
             # write comment in front of data
             assert entry.base_case in self.generator.base_cases
             base_case_number = self.generator.base_cases.index(entry.base_case)

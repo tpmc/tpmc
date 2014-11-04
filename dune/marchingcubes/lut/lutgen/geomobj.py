@@ -14,12 +14,20 @@ from disambiguate import permute_faceid
 LOGGER = logging.getLogger('lutgen.geomobject')
 
 class CenterPoint(object):
+    def __init__(self, id):
+        self.id = id
     def __repr__(self):
-        return "CenterPoint"
-    def __eq__(self, other):
-        return type(other) is CenterPoint
+        return "CenterPoint{0}".format(self.id)
+    def __cmp__(self, other):
+        if type(other) is CenterPoint:
+            return self.id - other.id
+        if type(other) is FacePoint:
+            return 1
+        if type(other) is RootPoint:
+            return 1
+        return -1
     def __hash__(self):
-        return hash("CenterPoint")
+        return hash("CenterPoint{0}".format(self.id))
 
 class FacePoint(object):
     def __init__(self, id):
@@ -29,9 +37,29 @@ class FacePoint(object):
     def __cmp__(self, other):
         if type(other) is FacePoint:
             return self.id - other.id
+        if type(other) is CenterPoint:
+            return -1
+        if type(other) is RootPoint:
+            return 1
         return -1
     def __hash__(self):
         return hash("FacePoint{0}".format(self.id))
+
+class RootPoint(object):
+    def __init__(self, id):
+        self.id = id
+    def __repr__(self):
+        return "RootPoint{0}".format(self.id)
+    def __cmp__(self, other):
+        if type(other) is RootPoint:
+            return self.id - other.id
+        if type(other) is FacePoint:
+            return -1
+        if type(other) is CenterPoint:
+            return -1
+        return -1
+    def __hash__(self):
+        return hash("RootPoint{0}".format(self.id))
 
 class GeomObject(object):
     """ class representing a geometric object, eg a 3d cube, 2d simplex, etc """
@@ -127,11 +155,9 @@ class GeomObject(object):
             """ permutates vertex """
             if type(vertex) is int:
                 return perm[vertex]
-            if type(vertex) is CenterPoint:
-                return vertex
-            if type(vertex) is FacePoint:
+            if type(vertex) in [FacePoint,CenterPoint,RootPoint]:
                 cubereffaces = ReferenceElements[self.global_type].faces
-                return FacePoint(permute_faceid(vertex.id, perm, cubereffaces))
+                return type(vertex)(permute_faceid(vertex.id, perm, cubereffaces))
             l = [apply_perm(vertex[0]), apply_perm(vertex[1])];
             if type(vertex[0]) is tuple or type(vertex[1]) is tuple:
                 return tuple(l)
@@ -172,10 +198,21 @@ def permute_geom_list(dim, global_type, entities, perm):
     return [ GeomObject(dim, e, global_type) * perm for e in entities ]
 
 
-Center = CenterPoint()
+Center0 = CenterPoint(0)
+Center1 = CenterPoint(1)
+Center2 = CenterPoint(2)
+Center3 = CenterPoint(3)
+Center4 = CenterPoint(4)
+Center5 = CenterPoint(5)
 Face0 = FacePoint(0)
 Face1 = FacePoint(1)
 Face2 = FacePoint(2)
 Face3 = FacePoint(3)
 Face4 = FacePoint(4)
 Face5 = FacePoint(5)
+Root0 = RootPoint(0)
+Root1 = RootPoint(1)
+Root2 = RootPoint(2)
+Root3 = RootPoint(3)
+Root4 = RootPoint(4)
+Root5 = RootPoint(5)

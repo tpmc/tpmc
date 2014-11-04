@@ -29,7 +29,7 @@ namespace Dune {
     template <int po, class X, class R>
     static void apply(const UnivariatePolynomial<po,X>& p, R& result) {
       typedef typename UnivariatePolynomial<po,X>::Domain Domain;
-      Domain bound(0);
+      /*Domain bound(0);
       for (SizeType i = 0; i<po; ++i)
         if (FloatCmp::ne(std::abs(p.coeff(i+1)), 0.0))
           bound += std::abs(p.coeff(i))/std::abs(p.coeff(i+1));
@@ -41,6 +41,11 @@ namespace Dune {
         roots[i] = 2*static_cast<int>(i)-po+1;
         roots[i] /= std::max(po-1,1);
         roots[i] *= bound;
+      }
+      */
+      array<Domain, po> roots;
+      for (SizeType i = 0; i<po; ++i) {
+        roots[i] = static_cast<Domain>(i)/std::max(po-1,1);
       }
       array<Domain, po> value, derivative, weight;
       Domain residuum;
@@ -110,6 +115,17 @@ namespace Dune {
   private:
     template <int po, class I>
     static void apply(const I& begin, const I& end, ctype& result);
+
+    template <class VectorType, class I>
+    static void insertPrismCoefficients(const VectorType& vertex_values,
+                                        const PointType& a,
+                                        const PointType& b,
+                                        I out);
+    template <class VectorType, class I>
+    static void insertCubeCoefficients(const VectorType& vertex_values,
+                                       const PointType& a,
+                                       const PointType& b,
+                                       I out);
   };
 
 
@@ -126,12 +142,6 @@ namespace Dune {
   template <int po, class I>
   void AberthFunctor<ctype, StopPolicy>::apply(const I& begin, const I& end, ctype& result) {
     UnivariatePolynomial<po, ctype > p(begin, end);
-    // if both starting points are zero, we use the middle point
-    // \todo use real center on the interface
-    if (Dune::FloatCmp::eq(p(0),0.0) && Dune::FloatCmp::eq(p(1),0.0)) {
-      result = 0.5;
-      return;
-    }
     ctype roots[po];
     AberthMethod<StopPolicy>::apply(p,roots);
 #ifndef NDEBUG
@@ -152,6 +162,9 @@ namespace Dune {
     }
     if (id >= 0)
       result = roots[id];
+    else {
+      DUNE_THROW(Dune::Exception, "Aberth method did not find a root between 0 and 1");
+    }
 #ifndef NDEBUG
     std::cout << "choosing root " << id << " at: " << result << "\n";
 #endif
@@ -159,28 +172,71 @@ namespace Dune {
 
 
   template <typename ctype, class StopPolicy>
+  template <class VectorType, class I>
+  void AberthFunctor<ctype, StopPolicy>::insertCubeCoefficients(const VectorType& v,
+                                                                const PointType& a,
+                                                                const PointType& b,
+                                                                I out) {
+    PointType x(b);
+    x -= a;
+    ctype A = v[7]-v[6]-v[5]+v[4]-v[3]+v[2]+v[1]-v[0],
+          B = v[6]-v[4]-v[2]+v[0], C = v[5]-v[4]-v[1]+v[0],
+          D = v[3]-v[2]-v[1]+v[0], E = v[4]-v[0], F = v[2]-v[0],
+          G = v[1]-v[0], H = v[0];
+    // zero coefficient
+    *out++ = A*a[0]*a[1]*a[2] + B*a[1]*a[2] + C*a[0]*a[2] + D*a[0]*a[1] + E*a[2] + F*a[1] + G*a[0] + H;
+    // first coefficient
+    *out++ = A*(x[0]*a[1]*a[2]+a[0]*x[1]*a[2]+a[0]*a[1]*x[2]) + B*(x[1]*a[2]+a[1]*x[2]) + C*(x[0]*a[2]+a[0]*x[2]) + D*(x[0]*a[1]+a[0]*x[1]) + E*x[2] + F*x[1] + G*x[0];
+    // second coefficient
+    *out++ = A*(x[0]*x[1]*a[2]+x[0]*a[1]*x[2]+a[0]*x[1]*x[2]) + B*x[1]*x[2] + C*x[0]*x[2] + D*x[0]*x[1];
+    // third coefficient
+    *out++ = A*x[0]*x[1]*x[2];
+  }
+
+  template <typename ctype, class StopPolicy>
+  template <class VectorType, class I>
+  void AberthFunctor<ctype, StopPolicy>::insertPrismCoefficients(const VectorType& v,
+                                                                 const PointType& a,
+                                                                 const PointType& b,
+                                                                 I out) {
+    PointType d(b);
+    d -= a;
+    ctype A = v[0]-v[1]-v[3]+v[4],
+          B = v[0]-v[2]-v[3]+v[5],
+          C = v[1]-v[0],
+          D = v[2]-v[0],
+          E = v[3]-v[0];
+    // zero coefficient
+    *out++ = a[0]*a[2]*A + a[1]*a[2]*B + a[0]*C + a[1]*D + a[2]*E + v[0];
+    // first coefficient
+    *out++ = (d[0]*a[2]+d[2]*a[0])*A + (d[1]*a[2]+d[2]*a[1])*B
+             + d[0]*C + d[1]*D + d[2]*E;
+    // second coefficient
+    *out++ = d[0]*d[2]*A + d[1]*d[2]*B;
+  }
+
+  template <typename ctype, class StopPolicy>
   template <class VectorType>
   void AberthFunctor<ctype, StopPolicy>::findRoot(const VectorType& v,
                                                   const PointType& a,
                                                   const PointType& b,
                                                   PointType& result) {
-    PointType x(b);
-    x -= a;
-    // compute coefficients
-    ctype A = v[7]-v[6]-v[5]+v[4]-v[3]+v[2]+v[1]-v[0],
-          B = v[6]-v[4]-v[2]+v[0], C = v[5]-v[4]-v[1]+v[0],
-          D = v[3]-v[2]-v[1]+v[0], E = v[4]-v[0], F = v[2]-v[0],
-          G = v[1]-v[0], H = v[0];
-    ctype coefficients[] = {
-      A*a[0]*a[1]*a[2] + B*a[1]*a[2] + C*a[0]*a[2] + D*a[0]*a[1]
-      + E*a[2] + F*a[1] + G*a[0] + H,
-      A*(x[0]*a[1]*a[2]+a[0]*x[1]*a[2]+a[0]*a[1]*x[2])
-      + B*(x[1]*a[2]+a[1]*x[2]) + C*(x[0]*a[2]+a[0]*x[2])
-      + D*(x[0]*a[1]+a[0]*x[1]) + E*x[2] + F*x[1] + G*x[0],
-      A*(x[0]*x[1]*a[2]+x[0]*a[1]*x[2]+a[0]*x[1]*x[2])
-      + B*x[1]*x[2] + C*x[0]*x[2] + D*x[0]*x[1],
-      A*x[0]*x[1]*x[2]
-    };
+    // method only supported for cube or prism
+    assert(v.size() == 6 || v.size() == 8);
+#ifndef NDEBUG
+    std::cout << "finding root between " << a << " and " << b << "\n";
+#endif
+    ctype coefficients[4] = {0.,0.,0.,0.};
+    if (v.size() == 6) {
+      insertPrismCoefficients(v,a,b,coefficients);
+    } else if (v.size() == 8) {
+      insertCubeCoefficients(v,a,b,coefficients);
+    }
+#ifndef NDEBUG
+    std::cout << "polynomial coefficients: "
+      << coefficients[0] << " " << coefficients[1] << " "
+      << coefficients[2] << " " << coefficients[3] << "\n";
+#endif
     // create polynomial
     ctype root = 0.0;
     if (Dune::FloatCmp::ne(coefficients[3], 0.0)) {
@@ -190,8 +246,10 @@ namespace Dune {
     } else {
       apply<1, ctype*>(coefficients, coefficients+2, root);
     }
-    result = a;
-    result.axpy(root, x);
+    result = b;
+    result -= a;
+    result *= root;
+    result += a;
   }
 }
 

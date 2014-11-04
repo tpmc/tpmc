@@ -2,7 +2,7 @@ from lutgen.output import Output
 
 from lutgen.referenceelements import GeometryType
 from lutgen.referenceelements import ReferenceElements
-from lutgen.geomobj import CenterPoint, FacePoint
+from lutgen.geomobj import CenterPoint, FacePoint, RootPoint
 
 from pyvtk import *
 
@@ -16,10 +16,27 @@ class Vtk(Output):
                         if type(v) is CenterPoint:
                                 return [0.5 for i in range(dim) ] + [0]*(3-dim)
 			if type(v) is FacePoint:
-				soliddims = [(0,0), (0,1), (1,0), (1,1), (2,0), (2,1)]
-				res = [0.5]*dim
-				res[soliddims[v.id][0]] = soliddims[v.id][1]
-				return res
+                                assert(dim == 3)
+                                if len(points) == 8:
+                                    facecenters = [[0,.5,.5],[1,.5,.5],[.5,0,.5],
+                                                   [.5,1,.5],[.5,.5,0],[.5,.5,1]]
+                                elif len(points) == 6:
+                                    facecenters = [[.5,0,.5],[0,.5,.5],[.5,.5,.5],
+                                                   [1./3.,1./3.,0],[1./3.,1./3.,1]]
+                                else:
+                                    assert(False)
+				return facecenters[v.id]
+			if type(v) is RootPoint:
+                                assert(dim == 3)
+                                if len(points) == 8:
+                                    roots = [[0.15,.5,.5],[0.85,.5,.5],[.5,0.15,.5],
+                                             [.5,0.85,.5],[.5,.5,0.15],[.5,.5,0.85]]
+                                elif len(points) == 6:
+                                    roots = [[.5,0.15,.5],[0.15,.5,.5],[.5-.15/sqrt(3.),.5-.15/sqrt(3.),.5-.15/sqrt(3.)],
+                                             [1./3.,1./3.,0.15],[1./3.,1./3.,0.85]]
+                                else:
+                                    assert(False)
+				return roots[v.id]
                         else:
                                 w = 0.5
                                 p1 = vertex(v[0],points)

@@ -21,7 +21,7 @@ namespace Dune {
     static const unsigned int MAX_ITERATION;
   };
   template <typename ValueType>
-  const unsigned int IterationStopPolicy<ValueType>::MAX_ITERATION = 10;
+  const unsigned int IterationStopPolicy<ValueType>::MAX_ITERATION = 20;
 
   /*
    * stop Newton's method if the residuum is small enough

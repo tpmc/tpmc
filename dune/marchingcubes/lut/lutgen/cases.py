@@ -88,7 +88,7 @@ class Case(BaseCase):
                        for test in self.base_case.tests ]
         # update mc33 triangulations
         self.mc33 = [ Triangulation(triang.name,
-                                    self.transformation*triang.vertex_groups,
+                                    self.transformation.fromBaseCase(triang.vertex_groups),
                                     permute_geom_list(dim-1, global_type, triang.faces, 
                                                       self.transformation),
                                     permute_geom_list(dim, global_type, triang.exterior, 

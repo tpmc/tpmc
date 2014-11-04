@@ -1,5 +1,5 @@
 from referenceelements import ReferenceElements
-from geomobj import CenterPoint, FacePoint
+from geomobj import CenterPoint, FacePoint, RootPoint
 
 class NotImplementedException(Exception):
     def __init__(self, value):
@@ -59,6 +59,10 @@ def calculateCoordinate(vertex, geometrytype):
         return cmean([calculateCoordinate(i, geometrytype) for i in range(len(ref))], [1]*len(ref))
     if type(vertex) is FacePoint:
         return cmean([calculateCoordinate(i, geometrytype) for i in ref.faces[vertex.id]], [1]*len(ref.faces[vertex.id]))
+    if type(vertex) is RootPoint:
+        addition = [[.15,0,0],[-.15,0,0],[0,.15,0],[0,-.15,0],[0,0,.15],[0,0,-.15]]
+        tmp = cmean([calculateCoordinate(i, geometrytype) for i in ref.faces[vertex.id]], [1]*len(ref.faces[vertex.id]))
+        return [tmp[i]+addition[vertex.id][i] for i in range(len(tmp))]
     if type(vertex) is tuple:
         return cmean([calculateCoordinate(x, geometrytype) for x in vertex], [calcWeight(i) for i in vertex])
     if type(vertex) is int:

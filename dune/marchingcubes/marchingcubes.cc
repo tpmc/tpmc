@@ -394,12 +394,15 @@ namespace Dune {
     if (number <= 0) {     // we have a single point
       number *= -1;
 
-      if (number == CP && dim == 3 && vertex_count == 8) {
-        // should not use CP anymore
-        //DUNE_THROW(IllegalArgumentException, "centerpoint found");
-      } else if (number >= FA && number <= FF) {
+      if (number >= FA && number <= FF) {
         short faceid = number - FA;
         getCoordsFromFaceId(vertex_values, vertex_count, faceid, coord);
+      } else if (number >= CA && number <= CF) {
+        short faceid = number - CA;
+        getCoordsFromCenterId(vertex_values, vertex_count, faceid, coord);
+      } else if (number >= RA && number <= RF) {
+        short faceid = number - RA;
+        getCoordsFromRootId(vertex_values, vertex_count, faceid, coord);
       } else {
         getCoordsFromEdgeNumber(vertex_values, vertex_count,
                                 number, coord);
@@ -416,24 +419,15 @@ namespace Dune {
           && -vertex_index[1] >= VA && -vertex_index[1] <= VH) {       // we have a simple edge
         sizeType index_a = Tables::all_vertex_to_index[vertex_count+dim][-vertex_index[0]];
         sizeType index_b = Tables::all_vertex_to_index[vertex_count+dim][-vertex_index[1]];
-        // if theres no intersection along the edge, there is no vertex
-        if (threshFunctor.isInside(vertex_values[index_a]) ==
+        // if theres no intersection along the edge, we use the middle as a
+        // helper vertex. otherwise, use linear interpolation
+        valueType interpol_factor = -0.5;
+        if (threshFunctor.isInside(vertex_values[index_a]) !=
             threshFunctor.isInside(vertex_values[index_b])) {
-#ifndef NDEBUG
-          std::cout << "vertex values: ";
-          for (std::size_t i = 0; i<vertex_count; ++i)
-            std::cout << " " << vertex_values[i];
-          std::cout << "\nfirst: " << vertex_index[0] << " a: " << index_a
-                    << " second: " << vertex_index[1] << " b: " << index_b << "\n";
-#endif
-          //DUNE_THROW(IllegalArgumentException, "no vertex on edge found");
+          // factor for interpolation
+          interpol_factor = threshFunctor.interpolationFactor
+                                  (point_a,point_b,vertex_values[index_a],vertex_values[index_b]);
         }
-
-        // factor for interpolation
-        valueType interpol_factor = threshFunctor.interpolationFactor
-                                      (point_a,point_b,vertex_values[index_a],vertex_values[index_b]);
-
-
         // calculate interpolation point
         for (sizeType i = 0; i < dim; i++) {
           coord[i] = point_a[i] - interpol_factor * (point_b[i] - point_a[i]);
@@ -450,6 +444,84 @@ namespace Dune {
       assert(false);
   }
 
+  template <typename valueType, int dim, typename thresholdFunctor,
+      SymmetryType symmetryType, class intersectionFunctor>
+  template <typename valueVector>
+  void MarchingCubes33<valueType, dim, thresholdFunctor,
+      symmetryType, intersectionFunctor>::
+  getCoordsFromCenterId(const valueVector& vertex_values,
+                        const sizeType vertex_count, short centerid,
+                        point& coord) const
+  {
+    // CenterPoints only supported in 3d cubes
+    assert(dim == 3 && vertex_count == 8);
+    static unsigned short permutations[][8] = {{0,2,4,6,1,3,5,7}, {0,1,4,5,2,3,6,7}, {0,1,2,3,4,5,6,7}};
+    // x dir, y dir, z dir
+    static unsigned short coordPerm[][3] = {{1,2,0}, {0,2,1}, {0,1,2}};
+    unsigned short * currentPermutation = permutations[centerid/2];
+    unsigned short * currentCoordPerm = coordPerm[centerid/2];
+    double v[vertex_count];
+    for (int i = 0; i<vertex_count; ++i) {
+      v[i] = vertex_values[currentPermutation[i]];
+    }
+    double edges[] = {v[4]-v[0], v[5]-v[1], v[6]-v[2], v[7]-v[3]};
+    double A = edges[3]*v[0]+edges[0]*v[3]-edges[2]*v[1]-edges[1]*v[2];
+    double B = edges[1]*v[6]+edges[2]*v[5]-edges[0]*v[7]-edges[3]*v[4];
+    double denom = (v[0]-v[1]-v[2]+v[3])*B+(v[4]-v[5]-v[6]+v[7])*A;
+    coord[currentCoordPerm[0]] = (B*(v[0]-v[2])+A*(v[4]-v[6]))/denom;
+    coord[currentCoordPerm[1]] = (B*(v[0]-v[1])+A*(v[4]-v[5]))/denom;
+    coord[currentCoordPerm[2]] = A/(A+B);
+  }
+
+  template <typename valueType, int dim, typename thresholdFunctor,
+      SymmetryType symmetryType, class intersectionFunctor>
+  template <typename valueVector>
+  void MarchingCubes33<valueType, dim, thresholdFunctor,
+      symmetryType, intersectionFunctor>::
+  getCoordsFromRootId(const valueVector& vertex_values,
+                      const sizeType vertex_count, short faceid,
+                      point& coord) const
+  {
+    assert(dim == 3 && vertex_count == 8);
+    static unsigned short permutations[][8] = {{0,2,4,6,1,3,5,7}, {1,3,5,7,0,2,4,6}, {0,1,4,5,2,3,6,7},
+                                               {2,3,6,7,0,1,4,5}, {0,1,2,3,4,5,6,7}, {4,5,6,7,0,1,2,3}};
+    // x dir, y dir, z dir
+    static unsigned short coordPerm[][3] = {{1,2,0}, {0,2,1}, {0,1,2}};
+    unsigned short * currentPermutation = permutations[faceid];
+    unsigned short * currentCoordPerm = coordPerm[faceid/2];
+    double v[vertex_count];
+    for (int i = 0; i<vertex_count; ++i) {
+      v[i] = vertex_values[currentPermutation[i]];
+    }
+    double edges[] = {v[4]-v[0], v[5]-v[1], v[6]-v[2], v[7]-v[3]};
+    double A = edges[0]*edges[3]-edges[1]*edges[2];
+    double B = edges[3]*v[0]+edges[0]*v[3]-edges[2]*v[1]-edges[1]*v[2];
+    double C = edges[1]*v[6]+edges[2]*v[5]-edges[0]*v[7]-edges[3]*v[4];
+    double D = v[0]*v[3]-v[1]*v[2];
+    double E = -std::sqrt(-4*A*D+B*B);
+    if (Dune::FloatCmp::eq(A,0.0)) {
+      double root = -D/B;
+      double denom = -(edges[0]-edges[1]-edges[2]+edges[3])*D+(v[0]-v[1]-v[2]+v[3])*B;
+      coord[currentCoordPerm[0]] = ((edges[2]-edges[0])*D+(v[0]-v[2])*B)/denom;
+      coord[currentCoordPerm[1]] = ((edges[1]-edges[0])*D+(v[0]-v[1])*B)/denom;
+      coord[currentCoordPerm[2]] = faceid%2==0? root : 1.0-root;
+    } else {
+      double root0 = 0.5*(-E-B)/A;
+      double root1 = 0.5*(E-B)/A;
+      const bool root0_invalid = Dune::FloatCmp::lt(root0,0.0) || Dune::FloatCmp::gt(root0,1.0);
+      const bool root1_invalid = Dune::FloatCmp::lt(root1,0.0) || Dune::FloatCmp::gt(root1,1.0);
+      if (root0_invalid || (!root1_invalid && root1 < root0)) {
+        E *= -1;
+        coord[currentCoordPerm[2]] = faceid%2==0 ? root1 : 1.0-root1;
+      } else {
+        coord[currentCoordPerm[2]] = faceid%2==0 ? root0 : 1.0-root0;
+      }
+      const double denom = -(edges[0]-edges[1]-edges[2]+edges[3])*E-(v[4]-v[5]-v[6]+v[7])*B-(v[0]-v[1]-v[2]+v[3])*C;
+      coord[currentCoordPerm[0]] = (-(edges[0]-edges[2])*E-(v[4]-v[6])*B-(v[0]-v[2])*C)/denom;
+      coord[currentCoordPerm[1]] = (-(edges[0]-edges[1])*E-(v[4]-v[5])*B-(v[0]-v[1])*C)/denom;
+    }
+  }
+
 
   template <typename valueType, int dim, typename thresholdFunctor,
       SymmetryType symmetryType, class intersectionFunctor>
@@ -460,6 +532,8 @@ namespace Dune {
                       const sizeType vertex_count, short faceid,
                       point& coord) const
   {
+    // FacePoints only supported in 3d
+    assert(dim == 3);
     static short cube_faceoffsets[] = {0,4,8,12,16,20,24};
     static short cube_faces[] = {0,2,4,6,1,3,5,7,0,1,4,5,2,3,6,7,0,1,2,3,4,
                                  5,6,7};
@@ -509,27 +583,54 @@ namespace Dune {
                                short b, short c, short d, short faceid,
                                point& coord) const
   {
-    // const, first dir, second dir
-    static short dirs[][3] = {{0,1,2}, {0,1,2}, {1,0,2}, {1,0,2},
-                              {2,0,1}, {2,0,1}};
-    static valueType constvalues[] = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
+    point pa,pb,pc,pd;
     valueType va = vertex_values[a],
               vb = vertex_values[b],
               vc = vertex_values[c],
               vd = vertex_values[d];
-    // if its a face with no edge points, we use the geometric
-    // center, otherwise we use the center of the hyperbola
-    if (Dune::FloatCmp::ge(va*vb,0.0) && Dune::FloatCmp::ge(vb*vc, 0.0)
-        && Dune::FloatCmp::ge(vc*vd,0.0)) {
-      coord[dirs[faceid][0]] = constvalues[faceid];
-      coord[dirs[faceid][1]] = 0.5;
-      coord[dirs[faceid][2]] = 0.5;
-    } else {
-      valueType factor = 1.0/(va-vb-vc+vd);
-      coord[dirs[faceid][0]] = constvalues[faceid];
-      coord[dirs[faceid][1]] = factor*(va-vc);
-      coord[dirs[faceid][2]] = factor*(va-vb);
+    // map prism and simplex indices to cube (i.e. skip vertex 3)
+    if (vertex_count == 4 || vertex_count == 6) {
+      if (a > 2) ++a;
+      if (b > 2) ++b;
+      if (c > 2) ++c;
+      if (d > 2) ++d;
     }
+    getCoordsFromEdgeNumber(vertex_values, vertex_count, a, pa);
+    getCoordsFromEdgeNumber(vertex_values, vertex_count, b, pb);
+    getCoordsFromEdgeNumber(vertex_values, vertex_count, c, pc);
+    getCoordsFromEdgeNumber(vertex_values, vertex_count, d, pd);
+#ifndef NDEBUG
+    std::cout << "getting coords for rectangular face:\n";
+    std::cout << "pa = " << pa << " va = " << va << "\n";
+    std::cout << "pb = " << pb << " vb = " << vb << "\n";
+    std::cout << "pc = " << pc << " vc = " << vc << "\n";
+    std::cout << "pd = " << pd << " vd = " << vd << "\n";
+#endif
+    valueType cx = 0.5, cy = 0.5;
+    if (Dune::FloatCmp::ge(va*vd,0.0) && Dune::FloatCmp::ge(vb*vc,0.0) && Dune::FloatCmp::lt(va*vb,0.0)) {
+      valueType factor = 1.0/(va-vb-vc+vd);
+      cx = factor*(va-vc);
+      cy = factor*(va-vb);
+    } else if (Dune::FloatCmp::ge(va*vb,0.0) && Dune::FloatCmp::ge(vc*vd,0.0) && Dune::FloatCmp::lt(va*vc,0.0)) {
+      cy = (va+vb)/(va+vb-vc-vd);
+    } else if (Dune::FloatCmp::ge(va*vc,0.0) && Dune::FloatCmp::ge(vb*vd,0.0) && Dune::FloatCmp::lt(va*vb,0.0)) {
+      cx = (va+vc)/(va-vb+vc-vd);
+    }
+#ifndef NDEBUG
+    std::cout << "local coordinates of center: " << cx << ", " << cy << "\n";
+#endif
+    pa *= (1-cx)*(1-cy);
+    pb *= cx*(1-cy);
+    pc *= (1-cx)*cy;
+    pd *= cx*cy;
+    coord = pa;
+    coord += pb;
+    coord += pc;
+    coord += pd;
+#ifndef NDEBUG
+    std::cout << "result = " << coord << "\n";
+    std::cout << "value at center : " << (1-cx)*(1-cy)*va+cx*(1-cy)*vb+(1-cx)*cy*vc+cx*cy*vd << "\n";
+#endif
   }
 
   template <typename valueType, int dim, typename thresholdFunctor,

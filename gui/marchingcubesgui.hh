@@ -89,7 +89,7 @@ MarchingCubesGUI<N>::MarchingCubesGUI(I begin, I end)
   }
   std::fill(mValues.begin()+index, mValues.end(), 1);
   std::fill(mGridValid, mGridValid+N, false);
-  std::fill(mRefinements, mRefinements+N, 0);
+  std::fill(mRefinements, mRefinements+N, 2);
   mRefinements[0] = 4;
   // start with face 4
   mPlaneFirst[0] = 1;
