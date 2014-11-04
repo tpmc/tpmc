@@ -171,7 +171,7 @@ namespace MarchingCubesTest {
     return result;
   }
 
-  // tests if the volume of interior and exterior match the volume of the reference element
+  // tests if all vertices which are not on the interface are corners of the reference element
   template <typename Geometry>
   class InterfaceTest {
     bool result_;
@@ -568,8 +568,10 @@ namespace MarchingCubesTest {
 int main(int argc, char* argv[]) {
   using namespace MarchingCubesTest;
   try {
-    const int N = 1500;
+    // number of times different random-data tests should run
+    const int N = 5000;
     std::srand(std::time(0));
+    // test if the quadrature works by setting all values to inside
     Test allinside("allinside");
     allinside.run<AllInsideGenerator<CubeGeometry<3> >, VolumeTest<CubeGeometry<3> > >();
     allinside.run<AllInsideGenerator<CubeGeometry<2> >, VolumeTest<CubeGeometry<2> > >();
@@ -577,12 +579,14 @@ int main(int argc, char* argv[]) {
     allinside.run<AllInsideGenerator<SimplexGeometry<2> >, VolumeTest<SimplexGeometry<2> > >();
     allinside.run<AllInsideGenerator<PrismGeometry >, VolumeTest<PrismGeometry> >();
     allinside.run<AllInsideGenerator<PyramidGeometry >, VolumeTest<PyramidGeometry> >();
+    // test if the volume of interior and exterior matches the volume of the reference element
     Test volumetest("volume");
     volumetest.run<AllCombinationGenerator<CubeGeometry<3> >, VolumeTest<CubeGeometry<3> > >();
     volumetest.run<AllCombinationGenerator<CubeGeometry<2> >, VolumeTest<CubeGeometry<2> > >();
     volumetest.run<AllCombinationGenerator<SimplexGeometry<3> >, VolumeTest<SimplexGeometry<3> > >();
     volumetest.run<AllCombinationGenerator<SimplexGeometry<2> >, VolumeTest<SimplexGeometry<2> > >();
     volumetest.run<AllCombinationGenerator<PrismGeometry>, VolumeTest<PrismGeometry> >();
+    // NOTE commented pyramid volume test due to problems with pyramid quadrature
     //volumetest.run<AllCombinationGenerator<PyramidGeometry>, VolumeTest<PyramidGeometry> >();
     volumetest.run<RandomDataGenerator<CubeGeometry<3>, N>, VolumeTest<CubeGeometry<3> > >();
     volumetest.run<RandomDataGenerator<CubeGeometry<2>, N>, VolumeTest<CubeGeometry<2> > >();
@@ -591,6 +595,7 @@ int main(int argc, char* argv[]) {
     volumetest.run<RandomDataGenerator<PrismGeometry, N>, VolumeTest<PrismGeometry> >();
     //volumetest.run<RandomDataGenerator<PyramidGeometry, N>, VolumeTest<PyramidGeometry> >();
 
+    // TODO check if transformation test really is a test which should run through
     //Test transformationtest("transformation");
     //transformationtest.run<AllCombinationGenerator<CubeGeometry<3> >, TransformationTest<CubeGeometry<3> > >();
     //transformationtest.run<AllCombinationGenerator<CubeGeometry<2> >, TransformationTest<CubeGeometry<2> > >();
@@ -604,6 +609,9 @@ int main(int argc, char* argv[]) {
     //transformationtest.run<RandomDataGenerator<SimplexGeometry<2>, N>, TransformationTest<SimplexGeometry<2> > >();
     //transformationtest.run<RandomDataGenerator<PrismGeometry, N>, TransformationTest<PrismGeometry> >();
     ////transformationtest.run<RandomDataGenerator<PyramidGeometry, N>, TransformationTest<PyramidGeometry> >();
+
+
+    // test if all coordinates are inside of the reference element
     Test validcoordinatestest("validcoordinates");
     validcoordinatestest.run<AllCombinationGenerator<CubeGeometry<3> >, ValidCoordinatesTest<CubeGeometry<3> > >();
     validcoordinatestest.run<AllCombinationGenerator<CubeGeometry<2> >, ValidCoordinatesTest<CubeGeometry<2> > >();
@@ -617,6 +625,7 @@ int main(int argc, char* argv[]) {
     validcoordinatestest.run<RandomDataGenerator<SimplexGeometry<2>, N>, ValidCoordinatesTest<SimplexGeometry<2> > >();
     validcoordinatestest.run<RandomDataGenerator<PrismGeometry, N>, ValidCoordinatesTest<PrismGeometry> >();
     validcoordinatestest.run<RandomDataGenerator<PyramidGeometry, N>, ValidCoordinatesTest<PyramidGeometry> >();
+    // test if exterior and interior match the inverted interior and exterior respectively
     Test inversiontest("inversion");
     inversiontest.run<AllCombinationGenerator<CubeGeometry<3> >, InversionTest<CubeGeometry<3> > >();
     inversiontest.run<AllCombinationGenerator<CubeGeometry<2> >, InversionTest<CubeGeometry<2> > >();
@@ -631,6 +640,7 @@ int main(int argc, char* argv[]) {
     inversiontest.run<RandomDataGenerator<PrismGeometry, N>, InversionTest<PrismGeometry> >();
     inversiontest.run<RandomDataGenerator<PyramidGeometry, N>, InversionTest<PyramidGeometry> >();
     Test interfacetest("interface");
+    // test if all vertices which are not on the interface are corners of the reference element
     interfacetest.run<AllCombinationGenerator<CubeGeometry<3> >, InterfaceTest<CubeGeometry<3> > >();
     interfacetest.run<AllCombinationGenerator<CubeGeometry<2> >, InterfaceTest<CubeGeometry<2> > >();
     interfacetest.run<AllCombinationGenerator<SimplexGeometry<3> >, InterfaceTest<SimplexGeometry<3> > >();
