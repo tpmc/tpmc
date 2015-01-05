@@ -1,8 +1,0 @@
-INPUT                  += @top_srcdir@/dune/marchingcubes
-FILE_PATTERNS          += *.py
-EXTRACT_PRIVATE        = YES
-EXCLUDE                += 
-EXAMPLE_PATH           +=
-EXAMPLE_PATTERNS       +=
-IMAGE_PATH             +=
-PREDEFINED             += DOXYGEN 
