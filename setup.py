@@ -41,7 +41,7 @@ extern \"C\" {
 def configuration(parent_package='', top_path=None):
         import numpy
         from numpy.distutils.misc_util import Configuration
-        config = Configuration('pytpmc',parent_package,top_path)
+        config = Configuration('tpmc',parent_package,top_path)
         ## libmarchinglut
         lutfile = 'build/marchinglut.cc'
         generate_lut(lutfile)
@@ -54,7 +54,7 @@ def configuration(parent_package='', top_path=None):
         # config.add_installed_library(..., install_dir='../..') to install in /usr/local/lib
         return config
 
-setup (name = 'tpmc',
+setup (
        version = '1.0',
        description = 'python classes to generate TPMC lookup tables',
        author = 'Christian Engwer',
