@@ -42,6 +42,7 @@ def configuration(parent_package='', top_path=None):
         import numpy
         from numpy.distutils.misc_util import Configuration
         config = Configuration('pytpmc',parent_package,top_path)
+        ## libmarchinglut
         lutfile = 'build/marchinglut.cc'
         generate_lut(lutfile)
         config.add_installed_library('marchinglut',
@@ -62,5 +63,23 @@ setup (name = 'tpmc',
        long_description = '''
        Implementation of the topology preserving marching cubes.
        ''',
+       py_modules= ['tpmc', 'tpmc.lut', 'tpmc.lut.lutgen',
+                    'tpmc.lut.lutgen.base_case_triangulation',
+                    'tpmc.lut.lutgen.cases',
+                    'tpmc.lut.lutgen.consistencycheck',
+                    'tpmc.lut.lutgen.coordinates',
+                    'tpmc.lut.lutgen.disambiguate',
+                    'tpmc.lut.lutgen.dunecode',
+                    'tpmc.lut.lutgen.generator',
+                    'tpmc.lut.lutgen.geomobj',
+                    'tpmc.lut.lutgen.output',
+                    'tpmc.lut.lutgen.permutation',
+                    'tpmc.lut.lutgen.polygon',
+                    'tpmc.lut.lutgen.referenceelements',
+                    'tpmc.lut.lutgen.sk',
+                    'tpmc.lut.lutgen.test',
+                    'tpmc.lut.lutgen.transformation',
+                    'tpmc.lut.lutgen.vtk'
+            ],
        configuration=configuration
 )
