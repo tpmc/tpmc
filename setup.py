@@ -1,6 +1,9 @@
 from numpy.distutils.core import setup
 
 def generate_lut(filename):
+        from os import path
+        if path.exists(filename):
+                return
         from tpmc.lut.lutgen.dunecode import DuneCode
         print "importing lookup generators"
         from tpmc.lut.lutgen.base_case_triangulation import LookupGenerators
