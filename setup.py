@@ -42,12 +42,20 @@ def configuration(parent_package='', top_path=None):
         import numpy
         from numpy.distutils.misc_util import Configuration
         config = Configuration('tpmc',parent_package,top_path)
+        config.header_dir = 'include/tpmc' # this is relative to config.path_in_package
+        config.lib_dir = 'tpmc/lib' # this is relative to install path
+        ## header files
+        # config.add_include_dirs(['tpmc/include/tpmc/*.hh', 'tpmc/lut/*.hh'])
+        config.add_data_files((config.header_dir, 'tpmc/include/tpmc/*.hh'))
+        config.add_data_files((config.header_dir, 'tpmc/lut/*.hh'))
+        #config.add_headers('tpmc/include/tpmc/*.hh'])
+        #config.add_headers('tpmc/lut/*.hh')
         ## libmarchinglut
-        lutfile = 'build/marchinglut.cc'
+        lutfile = 'build/tpmc_lut.cc'
         generate_lut(lutfile)
-        config.add_installed_library('marchinglut',
+        config.add_installed_library('tpmc_lut',
                                      sources = [lutfile],
-                                     install_dir = 'lib',
+                                     install_dir = config.lib_dir,
                                      build_info = {
                                              'include_dirs' : [ 'tpmc/lut' ]
                                      })
