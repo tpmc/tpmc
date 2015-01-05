@@ -63,6 +63,7 @@ def configuration(parent_package='', top_path=None):
                                              'include_dirs' : [ 'tpmc/lut' ]
                                      })
         # config.add_installed_library(..., install_dir='../..') to install in /usr/local/lib
+        config.add_scripts('tpmc-config')
         return config
 
 setup (

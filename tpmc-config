@@ -1,0 +1,7 @@
+#!/usr/bin/python
+
+import tpmc
+from os import path
+
+modpath = path.dirname(tpmc.__file__)
+print "-I%s/include -L%s/lib" % (modpath,modpath)
