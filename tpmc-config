@@ -1,7 +1,29 @@
 #!/usr/bin/python
 
 import tpmc
+import argparse
 from os import path
 
+# ... e.g. /usr/local/lib/python2.7/dist-packages/tpmc
 modpath = path.dirname(tpmc.__file__)
-print "-I%s/include -L%s/lib" % (modpath,modpath)
+prefix = path.normpath(path.join(modpath,"../../../.."))
+version = tpmc.version
+cflags = "-I%s/include" % modpath
+libs = "-L%s/lib -ltpmc_lut" % modpath
+
+parser = argparse.ArgumentParser(prog='tpmc-config')
+parser.add_argument('--prefix', version=prefix,
+                    action='version',
+                    help='show tpmc installation prefix')
+parser.add_argument('--cflags', const=cflags,
+                    action='append_const', dest='output',
+                    help='print pre-processor and compiler flags')
+parser.add_argument('--libs', const=libs,
+                    action='append_const', dest='output',
+                    help='print library linking information')
+parser.add_argument('--version', version=version,
+                    action='version', dest='output',
+                    help='output version information')
+
+args = parser.parse_args()
+print " ".join(args.output)
