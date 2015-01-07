@@ -1,4 +1,5 @@
 from numpy.distutils.core import setup
+import os
 
 def generate_lut(filename):
         from os import path
@@ -53,6 +54,9 @@ def configuration(parent_package='', top_path=None):
         config.add_data_files((config.header_dir, 'tpmc/lut/*.hh'))
         #config.add_headers('tpmc/include/tpmc/*.hh'])
         #config.add_headers('tpmc/lut/*.hh')
+        ## create build directory
+        if not os.path.exists('build'):
+                os.mkdir('build')
         ## libmarchinglut
         lutfile = 'build/tpmc_lut.cc'
         generate_lut(lutfile)
