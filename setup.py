@@ -57,14 +57,21 @@ def configuration(parent_package='', top_path=None):
         ## create build directory
         if not os.path.exists('build'):
                 os.mkdir('build')
-        ## libmarchinglut
+        ## libtpmc_lut
         lutfile = 'build/tpmc_lut.cc'
         generate_lut(lutfile)
         config.add_installed_library('tpmc_lut',
                                      sources = [lutfile],
                                      install_dir = config.lib_dir,
                                      build_info = {
-                                             'include_dirs' : [ 'tpmc/lut' ]
+                                             'include_dirs' : [ 'tpmc/lut', 'tpmc/include' ]
+                                     })
+        ## libtpmc_tables
+        config.add_installed_library('tpmc_tables',
+                                     sources = ['tpmc/src/marchingcubestables.cc'],
+                                     install_dir = config.lib_dir,
+                                     build_info = {
+                                             'include_dirs' : [ 'tpmc/lut', 'tpmc/include' ]
                                      })
         # config.add_installed_library(..., install_dir='../..') to install in /usr/local/lib
         config.add_scripts('tpmc-config')

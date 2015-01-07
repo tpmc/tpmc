@@ -4,11 +4,13 @@
 #define TPMC_MARCHINGCUBESTABLES_HH
 
 namespace tpmc {
-  enum SymmetryType {
-    symmetric, nonsymmetric
+  struct SymmetryType {
+    enum Value {
+      symmetric, nonsymmetric
+    };
   };
 
-  template <SymmetryType symmetryType>
+  template <SymmetryType::Value symmetryType>
   struct MarchingCubesTables;
 
   template <>
@@ -117,8 +119,10 @@ namespace tpmc {
      */
     static const short * const all_face_tests[];
   };
-}
 
-#include "marchingcubestables_impl.hh"
+  extern template struct MarchingCubesTables<SymmetryType::nonsymmetric>;
+  extern template struct MarchingCubesTables<SymmetryType::symmetric>;
+
+}
 
 #endif // TPMC_MARCHINGCUBESTABLES_HH
