@@ -119,6 +119,6 @@ namespace tpmc {
   };
 }
 
-#include "marchingcubestables.cc"
+#include "marchingcubestables_impl.hh"
 
 #endif // TPMC_MARCHINGCUBESTABLES_HH

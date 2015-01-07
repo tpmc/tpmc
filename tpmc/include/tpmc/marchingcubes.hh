@@ -123,6 +123,6 @@ namespace tpmc
   };
 }
 
-#include "marchingcubes.cc"
+#include "marchingcubes_impl.hh"
 
 #endif // TPMC_MARCHINGCUBES_HH
