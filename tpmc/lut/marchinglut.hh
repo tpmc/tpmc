@@ -97,6 +97,9 @@ static const short RD = CF + 4;
 static const short RE = CF + 5;
 static const short RF = CF + 6;
 
+// the number of different vertices defined above (assuming ascending continuous order)
+static const short VERTICES_ON_REFERENCE_COUNT = RF+1;
+
 /* Constants indicating whether case special treatment when marching cubes' 33 is used. */
 static const short CASE_UNIQUE_MC33 = 0;
 static const short CASE_AMBIGUOUS_MC33 = 1;
@@ -154,6 +157,8 @@ static const short table_cube3d_vertex_to_index[] = {0,1,2,3,4,5,6,7};
 
 extern "C"
 {
+
+  extern const int table_cube2d_complex_vertex_count;
 
   extern const short table_cube2d_vertices[];
   /*
@@ -234,6 +239,8 @@ extern "C"
    */
   extern const short table_cube2d_mc33_face_test_order[];
 
+  extern const int table_cube3d_complex_vertex_count;
+
   extern const short table_cube3d_vertices[];
   /*
    * TODO: Comment 3D cube
@@ -278,6 +285,8 @@ extern "C"
    * TODO: Comment
    */
   extern const short table_cube3d_mc33_face_test_order[];
+
+  extern const int table_cube3dsym_complex_vertex_count;
 
   extern const short table_cube3dsym_vertices[];
   /*
@@ -324,6 +333,8 @@ extern "C"
    */
   extern const short table_cube3dsym_mc33_face_test_order[];
 
+  extern const int table_simplex2d_complex_vertex_count;
+
   extern const short table_simplex2d_vertices[];
   /*
    * TODO: Comment 2D simplex
@@ -359,6 +370,8 @@ extern "C"
    */
   extern const short table_simplex2d_codim_1[];
 
+  extern const int table_simplex3d_complex_vertex_count;
+
   extern const short table_simplex3d_vertices[];
   /*
    * TODO: Comment 3D simplex
@@ -393,6 +406,8 @@ extern "C"
    * TODO: Comment
    */
   extern const short table_simplex3d_codim_1[];
+
+  extern const int table_pyramid3d_complex_vertex_count;
 
   extern const short table_pyramid3d_vertices[];
   /*
@@ -439,6 +454,8 @@ extern "C"
    */
   extern const short table_pyramid3d_mc33_face_test_order[];
 
+  extern const int table_prism3d_complex_vertex_count;
+
   extern const short table_prism3d_vertices[];
   /*
    * TODO: Comment 3D prism
@@ -484,6 +501,8 @@ extern "C"
    */
   extern const short table_prism3d_mc33_face_test_order[];
 
+  extern const int table_any0d_complex_vertex_count;
+
   extern const short table_any0d_vertices[];
   /*
    * TODO: Comment
@@ -518,6 +537,8 @@ extern "C"
    * TODO: Comment
    */
   extern const short table_any0d_codim_1[];
+
+  extern const int table_any1d_complex_vertex_count;
 
   extern const short table_any1d_vertices[];
   /*

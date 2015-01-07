@@ -1,22 +1,18 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef DUNE_MARCHINGCUBESTABLES_HH
-#define DUNE_MARCHINGCUBESTABLES_HH
+#ifndef TPMC_MARCHINGCUBESTABLES_HH
+#define TPMC_MARCHINGCUBESTABLES_HH
 
-namespace Dune {
+namespace tpmc {
   enum SymmetryType {
     symmetric, nonsymmetric
   };
 
-  template <typename valueType, int dim, typename thresholdFunctor,
-      SymmetryType symmetryType, typename intersectionFunctor>
-  struct MarchingCubes33Tables;
+  template <SymmetryType symmetryType>
+  struct MarchingCubesTables;
 
-  template <typename valueType, int dim, typename thresholdFunctor,
-      typename intersectionFunctor>
-  struct MarchingCubes33Tables<valueType,dim,thresholdFunctor,
-      SymmetryType::nonsymmetric,
-      intersectionFunctor> {
+  template <>
+  struct MarchingCubesTables<SymmetryType::nonsymmetric> {
     /*
      * row containing information about a specific mc case. for details see
      * marchinglut.hh
@@ -27,6 +23,9 @@ namespace Dune {
      * <code>marchinglut.hh</code>
      */
     static offsetRow * all_case_offsets[];
+
+    static int all_complex_vertex_count[];
+
     /*
      * contains arrays for renumbering vertices. used for simplex and prism
      * to map the vertex numbers to the indices in the vertex-values array
@@ -67,11 +66,8 @@ namespace Dune {
 
 
 
-  template <typename valueType, int dim, typename thresholdFunctor,
-      typename intersectionFunctor>
-  struct MarchingCubes33Tables<valueType,dim,thresholdFunctor,
-      SymmetryType::symmetric,
-      intersectionFunctor> {
+  template <>
+  struct MarchingCubesTables<SymmetryType::symmetric> {
     /*
      * row containing information about a specific mc case. for details see
      * marchinglut.hh
@@ -82,6 +78,8 @@ namespace Dune {
      * <code>marchinglut.hh</code>
      */
     static offsetRow * all_case_offsets[];
+
+    static int all_complex_vertex_count[];
     /*
      * contains arrays for renumbering vertices. used for simplex and prism
      * to map the vertex numbers to the indices in the vertex-values array
@@ -123,4 +121,4 @@ namespace Dune {
 
 #include "marchingcubestables.cc"
 
-#endif
+#endif // TPMC_MARCHINGCUBESTABLES_HH

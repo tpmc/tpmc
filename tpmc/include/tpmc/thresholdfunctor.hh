@@ -4,12 +4,10 @@
  * MarchingThresholdFunctor.hh
  * TODO: Templateisierung des Datentyps
  */
+#ifndef TPMC_THRESHOLDFUNCTOR_HH
+#define TPMC_THRESHOLDFUNCTOR_HH
 
-#ifndef THRESHOLD_FUNCTOR_HH_
-#define THRESHOLD_FUNCTOR_HH_
-
-namespace Dune {
-  namespace MarchingCubes {
+namespace tpmc {
 
     /**
      * \brief basic threshold functor
@@ -129,51 +127,6 @@ namespace Dune {
       //! Defines the isosurface.
       constexpr static vtype threshold = ValueTraits::value;
     };
+}
 
-
-    template <class vtype, class Geometry>
-    class NonDegeneratingThresholdFunctor
-      : public ThresholdFunctor<vtype>
-    {
-    public:
-
-      using ThresholdFunctor<vtype>::getDistance;
-
-      //! constructor
-      NonDegeneratingThresholdFunctor(const Geometry & _embedding, const vtype _minLength)
-        : ThresholdFunctor<vtype>(0), embedding(_embedding), minLength(_minLength)
-      {}
-
-      //! minimum length for an edge below which it will be considered
-      //! to be degenerated
-      vtype degenerationDistance() const
-      {
-        return 0;
-      }
-
-      //! distance to iso surface
-      template<typename point>
-      vtype interpolationFactor
-        (const point &a, const point& b, const vtype va, const vtype vb) const
-      {
-        const vtype length = (embedding.global(a)-embedding.global(b)).two_norm();
-        const vtype factor = getDistance(va) / (getDistance(vb)-getDistance(va));
-        const vtype sign   = factor / std::abs(factor);
-        if(length*std::abs(factor)<minLength)
-          return sign*minLength/length;
-        else if(length-length*std::abs(factor)<minLength)
-          return sign*(1.0-minLength/length);
-        else
-          return factor;
-      }
-
-    private:
-      const Geometry embedding;
-      const vtype minLength;
-    };
-
-
-  } // end namespace MarchingCubes
-} // end namespace Dune
-
-#endif /* THRESHOLD_FUNCTOR_HH_ */
+#endif // TPMC_THRESHOLDFUNCTOR_HH

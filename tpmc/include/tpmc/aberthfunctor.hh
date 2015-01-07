@@ -1,15 +1,60 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
-#ifndef ABERTHFUNCTOR_HH
-#define ABERTHFUNCTOR_HH
+#ifndef TPMC_ABERTHFUNCTOR_HH
+#define TPMC_ABERTHFUNCTOR_HH
 
 #include <algorithm>
-#include <dune/common/fvector.hh>
-#include <dune/common/array.hh>
-#include "univariatepolynomial.hh"
-#include "newtonfunctor.hh"
+#include <array>
+#include <cassert>
+#include <type_traits>
+#include <tpmc/univariatepolynomial.hh>
+#include <tpmc/floatcmp.hh>
 
-namespace Dune {
+namespace tpmc {
+  class NoRootException : public std::exception {};
+
+  /*
+   * stop Aberth's method after a constant number of iterations
+   */
+  template <typename ValueType>
+  class IterationStopPolicy {
+  public:
+    static bool stop(unsigned int iteration, ValueType residuum) {
+      return iteration >= MAX_ITERATION;
+    }
+  private:
+    static const unsigned int MAX_ITERATION;
+  };
+  template <typename ValueType>
+  const unsigned int IterationStopPolicy<ValueType>::MAX_ITERATION = 20;
+
+  /*
+   * stop Aberth's method if the residuum is small enough
+   */
+  template <typename ValueType>
+  class ResiduumStopPolicy {
+  public:
+    static bool stop(unsigned int iteration, ValueType residuum) {
+      return std::abs(residuum) < MIN_RESIDUUM;
+    }
+  private:
+    static const ValueType MIN_RESIDUUM;
+  };
+  template <typename ValueType>
+  const ValueType ResiduumStopPolicy<ValueType>::MIN_RESIDUUM = 1e-8;
+
+  /*
+   * stop if one of the stop policies says so
+   */
+  template <typename ValueType, template <typename> class Policy1,
+      template <typename> class Policy2>
+  class OrCombinedStopPolicy {
+  public:
+    static bool stop(unsigned int iteration, ValueType residuum) {
+      return (Policy1<ValueType>::stop(iteration, residuum)
+              || Policy2<ValueType>::stop(iteration, residuum));
+    }
+  };
 
   /** \brief class wrapping the aberth method
    *
@@ -43,11 +88,11 @@ namespace Dune {
         roots[i] *= bound;
       }
       */
-      array<Domain, po> roots;
+      std::array<Domain, po> roots;
       for (SizeType i = 0; i<po; ++i) {
         roots[i] = static_cast<Domain>(i)/std::max(po-1,1);
       }
-      array<Domain, po> value, derivative, weight;
+      std::array<Domain, po> value, derivative, weight;
       Domain residuum;
       update<po,X>(p, roots, value, derivative, weight, residuum);
       SizeType iteration = 0;
@@ -72,8 +117,8 @@ namespace Dune {
 
     template <int po, class X>
     static void update(const UnivariatePolynomial<po, X>& p,
-                       const array<X, po>& roots, array<X, po>& value,
-                       array<X, po>& derivative, array<X, po>& weight,
+                       const std::array<X, po>& roots, std::array<X, po>& value,
+                       std::array<X, po>& derivative, std::array<X, po>& weight,
                        X& residuum) {
       for (SizeType i = 0; i<po; ++i) {
         value[i] = p(roots[i]);
@@ -92,55 +137,57 @@ namespace Dune {
 
   /** \brief functor to be used in the mc algorithm
    */
-  template <typename ctype,
-      class StopPolicy = OrCombinedStopPolicy<ctype,
-          ResiduumStopPolicy,
-          IterationStopPolicy> >
-  class AberthFunctor {
+  template <typename Coordinate,
+            class StopPolicy = OrCombinedStopPolicy<typename Coordinate::value_type,
+                                                    ResiduumStopPolicy, IterationStopPolicy> >
+  class AberthFunctor
+  {
   public:
     typedef typename AberthMethod<StopPolicy>::SizeType SizeType;
-    typedef FieldVector<ctype, 3> PointType;
+    typedef typename Coordinate::value_type ctype;
 
-    template <class VectorType>
-    static void findRoot(const VectorType& vertex_values,
-                         const PointType& a,
-                         const PointType& b,
-                         PointType& result);
-
-    template <class VectorType, int dim>
-    static void findRoot(const VectorType& vertex_values,
-                         const Dune::FieldVector<ctype, dim>& a,
-                         const Dune::FieldVector<ctype, dim>& b,
-                         Dune::FieldVector<ctype, dim>& result);
+    template <int dim, typename InputIterator>
+    static Coordinate findRoot(InputIterator valuesBegin, InputIterator valuesEnd,
+                               const Coordinate& a, const Coordinate& b)
+    {
+      return findRootImpl(valuesBegin, valuesEnd, a, b, std::integral_constant<int,dim>());
+    }
   private:
-    template <int po, class I>
-    static void apply(const I& begin, const I& end, ctype& result);
 
-    template <class VectorType, class I>
-    static void insertPrismCoefficients(const VectorType& vertex_values,
-                                        const PointType& a,
-                                        const PointType& b,
-                                        I out);
-    template <class VectorType, class I>
-    static void insertCubeCoefficients(const VectorType& vertex_values,
-                                       const PointType& a,
-                                       const PointType& b,
-                                       I out);
+    template <int dim, typename InputIterator>
+    static Coordinate findRootImpl(InputIterator valuesBegin, InputIterator valuesEnd,
+                                   const Coordinate& a, const Coordinate& b, std::integral_constant<int,dim>);
+    template <typename InputIterator>
+    static Coordinate findRootImpl(InputIterator valuesBegin, InputIterator valuesEnd,
+                                   const Coordinate& a, const Coordinate& b, std::integral_constant<int,3>);
+
+    template <int po, class I>
+    static ctype apply(const I& begin, const I& end);
+
+    template <typename InputIterator, typename OutputIterator>
+    static void insertPrismCoefficients(InputIterator valuesBegin, InputIterator valuesEnd,
+                                        const Coordinate& a, const Coordinate& b,
+                                        OutputIterator out);
+
+    template <typename InputIterator, typename OutputIterator>
+    static void insertCubeCoefficients(InputIterator valuesBegin, InputIterator valuesEnd,
+                                       const Coordinate& a, const Coordinate& b,
+                                       OutputIterator out);
   };
 
-
-  template <typename ctype, class StopPolicy>
-  template <class VectorType, int dim>
-  void AberthFunctor<ctype, StopPolicy>::findRoot(const VectorType& vertex_values,
-                                                  const Dune::FieldVector<ctype, dim>& a,
-                                                  const Dune::FieldVector<ctype, dim>& b,
-                                                  Dune::FieldVector<ctype, dim>& result) {
-    DUNE_THROW(Dune::NotImplemented, "aberth method not supported for dim < 3");
+  template <typename Coordinate, class StopPolicy>
+  template <int dim, typename InputIterator>
+  Coordinate AberthFunctor<Coordinate, StopPolicy>::findRootImpl(InputIterator valuesBegin,
+                                                           InputIterator valuesEnd,
+                                                           const Coordinate& a, const Coordinate& b,
+                                                           std::integral_constant<int, dim>)
+  {
+    throw std::invalid_argument("aberth method not valid for this dimension");
   }
 
-  template <typename ctype, class StopPolicy>
+  template <typename Coordinate, class StopPolicy>
   template <int po, class I>
-  void AberthFunctor<ctype, StopPolicy>::apply(const I& begin, const I& end, ctype& result) {
+  typename Coordinate::value_type AberthFunctor<Coordinate, StopPolicy>::apply(const I& begin, const I& end) {
     UnivariatePolynomial<po, ctype > p(begin, end);
     ctype roots[po];
     AberthMethod<StopPolicy>::apply(p,roots);
@@ -150,7 +197,7 @@ namespace Dune {
       std::cout << " " << roots[i];
     std::cout << "\n";
 #endif
-    result = 0;
+    ctype result = 0;
     int id = -1;
     ctype v = 0.0;
     for (SizeType i = 0; i<po; ++i) {
@@ -163,22 +210,26 @@ namespace Dune {
     if (id >= 0)
       result = roots[id];
     else {
-      DUNE_THROW(Dune::Exception, "Aberth method did not find a root between 0 and 1");
+      throw NoRootException();
     }
 #ifndef NDEBUG
     std::cout << "choosing root " << id << " at: " << result << "\n";
 #endif
+    return result;
   }
 
-
-  template <typename ctype, class StopPolicy>
-  template <class VectorType, class I>
-  void AberthFunctor<ctype, StopPolicy>::insertCubeCoefficients(const VectorType& v,
-                                                                const PointType& a,
-                                                                const PointType& b,
-                                                                I out) {
-    PointType x(b);
+  template <typename Coordinate, class StopPolicy>
+  template <typename InputIterator, typename OutputIterator>
+  void AberthFunctor<Coordinate, StopPolicy>::insertCubeCoefficients(InputIterator valuesBegin,
+                                                                InputIterator valuesEnd,
+                                                                const Coordinate& a,
+                                                                const Coordinate& b,
+                                                                OutputIterator out)
+  {
+    Coordinate x(b);
     x -= a;
+    std::array<ctype,8> v;
+    std::copy(valuesBegin, valuesEnd, v.begin());
     ctype A = v[7]-v[6]-v[5]+v[4]-v[3]+v[2]+v[1]-v[0],
           B = v[6]-v[4]-v[2]+v[0], C = v[5]-v[4]-v[1]+v[0],
           D = v[3]-v[2]-v[1]+v[0], E = v[4]-v[0], F = v[2]-v[0],
@@ -193,14 +244,18 @@ namespace Dune {
     *out++ = A*x[0]*x[1]*x[2];
   }
 
-  template <typename ctype, class StopPolicy>
-  template <class VectorType, class I>
-  void AberthFunctor<ctype, StopPolicy>::insertPrismCoefficients(const VectorType& v,
-                                                                 const PointType& a,
-                                                                 const PointType& b,
-                                                                 I out) {
-    PointType d(b);
+  template <typename Coordinate, class StopPolicy>
+  template <typename InputIterator, typename OutputIterator>
+  void AberthFunctor<Coordinate, StopPolicy>::insertPrismCoefficients(InputIterator valuesBegin,
+                                                                      InputIterator valuesEnd,
+                                                                      const Coordinate& a,
+                                                                      const Coordinate& b,
+                                                                      OutputIterator out)
+  {
+    Coordinate d(b);
     d -= a;
+    std::array<ctype,6> v;
+    std::copy(valuesBegin, valuesEnd, v.begin());
     ctype A = v[0]-v[1]-v[3]+v[4],
           B = v[0]-v[2]-v[3]+v[5],
           C = v[1]-v[0],
@@ -215,22 +270,25 @@ namespace Dune {
     *out++ = d[0]*d[2]*A + d[1]*d[2]*B;
   }
 
-  template <typename ctype, class StopPolicy>
-  template <class VectorType>
-  void AberthFunctor<ctype, StopPolicy>::findRoot(const VectorType& v,
-                                                  const PointType& a,
-                                                  const PointType& b,
-                                                  PointType& result) {
+  template <typename Coordinate, class StopPolicy>
+  template <typename InputIterator>
+  Coordinate AberthFunctor<Coordinate, StopPolicy>::findRootImpl(InputIterator valuesBegin,
+                                                                 InputIterator valuesEnd,
+                                                                 const Coordinate& a,
+                                                                 const Coordinate& b,
+                                                                 std::integral_constant<int, 3>)
+  {
     // method only supported for cube or prism
-    assert(v.size() == 6 || v.size() == 8);
+    unsigned int valueCount = std::distance(valuesBegin, valuesEnd);
+    assert(valueCount == 6 || valueCount == 8);
 #ifndef NDEBUG
     std::cout << "finding root between " << a << " and " << b << "\n";
 #endif
     ctype coefficients[4] = {0.,0.,0.,0.};
-    if (v.size() == 6) {
-      insertPrismCoefficients(v,a,b,coefficients);
-    } else if (v.size() == 8) {
-      insertCubeCoefficients(v,a,b,coefficients);
+    if (valueCount == 6) {
+      insertPrismCoefficients(valuesBegin, valuesEnd, a, b, coefficients);
+    } else if (valueCount == 8) {
+      insertCubeCoefficients(valuesBegin, valuesEnd, a, b, coefficients);
     }
 #ifndef NDEBUG
     std::cout << "polynomial coefficients: "
@@ -239,18 +297,19 @@ namespace Dune {
 #endif
     // create polynomial
     ctype root = 0.0;
-    if (Dune::FloatCmp::ne(coefficients[3], 0.0)) {
-      apply<3, ctype*>(coefficients, coefficients+4, root);
-    } else if (Dune::FloatCmp::ne(coefficients[2], 0.0)) {
-      apply<2, ctype*>(coefficients, coefficients+3, root);
+    if (FloatCmp::ne(coefficients[3], 0.0)) {
+      root = apply<3, ctype*>(coefficients, coefficients+4);
+    } else if (FloatCmp::ne(coefficients[2], 0.0)) {
+      root = apply<2, ctype*>(coefficients, coefficients+3);
     } else {
-      apply<1, ctype*>(coefficients, coefficients+2, root);
+      root = apply<1, ctype*>(coefficients, coefficients+2);
     }
-    result = b;
+    Coordinate result = b;
     result -= a;
     result *= root;
     result += a;
+    return result;
   }
 }
 
-#endif //ABERTHFUNCTOR_HH
+#endif // TPMC_ABERTHFUNCTOR_HH

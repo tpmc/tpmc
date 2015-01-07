@@ -400,6 +400,8 @@ class DuneCode:
         table_codim0_interior.append("    };\n\n\n", 0)
         table_codim0_interior_groups.append("    };\n\n\n", 0)
         table_codim1.append("    };\n\n\n", 0)
+        complex_vertex_count_string = "const int table_{0[T]}{0[D]}d{0[S]}_complex_vertex_count = {1};\n".format(table_dict, len(vmapper.vertices));
+        dune_file.write(complex_vertex_count_string);
         dune_file.write(vmapper.table.tablestring)
         dune_file.write(table_offsets.tablestring)
         dune_file.write(table_vertex_groups.tablestring)
