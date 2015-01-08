@@ -410,11 +410,9 @@ namespace tpmc
       if (number >= FA && number <= FF) {
         short faceid = number - FA;
         return getCoordsFromFaceId(valuesBegin, valuesEnd, faceid);
-      }
       } else if (number >= CA && number <= CF) {
         short faceid = number - CA;
         return getCoordsFromCenterId(valuesBegin, valuesEnd, faceid);
-      }
       } else if (number >= RA && number <= RF) {
         short faceid = number - RA;
         return getCoordsFromRootId(valuesBegin, valuesEnd, faceid);
@@ -527,7 +525,6 @@ namespace tpmc
     if (FloatCmp::eq(A,0.0)) {
       double root = -D/B;
       double denom = -(edges[0]-edges[1]-edges[2]+edges[3])*D+(v[0]-v[1]-v[2]+v[3])*B;
-                                                                        * B;
       result[currentCoordPerm[0]] = ((edges[2] - edges[0]) * D + (v[0] - v[2]) * B) / denom;
       result[currentCoordPerm[1]] = ((edges[1] - edges[0]) * D + (v[0] - v[1]) * B) / denom;
       result[currentCoordPerm[2]] = faceid % 2 == 0 ? root : 1.0 - root;
