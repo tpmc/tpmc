@@ -9,7 +9,7 @@ modpath = path.dirname(tpmc.__file__)
 prefix = path.normpath(path.join(modpath,"../../../.."))
 version = tpmc.version
 cflags = "-I%s/include" % modpath
-libs = "-L%s/lib -ltpmc_tables -ltpmc_lut" % modpath
+libs = "-L%s/lib -ltpmc_tables" % modpath
 
 parser = argparse.ArgumentParser(prog='tpmc-config')
 parser.add_argument('--prefix', version=prefix,

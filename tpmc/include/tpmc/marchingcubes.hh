@@ -23,31 +23,31 @@ namespace tpmc
   /** \brief The 'topology preserving marching cubes' algorithm.
    */
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-            SymmetryType symmetryType = SymmetryType::nonsymmetric,
+            SymmetryType::Value symmetryType = SymmetryType::nonsymmetric,
             typename IntersectionFunctor = AberthFunctor<Coordinate> >
   class MarchingCubes {
-    typedef size_t sizeType;
+    typedef size_t size_type;
     typedef typename Coordinate::value_type ctype;
   public:
 
     template <typename InputIterator>
-    SizeType getKey(InputIterator valuesBegin, InputIterator valuesEnd, const bool use_mc_33) const;
+    size_type getKey(InputIterator valuesBegin, InputIterator valuesEnd, const bool use_mc_33) const;
 
     template <typename InputIterator, typename OutputIterator>
-    void getVertices(InputIterator valuesBegin, InputIterator valuesEnd, SizeType key,
+    void getVertices(InputIterator valuesBegin, InputIterator valuesEnd, size_type key,
                      std::vector<int>& vertexToIndex, OutputIterator out) const;
 
     int getMaximalVertexCount(GeometryType type) const;
 
     template <typename OutputIterator>
-    void getElements(GeometryType geometry, SizeType key, TriangulationType type,
+    void getElements(GeometryType geometry, size_type key, TriangulationType type,
                      OutputIterator out) const;
 
     template <typename OutputIterator>
-    void getVertexGroups(GeometryType geometry, SizeType key, OutputIterator out) const;
+    void getVertexGroups(GeometryType geometry, size_type key, OutputIterator out) const;
 
     template <typename OutputIterator>
-    void getElementGroups(GeometryType geometry, SizeType key, TriangulationType type,
+    void getElementGroups(GeometryType geometry, size_type key, TriangulationType type,
                           OutputIterator out) const;
 
     MarchingCubes(const thresholdFunctor& _threshFunctor = thresholdFunctor())
@@ -79,8 +79,8 @@ namespace tpmc
      * This test is needed to choose between ambiguous MC33 cases.
      */
     template <typename InputIterator>
-    bool testAmbiguousCenter(InputIterator valuesBegin, InputIterator valuesEnd, SizeType refCorner,
-                             SizeType refFace) const;
+    bool testAmbiguousCenter(InputIterator valuesBegin, InputIterator valuesEnd, size_type refCorner,
+                             size_type refFace) const;
 
     /** \brief gets coordinates of the vertex represented by
      * <code>number<code> (either a vertex, edge or center number)

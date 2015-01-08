@@ -36,10 +36,10 @@ namespace tpmc
    *                  elements but they are topological correct.
    */
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-      SymmetryType symmetryType, class intersectionFunctor>
+            SymmetryType::Value symmetryType, class intersectionFunctor>
   template <typename InputIterator>
   typename MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
-                         intersectionFunctor>::sizeType
+                         intersectionFunctor>::size_type
   MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                 intersectionFunctor>::getKey(InputIterator valuesBegin, InputIterator valuesEnd, bool use_mc_33) const
   {
@@ -51,7 +51,7 @@ namespace tpmc
     {
       return 0;
     }
-    const sizeType vertex_count = std::distance(valuesBegin, valuesEnd);
+    const size_type vertex_count = std::distance(valuesBegin, valuesEnd);
     const GeometryType geometry = makeGeometryType(dim, vertex_count);
 
     const unsigned short(*const table_case_offsets)[10]
@@ -76,9 +76,9 @@ namespace tpmc
     if (use_mc_33 && ambiguous_case)
     {
       // find face tests for the case
-      sizeType test_index = (sizeType) table_mc33_offsets[case_number];
+      size_type test_index = (size_type) table_mc33_offsets[case_number];
       // offsets to have a binary tree like behavior
-      sizeType tree_offset = 1;
+      size_type tree_offset = 1;
       // perform tests and find case number
       short test = table_mc33_face_test_order[test_index + tree_offset];
 
@@ -166,7 +166,7 @@ namespace tpmc
 
 
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-            SymmetryType symmetryType, typename IntersectionFunctor>
+            SymmetryType::Value symmetryType, typename IntersectionFunctor>
   int MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                      IntersectionFunctor>::getMaximalVertexCount(GeometryType geometry) const
   {
@@ -174,11 +174,11 @@ namespace tpmc
   }
 
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-            SymmetryType symmetryType, typename IntersectionFunctor>
+            SymmetryType::Value symmetryType, typename IntersectionFunctor>
   template <typename InputIterator, typename OutputIterator>
   void MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                      IntersectionFunctor>::getVertices(InputIterator valuesBegin,
-                                                       InputIterator valuesEnd, sizeType key,
+                                                       InputIterator valuesEnd, size_type key,
                                                        std::vector<int>& vertexToIndex,
                                                        OutputIterator out) const
   {
@@ -194,7 +194,7 @@ namespace tpmc
 
     const int extint_and_codim[][2] = { { 0, 0 }, { 1, 0 }, { 0, 1 } };
 
-    sizeType element_count;
+    size_type element_count;
     const short* codim_index;
 
     // loop over exterior, interior and interface and collect vertices
@@ -265,10 +265,10 @@ namespace tpmc
    * \param elements where the resulting coordinates will be stored.
    */
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-            SymmetryType symmetryType, typename IntersectionFunctor>
+            SymmetryType::Value symmetryType, typename IntersectionFunctor>
   template <typename OutputIterator>
   void MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
-                     IntersectionFunctor>::getElements(GeometryType geometry, sizeType key,
+                     IntersectionFunctor>::getElements(GeometryType geometry, size_type key,
                                                        TriangulationType type,
                                                        OutputIterator out) const
   {
@@ -276,7 +276,7 @@ namespace tpmc
     const bool exterior_not_interior = (type == TriangulationType::Exterior);
     const bool codim_1_not_0 = (type == TriangulationType::Interface);
 
-    sizeType element_count
+    size_type element_count
         = Tables::all_case_offsets[vertex_count
                                    + dim][key][INDEX_COUNT_CODIM_0[int(exterior_not_interior)]];
     const short(*codim_index)
@@ -290,13 +290,13 @@ namespace tpmc
                     + Tables::all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_1];
     }
 
-    for (sizeType i = 0; i < element_count; i++)
+    for (size_type i = 0; i < element_count; i++)
     {
-      sizeType point_count = *codim_index++;
+      size_type point_count = *codim_index++;
       // Vector for storing the element points
       std::vector<int> element;
       element.reserve(point_count);
-      for (sizeType j = 0; j < point_count; j++)
+      for (size_type j = 0; j < point_count; j++)
       {
         const int current = *codim_index++;
         const int vertex = vertexTableEntryToIndex(current);
@@ -323,10 +323,10 @@ namespace tpmc
    * \param vertex_groups where the resulting group indices are stored
    */
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-            SymmetryType symmetryType, typename IntersectionFunctor>
+            SymmetryType::Value symmetryType, typename IntersectionFunctor>
   template <typename OutputIterator>
   void MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
-                     IntersectionFunctor>::getVertexGroups(GeometryType geometry, sizeType key,
+                     IntersectionFunctor>::getVertexGroups(GeometryType geometry, size_type key,
                                                            OutputIterator out) const
   {
     const unsigned int vertex_count = getCornerCount(dim,geometry);
@@ -354,10 +354,10 @@ namespace tpmc
    * \param element_groups where the resulting group indices are stored
    */
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-            SymmetryType symmetryType, typename IntersectionFunctor>
+            SymmetryType::Value symmetryType, typename IntersectionFunctor>
   template <typename OutputIterator>
   void MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
-                     IntersectionFunctor>::getElementGroups(GeometryType geometry, sizeType key,
+                     IntersectionFunctor>::getElementGroups(GeometryType geometry, size_type key,
                                                             TriangulationType type,
                                                             OutputIterator out) const
   {
@@ -368,7 +368,7 @@ namespace tpmc
         = Tables::all_element_groups[vertex_count + dim][int(exterior_not_interior)]
           + Tables::all_case_offsets[vertex_count + dim][key]
                                     [INDEX_OFFSET_ELEMENT_GROUPS[int(exterior_not_interior)]];
-    sizeType element_count
+    size_type element_count
         = Tables::all_case_offsets[vertex_count
                                    + dim][key][INDEX_COUNT_CODIM_0[int(exterior_not_interior)]];
 
@@ -393,7 +393,7 @@ namespace tpmc
    * \param coord where the resulting coordinates will be stored.
    */
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-            SymmetryType symmetryType, typename IntersectionFunctor>
+            SymmetryType::Value symmetryType, typename IntersectionFunctor>
   template <typename InputIterator>
   Coordinate MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                            IntersectionFunctor>::getCoordsFromNumber(InputIterator valuesBegin,
@@ -411,14 +411,15 @@ namespace tpmc
         short faceid = number - FA;
         return getCoordsFromFaceId(valuesBegin, valuesEnd, faceid);
       }
-      } else if (number >= CA && number <= CF) {
+      if (number >= CA && number <= CF) {
         short faceid = number - CA;
         return getCoordsFromCenterId(valuesBegin, valuesEnd, faceid);
       }
-      } else if (number >= RA && number <= RF) {
+      if (number >= RA && number <= RF) {
         short faceid = number - RA;
         return getCoordsFromRootId(valuesBegin, valuesEnd, faceid);
-      } else {
+      }
+      else {
         return getCoordsFromEdgeNumber(valuesBegin, valuesEnd, number);
       }
     } else {     // we have an egde
@@ -429,8 +430,8 @@ namespace tpmc
       if (vertex_index[0] <= 0 && vertex_index[1] <= 0 && -vertex_index[0] >= VA
           && -vertex_index[0] <= VH && -vertex_index[1] >= VA && -vertex_index[1] <= VH)
       { // we have a simple edge
-        sizeType index_a = Tables::all_vertex_to_index[vertex_count + dim][-vertex_index[0]];
-        sizeType index_b = Tables::all_vertex_to_index[vertex_count + dim][-vertex_index[1]];
+        size_type index_a = Tables::all_vertex_to_index[vertex_count + dim][-vertex_index[0]];
+        size_type index_b = Tables::all_vertex_to_index[vertex_count + dim][-vertex_index[1]];
         InputIterator value_a = valuesBegin;
         std::advance(value_a, index_a);
         InputIterator value_b = valuesBegin;
@@ -445,7 +446,7 @@ namespace tpmc
         }
         // calculate interpolation point
         Coordinate result;
-        for (sizeType i = 0; i < dim; i++)
+        for (size_type i = 0; i < dim; i++)
         {
           result[i] = point_a[i] - interpol_factor * (point_b[i] - point_a[i]);
         }
@@ -465,7 +466,7 @@ namespace tpmc
   }
 
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-            SymmetryType symmetryType, typename IntersectionFunctor>
+            SymmetryType::Value symmetryType, typename IntersectionFunctor>
   template <typename InputIterator>
   Coordinate MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                            IntersectionFunctor>::getCoordsFromCenterId(InputIterator valuesBegin,
@@ -497,7 +498,7 @@ namespace tpmc
   }
 
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-            SymmetryType symmetryType, typename IntersectionFunctor>
+            SymmetryType::Value symmetryType, typename IntersectionFunctor>
   template <typename InputIterator>
   Coordinate MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                            IntersectionFunctor>::getCoordsFromRootId(InputIterator valuesBegin,
@@ -527,7 +528,6 @@ namespace tpmc
     if (FloatCmp::eq(A,0.0)) {
       double root = -D/B;
       double denom = -(edges[0]-edges[1]-edges[2]+edges[3])*D+(v[0]-v[1]-v[2]+v[3])*B;
-                                                                        * B;
       result[currentCoordPerm[0]] = ((edges[2] - edges[0]) * D + (v[0] - v[2]) * B) / denom;
       result[currentCoordPerm[1]] = ((edges[1] - edges[0]) * D + (v[0] - v[1]) * B) / denom;
       result[currentCoordPerm[2]] = faceid % 2 == 0 ? root : 1.0 - root;
@@ -550,7 +550,7 @@ namespace tpmc
   }
 
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-            SymmetryType symmetryType, class IntersectionFunctor>
+            SymmetryType::Value symmetryType, class IntersectionFunctor>
   template <typename InputIterator>
   Coordinate MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                            IntersectionFunctor>::getCoordsFromFaceId(InputIterator valuesBegin,
@@ -600,7 +600,7 @@ namespace tpmc
   }
 
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-            SymmetryType symmetryType, class IntersectionFunctor>
+            SymmetryType::Value symmetryType, class IntersectionFunctor>
   template <typename InputIterator>
   Coordinate
   MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
@@ -669,7 +669,7 @@ namespace tpmc
   }
 
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-            SymmetryType symmetryType, class IntersectionFunctor>
+            SymmetryType::Value symmetryType, class IntersectionFunctor>
   template <typename InputIterator>
   Coordinate
   MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
@@ -726,7 +726,7 @@ namespace tpmc
    * \param coord where the resulting coordinates will be stored.
    */
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-            SymmetryType symmetryType, class intersectionFunctor>
+            SymmetryType::Value symmetryType, class intersectionFunctor>
   template <typename InputIterator>
   Coordinate MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                            intersectionFunctor>::getCoordsFromEdgeNumber(InputIterator valuesBegin,
@@ -736,7 +736,7 @@ namespace tpmc
     number /= FACTOR_FIRST_POINT;
     Coordinate result;
     // Get coordinate for each dimension. It is either 0 or 1.
-    for (sizeType d = 0; d < dim; d++)
+    for (size_type d = 0; d < dim; d++)
     {
       result[d] = number & (1 << d) ? ctype(1.0) : ctype(0.0);
     }
@@ -760,7 +760,7 @@ namespace tpmc
    * \return <code>True</code> if face center is not inside
    */
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-            SymmetryType symmetryType, class intersectionFunctor>
+            SymmetryType::Value symmetryType, class intersectionFunctor>
   bool MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                      intersectionFunctor>::testAmbiguousFace(const valueType corner_a,
                                                              const valueType corner_b,
@@ -805,7 +805,7 @@ namespace tpmc
    * \return <code>True</true> if cell center is connected to refCorner and the opposite corner.
    */
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-            SymmetryType symmetryType, class intersectionFunctor>
+            SymmetryType::Value symmetryType, class intersectionFunctor>
   template <typename InputIterator>
   bool MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                      intersectionFunctor>::testAmbiguousCenter(InputIterator valuesBegin,

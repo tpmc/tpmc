@@ -120,9 +120,6 @@ namespace tpmc {
     static const short * const all_face_tests[];
   };
 
-  extern template struct MarchingCubesTables<SymmetryType::nonsymmetric>;
-  extern template struct MarchingCubesTables<SymmetryType::symmetric>;
-
 }
 
 #endif // TPMC_MARCHINGCUBESTABLES_HH

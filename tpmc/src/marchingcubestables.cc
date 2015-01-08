@@ -275,4 +275,5 @@ namespace tpmc {
                       table_pyramid3d_mc33_face_test_order,
                       table_prism3d_mc33_face_test_order, 0,
                       table_cube3dsym_mc33_face_test_order};
-}
+
+} // end namespace tpmc

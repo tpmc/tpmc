@@ -22,7 +22,7 @@ def generate_lut(filename):
      * Don't edit this file!
      */
 
-#include "marchinglut.hh"
+#include <tpmc/marchinglut.hh>
 
 extern \"C\" {
 
@@ -57,18 +57,11 @@ def configuration(parent_package='', top_path=None):
         ## create build directory
         if not os.path.exists('build'):
                 os.mkdir('build')
-        ## libtpmc_lut
+        ## libtpmc_tables
         lutfile = 'build/tpmc_lut.cc'
         generate_lut(lutfile)
-        config.add_installed_library('tpmc_lut',
-                                     sources = [lutfile],
-                                     install_dir = config.lib_dir,
-                                     build_info = {
-                                             'include_dirs' : [ 'tpmc/lut', 'tpmc/include' ]
-                                     })
-        ## libtpmc_tables
         config.add_installed_library('tpmc_tables',
-                                     sources = ['tpmc/src/marchingcubestables.cc'],
+                                     sources = [lutfile, 'tpmc/src/marchingcubestables.cc'],
                                      install_dir = config.lib_dir,
                                      build_info = {
                                              'include_dirs' : [ 'tpmc/lut', 'tpmc/include' ]
