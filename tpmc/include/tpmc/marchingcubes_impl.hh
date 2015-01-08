@@ -410,12 +410,10 @@ namespace tpmc
       if (number >= FA && number <= FF) {
         short faceid = number - FA;
         return getCoordsFromFaceId(valuesBegin, valuesEnd, faceid);
-      }
-      if (number >= CA && number <= CF) {
+      } else if (number >= CA && number <= CF) {
         short faceid = number - CA;
         return getCoordsFromCenterId(valuesBegin, valuesEnd, faceid);
-      }
-      if (number >= RA && number <= RF) {
+      } else if (number >= RA && number <= RF) {
         short faceid = number - RA;
         return getCoordsFromRootId(valuesBegin, valuesEnd, faceid);
       }
