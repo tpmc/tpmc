@@ -33,19 +33,19 @@ check_include_file_cxx(tpmc/marchinglut.hh _TPMC_HEADER_USABLE)
 
 # find library in custom directory
 find_library(TPMC_LIBRARY
-  NAMES tpmc_lut
+  NAMES tpmc_tables
   PATHS ${TPMC_PREFIX}
   PATH_SUFFIXES lib
   NO_DEFAULT_PATH
   DOC "Full path to tpmc library.")
 # find lib in default directory
 find_library(TPMC_LIBRARY
-  NAMES tpmc_lut)
+  NAMES tpmc_tables)
 
 # check if library is working
 include(CheckLibraryExists)
 get_filename_component(TPMC_LIBRARY_PATH ${TPMC_LIBRARY} PATH)
-check_library_exists(tpmc_lut table_cube2d_vertices "${TPMC_LIBRARY_PATH}" _TPMC_LIB_FUNCTIONAL)
+check_library_exists(tpmc_tables table_cube2d_vertices "${TPMC_LIBRARY_PATH}" _TPMC_LIB_FUNCTIONAL)
 
 # restore check state
 cmake_pop_check_state()
