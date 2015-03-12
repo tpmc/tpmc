@@ -52,12 +52,13 @@ namespace tpmc
       return 0;
     }
     const size_type vertex_count = std::distance(valuesBegin, valuesEnd);
+    const unsigned int table_index = vertex_count + dim;
     const GeometryType geometry = makeGeometryType(dim, vertex_count);
 
     const unsigned short(*const table_case_offsets)[10]
-        = Tables::all_case_offsets[vertex_count + dim];
-    const short* const table_mc33_offsets = Tables::all_mc33_offsets[vertex_count + dim];
-    const short* const table_mc33_face_test_order = Tables::all_face_tests[vertex_count + dim];
+        = Tables::all_case_offsets[table_index];
+    const short* const table_mc33_offsets = Tables::all_mc33_offsets[table_index];
+    const short* const table_mc33_face_test_order = Tables::all_face_tests[table_index];
 
     // vector containing information if vertices are inside or not
     int case_number = 0;
@@ -185,7 +186,8 @@ namespace tpmc
     const int NOTCOMPUTED = -1;
 
     const unsigned int vertex_count = std::distance(valuesBegin, valuesEnd);
-    const unsigned int vertexArraySize = Tables::all_complex_vertex_count[vertex_count + dim]
+    const unsigned int table_index = vertex_count + dim;
+    const unsigned int vertexArraySize = Tables::all_complex_vertex_count[table_index]
                                          + VERTICES_ON_REFERENCE_COUNT;
     vertexToIndex.resize(vertexArraySize);
     std::fill(vertexToIndex.begin(), vertexToIndex.end(), NOTCOMPUTED);
@@ -206,17 +208,17 @@ namespace tpmc
       // get pointer into codim table and element count
       if (codim_1_not_0)
       {
-        element_count = Tables::all_case_offsets[vertex_count + dim][key][INDEX_COUNT_CODIM_1];
-        codim_index = Tables::all_codim_1[vertex_count + dim]
-                      + Tables::all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_1];
+        element_count = Tables::all_case_offsets[table_index][key][INDEX_COUNT_CODIM_1];
+        codim_index = Tables::all_codim_1[table_index]
+                      + Tables::all_case_offsets[table_index][key][INDEX_OFFSET_CODIM_1];
       }
       else
       {
         element_count
-            = Tables::all_case_offsets[vertex_count
-                                       + dim][key][INDEX_COUNT_CODIM_0[int(exterior_not_interior)]];
-        codim_index = Tables::all_codim_0[vertex_count + dim][int(exterior_not_interior)]
-                      + Tables::all_case_offsets[vertex_count + dim][key]
+            = Tables::all_case_offsets[table_index]
+                                      [key][INDEX_COUNT_CODIM_0[int(exterior_not_interior)]];
+        codim_index = Tables::all_codim_0[table_index][int(exterior_not_interior)]
+                      + Tables::all_case_offsets[table_index][key]
                                                 [INDEX_OFFSET_CODIM_0[int(exterior_not_interior)]];
       }
       for (int elementIndex = 0; elementIndex < element_count; ++elementIndex)
@@ -273,21 +275,22 @@ namespace tpmc
                                                        OutputIterator out) const
   {
     const unsigned int vertex_count = getCornerCount(dim, geometry);
+    const unsigned int table_index = vertex_count + dim;
     const bool exterior_not_interior = (type == TriangulationType::Exterior);
     const bool codim_1_not_0 = (type == TriangulationType::Interface);
 
     size_type element_count
-        = Tables::all_case_offsets[vertex_count
-                                   + dim][key][INDEX_COUNT_CODIM_0[int(exterior_not_interior)]];
+        = Tables::all_case_offsets[table_index]
+                                  [key][INDEX_COUNT_CODIM_0[int(exterior_not_interior)]];
     const short(*codim_index)
-        = Tables::all_codim_0[vertex_count + dim][int(exterior_not_interior)]
-          + Tables::all_case_offsets[vertex_count
-                                     + dim][key][INDEX_OFFSET_CODIM_0[int(exterior_not_interior)]];
+        = Tables::all_codim_0[table_index][int(exterior_not_interior)]
+          + Tables::all_case_offsets[table_index]
+                                    [key][INDEX_OFFSET_CODIM_0[int(exterior_not_interior)]];
     if (codim_1_not_0)
     {
-      element_count = Tables::all_case_offsets[vertex_count + dim][key][INDEX_COUNT_CODIM_1];
-      codim_index = Tables::all_codim_1[vertex_count + dim]
-                    + Tables::all_case_offsets[vertex_count + dim][key][INDEX_OFFSET_CODIM_1];
+      element_count = Tables::all_case_offsets[table_index][key][INDEX_COUNT_CODIM_1];
+      codim_index = Tables::all_codim_1[table_index]
+                    + Tables::all_case_offsets[table_index][key][INDEX_OFFSET_CODIM_1];
     }
 
     for (size_type i = 0; i < element_count; i++)
@@ -330,10 +333,11 @@ namespace tpmc
                                                            OutputIterator out) const
   {
     const unsigned int vertex_count = getCornerCount(dim,geometry);
+    const unsigned int table_index = vertex_count + dim;
 
     const short* vg_index
-        = Tables::all_vertex_groups[vertex_count + dim]
-          + Tables::all_case_offsets[vertex_count + dim][key][INDEX_VERTEX_GROUPS];
+        = Tables::all_vertex_groups[table_index]
+          + Tables::all_case_offsets[table_index][key][INDEX_VERTEX_GROUPS];
 
     std::copy(vg_index, vg_index + vertex_count, out);
   }
@@ -363,14 +367,15 @@ namespace tpmc
   {
     const bool exterior_not_interior = (type == TriangulationType::Exterior);
     const unsigned int vertex_count = getCornerCount(dim,geometry);
+    const unsigned int table_index = vertex_count + dim;
 
     const short* eg_index
-        = Tables::all_element_groups[vertex_count + dim][int(exterior_not_interior)]
-          + Tables::all_case_offsets[vertex_count + dim][key]
+        = Tables::all_element_groups[table_index][int(exterior_not_interior)]
+          + Tables::all_case_offsets[table_index][key]
                                     [INDEX_OFFSET_ELEMENT_GROUPS[int(exterior_not_interior)]];
     size_type element_count
-        = Tables::all_case_offsets[vertex_count
-                                   + dim][key][INDEX_COUNT_CODIM_0[int(exterior_not_interior)]];
+        = Tables::all_case_offsets[table_index]
+                                  [key][INDEX_COUNT_CODIM_0[int(exterior_not_interior)]];
 
     std::copy(eg_index, eg_index + element_count, out);
   }
@@ -422,14 +427,15 @@ namespace tpmc
       }
     } else {     // we have an egde
       const unsigned int vertex_count = std::distance(valuesBegin, valuesEnd);
-      const short(*vertex_index) = Tables::all_case_vertices[vertex_count + dim] + number;
+      const unsigned int table_index = vertex_count + dim;
+      const short(*vertex_index) = Tables::all_case_vertices[table_index] + number;
       Coordinate point_a = getCoordsFromNumber(valuesBegin, valuesEnd, vertex_index[0]);
       Coordinate point_b = getCoordsFromNumber(valuesBegin, valuesEnd, vertex_index[1]);
       if (vertex_index[0] <= 0 && vertex_index[1] <= 0 && -vertex_index[0] >= VA
           && -vertex_index[0] <= VH && -vertex_index[1] >= VA && -vertex_index[1] <= VH)
       { // we have a simple edge
-        size_type index_a = Tables::all_vertex_to_index[vertex_count + dim][-vertex_index[0]];
-        size_type index_b = Tables::all_vertex_to_index[vertex_count + dim][-vertex_index[1]];
+        size_type index_a = Tables::all_vertex_to_index[table_index][-vertex_index[0]];
+        size_type index_b = Tables::all_vertex_to_index[table_index][-vertex_index[1]];
         InputIterator value_a = valuesBegin;
         std::advance(value_a, index_a);
         InputIterator value_b = valuesBegin;
@@ -558,6 +564,7 @@ namespace tpmc
     // FacePoints only supported in 3d
     assert(dim == 3);
     const int vertex_count = std::distance(valuesBegin, valuesEnd);
+    const unsigned int table_index = vertex_count + dim;
     static short cube_faceoffsets[] = {0,4,8,12,16,20,24};
     static short cube_faces[] = {0,2,4,6,1,3,5,7,0,1,4,5,2,3,6,7,0,1,2,3,4,
                                  5,6,7};
@@ -608,6 +615,7 @@ namespace tpmc
                                                                    short faceid) const
   {
     const int vertex_count = std::distance(valuesBegin, valuesEnd);
+    const unsigned int table_index = vertex_count + dim;
     // map prism and simplex indices to cube (i.e. skip vertex 3)
     if (vertex_count == 4 || vertex_count == 6) {
       if (a > 2) ++a;
