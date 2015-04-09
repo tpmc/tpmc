@@ -1,9 +1,14 @@
 // -*- tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*-
 // vi: set et ts=4 sw=2 sts=2:
+#include <cmath>
 #include <tpmc/marchinglut.hh>
 #include <tpmc/marchingcubestables.hh>
 
 namespace tpmc {
+
+  max_complex_vertex_count =
+    std::max(table_cube3d_complex_vertex_count, table_cube3dsym_complex_vertex_count);
+
   /* table specialization for non symmetric tables */
 
   int MarchingCubesTables<SymmetryType::nonsymmetric>::all_complex_vertex_count[]

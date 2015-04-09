@@ -13,11 +13,32 @@ namespace tpmc
    */
   class NotImplementedException : public std::exception {};
 
-  enum TriangulationType
+  enum ReconstructionType
   {
     Interior,
     Exterior,
     Interface
+  };
+
+  enum AlgorithmType
+  {
+    simpleMC,
+    fullTPMC,
+    fullSymmetricTPMC
+  };
+
+  class ReconstructionContext
+  {
+  public:
+    ReconstructionContext() :
+      vertexToIndex(max_complex_vertex_count + VERTICES_ON_REFERENCE_COUNT)
+    {}
+  private:
+    template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
+              SymmetryType::Value symmetryType, class intersectionFunctor>
+    friend MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
+                         intersectionFunctor>;
+    std::vector<int> vertexToIndex;
   };
 
   /** \brief The 'topology preserving marching cubes' algorithm.
@@ -31,11 +52,11 @@ namespace tpmc
   public:
 
     template <typename InputIterator>
-    size_type getKey(InputIterator valuesBegin, InputIterator valuesEnd, const bool use_mc_33) const;
+    size_type getKey(InputIterator valuesBegin, InputIterator valuesEnd) const;
 
     template <typename InputIterator, typename OutputIterator>
     void getVertices(InputIterator valuesBegin, InputIterator valuesEnd, size_type key,
-                     std::vector<int>& vertexToIndex, OutputIterator out) const;
+                     ReconstructionContext context, OutputIterator out) const;
 
     int getMaximalVertexCount(GeometryType type) const;
 
@@ -50,7 +71,7 @@ namespace tpmc
     void getElementGroups(GeometryType geometry, size_type key, TriangulationType type,
                           OutputIterator out) const;
 
-    MarchingCubes(const thresholdFunctor& _threshFunctor = thresholdFunctor())
+    MarchingCubes(const thresholdFunctor& _threshFunctor = thresholdFunctor(), const AlgorithmType algo_type)
         : threshFunctor(_threshFunctor) {}
 
   private:
@@ -59,6 +80,10 @@ namespace tpmc
      * functor for defining and asserting numerical thresholds
      */
     const thresholdFunctor threshFunctor;
+
+    /*
+     * remember which mc algorithm to use
+     */
 
     /*
      * class containing tables as static members specialized by
