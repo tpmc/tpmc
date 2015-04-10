@@ -40,7 +40,8 @@ find_library(TPMC_LIBRARY
   DOC "Full path to tpmc library.")
 # find lib in default directory
 find_library(TPMC_LIBRARY
-  NAMES tpmc_tables)
+  NAMES tpmc_tables
+  PATH_SUFFIXES lib)
 
 # check if library is working
 include(CheckLibraryExists)
