@@ -7,6 +7,7 @@
 #include <tpmc/marchingcubestables.hh>
 #include <tpmc/marchinglut.hh>
 #include <tpmc/geometrytype.hh>
+#include <tpmc/fieldtraits.hh>
 
 namespace tpmc
 {
@@ -51,7 +52,7 @@ namespace tpmc
             typename IntersectionFunctor = AberthFunctor<Coordinate> >
   class MarchingCubes {
     typedef size_t size_type;
-    typedef typename Coordinate::value_type ctype;
+    typedef typename FieldTraits<Coordinate>::field_type ctype;
   public:
 
     template <typename InputIterator>

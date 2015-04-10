@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <tpmc/univariatepolynomial.hh>
 #include <tpmc/floatcmp.hh>
+#include <tpmc/fieldtraits.hh>
 
 namespace tpmc {
   class NoRootException : public std::exception {};
@@ -16,43 +17,41 @@ namespace tpmc {
   /*
    * stop Aberth's method after a constant number of iterations
    */
-  template <typename ValueType>
   class IterationStopPolicy {
   public:
+    template <typename ValueType>
     static bool stop(unsigned int iteration, ValueType residuum) {
       return iteration >= MAX_ITERATION;
     }
   private:
     static const unsigned int MAX_ITERATION;
   };
-  template <typename ValueType>
-  const unsigned int IterationStopPolicy<ValueType>::MAX_ITERATION = 20;
+  const unsigned int IterationStopPolicy::MAX_ITERATION = 20;
 
   /*
    * stop Aberth's method if the residuum is small enough
    */
-  template <typename ValueType>
   class ResiduumStopPolicy {
   public:
+    template <typename ValueType>
     static bool stop(unsigned int iteration, ValueType residuum) {
       return std::abs(residuum) < MIN_RESIDUUM;
     }
   private:
-    static const ValueType MIN_RESIDUUM;
+    static const double MIN_RESIDUUM;
   };
-  template <typename ValueType>
-  const ValueType ResiduumStopPolicy<ValueType>::MIN_RESIDUUM = 1e-8;
+  const double ResiduumStopPolicy::MIN_RESIDUUM = 1e-8;
 
   /*
    * stop if one of the stop policies says so
    */
-  template <typename ValueType, template <typename> class Policy1,
-      template <typename> class Policy2>
-  class OrCombinedStopPolicy {
+  template <typename Policy1, typename Policy2>
+  class OrCombinedStopPolicy
+  {
   public:
+    template <class ValueType>
     static bool stop(unsigned int iteration, ValueType residuum) {
-      return (Policy1<ValueType>::stop(iteration, residuum)
-              || Policy2<ValueType>::stop(iteration, residuum));
+      return (Policy1::stop(iteration, residuum) || Policy2::stop(iteration, residuum));
     }
   };
 
@@ -138,13 +137,12 @@ namespace tpmc {
   /** \brief functor to be used in the mc algorithm
    */
   template <typename Coordinate,
-            class StopPolicy = OrCombinedStopPolicy<typename Coordinate::value_type,
-                                                    ResiduumStopPolicy, IterationStopPolicy> >
+            class StopPolicy = OrCombinedStopPolicy<ResiduumStopPolicy, IterationStopPolicy> >
   class AberthFunctor
   {
   public:
     typedef typename AberthMethod<StopPolicy>::SizeType SizeType;
-    typedef typename Coordinate::value_type ctype;
+    typedef typename FieldTraits<Coordinate>::field_type ctype;
 
     template <int dim, typename InputIterator>
     static Coordinate findRoot(InputIterator valuesBegin, InputIterator valuesEnd,
@@ -187,7 +185,7 @@ namespace tpmc {
 
   template <typename Coordinate, class StopPolicy>
   template <int po, class I>
-  typename Coordinate::value_type AberthFunctor<Coordinate, StopPolicy>::apply(const I& begin, const I& end) {
+  typename FieldTraits<Coordinate>::field_type AberthFunctor<Coordinate, StopPolicy>::apply(const I& begin, const I& end) {
     UnivariatePolynomial<po, ctype > p(begin, end);
     ctype roots[po];
     AberthMethod<StopPolicy>::apply(p,roots);

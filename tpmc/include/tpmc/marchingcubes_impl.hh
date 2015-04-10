@@ -772,10 +772,10 @@ namespace tpmc
       const
   {
     // Change naming scheme to jgt-paper ones
-    ctype a = threshFunctor.getDistance(corner_a);
-    ctype b = threshFunctor.getDistance(corner_b);
-    ctype c = threshFunctor.getDistance(corner_d);
-    ctype d = threshFunctor.getDistance(corner_c);
+    valueType a = threshFunctor.getDistance(corner_a);
+    valueType b = threshFunctor.getDistance(corner_b);
+    valueType c = threshFunctor.getDistance(corner_d);
+    valueType d = threshFunctor.getDistance(corner_c);
 
     // check if its really an amiguous face
     assert(a*c >= 0);
@@ -783,8 +783,8 @@ namespace tpmc
 
     // should use 'a' according to lewiner paper (inverse is true if reference
     // vertex is not equal to zero
-    //ctype f = inverse ? a : b;
-    ctype f = a;
+    //valueType f = inverse ? a : b;
+    valueType f = a;
 
 #ifndef NDEBUG
     std::cout << "testFace " << inverse << " => " << f*(a*c-b*d) << std::endl;
@@ -856,7 +856,7 @@ namespace tpmc
 
     const int vertex_count = std::distance(valuesBegin, valuesEnd);
     double v[vertex_count];
-    const ctype sign = threshFunctor.isInside(*valuesBegin) ? -1.0 : 1.0;
+    const valueType sign = threshFunctor.isInside(*valuesBegin) ? -1.0 : 1.0;
     for (; valuesBegin != valuesEnd; ++valuesBegin, ++fp)
     {
       v[p[*fp]] = sign * threshFunctor.getDistance(*valuesBegin);
@@ -869,7 +869,7 @@ namespace tpmc
 #endif
 
     // check that there is maximum
-    const ctype a = (v[4] - v[0]) * (v[7] - v[3]) - (v[6] - v[2]) * (v[5] - v[1]);
+    const valueType a = (v[4] - v[0]) * (v[7] - v[3]) - (v[6] - v[2]) * (v[5] - v[1]);
 #ifndef NDEBUG
     std::cout << "a = " << a << "\n";
 #endif
@@ -881,12 +881,12 @@ namespace tpmc
       return false;
     }
     // check that the maximum-plane is inside the cube
-    const ctype b = v[3] * (v[4] - v[0]) + v[0] * (v[7] - v[3]) - v[1] * (v[6] - v[2])
+    const valueType b = v[3] * (v[4] - v[0]) + v[0] * (v[7] - v[3]) - v[1] * (v[6] - v[2])
                     - v[2] * (v[5] - v[1]);
 #ifndef NDEBUG
     std::cout << "b = " << b << "\n";
 #endif
-    const ctype t_max = -0.5 * b / a;
+    const valueType t_max = -0.5 * b / a;
 #ifndef NDEBUG
     std::cout << "t_max = " << t_max << "\n";
 #endif
@@ -898,10 +898,10 @@ namespace tpmc
       return false;
     }
     // check that the
-    const ctype at = v[0] + (v[4] - v[0]) * t_max;
-    const ctype bt = v[2] + (v[6] - v[2]) * t_max;
-    const ctype ct = v[3] + (v[7] - v[3]) * t_max;
-    const ctype dt = v[1] + (v[5] - v[1]) * t_max;
+    const valueType at = v[0] + (v[4] - v[0]) * t_max;
+    const valueType bt = v[2] + (v[6] - v[2]) * t_max;
+    const valueType ct = v[3] + (v[7] - v[3]) * t_max;
+    const valueType dt = v[1] + (v[5] - v[1]) * t_max;
     const bool inequation_4 = !threshFunctor.isLower(at*ct - bt*dt);
     // check sign(v[0]) = sign(at) = sign(ct) = sign(v[7])
 #ifndef NDEBUG
