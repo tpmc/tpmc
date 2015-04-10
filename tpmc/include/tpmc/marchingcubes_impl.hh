@@ -116,18 +116,10 @@ namespace tpmc
 #ifndef NDEBUG
           std::cout << "++++ testing face " << face << std::endl;
 #endif
-          InputIterator ita = valuesBegin;
-          std::advance(ita, getVertexOfFace<dim>(geometry, face, 0));
-          corner_a = *ita;
-          InputIterator itb = valuesBegin;
-          std::advance(itb, getVertexOfFace<dim>(geometry, face, 1));
-          corner_b = *itb;
-          InputIterator itc = valuesBegin;
-          std::advance(itc, getVertexOfFace<dim>(geometry, face, 2));
-          corner_c = *itc;
-          InputIterator itd = valuesBegin;
-          std::advance(itd, getVertexOfFace<dim>(geometry, face, 3));
-          corner_d = *itd;
+          corner_a = valuesBegin[getVertexOfFace<dim>(geometry, face, 0)];
+          corner_b = valuesBegin[getVertexOfFace<dim>(geometry, face, 1)];
+          corner_c = valuesBegin[getVertexOfFace<dim>(geometry, face, 2)];
+          corner_d = valuesBegin[getVertexOfFace<dim>(geometry, face, 3)];
 #ifndef NDEBUG
           std::cout << "vertices " << corner_a << " "  << corner_b << " "  << corner_c << " "  << corner_d << "\n";
 #endif
@@ -433,17 +425,15 @@ namespace tpmc
       { // we have a simple edge
         size_type index_a = Tables::all_vertex_to_index[table_index][-vertex_index[0]];
         size_type index_b = Tables::all_vertex_to_index[table_index][-vertex_index[1]];
-        InputIterator value_a = valuesBegin;
-        std::advance(value_a, index_a);
-        InputIterator value_b = valuesBegin;
-        std::advance(value_b, index_b);
+        valueType value_a = valuesBegin[index_a];
+        valueType value_b = valuesBegin[index_b];
         // if theres no intersection along the edge, we use the middle as a
         // helper vertex. otherwise, use linear interpolation
         valueType interpol_factor = -0.5;
-        if (threshFunctor.isInside(*value_a) != threshFunctor.isInside(*value_b))
+        if (threshFunctor.isInside(value_a) != threshFunctor.isInside(value_b))
         {
           // factor for interpolation
-          interpol_factor = threshFunctor.interpolationFactor(point_a, point_b, *value_a, *value_b);
+          interpol_factor = threshFunctor.interpolationFactor(point_a, point_b, value_a, value_b);
         }
         // calculate interpolation point
         Coordinate result;
@@ -625,18 +615,10 @@ namespace tpmc
     Coordinate pc = getCoordsFromEdgeNumber(valuesBegin, valuesEnd, c);
     Coordinate pd = getCoordsFromEdgeNumber(valuesBegin, valuesEnd, d);
 
-    InputIterator ia = valuesBegin;
-    std::advance(ia, a);
-    valueType va = *ia;
-    InputIterator ib = valuesBegin;
-    std::advance(ib, b);
-    valueType vb = *ib;
-    InputIterator ic = valuesBegin;
-    std::advance(ic, c);
-    valueType vc = *ic;
-    InputIterator id = valuesBegin;
-    std::advance(id, d);
-    valueType vd = *id;
+    valueType va = valuesBegin[a];
+    valueType vb = valuesBegin[b];
+    valueType vc = valuesBegin[c];
+    valueType vd = valuesBegin[d];
 #ifndef NDEBUG
     std::cout << "getting coords for rectangular face:\n";
     std::cout << "pa = " << pa << " va = " << va << "\n";
@@ -682,15 +664,9 @@ namespace tpmc
       const
   {
     short ind[] = {a,b,c};
-    InputIterator ita = valuesBegin;
-    std::advance(ita, a);
-    valueType va = *ita;
-    InputIterator itb = valuesBegin;
-    std::advance(itb, b);
-    valueType vb = *itb;
-    InputIterator itc = valuesBegin;
-    std::advance(itc, c);
-    valueType vc = *itc;
+    valueType va = valuesBegin[a];
+    valueType vb = valuesBegin[b];
+    valueType vc = valuesBegin[c];
     bool ia = threshFunctor.isInside(va);
     bool ib = threshFunctor.isInside(vb);
     bool ic = threshFunctor.isInside(vc);
