@@ -3,6 +3,7 @@ Contains classes/constants for export to dune marchinglut.cc
 """
 
 import math
+import operator
 from referenceelements import ReferenceElements
 from geomobj import FacePoint, CenterPoint, RootPoint
 
@@ -75,6 +76,7 @@ class VertexMapper:
     def __init__(self):
         self.table = TableStorage()
         self.vertices = dict()
+        self.max_local_count = 0
     def id(self, vertex):
         if vertex in self.vertices:
             return self.vertices[vertex]
@@ -102,6 +104,19 @@ class VertexMapper:
                 elif type(vertex) is RootPoint:
                     val = rootids[vertex.id]
                 return -val;
+
+class LocalVertexMapper:
+    def __init__(self, vmapper):
+      self.vmapper = vmapper
+      self.vertices = dict()
+    def id(self, vertex):
+      vid = self.vmapper.id(vertex)
+      if vid <= -VA and vid >= -VH:
+        return vid-1
+      if not vid in self.vertices:
+        self.vertices[vid] = len(self.vertices)
+      return self.vertices[vid]
+
 
 class DuneCode:
     """ Generates the tables, writes marchinglut.cc """
@@ -195,7 +210,10 @@ class DuneCode:
                                                                * base_case_number),
                                                               table.offset,
                                                               ", ".join(str(g) for g in groups)), len(groups));
-        def create_tables(self, vmapper, offsets, vertex_groups, codim0_exterior, codim0_exterior_groups, codim0_interior, codim0_interior_groups, codim1):
+        def create_complex_vertices_line(lmapper, table):
+            sorted_keys = [x[0] for x in sorted(lmapper.vertices.items(), key=operator.itemgetter(1))]
+            table.append("      /* {} */ {}, {} \n".format(table.offset, len(sorted_keys), "{} ,".format(", ".join(str(x) for x in sorted_keys)) if len(sorted_keys) else ""),1+len(sorted_keys))
+        def create_tables(self, vmapper, offsets, complex_vertices, vertex_groups, codim0_exterior, codim0_exterior_groups, codim0_interior, codim0_interior_groups, codim1):
             """ creates string tables out of case tables """
             for entry in self.generator.all_cases:
                 #print "AHHH writing entry ", entry
@@ -210,7 +228,7 @@ class DuneCode:
                 base_case_number = \
                     self.generator.base_cases.index(entry.base_case)
                 oline = ("      /* {0} / {1} */ "
-                               "{{{2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}}},\n")
+                               "{{{2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}}},\n")
                 offsets.append(oline.format(entry.case,
                                             (entry.transformation.orientation
                                              * base_case_number),
@@ -220,12 +238,16 @@ class DuneCode:
                                             len(entry.interior),
                                             codim1.offset, len(entry.faces),
                                             vertex_groups.offset,
+                                            complex_vertices.offset,
                                             unique_case), 1)
                 create_vertex_groups_line(entry, entry.vertex_groups, vertex_groups)
-                create_codim0_line(vmapper, codim0_exterior, codim0_exterior_groups, entry, entry.exterior, entry.exterior_groups)
-                create_codim0_line(vmapper, codim0_interior, codim0_interior_groups, entry, entry.interior, entry.interior_groups)
-                create_codim1_line(vmapper, codim1, entry, entry.faces)
-        def create_mc33_tables(self, vmapper, offsets, vertex_groups, codim0_exterior, codim0_exterior_groups, codim0_interior, codim0_interior_groups, codim1, mc33_offsets, 
+                lmapper = LocalVertexMapper(vmapper)
+                create_codim0_line(lmapper, codim0_exterior, codim0_exterior_groups, entry, entry.exterior, entry.exterior_groups)
+                create_codim0_line(lmapper, codim0_interior, codim0_interior_groups, entry, entry.interior, entry.interior_groups)
+                create_codim1_line(lmapper, codim1, entry, entry.faces)
+                create_complex_vertices_line(lmapper, complex_vertices);
+                vmapper.max_local_count = max(vmapper.max_local_count, len(lmapper.vertices))
+        def create_mc33_tables(self, vmapper, offsets, complex_vertices, vertex_groups, codim0_exterior, codim0_exterior_groups, codim0_interior, codim0_interior_groups, codim1, mc33_offsets, 
                                mc33_tests):
             """ creates mc33 caste table and mc33 test table and returns  """
             offsets.append("      /* MC 33 cases follow */\n", 0)
@@ -257,7 +279,7 @@ class DuneCode:
                         base_case_number = \
                             self.generator.base_cases.index(entry.base_case)
                         oline = ("      /* {0} test index:{1} */ "
-                                 "{{{2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, 0}},\n")
+                                 "{{{2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, 0}},\n")
                         offsets.append(oline.format(base_case_number,
                                                     len(entry.tests),
                                                     codim0_exterior.offset,
@@ -268,12 +290,16 @@ class DuneCode:
                                                     len(mc33_case.interior),
                                                     codim1.offset,
                                                     len(mc33_case.faces),
-                                                    vertex_groups.offset),
+                                                    vertex_groups.offset,
+                                                    complex_vertices.offset),
                                        1)
+                        lmapper = LocalVertexMapper(vmapper)
                         create_vertex_groups_line(entry, mc33_case.vertex_groups, vertex_groups)
-                        create_codim0_line(vmapper, codim0_exterior, codim0_exterior_groups, entry, mc33_case.exterior, mc33_case.exterior_groups)
-                        create_codim0_line(vmapper, codim0_interior, codim0_interior_groups, entry, mc33_case.interior, mc33_case.interior_groups)
-                        create_codim1_line(vmapper, codim1, entry, mc33_case.faces)
+                        create_codim0_line(lmapper, codim0_exterior, codim0_exterior_groups, entry, mc33_case.exterior, mc33_case.exterior_groups)
+                        create_codim0_line(lmapper, codim0_interior, codim0_interior_groups, entry, mc33_case.interior, mc33_case.interior_groups)
+                        create_codim1_line(lmapper, codim1, entry, mc33_case.faces)
+                        create_complex_vertices_line(lmapper, complex_vertices)
+                        vmapper.max_local_count = max(vmapper.max_local_count, len(lmapper.vertices))
                 else:
                     mc33_offsets.append("    /* {0} / {1} */"
                                         " ".format(entry.case, 
@@ -295,7 +321,7 @@ class DuneCode:
         table_offsets = TableStorage()
         table_offsets.tablestring = \
             ("    "
-             "const unsigned short table_{0[T]}{0[D]}d{0[S]}_cases_offsets[][10] = {{\n"
+             "const unsigned short table_{0[T]}{0[D]}d{0[S]}_cases_offsets[][11] = {{\n"
              "     /* vv: vertex values with 0=in, 1=out\n"
              "      * cn: case number\n"
              "      * bc: basic case, if negative it's inverted\n"
@@ -306,9 +332,15 @@ class DuneCode:
              "      * c0i: element count of co-dimension 0 interior elements\n"
              "      * o0i: table offset for co-dimension 0 interior\n"
              "      * vg: table offset for vertex_groups\n"
+             "      * cv: table offset for complex vertices\n"
              "      * uniq: whether the case is ambiguous for MC33 */\n"
-             "      /* vv / cn / bc / o0e, o0eg, c0e, o0i, o0ig, c0i, o1, c1, vg, uniq */"
+             "      /* vv / cn / bc / o0e, o0eg, c0e, o0i, o0ig, c0i, o1, c1, vg, cv, uniq */"
              "\n".format(table_dict))
+        table_complex_vertices_used = TableStorage()
+        table_complex_vertices_used.tablestring = \
+            ("    "
+             "const short table_{0[T]}{0[D]}d{0[S]}_complex_vertices[] = {{"
+             "\n    /* offset in vertex table */\n".format(table_dict))
         table_vertex_groups = TableStorage()
         table_vertex_groups.tablestring = \
             ("    "
@@ -368,7 +400,7 @@ class DuneCode:
              "      /* cn / bc / el / cp */"
              "\n".format(table_dict))
         # write elements into the array
-        create_tables(self, vmapper, table_offsets, table_vertex_groups, table_codim0_exterior, table_codim0_exterior_groups ,
+        create_tables(self, vmapper, table_offsets, table_complex_vertices_used, table_vertex_groups, table_codim0_exterior, table_codim0_exterior_groups ,
                       table_codim0_interior, table_codim0_interior_groups, table_codim1)
         
         # tables for mc 33
@@ -388,22 +420,24 @@ class DuneCode:
                  "      /* dummy entry not used but the index has to "
                  "start with 1*/\n"
                  "      1,\n".format(table_dict))
-            create_mc33_tables(self, vmapper, table_offsets, table_vertex_groups, table_codim0_exterior, table_codim0_exterior_groups, 
+            create_mc33_tables(self, vmapper, table_offsets, table_complex_vertices_used, table_vertex_groups, table_codim0_exterior, table_codim0_exterior_groups, 
                                table_codim0_interior, table_codim0_interior_groups, table_codim1, 
                                table_mc33_offsets, table_mc33_tests)
         # close the arrays and write them
         vmapper.table.append("    };\n\n\n", 0)
         table_offsets.append("    };\n\n\n", 0)
+        table_complex_vertices_used.append("    };\n\n\n", 0)
         table_vertex_groups.append("    };\n\n\n", 0)
         table_codim0_exterior.append("    };\n\n\n", 0)
         table_codim0_exterior_groups.append("    };\n\n\n", 0)
         table_codim0_interior.append("    };\n\n\n", 0)
         table_codim0_interior_groups.append("    };\n\n\n", 0)
         table_codim1.append("    };\n\n\n", 0)
-        complex_vertex_count_string = "const int table_{0[T]}{0[D]}d{0[S]}_complex_vertex_count = {1};\n".format(table_dict, len(vmapper.vertices));
+        complex_vertex_count_string = "const int table_{0[T]}{0[D]}d{0[S]}_max_complex_vertex_count = {1};\n".format(table_dict, vmapper.max_local_count);
         dune_file.write(complex_vertex_count_string);
         dune_file.write(vmapper.table.tablestring)
         dune_file.write(table_offsets.tablestring)
+        dune_file.write(table_complex_vertices_used.tablestring)
         dune_file.write(table_vertex_groups.tablestring)
         dune_file.write(table_codim0_exterior.tablestring)
         dune_file.write(table_codim0_exterior_groups.tablestring)

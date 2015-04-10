@@ -13,10 +13,6 @@ namespace tpmc {
     };
   };
 
-  const short max_complex_vertex_count =
-    std::max(table_cube3d_complex_vertex_count, table_cube3dsym_complex_vertex_count);
-
-
   template <SymmetryType::Value symmetryType>
   struct MarchingCubesTables;
 
@@ -26,14 +22,14 @@ namespace tpmc {
      * row containing information about a specific mc case. for details see
      * marchinglut.hh
      */
-    typedef const unsigned short offsetRow[10];
+    typedef const unsigned short offsetRow[11];
     /*
      * contains offset-tables for different geometries. for details see
      * <code>marchinglut.hh</code>
      */
     static offsetRow * all_case_offsets[];
 
-    static int all_complex_vertex_count[];
+    static int all_max_complex_vertex_count[];
 
     /*
      * contains arrays for renumbering vertices. used for simplex and prism
@@ -71,6 +67,8 @@ namespace tpmc {
      * <code>marchinglut.hh</code>
      */
     static const short * const all_face_tests[];
+
+    static const short * const all_complex_vertices[];
   };
 
 
@@ -81,14 +79,14 @@ namespace tpmc {
      * row containing information about a specific mc case. for details see
      * marchinglut.hh
      */
-    typedef const unsigned short offsetRow[10];
+    typedef const unsigned short offsetRow[11];
     /*
      * contains offset-tables for different geometries. for details see
      * <code>marchinglut.hh</code>
      */
     static offsetRow * all_case_offsets[];
 
-    static int all_complex_vertex_count[];
+    static int all_max_complex_vertex_count[];
     /*
      * contains arrays for renumbering vertices. used for simplex and prism
      * to map the vertex numbers to the indices in the vertex-values array
@@ -125,6 +123,8 @@ namespace tpmc {
      * <code>marchinglut.hh</code>
      */
     static const short * const all_face_tests[];
+
+    static const short * const all_complex_vertices[];
   };
 
 }

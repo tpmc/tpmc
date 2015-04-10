@@ -28,23 +28,6 @@ namespace tpmc
     fullTPMC
   };
 
-  class ReconstructionContext
-  {
-  public:
-    ReconstructionContext() :
-      vertexToIndex(max_complex_vertex_count + VERTICES_ON_REFERENCE_COUNT)
-    {}
-
-    int index(int vertex) const {
-      return vertexToIndex[vertex];
-    }
-  private:
-    template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
-              SymmetryType::Value symmetryType, class intersectionFunctor>
-    friend class MarchingCubes;
-    std::vector<int> vertexToIndex;
-  };
-
   /** \brief The 'topology preserving marching cubes' algorithm.
    */
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
@@ -60,7 +43,7 @@ namespace tpmc
 
     template <typename InputIterator, typename OutputIterator>
     void getVertices(InputIterator valuesBegin, InputIterator valuesEnd, size_type key,
-                     ReconstructionContext& context, OutputIterator out) const;
+                     OutputIterator out) const;
 
     int getMaximalVertexCount(GeometryType type) const;
 

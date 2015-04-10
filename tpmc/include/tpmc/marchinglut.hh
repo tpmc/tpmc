@@ -142,7 +142,8 @@ static const int INDEX_COUNT_CODIM_0[] = {5, 2};
 static const int INDEX_OFFSET_CODIM_1 = 6;
 static const int INDEX_COUNT_CODIM_1 = 7;
 static const int INDEX_VERTEX_GROUPS = 8;
-static const int INDEX_UNIQUE_CASE = 9;
+static const int INDEX_COMPLEX_VERTICES = 9;
+static const int INDEX_UNIQUE_CASE = 10;
 
 /* Mappings for vertex number to linear index in value array */
 static const short table_any1d_vertex_to_index[] = {0,1};
@@ -158,7 +159,7 @@ static const short table_cube3d_vertex_to_index[] = {0,1,2,3,4,5,6,7};
 extern "C"
 {
 
-  extern const int table_cube2d_complex_vertex_count;
+  extern const int table_cube2d_max_complex_vertex_count;
 
   extern const short table_cube2d_vertices[];
   /*
@@ -177,7 +178,8 @@ extern "C"
    * Basic case 2: 0 0 1 1
    * Basic case 3: 0 1 0 1
    */
-  extern const unsigned short table_cube2d_cases_offsets[][10];
+  extern const unsigned short table_cube2d_cases_offsets[][11];
+  extern const short table_cube2d_complex_vertices[];
 
   /*
    * TODO: Comment
@@ -233,19 +235,21 @@ extern "C"
    * TODO: Comment
    */
   extern const short table_cube2d_mc33_offsets[];
+  extern const short table_cube2d_mc33_complex_vertices[];
 
   /*
    * TODO: Comment
    */
   extern const short table_cube2d_mc33_face_test_order[];
 
-  extern const int table_cube3d_complex_vertex_count;
+  extern const int table_cube3d_max_complex_vertex_count;
 
   extern const short table_cube3d_vertices[];
   /*
    * TODO: Comment 3D cube
    */
-  extern const unsigned short table_cube3d_cases_offsets[][10];
+  extern const unsigned short table_cube3d_cases_offsets[][11];
+  extern const short table_cube3d_complex_vertices[];
 
   /*
    * TODO: Comment
@@ -280,19 +284,21 @@ extern "C"
    * TODO: Comment
    */
   extern const short table_cube3d_mc33_offsets[];
+  extern const short table_cube3d_mc33_complex_vertices[];
 
   /*
    * TODO: Comment
    */
   extern const short table_cube3d_mc33_face_test_order[];
 
-  extern const int table_cube3dsym_complex_vertex_count;
+  extern const int table_cube3dsym_max_complex_vertex_count;
 
   extern const short table_cube3dsym_vertices[];
   /*
    * TODO: Comment 3D cube
    */
-  extern const unsigned short table_cube3dsym_cases_offsets[][10];
+  extern const unsigned short table_cube3dsym_cases_offsets[][11];
+  extern const short table_cube3dsym_complex_vertices[];
 
   /*
    * TODO: Comment
@@ -327,19 +333,21 @@ extern "C"
    * TODO: Comment
    */
   extern const short table_cube3dsym_mc33_offsets[];
+  extern const short table_cube3dsym_mc33_complex_vertices[];
 
   /*
    * TODO: Comment
    */
   extern const short table_cube3dsym_mc33_face_test_order[];
 
-  extern const int table_simplex2d_complex_vertex_count;
+  extern const int table_simplex2d_max_complex_vertex_count;
 
   extern const short table_simplex2d_vertices[];
   /*
    * TODO: Comment 2D simplex
    */
-  extern const unsigned short table_simplex2d_cases_offsets[][10];
+  extern const unsigned short table_simplex2d_cases_offsets[][11];
+  extern const short table_simplex2d_complex_vertices[];
 
   /*
    * TODO: Comment
@@ -370,13 +378,14 @@ extern "C"
    */
   extern const short table_simplex2d_codim_1[];
 
-  extern const int table_simplex3d_complex_vertex_count;
+  extern const int table_simplex3d_max_complex_vertex_count;
 
   extern const short table_simplex3d_vertices[];
   /*
    * TODO: Comment 3D simplex
    */
-  extern const unsigned short table_simplex3d_cases_offsets[][10];
+  extern const unsigned short table_simplex3d_cases_offsets[][11];
+  extern const short table_simplex3d_complex_vertices[];
 
   /*
    * TODO: Comment
@@ -407,13 +416,14 @@ extern "C"
    */
   extern const short table_simplex3d_codim_1[];
 
-  extern const int table_pyramid3d_complex_vertex_count;
+  extern const int table_pyramid3d_max_complex_vertex_count;
 
   extern const short table_pyramid3d_vertices[];
   /*
    * TODO: Comment 3D pyramid
    */
-  extern const unsigned short table_pyramid3d_cases_offsets[][10];
+  extern const unsigned short table_pyramid3d_cases_offsets[][11];
+  extern const short table_pyramid3d_complex_vertices[];
 
   /*
    * TODO: Comment
@@ -448,19 +458,21 @@ extern "C"
    * TODO: Comment
    */
   extern const short table_pyramid3d_mc33_offsets[];
+  extern const short table_pyramid3d_mc33_complex_vertices[];
 
   /*
    * TODO: Comment
    */
   extern const short table_pyramid3d_mc33_face_test_order[];
 
-  extern const int table_prism3d_complex_vertex_count;
+  extern const int table_prism3d_max_complex_vertex_count;
 
   extern const short table_prism3d_vertices[];
   /*
    * TODO: Comment 3D prism
    */
-  extern const unsigned short table_prism3d_cases_offsets[][10];
+  extern const unsigned short table_prism3d_cases_offsets[][11];
+  extern const short table_prism3d_complex_vertices[];
 
   /*
    * TODO: Comment
@@ -495,19 +507,21 @@ extern "C"
    * TODO: Comment
    */
   extern const short table_prism3d_mc33_offsets[];
+  extern const short table_prism3d_mc33_complex_vertices[];
 
   /*
    * TODO: Comment
    */
   extern const short table_prism3d_mc33_face_test_order[];
 
-  extern const int table_any0d_complex_vertex_count;
+  extern const int table_any0d_max_complex_vertex_count;
 
   extern const short table_any0d_vertices[];
   /*
    * TODO: Comment
    */
-  extern const unsigned short table_any0d_cases_offsets[][10];
+  extern const unsigned short table_any0d_cases_offsets[][11];
+  extern const short table_any0d_complex_vertices[];
 
   /*
    * TODO: Comment
@@ -538,13 +552,14 @@ extern "C"
    */
   extern const short table_any0d_codim_1[];
 
-  extern const int table_any1d_complex_vertex_count;
+  extern const int table_any1d_max_complex_vertex_count;
 
   extern const short table_any1d_vertices[];
   /*
    * TODO: Comment
    */
-  extern const unsigned short table_any1d_cases_offsets[][10];
+  extern const unsigned short table_any1d_cases_offsets[][11];
+  extern const short table_any1d_complex_vertices[];
 
   /*
    * TODO: Comment

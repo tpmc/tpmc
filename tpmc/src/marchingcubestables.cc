@@ -7,13 +7,13 @@ namespace tpmc {
 
   /* table specialization for non symmetric tables */
 
-  int MarchingCubesTables<SymmetryType::nonsymmetric>::all_complex_vertex_count[]
+  int MarchingCubesTables<SymmetryType::nonsymmetric>::all_max_complex_vertex_count[]
       = { 0,                                    0,
-          0,                                    table_any1d_complex_vertex_count,
-          0,                                    table_simplex2d_complex_vertex_count,
-          table_cube2d_complex_vertex_count,    table_simplex3d_complex_vertex_count,
-          table_pyramid3d_complex_vertex_count, table_prism3d_complex_vertex_count,
-          0,                                    table_cube3d_complex_vertex_count };
+          0,                                    table_any1d_max_complex_vertex_count,
+          0,                                    table_simplex2d_max_complex_vertex_count,
+          table_cube2d_max_complex_vertex_count,    table_simplex3d_max_complex_vertex_count,
+          table_pyramid3d_max_complex_vertex_count, table_prism3d_max_complex_vertex_count,
+          0,                                    table_cube3d_max_complex_vertex_count };
 
   /*
    * Case offset tables (e.g. table_cube2d_cases offsets) for different
@@ -141,16 +141,24 @@ namespace tpmc {
                       table_prism3d_mc33_face_test_order, 0,
                       table_cube3d_mc33_face_test_order};
 
+  const short * const
+  MarchingCubesTables<SymmetryType::nonsymmetric>::
+  all_complex_vertices[] = {0, 0, 0, 0, 0, 0,
+                        table_cube2d_complex_vertices, 0,
+                        table_pyramid3d_complex_vertices,
+                        table_prism3d_complex_vertices, 0,
+                        table_cube3d_complex_vertices};
+
 
   /** table secialization for symmetric cases */
 
-  int MarchingCubesTables<SymmetryType::symmetric>::all_complex_vertex_count[]
+  int MarchingCubesTables<SymmetryType::symmetric>::all_max_complex_vertex_count[]
       = { 0,                                    0,
-          0,                                    table_any1d_complex_vertex_count,
-          0,                                    table_simplex2d_complex_vertex_count,
-          table_cube2d_complex_vertex_count,    table_simplex3d_complex_vertex_count,
-          table_pyramid3d_complex_vertex_count, table_prism3d_complex_vertex_count,
-          0,                                    table_cube3dsym_complex_vertex_count };
+          0,                                    table_any1d_max_complex_vertex_count,
+          0,                                    table_simplex2d_max_complex_vertex_count,
+          table_cube2d_max_complex_vertex_count,    table_simplex3d_max_complex_vertex_count,
+          table_pyramid3d_max_complex_vertex_count, table_prism3d_max_complex_vertex_count,
+          0,                                    table_cube3dsym_max_complex_vertex_count };
   /*
    * Case offset tables (e.g. table_cube2d_cases offsets) for different
    * types of elements and dimensions.
@@ -276,5 +284,13 @@ namespace tpmc {
                       table_pyramid3d_mc33_face_test_order,
                       table_prism3d_mc33_face_test_order, 0,
                       table_cube3dsym_mc33_face_test_order};
+
+  const short * const
+  MarchingCubesTables<SymmetryType::symmetric>::
+  all_complex_vertices[] = {0, 0, 0, 0, 0, 0,
+                            table_cube2d_complex_vertices, 0,
+                            table_pyramid3d_complex_vertices,
+                            table_prism3d_complex_vertices, 0,
+                            table_cube3dsym_complex_vertices};
 
 } // end namespace tpmc

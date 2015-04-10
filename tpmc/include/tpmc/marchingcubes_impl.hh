@@ -55,7 +55,7 @@ namespace tpmc
     const unsigned int table_index = vertex_count + dim;
     const GeometryType geometry = makeGeometryType(dim, vertex_count);
 
-    const unsigned short(*const table_case_offsets)[10]
+    const unsigned short(*const table_case_offsets)[11]
         = Tables::all_case_offsets[table_index];
     const short* const table_mc33_offsets = Tables::all_mc33_offsets[table_index];
     const short* const table_mc33_face_test_order = Tables::all_face_tests[table_index];
@@ -172,61 +172,20 @@ namespace tpmc
   void MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                      IntersectionFunctor>::getVertices(InputIterator valuesBegin,
                                                        InputIterator valuesEnd, size_type key,
-                                                       ReconstructionContext& context,
                                                        OutputIterator out) const
   {
     const int NOTCOMPUTED = -1;
 
     const unsigned int vertex_count = std::distance(valuesBegin, valuesEnd);
     const unsigned int table_index = vertex_count + dim;
-    std::fill(context.vertexToIndex.begin(), context.vertexToIndex.end(), NOTCOMPUTED);
 
-    unsigned int nextOutIndex = 0;
+    const short* complex_vertex_index = Tables::all_complex_vertices[table_index]
+                  + Tables::all_case_offsets[table_index][key][INDEX_COMPLEX_VERTICES];
 
-    const int extint_and_codim[][2] = { { 0, 0 }, { 1, 0 }, { 0, 1 } };
-
-    size_type element_count;
-    const short* codim_index;
-
-    // loop over exterior, interior and interface and collect vertices
-    for (int ecIndex = 0; ecIndex < 3; ++ecIndex)
-    {
-      const int exterior_not_interior = extint_and_codim[ecIndex][0];
-      const int codim_1_not_0 = extint_and_codim[ecIndex][1];
-
-      // get pointer into codim table and element count
-      if (codim_1_not_0)
-      {
-        element_count = Tables::all_case_offsets[table_index][key][INDEX_COUNT_CODIM_1];
-        codim_index = Tables::all_codim_1[table_index]
-                      + Tables::all_case_offsets[table_index][key][INDEX_OFFSET_CODIM_1];
-      }
-      else
-      {
-        element_count
-            = Tables::all_case_offsets[table_index]
-                                      [key][INDEX_COUNT_CODIM_0[int(exterior_not_interior)]];
-        codim_index = Tables::all_codim_0[table_index][int(exterior_not_interior)]
-                      + Tables::all_case_offsets[table_index][key]
-                                                [INDEX_OFFSET_CODIM_0[int(exterior_not_interior)]];
-      }
-      for (int elementIndex = 0; elementIndex < element_count; ++elementIndex)
-      {
-        const short currentVertexCount = *codim_index++;
-        for (int j = 0; j < currentVertexCount; ++j)
-        {
-          const short current = *codim_index++;
-          // check if it is not already computed
-          const int vertex = vertexTableEntryToIndex(current);
-          if (context.vertexToIndex[vertex] == NOTCOMPUTED)
-          {
-            // compute vertex and store result
-            *out++ = getCoordsFromNumber(valuesBegin, valuesEnd, current);
-            // remember index
-            context.vertexToIndex[vertex] = nextOutIndex++;
-          }
-        }
-      }
+    const unsigned int count = *complex_vertex_index++;
+    for (unsigned int i = 0; i<count; ++i) {
+      short current = *complex_vertex_index++;
+      *out++ = getCoordsFromNumber(valuesBegin, valuesEnd, current);
     }
   }
 
@@ -288,12 +247,9 @@ namespace tpmc
       // Vector for storing the element points
       std::vector<int> element;
       element.reserve(point_count);
-      for (size_type j = 0; j < point_count; j++)
+      for (size_type j = 0; j < point_count; j++, codim_index++)
       {
-        const int current = *codim_index++;
-        const int vertex = vertexTableEntryToIndex(current);
-        // check if its a reference vertex or not
-        element.push_back(vertex);
+        element.push_back(*codim_index);
       }
       *out++ = element;
     }
