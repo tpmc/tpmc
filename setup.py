@@ -48,7 +48,9 @@ def configuration(parent_package='', top_path=None):
         config = Configuration('tpmc',parent_package,top_path)
         config.header_dir = 'include/tpmc' # this is relative to config.path_in_package
         config.lib_dir = 'tpmc/lib' # this is relative to install path
+        print config.path_in_package
         ## header files
+        # config.add_data_files((config.header_dir, 'tpmc/include/tpmc/*.hh'))
         config.add_headers('tpmc/include/tpmc/*.hh')
         ## create build directory
         if not os.path.exists('build'):
