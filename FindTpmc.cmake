@@ -14,11 +14,11 @@ set(TPMC_FOUND TPMC_FOUND-NOTFOUND)
 # find header in user supplied directory
 find_path(TPMC_INCLUDE_DIR tpmc/marchinglut.hh
   PATHS ${TPMC_PREFIX}
-  PATH_SUFFIXES include
+  PATH_SUFFIXES include include/python
   NO_DEFAULT_PATH
   DOC "Include directory with tpmc header files")
 find_path(TPMC_INCLUDE_DIR tpmc/marchinglut.hh
-  PATH_SUFFIXES include
+  PATH_SUFFIXES include include/python
   DOC "Include directory with tpmc header files")
 
 # check header usability
@@ -35,13 +35,13 @@ check_include_file_cxx(tpmc/marchinglut.hh _TPMC_HEADER_USABLE)
 find_library(TPMC_LIBRARY
   NAMES tpmc_tables
   PATHS ${TPMC_PREFIX}
-  PATH_SUFFIXES lib
+  PATH_SUFFIXES lib lib/python/tpmc/lib
   NO_DEFAULT_PATH
   DOC "Full path to tpmc library.")
 # find lib in default directory
 find_library(TPMC_LIBRARY
   NAMES tpmc_tables
-  PATH_SUFFIXES lib)
+  PATH_SUFFIXES lib lib/python/tpmc/lib)
 
 # check if library is working
 include(CheckLibraryExists)
