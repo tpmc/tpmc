@@ -26,4 +26,5 @@ parser.add_argument('--version', version=version,
                     help='output version information')
 
 args = parser.parse_args()
-print " ".join(args.output)
+if args.output:
+    print " ".join(args.output)
