@@ -41,7 +41,7 @@ namespace tpmc
   typename MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                          intersectionFunctor>::size_type
   MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
-                intersectionFunctor>::getKey(InputIterator valuesBegin, InputIterator valuesEnd, bool use_mc_33) const
+                intersectionFunctor>::getKey(InputIterator valuesBegin, InputIterator valuesEnd) const
   {
     if ((dim < 0) || (dim > 3))
     {
@@ -74,7 +74,7 @@ namespace tpmc
       (CASE_AMBIGUOUS_MC33 ==
        (CASE_AMBIGUOUS_MC33 & table_case_offsets[case_number][INDEX_UNIQUE_CASE]));
     // if it's not unique get the correct one
-    if (use_mc_33 && ambiguous_case)
+    if (algorithmType == AlgorithmType::fullTPMC && ambiguous_case)
     {
       // find face tests for the case
       size_type test_index = (size_type) table_mc33_offsets[case_number];
@@ -180,17 +180,14 @@ namespace tpmc
   void MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                      IntersectionFunctor>::getVertices(InputIterator valuesBegin,
                                                        InputIterator valuesEnd, size_type key,
-                                                       std::vector<int>& vertexToIndex,
+                                                       ReconstructionContext& context,
                                                        OutputIterator out) const
   {
     const int NOTCOMPUTED = -1;
 
     const unsigned int vertex_count = std::distance(valuesBegin, valuesEnd);
     const unsigned int table_index = vertex_count + dim;
-    const unsigned int vertexArraySize = Tables::all_complex_vertex_count[table_index]
-                                         + VERTICES_ON_REFERENCE_COUNT;
-    vertexToIndex.resize(vertexArraySize);
-    std::fill(vertexToIndex.begin(), vertexToIndex.end(), NOTCOMPUTED);
+    std::fill(context.vertexToIndex.begin(), context.vertexToIndex.end(), NOTCOMPUTED);
 
     unsigned int nextOutIndex = 0;
 
@@ -229,12 +226,12 @@ namespace tpmc
           const short current = *codim_index++;
           // check if it is not already computed
           const int vertex = vertexTableEntryToIndex(current);
-          if (vertexToIndex[vertex] == NOTCOMPUTED)
+          if (context.vertexToIndex[vertex] == NOTCOMPUTED)
           {
             // compute vertex and store result
             *out++ = getCoordsFromNumber(valuesBegin, valuesEnd, current);
             // remember index
-            vertexToIndex[vertex] = nextOutIndex++;
+            context.vertexToIndex[vertex] = nextOutIndex++;
           }
         }
       }
@@ -271,13 +268,13 @@ namespace tpmc
   template <typename OutputIterator>
   void MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                      IntersectionFunctor>::getElements(GeometryType geometry, size_type key,
-                                                       TriangulationType type,
+                                                       ReconstructionType type,
                                                        OutputIterator out) const
   {
     const unsigned int vertex_count = getCornerCount(dim, geometry);
     const unsigned int table_index = vertex_count + dim;
-    const bool exterior_not_interior = (type == TriangulationType::Exterior);
-    const bool codim_1_not_0 = (type == TriangulationType::Interface);
+    const bool exterior_not_interior = (type == ReconstructionType::Exterior);
+    const bool codim_1_not_0 = (type == ReconstructionType::Interface);
 
     size_type element_count
         = Tables::all_case_offsets[table_index]
@@ -362,10 +359,10 @@ namespace tpmc
   template <typename OutputIterator>
   void MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                      IntersectionFunctor>::getElementGroups(GeometryType geometry, size_type key,
-                                                            TriangulationType type,
+                                                            ReconstructionType type,
                                                             OutputIterator out) const
   {
-    const bool exterior_not_interior = (type == TriangulationType::Exterior);
+    const bool exterior_not_interior = (type == ReconstructionType::Exterior);
     const unsigned int vertex_count = getCornerCount(dim,geometry);
     const unsigned int table_index = vertex_count + dim;
 

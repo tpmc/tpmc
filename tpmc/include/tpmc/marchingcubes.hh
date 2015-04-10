@@ -5,6 +5,7 @@
 
 #include <tpmc/aberthfunctor.hh>
 #include <tpmc/marchingcubestables.hh>
+#include <tpmc/marchinglut.hh>
 #include <tpmc/geometrytype.hh>
 
 namespace tpmc
@@ -23,8 +24,7 @@ namespace tpmc
   enum AlgorithmType
   {
     simpleMC,
-    fullTPMC,
-    fullSymmetricTPMC
+    fullTPMC
   };
 
   class ReconstructionContext
@@ -33,11 +33,14 @@ namespace tpmc
     ReconstructionContext() :
       vertexToIndex(max_complex_vertex_count + VERTICES_ON_REFERENCE_COUNT)
     {}
+
+    int index(int vertex) const {
+      return vertexToIndex[vertex];
+    }
   private:
     template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
               SymmetryType::Value symmetryType, class intersectionFunctor>
-    friend MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
-                         intersectionFunctor>;
+    friend class MarchingCubes;
     std::vector<int> vertexToIndex;
   };
 
@@ -56,23 +59,27 @@ namespace tpmc
 
     template <typename InputIterator, typename OutputIterator>
     void getVertices(InputIterator valuesBegin, InputIterator valuesEnd, size_type key,
-                     ReconstructionContext context, OutputIterator out) const;
+                     ReconstructionContext& context, OutputIterator out) const;
 
     int getMaximalVertexCount(GeometryType type) const;
 
     template <typename OutputIterator>
-    void getElements(GeometryType geometry, size_type key, TriangulationType type,
+    void getElements(GeometryType geometry, size_type key, ReconstructionType type,
                      OutputIterator out) const;
 
     template <typename OutputIterator>
     void getVertexGroups(GeometryType geometry, size_type key, OutputIterator out) const;
 
     template <typename OutputIterator>
-    void getElementGroups(GeometryType geometry, size_type key, TriangulationType type,
+    void getElementGroups(GeometryType geometry, size_type key, ReconstructionType type,
                           OutputIterator out) const;
 
-    MarchingCubes(const thresholdFunctor& _threshFunctor = thresholdFunctor(), const AlgorithmType algo_type)
-        : threshFunctor(_threshFunctor) {}
+    MarchingCubes(AlgorithmType _alorithmType = AlgorithmType::fullTPMC,
+                  const thresholdFunctor& _threshFunctor = thresholdFunctor())
+        : algorithmType(_alorithmType)
+        , threshFunctor(_threshFunctor)
+    {
+    }
 
   private:
 
@@ -84,6 +91,7 @@ namespace tpmc
     /*
      * remember which mc algorithm to use
      */
+    const AlgorithmType algorithmType;
 
     /*
      * class containing tables as static members specialized by

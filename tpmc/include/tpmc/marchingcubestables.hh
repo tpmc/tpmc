@@ -3,12 +3,18 @@
 #ifndef TPMC_MARCHINGCUBESTABLES_HH
 #define TPMC_MARCHINGCUBESTABLES_HH
 
+#include <tpmc/marchinglut.hh>
+
 namespace tpmc {
   struct SymmetryType {
     enum Value {
       symmetric, nonsymmetric
     };
   };
+
+  const short max_complex_vertex_count =
+    std::max(table_cube3d_complex_vertex_count, table_cube3dsym_complex_vertex_count);
+
 
   template <SymmetryType::Value symmetryType>
   struct MarchingCubesTables;
