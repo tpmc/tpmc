@@ -3,6 +3,7 @@
 #ifndef TPMC_MARCHINGCUBESTABLES_HH
 #define TPMC_MARCHINGCUBESTABLES_HH
 
+#include <algorithm>
 #include <tpmc/marchinglut.hh>
 
 namespace tpmc {
