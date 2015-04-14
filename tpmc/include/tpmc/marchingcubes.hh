@@ -17,8 +17,8 @@ namespace tpmc
 
   enum ReconstructionType
   {
-    Interior,
-    Exterior,
+    InteriorDomain,
+    ExteriorDomain,
     Interface
   };
 
