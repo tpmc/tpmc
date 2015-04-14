@@ -8,6 +8,7 @@
 #include <tpmc/marchinglut.hh>
 #include <tpmc/geometrytype.hh>
 #include <tpmc/fieldtraits.hh>
+#include <tpmc/tresholdfunctor.hh>
 
 namespace tpmc
 {
@@ -30,7 +31,8 @@ namespace tpmc
 
   /** \brief The 'topology preserving marching cubes' algorithm.
    */
-  template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
+  template <typename valueType, int dim, typename Coordinate,
+            typename thresholdFunctor = ThresholdFunctor<valueType>,
             SymmetryType::Value symmetryType = SymmetryType::nonsymmetric,
             typename IntersectionFunctor = AberthFunctor<Coordinate> >
   class MarchingCubes {
