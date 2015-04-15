@@ -65,6 +65,34 @@ namespace tpmc {
       vtype threshold;
     };
 
+    /**
+     * \brief wraps a static constant of type double.
+     *
+     * the number is encode in the form A.B*10^(Exp)
+     * \tparam A   the pre-comma part
+     * \tparam B   the post-comma part
+     * \tparam Exp the exponent
+     *
+     * \code
+     * double_constant<17,3> // == 17.3
+     * \endcode
+     * or
+     * \code
+     * double_constant<1,3,-4> // == 1.3e-4
+     * \endcode
+     */
+    template<int A, unsigned int B = 0, int Exp = 1>
+    struct double_constant
+    {
+    static constexpr double value =
+      (A + // the pre comma values
+        (B>0 ?
+          (A>0?1.0:-1.0) // the sign
+          * B            // the post comma values
+          * std::pow(10,-std::ceil(std::log10(B))):0.0) // the B exponent
+        )
+      * std::pow(10,Exp); // the overall exponent
+    };
 
     /**
      * \brief basic threshold functor
@@ -77,10 +105,12 @@ namespace tpmc {
      * ValueTraits are an implementation of the following type:
      * \code
      * struct ValueTraits {
-     *   typedef double ValueType;
-     *   static const double value;
+     *   static constexpr double value = 17.3;
      * };
-     *  static const double ValueTraits::value = 17.3;
+     * \endcode
+     * for convinience you can just use the double_constant class, for example
+     * \code
+     * double_constant<17,3> // == 17.3
      * \endcode
      */
     template <typename ValueTraits>
