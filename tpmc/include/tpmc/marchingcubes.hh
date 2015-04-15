@@ -8,7 +8,7 @@
 #include <tpmc/marchinglut.hh>
 #include <tpmc/geometrytype.hh>
 #include <tpmc/fieldtraits.hh>
-#include <tpmc/tresholdfunctor.hh>
+#include <tpmc/thresholdfunctor.hh>
 
 namespace tpmc
 {
@@ -43,12 +43,30 @@ namespace tpmc
     template <typename InputIterator>
     size_type getKey(InputIterator valuesBegin, InputIterator valuesEnd) const;
 
+    /** \brief calculates the coordinates of all complex vertices used in a
+     * reconstruction for a given key
+     *
+     * The resulting vertices are of type Coordinate and are stored using
+     * the output iterator. A complex vertex denotes any vertex but the
+     * vertices of the reference element. The use of this method makes sure
+     * that no complex vertex for a specific set of corner values has to
+     * be computed more than once.
+     */
     template <typename InputIterator, typename OutputIterator>
     void getVertices(InputIterator valuesBegin, InputIterator valuesEnd, size_type key,
                      OutputIterator out) const;
 
     int getMaximalVertexCount(GeometryType type) const;
 
+    /** \brief return the specific reconstruction for a given key and geometry type
+     *
+     * The resulting Elements are stored as std::vector<int> in the given output
+     * iterator. An element is represented by its vertex indices. A vertex can be
+     * either negative or non-negative. If a vertex index i is negative, it represents
+     * the (-i-1)th corner of the reference element in the numbering of the reference
+     * cube. If i is non-negative, it represents the i-th vertex returned by a
+     * call of getVertices().
+     */
     template <typename OutputIterator>
     void getElements(GeometryType geometry, size_type key, ReconstructionType type,
                      OutputIterator out) const;

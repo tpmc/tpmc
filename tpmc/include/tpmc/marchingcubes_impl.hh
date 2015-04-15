@@ -224,7 +224,7 @@ namespace tpmc
   {
     const unsigned int vertex_count = getCornerCount(dim, geometry);
     const unsigned int table_index = vertex_count + dim;
-    const bool exterior_not_interior = (type == ReconstructionType::Exterior);
+    const bool exterior_not_interior = (type == ReconstructionType::ExteriorDomain);
     const bool codim_1_not_0 = (type == ReconstructionType::Interface);
 
     size_type element_count
@@ -310,7 +310,7 @@ namespace tpmc
                                                             ReconstructionType type,
                                                             OutputIterator out) const
   {
-    const bool exterior_not_interior = (type == ReconstructionType::Exterior);
+    const bool exterior_not_interior = (type == ReconstructionType::ExteriorDomain);
     const unsigned int vertex_count = getCornerCount(dim,geometry);
     const unsigned int table_index = vertex_count + dim;
 
