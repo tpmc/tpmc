@@ -14,52 +14,10 @@
 namespace tpmc {
   class NoRootException : public std::exception {};
 
-  /*
-   * stop Aberth's method after a constant number of iterations
-   */
-  class IterationStopPolicy {
-  public:
-    template <typename ValueType>
-    static bool stop(unsigned int iteration, ValueType residuum) {
-      return iteration >= MAX_ITERATION;
-    }
-  private:
-    static const unsigned int MAX_ITERATION;
-  };
-  const unsigned int IterationStopPolicy::MAX_ITERATION = 20;
-
-  /*
-   * stop Aberth's method if the residuum is small enough
-   */
-  class ResiduumStopPolicy {
-  public:
-    template <typename ValueType>
-    static bool stop(unsigned int iteration, ValueType residuum) {
-      return std::abs(residuum) < MIN_RESIDUUM;
-    }
-  private:
-    static const double MIN_RESIDUUM;
-  };
-  const double ResiduumStopPolicy::MIN_RESIDUUM = 1e-8;
-
-  /*
-   * stop if one of the stop policies says so
-   */
-  template <typename Policy1, typename Policy2>
-  class OrCombinedStopPolicy
-  {
-  public:
-    template <class ValueType>
-    static bool stop(unsigned int iteration, ValueType residuum) {
-      return (Policy1::stop(iteration, residuum) || Policy2::stop(iteration, residuum));
-    }
-  };
-
   /** \brief class wrapping the aberth method
    *
    * see for example: http://en.wikipedia.org/wiki/Aberth_method
    */
-  template <class StopPolicy>
   class AberthMethod {
     struct AbsCmp {
       template <class X, class Y>
@@ -67,6 +25,8 @@ namespace tpmc {
         return std::abs(x) < std::abs(y);
       }
     };
+    static const unsigned int MAX_ITERATION;
+    static const double MIN_RESIDUUM;
   public:
     typedef std::size_t SizeType;
 
@@ -95,7 +55,7 @@ namespace tpmc {
       Domain residuum;
       update<po,X>(p, roots, value, derivative, weight, residuum);
       SizeType iteration = 0;
-      while (!StopPolicy::stop(iteration, std::abs(residuum))) {
+      while (iteration < MAX_ITERATION && std::abs(residuum) > MIN_RESIDUUM) {
 #ifndef NDEBUG
         std::cout << "aberth method at iterator " << iteration
                   << " roots: ";
@@ -133,15 +93,16 @@ namespace tpmc {
       }
     }
   };
+  const unsigned int AberthMethod::MAX_ITERATION = 20;
+  const double AberthMethod::MIN_RESIDUUM = 1e-8;
 
   /** \brief functor to be used in the mc algorithm
    */
-  template <typename Coordinate,
-            class StopPolicy = OrCombinedStopPolicy<ResiduumStopPolicy, IterationStopPolicy> >
+  template <typename Coordinate>
   class AberthFunctor
   {
   public:
-    typedef typename AberthMethod<StopPolicy>::SizeType SizeType;
+    typedef typename AberthMethod::SizeType SizeType;
     typedef typename FieldTraits<Coordinate>::field_type ctype;
 
     template <int dim, typename InputIterator>
@@ -173,22 +134,22 @@ namespace tpmc {
                                        OutputIterator out);
   };
 
-  template <typename Coordinate, class StopPolicy>
+  template <typename Coordinate>
   template <int dim, typename InputIterator>
-  Coordinate AberthFunctor<Coordinate, StopPolicy>::findRootImpl(InputIterator valuesBegin,
-                                                           InputIterator valuesEnd,
-                                                           const Coordinate& a, const Coordinate& b,
-                                                           std::integral_constant<int, dim>)
+  Coordinate AberthFunctor<Coordinate>::findRootImpl(InputIterator valuesBegin,
+                                                     InputIterator valuesEnd,
+                                                     const Coordinate& a, const Coordinate& b,
+                                                     std::integral_constant<int, dim>)
   {
     throw std::invalid_argument("aberth method not valid for this dimension");
   }
 
-  template <typename Coordinate, class StopPolicy>
+  template <typename Coordinate>
   template <int po, class I>
-  typename FieldTraits<Coordinate>::field_type AberthFunctor<Coordinate, StopPolicy>::apply(const I& begin, const I& end) {
+  typename FieldTraits<Coordinate>::field_type AberthFunctor<Coordinate>::apply(const I& begin, const I& end) {
     UnivariatePolynomial<po, ctype > p(begin, end);
     ctype roots[po];
-    AberthMethod<StopPolicy>::apply(p,roots);
+    AberthMethod::apply(p,roots);
 #ifndef NDEBUG
     std::cout << "found roots at: ";
     for (SizeType i = 0; i<po; ++i)
@@ -216,13 +177,13 @@ namespace tpmc {
     return result;
   }
 
-  template <typename Coordinate, class StopPolicy>
+  template <typename Coordinate>
   template <typename InputIterator, typename OutputIterator>
-  void AberthFunctor<Coordinate, StopPolicy>::insertCubeCoefficients(InputIterator valuesBegin,
-                                                                InputIterator valuesEnd,
-                                                                const Coordinate& a,
-                                                                const Coordinate& b,
-                                                                OutputIterator out)
+  void AberthFunctor<Coordinate>::insertCubeCoefficients(InputIterator valuesBegin,
+                                                         InputIterator valuesEnd,
+                                                         const Coordinate& a,
+                                                         const Coordinate& b,
+                                                         OutputIterator out)
   {
     Coordinate x(b);
     x -= a;
@@ -242,13 +203,13 @@ namespace tpmc {
     *out++ = A*x[0]*x[1]*x[2];
   }
 
-  template <typename Coordinate, class StopPolicy>
+  template <typename Coordinate>
   template <typename InputIterator, typename OutputIterator>
-  void AberthFunctor<Coordinate, StopPolicy>::insertPrismCoefficients(InputIterator valuesBegin,
-                                                                      InputIterator valuesEnd,
-                                                                      const Coordinate& a,
-                                                                      const Coordinate& b,
-                                                                      OutputIterator out)
+  void AberthFunctor<Coordinate>::insertPrismCoefficients(InputIterator valuesBegin,
+                                                          InputIterator valuesEnd,
+                                                          const Coordinate& a,
+                                                          const Coordinate& b,
+                                                          OutputIterator out)
   {
     Coordinate d(b);
     d -= a;
@@ -268,13 +229,13 @@ namespace tpmc {
     *out++ = d[0]*d[2]*A + d[1]*d[2]*B;
   }
 
-  template <typename Coordinate, class StopPolicy>
+  template <typename Coordinate>
   template <typename InputIterator>
-  Coordinate AberthFunctor<Coordinate, StopPolicy>::findRootImpl(InputIterator valuesBegin,
-                                                                 InputIterator valuesEnd,
-                                                                 const Coordinate& a,
-                                                                 const Coordinate& b,
-                                                                 std::integral_constant<int, 3>)
+  Coordinate AberthFunctor<Coordinate>::findRootImpl(InputIterator valuesBegin,
+                                                     InputIterator valuesEnd,
+                                                     const Coordinate& a,
+                                                     const Coordinate& b,
+                                                     std::integral_constant<int, 3>)
   {
     // method only supported for cube or prism
     unsigned int valueCount = std::distance(valuesBegin, valuesEnd);
