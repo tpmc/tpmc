@@ -1,6 +1,9 @@
 #ifndef TPMC_REFERENCEELEMENTS_HH
 #define TPMC_REFERENCEELEMENTS_HH
 
+#include <exception>
+#include "geometrytype.hh"
+
 namespace tpmc
 {
   namespace faces
@@ -76,8 +79,9 @@ namespace tpmc
       return faces::FaceVertices<GeometryType::cube, 1>::get(faceIndex, localVertexIndex);
     case simplex:
       return faces::FaceVertices<GeometryType::simplex, 1>::get(faceIndex, localVertexIndex);
+    default:
+      throw std::invalid_argument("geometry not valid for 1d");
     }
-    throw std::invalid_argument("geometry not valid for 1d");
   }
 
   template <>
@@ -89,8 +93,9 @@ namespace tpmc
       return faces::FaceVertices<GeometryType::cube, 2>::get(faceIndex, localVertexIndex);
     case simplex:
       return faces::FaceVertices<GeometryType::simplex, 2>::get(faceIndex, localVertexIndex);
+    default:
+      throw std::invalid_argument("geometry not valid for 2d");
     }
-    throw std::invalid_argument("geometry not valid for 2d");
   }
 
   template <>
@@ -107,6 +112,7 @@ namespace tpmc
     case pyramid:
       return faces::FaceVertices<GeometryType::pyramid, 3>::get(faceIndex, localVertexIndex);
     }
+    throw std::invalid_argument("unknown geometry type provided");
   }
 }
 

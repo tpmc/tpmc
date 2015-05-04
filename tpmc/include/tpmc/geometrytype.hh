@@ -23,8 +23,10 @@ namespace tpmc
       case 2:
         switch (type) {
           case GeometryType::simplex:
+          case GeometryType::pyramid:
             return 3;
           case GeometryType::cube:
+          case GeometryType::prism:
             return 4;
         }
         break;

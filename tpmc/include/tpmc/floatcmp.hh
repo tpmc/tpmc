@@ -44,7 +44,7 @@ namespace tpmc
     static bool ge(T a, T b) {
       return a>b || eq(a,b);
     }
-  };
+  }
 }
 
 #endif // TPMC_FLOATCMP_HH

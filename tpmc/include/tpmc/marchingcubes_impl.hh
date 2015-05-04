@@ -12,16 +12,6 @@
 
 namespace tpmc
 {
-  namespace {
-    int vertexTableEntryToIndex(int entry)
-    {
-      return entry <= 0 ? -entry : (entry - 1) / 2 + VERTICES_ON_REFERENCE_COUNT;
-    }
-    int indexToVertexTableEntry(int index)
-    {
-      return index < VERTICES_ON_REFERENCE_COUNT? -index : 2*(index-VERTICES_ON_REFERENCE_COUNT) + 1;
-    }
-  }
   /** \brief Calculates the key in the marching cubes' case table
    * for the given element.
    *
@@ -174,8 +164,6 @@ namespace tpmc
                                                        InputIterator valuesEnd, size_type key,
                                                        OutputIterator out) const
   {
-    const int NOTCOMPUTED = -1;
-
     const unsigned int vertex_count = std::distance(valuesBegin, valuesEnd);
     const unsigned int table_index = vertex_count + dim;
 
@@ -225,7 +213,6 @@ namespace tpmc
     const unsigned int vertex_count = getCornerCount(dim, geometry);
     const unsigned int table_index = vertex_count + dim;
     const bool exterior_not_interior = (type == ReconstructionType::ExteriorDomain);
-    const bool codim_1_not_0 = (type == ReconstructionType::Interface);
 
     size_type element_count
         = Tables::all_case_offsets[table_index]
@@ -234,7 +221,7 @@ namespace tpmc
         = Tables::all_codim_0[table_index][int(exterior_not_interior)]
           + Tables::all_case_offsets[table_index]
                                     [key][INDEX_OFFSET_CODIM_0[int(exterior_not_interior)]];
-    if (codim_1_not_0)
+    if (type == ReconstructionType::Interface)
     {
       element_count = Tables::all_case_offsets[table_index][key][INDEX_COUNT_CODIM_1];
       codim_index = Tables::all_codim_1[table_index]
@@ -244,14 +231,7 @@ namespace tpmc
     for (size_type i = 0; i < element_count; i++)
     {
       size_type point_count = *codim_index++;
-      // Vector for storing the element points
-      std::vector<int> element;
-      element.reserve(point_count);
-      for (size_type j = 0; j < point_count; j++, codim_index++)
-      {
-        element.push_back(*codim_index);
-      }
-      *out++ = element;
+      *out++ = std::vector<int>(codim_index, codim_index+point_count);
     }
   }
 
@@ -368,7 +348,7 @@ namespace tpmc
         return getCoordsFromRootId(valuesBegin, valuesEnd, faceid);
       }
       else {
-        return getCoordsFromEdgeNumber(valuesBegin, valuesEnd, number);
+        return getCoordsFromReferenceCorner(number);
       }
     } else {     // we have an egde
       const unsigned int vertex_count = std::distance(valuesBegin, valuesEnd);
@@ -410,6 +390,7 @@ namespace tpmc
     // an invalid number has been provided since we are still in the method
     // indicates an error in the lut
     assert(false);
+    throw std::invalid_argument("error in the lut encountered (invalid vertex number)");
   }
 
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
@@ -428,7 +409,7 @@ namespace tpmc
     static unsigned short coordPerm[][3] = {{1,2,0}, {0,2,1}, {0,1,2}};
     unsigned short * currentPermutation = permutations[centerid/2];
     unsigned short * currentCoordPerm = coordPerm[centerid/2];
-    double v[vertex_count];
+    std::vector<double> v(vertex_count);
     for (; valuesBegin != valuesEnd; ++valuesBegin)
     {
       v[*currentPermutation++] = *valuesBegin;
@@ -460,7 +441,7 @@ namespace tpmc
     static unsigned short coordPerm[][3] = {{1,2,0}, {0,2,1}, {0,1,2}};
     unsigned short * currentPermutation = permutations[faceid];
     unsigned short * currentCoordPerm = coordPerm[faceid/2];
-    double v[vertex_count];
+    std::vector<double> v(vertex_count);
     for (; valuesBegin != valuesEnd; ++valuesBegin)
     {
       v[*currentPermutation++] = *valuesBegin;
@@ -507,7 +488,6 @@ namespace tpmc
     // FacePoints only supported in 3d
     assert(dim == 3);
     const int vertex_count = std::distance(valuesBegin, valuesEnd);
-    const unsigned int table_index = vertex_count + dim;
     static short cube_faceoffsets[] = {0,4,8,12,16,20,24};
     static short cube_faces[] = {0,2,4,6,1,3,5,7,0,1,4,5,2,3,6,7,0,1,2,3,4,
                                  5,6,7};
@@ -535,16 +515,15 @@ namespace tpmc
       short a = faces[faceoffsets[faceid]];
       short b = faces[faceoffsets[faceid]+1];
       short c = faces[faceoffsets[faceid]+2];
-      return getCoordsFromTriangularFace(valuesBegin, valuesEnd, a, b, c, faceid);
+      return getCoordsFromTriangularFace(valuesBegin, valuesEnd, a, b, c);
     } else if (count == 4) {
       short a = faces[faceoffsets[faceid]];
       short b = faces[faceoffsets[faceid]+1];
       short c = faces[faceoffsets[faceid]+2];
       short d = faces[faceoffsets[faceid]+3];
-      return getCoordsFromRectangularFace(valuesBegin, valuesEnd, a, b, c, d, faceid);
-    } else {
-      throw std::invalid_argument("Face Center only supported for triangular or rectangular faces");
+      return getCoordsFromRectangularFace(valuesBegin, valuesEnd, a, b, c, d);
     }
+    throw std::invalid_argument("Face Center only supported for triangular or rectangular faces");
   }
 
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
@@ -554,11 +533,9 @@ namespace tpmc
   MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                 IntersectionFunctor>::getCoordsFromRectangularFace(InputIterator valuesBegin,
                                                                    InputIterator valuesEnd, short a,
-                                                                   short b, short c, short d,
-                                                                   short faceid) const
+                                                                   short b, short c, short d) const
   {
     const int vertex_count = std::distance(valuesBegin, valuesEnd);
-    const unsigned int table_index = vertex_count + dim;
     // map prism and simplex indices to cube (i.e. skip vertex 3)
     if (vertex_count == 4 || vertex_count == 6) {
       if (a > 2) ++a;
@@ -566,10 +543,10 @@ namespace tpmc
       if (c > 2) ++c;
       if (d > 2) ++d;
     }
-    Coordinate pa = getCoordsFromEdgeNumber(valuesBegin, valuesEnd, a);
-    Coordinate pb = getCoordsFromEdgeNumber(valuesBegin, valuesEnd, b);
-    Coordinate pc = getCoordsFromEdgeNumber(valuesBegin, valuesEnd, c);
-    Coordinate pd = getCoordsFromEdgeNumber(valuesBegin, valuesEnd, d);
+    Coordinate pa = getCoordsFromReferenceCorner(a);
+    Coordinate pb = getCoordsFromReferenceCorner(b);
+    Coordinate pc = getCoordsFromReferenceCorner(c);
+    Coordinate pd = getCoordsFromReferenceCorner(d);
 
     valueType va = valuesBegin[a];
     valueType vb = valuesBegin[b];
@@ -616,7 +593,7 @@ namespace tpmc
   MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                 IntersectionFunctor>::getCoordsFromTriangularFace(InputIterator valuesBegin,
                                                                   InputIterator valuesEnd, short a,
-                                                                  short b, short c, short faceid)
+                                                                  short b, short c)
       const
   {
     short ind[] = {a,b,c};
@@ -662,11 +639,8 @@ namespace tpmc
    */
   template <typename valueType, int dim, typename Coordinate, typename thresholdFunctor,
             SymmetryType::Value symmetryType, class intersectionFunctor>
-  template <typename InputIterator>
   Coordinate MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
-                           intersectionFunctor>::getCoordsFromEdgeNumber(InputIterator valuesBegin,
-                                                                         InputIterator valuesEnd,
-                                                                         char number) const
+                           intersectionFunctor>::getCoordsFromReferenceCorner(short number) const
   {
     number /= FACTOR_FIRST_POINT;
     Coordinate result;
@@ -787,7 +761,7 @@ namespace tpmc
 #endif
 
     const int vertex_count = std::distance(valuesBegin, valuesEnd);
-    double v[vertex_count];
+    std::vector<double> v(vertex_count);
     const valueType sign = threshFunctor.isInside(*valuesBegin) ? -1.0 : 1.0;
     for (; valuesBegin != valuesEnd; ++valuesBegin, ++fp)
     {

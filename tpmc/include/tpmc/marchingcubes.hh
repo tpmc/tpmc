@@ -88,14 +88,14 @@ namespace tpmc
   private:
 
     /*
-     * functor for defining and asserting numerical thresholds
-     */
-    const thresholdFunctor threshFunctor;
-
-    /*
      * remember which mc algorithm to use
      */
     const AlgorithmType algorithmType;
+
+    /*
+     * functor for defining and asserting numerical thresholds
+     */
+    const thresholdFunctor threshFunctor;
 
     /*
      * class containing tables as static members specialized by
@@ -145,18 +145,16 @@ namespace tpmc
      */
     template <typename InputIterator>
     Coordinate getCoordsFromRectangularFace(InputIterator valuesBegin, InputIterator valuesEnd,
-                                            short a, short b, short c, short d, short faceid) const;
+                                            short a, short b, short c, short d) const;
     /** \brief gets coordinates of the vertex on the face with given ids
      */
     template <typename InputIterator>
     Coordinate getCoordsFromTriangularFace(InputIterator valuesBegin, InputIterator valuesEnd,
-                                           short a, short b, short c, short faceid) const;
+                                           short a, short b, short c) const;
     /** \brief gets coordinates of the first point of an edge given by its
      * <code>number</code>
      */
-    template <typename InputIterator>
-    Coordinate getCoordsFromEdgeNumber(InputIterator valuesBegin, InputIterator valuesEnd,
-                                       char number) const;
+    Coordinate getCoordsFromReferenceCorner(short number) const;
   };
 }
 
