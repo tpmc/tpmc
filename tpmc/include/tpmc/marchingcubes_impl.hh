@@ -232,6 +232,7 @@ namespace tpmc
     {
       size_type point_count = *codim_index++;
       *out++ = std::vector<int>(codim_index, codim_index+point_count);
+      codim_index += point_count;
     }
   }
 
