@@ -144,7 +144,7 @@ namespace tpmc {
   const short * const
   MarchingCubesTables<SymmetryType::nonsymmetric>::
   all_complex_vertices[] = {0, 0, 0, 0, 0, 0,
-                        table_cube2d_complex_vertices, 0,
+                        table_cube2d_complex_vertices, table_simplex3d_complex_vertices,
                         table_pyramid3d_complex_vertices,
                         table_prism3d_complex_vertices, 0,
                         table_cube3d_complex_vertices};
