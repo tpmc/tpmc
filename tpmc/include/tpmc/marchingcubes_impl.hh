@@ -33,6 +33,9 @@ namespace tpmc
   MarchingCubes<valueType, dim, Coordinate, thresholdFunctor, symmetryType,
                 intersectionFunctor>::getKey(InputIterator valuesBegin, InputIterator valuesEnd) const
   {
+#ifdef ENABLE_TPMC_PROFILING
+    ++profKeyGenerations_;
+#endif
     if ((dim < 0) || (dim > 3))
     {
       throw std::invalid_argument("Dimension must be 0, 1, 2 or 3");
@@ -114,12 +117,18 @@ namespace tpmc
           std::cout << "vertices " << corner_a << " "  << corner_b << " "  << corner_c << " "  << corner_d << "\n";
 #endif
           bool inverse = (-test - TEST_FACE) & TEST_FACE_FLIP;
+#ifdef ENABLE_TPMC_PROFILING
+          ++profFaceTests_;
+#endif
           test_result = testAmbiguousFace(corner_a, corner_b, corner_c, corner_d, inverse);
         }
         else if ((-test) & TEST_INTERIOR)
         {
           size_t refCorner = (-test - TEST_INTERIOR) >> 3;
           size_t refFace = (-test - TEST_INTERIOR) & 7;
+#ifdef ENABLE_TPMC_PROFILING
+          ++profCenterTests_;
+#endif
           test_result = testAmbiguousCenter(valuesBegin, valuesEnd, refCorner, refFace);
         }
         else

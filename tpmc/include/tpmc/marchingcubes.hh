@@ -30,6 +30,9 @@ namespace tpmc
   };
 
   /** \brief The 'topology preserving marching cubes' algorithm.
+   *
+   * note: profiling information can be enabled by defining the preprocessor macro
+   * ENABLE_TPMC_PROFILING
    */
   template <typename valueType, int dim, typename Coordinate,
             typename thresholdFunctor = ThresholdFunctor<valueType>,
@@ -56,6 +59,12 @@ namespace tpmc
     void getVertices(InputIterator valuesBegin, InputIterator valuesEnd, size_type key,
                      OutputIterator out) const;
 
+    /** \brief return the maximal number of complex vertices used in any
+     * reconstruction of the given geometry type
+     *
+     * This method returns an upper bound for the number of complex vertices
+     * returned by the getVertices method.
+     */
     int getMaximalVertexCount(GeometryType type) const;
 
     /** \brief return the specific reconstruction for a given key and geometry type
@@ -78,11 +87,30 @@ namespace tpmc
     void getElementGroups(GeometryType geometry, size_type key, ReconstructionType type,
                           OutputIterator out) const;
 
+#ifdef ENABLE_TPMC_PROFILING
+    // reset profiling information
+    void profReset()
+    {
+      profKeyGenerations_ = 0;
+      profFaceTests_ = 0;
+      profCenterTests_ = 0;
+    }
+    // return the number of calls to getKey since the last call to profReset
+    unsigned int profKeyGenerations() const { return profKeyGenerations_; }
+    // return the number of face tests since the last call to profReset
+    unsigned int profFaceTests() const { return profFaceTests_; }
+    // return the number of center tests since the last call to profReset
+    unsigned int profCenterTests() const { return profCenterTests_; }
+#endif
+
     MarchingCubes(AlgorithmType _alorithmType = AlgorithmType::fullTPMC,
                   const thresholdFunctor& _threshFunctor = thresholdFunctor())
         : algorithmType(_alorithmType)
         , threshFunctor(_threshFunctor)
     {
+#ifdef ENABLE_TPMC_PROFILING
+      profReset();
+#endif
     }
 
   private:
@@ -96,6 +124,12 @@ namespace tpmc
      * functor for defining and asserting numerical thresholds
      */
     const thresholdFunctor threshFunctor;
+
+#ifdef ENABLE_TPMC_PROFILING
+    mutable unsigned int profKeyGenerations_;
+    mutable unsigned int profFaceTests_;
+    mutable unsigned int profCenterTests_;
+#endif
 
     /*
      * class containing tables as static members specialized by
