@@ -96,11 +96,11 @@ namespace tpmc
       profCenterTests_ = 0;
     }
     // return the number of calls to getKey since the last call to profReset
-    unsigned int profKeyGenerations() const { return profKeyGenerations_; }
+    unsigned long profKeyGenerations() const { return profKeyGenerations_; }
     // return the number of face tests since the last call to profReset
-    unsigned int profFaceTests() const { return profFaceTests_; }
+    unsigned long profFaceTests() const { return profFaceTests_; }
     // return the number of center tests since the last call to profReset
-    unsigned int profCenterTests() const { return profCenterTests_; }
+    unsigned long profCenterTests() const { return profCenterTests_; }
 #endif
 
     MarchingCubes(AlgorithmType _alorithmType = AlgorithmType::fullTPMC,
@@ -126,9 +126,9 @@ namespace tpmc
     const thresholdFunctor threshFunctor;
 
 #ifdef ENABLE_TPMC_PROFILING
-    mutable unsigned int profKeyGenerations_;
-    mutable unsigned int profFaceTests_;
-    mutable unsigned int profCenterTests_;
+    mutable unsigned long profKeyGenerations_;
+    mutable unsigned long profFaceTests_;
+    mutable unsigned long profCenterTests_;
 #endif
 
     /*
