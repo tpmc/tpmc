@@ -564,10 +564,22 @@ namespace tpmc
     valueType vd = valuesBegin[d];
 #ifndef NDEBUG
     std::cout << "getting coords for rectangular face:\n";
-    std::cout << "pa = " << pa << " va = " << va << "\n";
-    std::cout << "pb = " << pb << " vb = " << vb << "\n";
-    std::cout << "pc = " << pc << " vc = " << vc << "\n";
-    std::cout << "pd = " << pd << " vd = " << vd << "\n";
+    std::cout << "pa =";
+    for (int i = 0; i<dim; ++i)
+      std::cout << " " << pa[i];
+    std::cout << " va = " << va << "\n";
+    std::cout << "pb =";
+    for (int i = 0; i<dim; ++i)
+      std::cout << " " << pb[i];
+    std::cout << " vb = " << vb << "\n";
+    std::cout << "pc =";
+    for (int i = 0; i<dim; ++i)
+      std::cout << " " << pc[i];
+    std::cout << " vc = " << vc << "\n";
+    std::cout << "pd =";
+    for (int i = 0; i<dim; ++i)
+      std::cout << " " << pd[i];
+    std::cout << " vd = " << vd << "\n";
 #endif
     valueType cx = 0.5, cy = 0.5;
     if (FloatCmp::ge(va*vd,0.0) && FloatCmp::ge(vb*vc,0.0) && FloatCmp::lt(va*vb,0.0)) {
@@ -582,15 +594,15 @@ namespace tpmc
 #ifndef NDEBUG
     std::cout << "local coordinates of center: " << cx << ", " << cy << "\n";
 #endif
-    pa *= (1-cx)*(1-cy);
-    pb *= cx*(1-cy);
-    pc *= (1-cx)*cy;
-    pd *= cx*cy;
-    pa += pb;
-    pa += pc;
-    pa += pd;
+    for (int i = 0; i<dim; ++i) {
+      pa[i] = pa[i] * (1.0 - cx) * (1.0 - cy) + pb[i] * cx * (1.0 - cy) + pc[i] * (1 - cx) * cy
+              + pd[i] * cx * cy;
+    }
 #ifndef NDEBUG
-    std::cout << "result = " << pa << "\n";
+    std::cout << "result =";
+    for (int i = 0; i<dim; ++i)
+      std::cout << " " << pa[i];
+     std::cout << "\n";
     std::cout << "value at center : " << (1-cx)*(1-cy)*va+cx*(1-cy)*vb+(1-cx)*cy*vc+cx*cy*vd << "\n";
 #endif
     return pa;
@@ -624,10 +636,17 @@ namespace tpmc
     short k01 = std::min(nind[0],nind[1])*FACTOR_FIRST_POINT+std::max(nind[0],nind[1])*FACTOR_SECOND_POINT;
     short k02 = std::min(nind[0],nind[2])*FACTOR_FIRST_POINT+std::max(nind[0],nind[2])*FACTOR_SECOND_POINT;
     Coordinate result = getCoordsFromNumber(valuesBegin, valuesEnd, k01);
-    result += getCoordsFromNumber(valuesBegin, valuesEnd, k02);
-    result += getCoordsFromNumber(valuesBegin, valuesEnd, nind[1]);
-    result += getCoordsFromNumber(valuesBegin, valuesEnd, nind[2]);
-    result *= 0.25;
+    Coordinate tmp = getCoordsFromNumber(valuesBegin, valuesEnd, k02);
+    for (int i = 0; i<dim; ++i)
+      result[i] += tmp[i];
+    tmp = getCoordsFromNumber(valuesBegin, valuesEnd, nind[1]);
+    for (int i = 0; i<dim; ++i)
+      result[i] += tmp[i];
+    tmp = getCoordsFromNumber(valuesBegin, valuesEnd, nind[2]);
+    for (int i = 0; i<dim; ++i)
+      result[i] += tmp[i];
+    for (int i = 0; i<dim; ++i)
+      result[i] *= 0.25;
     return result;
   }
 

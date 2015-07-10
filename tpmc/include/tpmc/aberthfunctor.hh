@@ -185,8 +185,9 @@ namespace tpmc {
                                                          const Coordinate& b,
                                                          OutputIterator out)
   {
-    Coordinate x(b);
-    x -= a;
+    Coordinate x;
+    for (int i = 0; i < 3; ++i)
+      x[i] = b[i] - a[i];
     std::array<ctype,8> v;
     std::copy(valuesBegin, valuesEnd, v.begin());
     ctype A = v[7]-v[6]-v[5]+v[4]-v[3]+v[2]+v[1]-v[0],
@@ -211,9 +212,10 @@ namespace tpmc {
                                                           const Coordinate& b,
                                                           OutputIterator out)
   {
-    Coordinate d(b);
-    d -= a;
-    std::array<ctype,6> v;
+    Coordinate d;
+    for (int i = 0; i < 3; ++i)
+      d[i] = b[i] - a[i];
+    std::array<ctype, 6> v;
     std::copy(valuesBegin, valuesEnd, v.begin());
     ctype A = v[0]-v[1]-v[3]+v[4],
           B = v[0]-v[2]-v[3]+v[5],
@@ -241,7 +243,13 @@ namespace tpmc {
     unsigned int valueCount = std::distance(valuesBegin, valuesEnd);
     assert(valueCount == 6 || valueCount == 8);
 #ifndef NDEBUG
-    std::cout << "finding root between " << a << " and " << b << "\n";
+    std::cout << "finding root between";
+    for (int i = 0; i < 3; ++i)
+      std::cout << " " << a[i];
+    std::cout << " and ";
+    for (int i = 0; i < 3; ++i)
+      std::cout << " " << b[i];
+    std::cout << "\n";
 #endif
     ctype coefficients[4] = {0.,0.,0.,0.};
     if (valueCount == 6) {
@@ -263,10 +271,9 @@ namespace tpmc {
     } else {
       root = apply<1, ctype*>(coefficients, coefficients+2);
     }
-    Coordinate result = b;
-    result -= a;
-    result *= root;
-    result += a;
+    Coordinate result;
+    for (int i = 0; i < 3; ++i)
+      result[i] = a[i] + root * (b[i] - a[i]);
     return result;
   }
 }

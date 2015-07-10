@@ -13,7 +13,7 @@ namespace tpmc {
     typedef T field_type;
   };
 
-  template <class T, int dim>
+  template <class T, std::size_t dim>
   struct FieldTraits<std::array<T,dim> > {
     typedef T field_type;
   };
