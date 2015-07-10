@@ -2,6 +2,7 @@
 #define TPMC_FIELDTRAITS_HH
 
 #include <vector>
+#include <array>
 
 namespace tpmc {
   template <class T>
@@ -9,6 +10,11 @@ namespace tpmc {
 
   template <class T>
   struct FieldTraits<std::vector<T> > {
+    typedef T field_type;
+  };
+
+  template <class T, int dim>
+  struct FieldTraits<std::array<T,dim> > {
     typedef T field_type;
   };
 }
