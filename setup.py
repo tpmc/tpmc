@@ -81,25 +81,21 @@ def configuration(parent_package='', top_path=None):
         from numpy.distutils.system_info import get_info
 
         config = Configuration('tpmc',parent_package,top_path)
+        ## cmake files
+        config.add_data_files('FindTpmc.cmake')
         ## header files
         config.add_data_files(constants['header_dir'] + '/*.hh')
         from os.path import join
         config.add_include_dirs(join('tpmc', 'include'))
         config.add_include_dirs(join('tpmc', 'lut'))
-
         ## libtpmc_tables
         config.add_installed_library('tpmc_tables',
                                      sources = ['tpmc/src/marchingcubestables.cc', generate_lut],
                                      install_dir = constants['lib_dir'])
-        # config.add_installed_library(..., install_dir='../..') to install in /usr/local/lib
-        # read version info from file
+        ## read version info from file
         config.get_version('tpmc/__version__.py')
-        # long_description = '''
-        # Implementation of the topology preserving marching cubes.
-        # '''
-        config.make_config_py()
+        ## tpmc-config script
         config.add_scripts('tpmc-config')
-        print config.path_in_package
         return config
 
 
