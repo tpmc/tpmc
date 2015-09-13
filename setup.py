@@ -2,8 +2,7 @@ def generate_lut(ext, build_dir):
         from os import path
         from distutils.dep_util import newer
         filename = path.join(build_dir, 'tpmc_lut.cc')
-        if not path.exists(filename):
-        # if newer(__file__, filename):
+        if newer(__file__, filename):
                 from tpmc.lut.lutgen.dunecode import DuneCode
                 print "importing lookup generators"
                 from tpmc.lut.lutgen.base_case_triangulation import LookupGenerators
