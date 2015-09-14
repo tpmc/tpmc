@@ -17,10 +17,10 @@ following licenses:
   Foundation, with the following special exception for linking and compiling
   against the TPMC library, the so-called "runtime exception":
 
-    As a special exception, you may use the PDELab source files as part of a
+    As a special exception, you may use the TPMC source files as part of a
     software library or application without restriction.  Specifically, if other
     files instantiate templates or use macros or inline functions from one or
-    more of the PDELab source files, or you compile one or more of the PDELab
+    more of the TPMC source files, or you compile one or more of the TPMC
     source files and link them with other files to produce an executable, this
     does not by itself cause the resulting executable to be covered by the GNU
     General Public License.  This exception does not however invalidate any
