@@ -50,6 +50,8 @@ metadata = dict(
         Implementation of the topology preserving marching cubes.
         ''',
         py_modules= ['tpmc.__version__',
+                     'tpmc.lut',
+                     'tpmc.lut.generate_lut',
                      'tpmc.lut.lutgen.base_case_triangulation',
                      'tpmc.lut.lutgen.cases',
                      'tpmc.lut.lutgen.consistencycheck',
