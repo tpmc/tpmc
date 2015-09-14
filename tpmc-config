@@ -1,14 +1,19 @@
 #!/usr/bin/python
 
-import tpmc
 import tpmc.__version__
+import os.path as path
+from sys import argv
 import argparse
 
+scriptdir = path.dirname(path.realpath(argv[0]))
+incdir = path.abspath(scriptdir + "/@incdir@/../")
+libdir = path.abspath(scriptdir + "/@libdir@")
+
 parser = argparse.ArgumentParser(prog='tpmc-config')
-parser.add_argument('--cflags', const="-I@incdir@",
+parser.add_argument('--cflags', const="-I%s" % incdir,
                     action='append_const', dest='output',
                     help='print pre-processor and compiler flags')
-parser.add_argument('--libs', const="-L@libdir@ -ltpmc_tables",
+parser.add_argument('--libs', const="-L%s -ltpmc_tables" % libdir,
                     action='append_const', dest='output',
                     help='print library linking information')
 parser.add_argument('--version', version=tpmc.__version__.__version__,

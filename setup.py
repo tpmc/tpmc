@@ -120,13 +120,14 @@ def substitute_setup_configuration (setup):
         except KeyError:
                 pass
         if install_scripts != None:
-            libdir = setup.command_obj['install_clib'].install_dir + "/" + constants['lib_dir']
-            incdir = setup.command_obj['install_data'].install_dir + "/" + constants['header_dir']
-            substitutes = { 'incdir' : incdir, 'libdir' : libdir }
-            for target in install_scripts.outfiles:
-                    from os import path
-                    source =  path.basename(target) # get the file name from the path object
-                    subst_config_file(source, target, substitutes)
+
+                libdir = setup.command_obj['install_clib'].install_dir + "/" + constants['lib_dir']
+                incdir = setup.command_obj['install_data'].install_dir + "/tpmc/" + constants['header_dir']
+                for target in install_scripts.outfiles:
+                        from os import path
+                        (bindir, source) = path.split(target) # get file name and bin directory from the path object
+                        substitutes = { 'incdir' : path.relpath(incdir,bindir) , 'libdir' : path.relpath(libdir,bindir) }
+                        subst_config_file(source, target, substitutes)
 
 
 if __name__ == '__main__':
@@ -134,7 +135,7 @@ if __name__ == '__main__':
         metadata['configuration'] = configuration
         setup = Setup (**metadata)
         substitute_setup_configuration(setup)
-        ### save the record for debugging
+        ### save the installation record for debugging
         # import sys
         # if len(sys.argv) >= 4 and sys.argv[2] == '--record':
         #         import shutil
