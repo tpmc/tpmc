@@ -45,10 +45,11 @@ metadata = dict(
         description = 'python classes to generate TPMC lookup tables',
         author = 'Christian Engwer',
         author_email = 'christi@mathe-macht-spass.de',
-        url = 'https://docs.python.org/extending/building',
+        url = 'http://users.dune-project.org/projects/libtpmc',
         long_description = '''
         Implementation of the topology preserving marching cubes.
         ''',
+        license = 'LGPLv3+',
         py_modules= ['tpmc.__version__',
                      'tpmc.lut',
                      'tpmc.lut.generate_lut',
