@@ -1,5 +1,7 @@
 TPMC
 ====
+.. image:: https://secure.travis-ci.org/tpmc/tpmc.svg?branch=master
+  :target: https://travis-ci.org/#!/tpmc/tpmc
 
 The TPMC library implements a *topology preserving marching cubes*
 algorithm.
