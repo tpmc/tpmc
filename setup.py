@@ -47,7 +47,7 @@ metadata = dict(
         author = 'Christian Engwer',
         author_email = 'christi@mathe-macht-spass.de',
         url = 'http://users.dune-project.org/projects/libtpmc',
-        long_description = open('README').read(), # Get the long description from the relevant file
+        long_description = open('README.rst').read(), # Get the long description from the relevant file
         license = 'LGPLv3+',
         py_modules= ['tpmc.__version__',
                      'tpmc.lut.__init__',
