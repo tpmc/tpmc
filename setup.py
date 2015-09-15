@@ -50,8 +50,9 @@ metadata = dict(
         long_description = open('README').read(), # Get the long description from the relevant file
         license = 'LGPLv3+',
         py_modules= ['tpmc.__version__',
-                     'tpmc.lut',
+                     'tpmc.lut.__init__',
                      'tpmc.lut.generate_lut',
+                     'tpmc.lut.lutgen.__init__',
                      'tpmc.lut.lutgen.base_case_triangulation',
                      'tpmc.lut.lutgen.cases',
                      'tpmc.lut.lutgen.consistencycheck',
