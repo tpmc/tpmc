@@ -93,8 +93,11 @@ def configuration(parent_package='', top_path=None):
         config.add_include_dirs(join('tpmc', 'lut'))
         ## libtpmc_tables
         config.add_installed_library('tpmc_tables',
-                                     sources = ['tpmc/src/marchingcubestables.cc', 'tpmc/src/geometrytype.cc', 'tpmc/src/referenceelements.cc', generate_lut],
-                                     install_dir = constants['lib_dir'])
+                                     sources = ['tpmc/src/marchingcubestables.cc', 'tpmc/src/geometrytype.cc',
+                                                'tpmc/src/referenceelements.cc', 'tpmc/src/aberthfunctor.cc',
+                                                generate_lut],
+                                     install_dir = constants['lib_dir'],
+                                     build_info = {'extra_compiler_args':['-std=c++11']})
         ## read version info from file
         config.get_version('tpmc/__version__.py')
         ## tpmc-config script

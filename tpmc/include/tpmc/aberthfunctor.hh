@@ -93,8 +93,6 @@ namespace tpmc {
       }
     }
   };
-  const unsigned int AberthMethod::MAX_ITERATION = 20;
-  const double AberthMethod::MIN_RESIDUUM = 1e-8;
 
   /** \brief functor to be used in the mc algorithm
    */
