@@ -26,7 +26,7 @@ software, dual-licensed under version 3 or later of the GNU Lesser
 General Public License and version 2 of the GNU General Public License
 with a special run-time exception.
 
-See the file COPYING for full copying permissions.
+See the file LICENSE.txt for full copying permissions.
 
 Installation
 ------------
