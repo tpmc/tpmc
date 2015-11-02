@@ -142,7 +142,7 @@ namespace tpmc
      * This test is needed to choose between ambiguous MC33 cases.
      */
     bool testAmbiguousFace(valueType cornerA, valueType cornerB,
-                           valueType cornerC, valueType cornerD, bool inverse) const;
+                           valueType cornerC, valueType cornerD) const;
 
     /** \brief Only to be called on cube. Tests if <code>refCorner</code> is
      * connected to its diagonally opposed corner

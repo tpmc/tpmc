@@ -10,12 +10,6 @@
 #include <iostream> // FIXME TODO: Debug only, entferne mich!
 #endif
 
-#ifndef NDEBUG
-#define ENABLE_DEBUG(A) , A
-#else
-#define ENABLE_DEBUG(A)
-#endif
-
 namespace tpmc
 {
   /** \brief Calculates the key in the marching cubes' case table
@@ -121,13 +115,12 @@ namespace tpmc
           corner_d = valuesBegin[getVertexOfFace<dim>(geometry, face, 3)];
 #ifndef NDEBUG
           std::cout << "vertices " << corner_a << " "  << corner_b << " "  << corner_c << " "  << corner_d << "\n";
-          bool inverse = (-test - TEST_FACE) & TEST_FACE_FLIP;
 #endif
 
 #ifdef ENABLE_TPMC_PROFILING
           ++profFaceTests_;
 #endif
-          test_result = testAmbiguousFace(corner_a, corner_b, corner_c, corner_d ENABLE_DEBUG(inverse));
+          test_result = testAmbiguousFace(corner_a, corner_b, corner_c, corner_d);
         }
         else if ((-test) & TEST_INTERIOR)
         {
@@ -710,7 +703,7 @@ namespace tpmc
                      intersectionFunctor>::testAmbiguousFace(const valueType corner_a,
                                                              const valueType corner_b,
                                                              const valueType corner_c,
-                                                             const valueType corner_d ENABLE_DEBUG(bool inverse))
+                                                             const valueType corner_d)
       const
   {
     // Change naming scheme to jgt-paper ones
@@ -729,7 +722,7 @@ namespace tpmc
     valueType f = a;
 
 #ifndef NDEBUG
-    std::cout << "testFace " << inverse << " => " << f*(a*c-b*d) << std::endl;
+    std::cout << "testFace " << f*(a*c-b*d) << std::endl;
 #endif
 
     bool result = !threshFunctor.isLower(f*(a*c-b*d));
