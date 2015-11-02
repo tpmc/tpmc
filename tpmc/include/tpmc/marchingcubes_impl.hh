@@ -10,6 +10,12 @@
 #include <iostream> // FIXME TODO: Debug only, entferne mich!
 #endif
 
+#ifndef NDEBUG
+#define ENABLE_DEBUG(A) , A
+#else
+#define ENABLE_DEBUG(A)
+#endif
+
 namespace tpmc
 {
   /** \brief Calculates the key in the marching cubes' case table
@@ -115,12 +121,13 @@ namespace tpmc
           corner_d = valuesBegin[getVertexOfFace<dim>(geometry, face, 3)];
 #ifndef NDEBUG
           std::cout << "vertices " << corner_a << " "  << corner_b << " "  << corner_c << " "  << corner_d << "\n";
-#endif
           bool inverse = (-test - TEST_FACE) & TEST_FACE_FLIP;
+#endif
+
 #ifdef ENABLE_TPMC_PROFILING
           ++profFaceTests_;
 #endif
-          test_result = testAmbiguousFace(corner_a, corner_b, corner_c, corner_d, inverse);
+          test_result = testAmbiguousFace(corner_a, corner_b, corner_c, corner_d ENABLE_DEBUG(inverse));
         }
         else if ((-test) & TEST_INTERIOR)
         {
@@ -703,7 +710,7 @@ namespace tpmc
                      intersectionFunctor>::testAmbiguousFace(const valueType corner_a,
                                                              const valueType corner_b,
                                                              const valueType corner_c,
-                                                             const valueType corner_d, bool inverse)
+                                                             const valueType corner_d ENABLE_DEBUG(bool inverse))
       const
   {
     // Change naming scheme to jgt-paper ones
