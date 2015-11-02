@@ -39,6 +39,12 @@ The easiest way to install the library is using pip:
 
 This will also install the C++ library
 
+The development version can always be installed directly from github:
+
+::
+
+    > pip install git+https://github.com/tpmc/tpmc.git
+
 Dependencies
 ~~~~~~~~~~~~
 
