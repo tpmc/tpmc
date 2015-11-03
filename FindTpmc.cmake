@@ -14,11 +14,11 @@ set(TPMC_FOUND TPMC_FOUND-NOTFOUND)
 # find header in user supplied directory
 find_path(TPMC_INCLUDE_DIR tpmc/marchinglut.hh
   PATHS ${TPMC_PREFIX}
-  PATH_SUFFIXES include include/python
+  PATH_SUFFIXES include include/python tpmc/include
   NO_DEFAULT_PATH
   DOC "Include directory with tpmc header files")
 find_path(TPMC_INCLUDE_DIR tpmc/marchinglut.hh
-  PATH_SUFFIXES include include/python
+  PATH_SUFFIXES include include/python tpmc/include
   DOC "Include directory with tpmc header files")
 
 # check header usability
