@@ -547,16 +547,16 @@ namespace tpmc
   {
     const int vertex_count = std::distance(valuesBegin, valuesEnd);
     // map prism and simplex indices to cube (i.e. skip vertex 3)
-    if (vertex_count == 4 || vertex_count == 6) {
-      if (a > 2) ++a;
-      if (b > 2) ++b;
-      if (c > 2) ++c;
-      if (d > 2) ++d;
-    }
-    Coordinate pa = getCoordsFromReferenceCorner(a);
-    Coordinate pb = getCoordsFromReferenceCorner(b);
-    Coordinate pc = getCoordsFromReferenceCorner(c);
-    Coordinate pd = getCoordsFromReferenceCorner(d);
+    bool prism_simplex = vertex_count == 4 || vertex_count == 6;
+
+    Coordinate pa =
+        getCoordsFromReferenceCorner(prism_simplex && a > 2 ? a + 1 : a);
+    Coordinate pb =
+        getCoordsFromReferenceCorner(prism_simplex && b > 2 ? b + 1 : b);
+    Coordinate pc =
+        getCoordsFromReferenceCorner(prism_simplex && c > 2 ? c + 1 : c);
+    Coordinate pd =
+        getCoordsFromReferenceCorner(prism_simplex && d > 2 ? d + 1 : d);
 
     valueType va = valuesBegin[a];
     valueType vb = valuesBegin[b];
