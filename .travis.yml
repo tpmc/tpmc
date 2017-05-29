@@ -1,14 +1,24 @@
 language: python
+
+sudo: false
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-4.8
+      - g++-4.8
+
+env:
+  - CXX="g++-4.8" CC="gcc-4.8"
+
 python:
   - "2.7"
-before_install:
-  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test;
-  - sudo apt-get update -qq
+
 install:
-  - sudo apt-get install -qq g++-4.8;
-  - export CXX="g++-4.8";
-  
   - pip install .
+
 script:
   - python setup.py build
   - python setup.py install
