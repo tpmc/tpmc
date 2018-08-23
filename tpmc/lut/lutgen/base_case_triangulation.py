@@ -1951,10 +1951,10 @@ BCTany0d = LookupGenerator(0,"any")
 # base cases cube 0D:
 # 0 -> 0
 BCTany0d.base_cases[0].faces = []
-BCTany0d.base_cases[0].exterior = [[0]]
-BCTany0d.base_cases[0].exterior_groups = [0]
-BCTany0d.base_cases[0].interior = []
-BCTany0d.base_cases[0].interior_groups = []
+BCTany0d.base_cases[0].interior = [[0]]
+BCTany0d.base_cases[0].interior_groups = [0]
+BCTany0d.base_cases[0].exterior = []
+BCTany0d.base_cases[0].exterior_groups = []
 # generate code
 # BCTany0d.generate()
 

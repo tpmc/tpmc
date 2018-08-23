@@ -8,7 +8,7 @@ namespace tpmc {
   /* table specialization for non symmetric tables */
 
   int MarchingCubesTables<SymmetryType::nonsymmetric>::all_max_complex_vertex_count[]
-      = { 0,                                    0,
+      = { 0,                                    table_any0d_max_complex_vertex_count,
           0,                                    table_any1d_max_complex_vertex_count,
           0,                                    table_simplex2d_max_complex_vertex_count,
           table_cube2d_max_complex_vertex_count,    table_simplex3d_max_complex_vertex_count,
@@ -21,7 +21,8 @@ namespace tpmc {
    */
   typename MarchingCubesTables<SymmetryType::nonsymmetric>::offsetRow *
   MarchingCubesTables<SymmetryType::nonsymmetric>::
-  all_case_offsets[] = {0, 0, 0, table_any1d_cases_offsets,
+  all_case_offsets[] = {0, table_any0d_cases_offsets, 0,
+                        table_any1d_cases_offsets,
                         0, table_simplex2d_cases_offsets,
                         table_cube2d_cases_offsets,
                         table_simplex3d_cases_offsets,
@@ -31,7 +32,8 @@ namespace tpmc {
 
   const short * const
   MarchingCubesTables<SymmetryType::nonsymmetric>::
-  all_case_vertices[] = {0, 0, 0, table_any1d_vertices,
+  all_case_vertices[] = {0, table_any0d_vertices, 0,
+                         table_any1d_vertices,
                          0, table_simplex2d_vertices,
                          table_cube2d_vertices, table_simplex3d_vertices,
                          table_pyramid3d_vertices, table_prism3d_vertices,
@@ -39,7 +41,8 @@ namespace tpmc {
 
   const short * const
   MarchingCubesTables<SymmetryType::nonsymmetric>::
-  all_vertex_to_index[] = {0, 0, 0, table_any1d_vertex_to_index,
+  all_vertex_to_index[] = {0, table_any0d_vertex_to_index, 0,
+                           table_any1d_vertex_to_index,
                            0, table_simplex2d_vertex_to_index,
                            table_cube2d_vertex_to_index,
                            table_simplex3d_vertex_to_index,
@@ -53,7 +56,8 @@ namespace tpmc {
    */
   const short * const
   MarchingCubesTables<SymmetryType::nonsymmetric>::
-  all_vertex_groups[] = {0, 0, 0, table_any1d_vertex_groups,
+  all_vertex_groups[] = {0, table_any0d_vertex_groups, 0,
+                         table_any1d_vertex_groups,
                          0, table_simplex2d_vertex_groups,
                          table_cube2d_vertex_groups,
                          table_simplex3d_vertex_groups,
@@ -67,7 +71,8 @@ namespace tpmc {
    */
   const short * const
   MarchingCubesTables<SymmetryType::nonsymmetric>::
-  all_codim_0[][2] = {{0, 0}, {0, 0}, {0, 0},
+  all_codim_0[][2] = {{0, 0}, {table_any0d_codim_0_interior,
+                       table_any0d_codim_0_exterior}, {0, 0},
                       {table_any1d_codim_0_interior,
                        table_any1d_codim_0_exterior}, {0, 0},
                       {table_simplex2d_codim_0_interior,
@@ -89,7 +94,8 @@ namespace tpmc {
    */
   const short * const
   MarchingCubesTables<SymmetryType::nonsymmetric>::
-  all_element_groups[][2] = {{0, 0}, {0, 0}, {0, 0},
+  all_element_groups[][2] = {{0, 0}, {table_any0d_interior_groups,
+                              table_any0d_exterior_groups}, {0, 0},
                              {table_any1d_interior_groups,
                               table_any1d_exterior_groups}, {0, 0},
                              {table_simplex2d_interior_groups,
@@ -111,7 +117,7 @@ namespace tpmc {
    */
   const short * const
   MarchingCubesTables<SymmetryType::nonsymmetric>::
-  all_codim_1[] = {0, 0, 0, table_any1d_codim_1,
+  all_codim_1[] = {0, table_any0d_codim_1, 0, table_any1d_codim_1,
                    0, table_simplex2d_codim_1,
                    table_cube2d_codim_1, table_simplex3d_codim_1,
                    table_pyramid3d_codim_1, table_prism3d_codim_1, 0,
@@ -143,7 +149,8 @@ namespace tpmc {
 
   const short * const
   MarchingCubesTables<SymmetryType::nonsymmetric>::
-  all_complex_vertices[] = {0, 0, 0, table_any1d_complex_vertices, 0, table_simplex2d_complex_vertices,
+  all_complex_vertices[] = {0, table_any0d_complex_vertices, 0, table_any1d_complex_vertices,
+                        0, table_simplex2d_complex_vertices,
                         table_cube2d_complex_vertices, table_simplex3d_complex_vertices,
                         table_pyramid3d_complex_vertices,
                         table_prism3d_complex_vertices, 0,
@@ -153,7 +160,7 @@ namespace tpmc {
   /** table secialization for symmetric cases */
 
   int MarchingCubesTables<SymmetryType::symmetric>::all_max_complex_vertex_count[]
-      = { 0,                                    0,
+      = { 0,                                    table_any0d_max_complex_vertex_count,
           0,                                    table_any1d_max_complex_vertex_count,
           0,                                    table_simplex2d_max_complex_vertex_count,
           table_cube2d_max_complex_vertex_count,    table_simplex3d_max_complex_vertex_count,
@@ -165,7 +172,8 @@ namespace tpmc {
    */
   typename MarchingCubesTables<SymmetryType::symmetric>::offsetRow *
   MarchingCubesTables<SymmetryType::symmetric>::
-  all_case_offsets[] = {0, 0, 0, table_any1d_cases_offsets,
+  all_case_offsets[] = {0, table_any0d_cases_offsets, 0,
+                        table_any1d_cases_offsets,
                         0, table_simplex2d_cases_offsets,
                         table_cube2d_cases_offsets,
                         table_simplex3d_cases_offsets,
@@ -175,7 +183,8 @@ namespace tpmc {
 
   const short * const
   MarchingCubesTables<SymmetryType::symmetric>::
-  all_case_vertices[] = {0, 0, 0, table_any1d_vertices,
+  all_case_vertices[] = {0, table_any0d_vertices, 0,
+                         table_any1d_vertices,
                          0, table_simplex2d_vertices,
                          table_cube2d_vertices, table_simplex3d_vertices,
                          table_pyramid3d_vertices, table_prism3d_vertices,
@@ -183,7 +192,8 @@ namespace tpmc {
 
   const short * const
   MarchingCubesTables<SymmetryType::symmetric>::
-  all_vertex_to_index[] = {0, 0, 0, table_any1d_vertex_to_index,
+  all_vertex_to_index[] = {0, table_any0d_vertex_to_index, 0,
+                           table_any1d_vertex_to_index,
                            0, table_simplex2d_vertex_to_index,
                            table_cube2d_vertex_to_index,
                            table_simplex3d_vertex_to_index,
@@ -197,7 +207,8 @@ namespace tpmc {
    */
   const short * const
   MarchingCubesTables<SymmetryType::symmetric>::
-  all_vertex_groups[] = {0, 0, 0, table_any1d_vertex_groups,
+  all_vertex_groups[] = {0, table_any0d_vertex_groups,
+                         0, table_any1d_vertex_groups,
                          0, table_simplex2d_vertex_groups,
                          table_cube2d_vertex_groups,
                          table_simplex3d_vertex_groups,
@@ -211,7 +222,8 @@ namespace tpmc {
    */
   const short * const
   MarchingCubesTables<SymmetryType::symmetric>::
-  all_codim_0[][2] = {{0, 0}, {0, 0}, {0, 0},
+  all_codim_0[][2] = {{0, 0}, {table_any0d_codim_0_interior,
+                       table_any0d_codim_0_exterior}, {0, 0},
                       {table_any1d_codim_0_interior,
                        table_any1d_codim_0_exterior}, {0, 0},
                       {table_simplex2d_codim_0_interior,
@@ -233,7 +245,8 @@ namespace tpmc {
    */
   const short * const
   MarchingCubesTables<SymmetryType::symmetric>::
-  all_element_groups[][2] = {{0, 0}, {0, 0}, {0, 0},
+  all_element_groups[][2] = {{0, 0}, {table_any0d_interior_groups,
+                              table_any0d_exterior_groups}, {0, 0},
                              {table_any1d_interior_groups,
                               table_any1d_exterior_groups}, {0, 0},
                              {table_simplex2d_interior_groups,
@@ -255,7 +268,7 @@ namespace tpmc {
    */
   const short * const
   MarchingCubesTables<SymmetryType::symmetric>::
-  all_codim_1[] = {0, 0, 0, table_any1d_codim_1,
+  all_codim_1[] = {0, table_any0d_codim_1, 0, table_any1d_codim_1,
                    0, table_simplex2d_codim_1,
                    table_cube2d_codim_1, table_simplex3d_codim_1,
                    table_pyramid3d_codim_1, table_prism3d_codim_1, 0,

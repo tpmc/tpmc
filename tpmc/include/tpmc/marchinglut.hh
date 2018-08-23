@@ -146,6 +146,7 @@ static const int INDEX_COMPLEX_VERTICES = 9;
 static const int INDEX_UNIQUE_CASE = 10;
 
 /* Mappings for vertex number to linear index in value array */
+static const short table_any0d_vertex_to_index[] = {0};
 static const short table_any1d_vertex_to_index[] = {0,1};
 static const short table_simplex2d_vertex_to_index[] = {0,1,2};
 static const short table_cube2d_vertex_to_index[] = {0,1,2,3};

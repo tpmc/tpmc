@@ -36,15 +36,16 @@ namespace tpmc
 #ifdef ENABLE_TPMC_PROFILING
     ++profKeyGenerations_;
 #endif
+    const size_type vertex_count = std::distance(valuesBegin, valuesEnd);
     if ((dim < 0) || (dim > 3))
     {
       throw std::invalid_argument("Dimension must be 0, 1, 2 or 3");
     }
     else if (dim == 0)
     {
-      return 0;
+      assert(vertex_count == 1);
+      return *valuesBegin < 0 ? 0 : 1;
     }
-    const size_type vertex_count = std::distance(valuesBegin, valuesEnd);
     const unsigned int table_index = vertex_count + dim;
     const GeometryType geometry = makeGeometryType(dim, vertex_count);
 
@@ -176,8 +177,10 @@ namespace tpmc
     const unsigned int vertex_count = std::distance(valuesBegin, valuesEnd);
     const unsigned int table_index = vertex_count + dim;
 
-    const short* complex_vertex_index = Tables::all_complex_vertices[table_index]
-                  + Tables::all_case_offsets[table_index][key][INDEX_COMPLEX_VERTICES];
+    const short* complex_vertex_index =
+        Tables::all_complex_vertices[table_index];
+    complex_vertex_index +=
+        Tables::all_case_offsets[table_index][key][INDEX_COMPLEX_VERTICES];
 
     const unsigned int count = *complex_vertex_index++;
     for (unsigned int i = 0; i<count; ++i) {
