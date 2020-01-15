@@ -105,17 +105,16 @@ def configuration(parent_package='', top_path=None):
         return config
 
 
-def subst_config_file(source, target ,inputdict):
+def subst_config_file(source, target, inputdict):
         # read tpmc-config script
         print("substituting configuration: %s -> %s" % (source, target))
         infile = open(source,'r')
+        outfile = open(target, 'w')
         content = ""
         for line in infile:
-                content = content + line
-        for key, value in inputdict.items():
-                content = content.replace("@"+key+"@", value)
-        outfile = open(target, 'w')
-        print(content, file=outfile)
+                for key, value in inputdict.items():
+                        line = line.replace("@"+key+"@", value)
+                outfile.write(line)
 
 
 def substitute_setup_configuration (setup):
