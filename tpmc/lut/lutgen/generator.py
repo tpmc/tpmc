@@ -38,6 +38,7 @@ class LookupGenerator(object):
                                                         range(self.p_size)) ,
                                          Transformation(1, 1, 
                                                         range(self.p_size))])
+
         i = 0
         g_size = 0
         # apply all generator-transformations to all elements in G, until
@@ -52,6 +53,8 @@ class LookupGenerator(object):
                 self.transformation_group.union(new_group)
             i += 1
         LOGGER.info("g_size: {0}; wortlaenge: {1}".format(g_size, i-1))
+
+        self.transformation_group = sorted(self.transformation_group)
 
         # Generate list of base cases
         # and save base case and permutation for each case

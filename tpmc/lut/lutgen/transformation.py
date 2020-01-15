@@ -30,3 +30,7 @@ class Transformation(Permutation):
     def __eq__(self, other):
         return self.inverted == other.inverted \
             and Permutation.__eq__(self, other)
+    def __lt__(self,other):
+        return tuple(self) + (self.orientation, self.inverted) < tuple(other) + (other.orientation, other.inverted)
+    def __gt__(self,other):
+        return tuple(self) + (self.orientation, self.inverted) > tuple(other) + (other.orientation, other.inverted)
