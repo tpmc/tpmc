@@ -13,6 +13,56 @@ from .disambiguate import permute_faceid
 
 LOGGER = logging.getLogger('lutgen.geomobject')
 
+def cmp_ordering__eq__(self, other):
+    c = self.__cmp__(other)
+    if c is NotImplemented:
+        return NotImplemented
+    return c == 0
+def cmp_ordering__ne__(self, other):
+    c = self.__cmp__(other)
+    if c is NotImplemented:
+        return NotImplemented
+    return c != 0
+def cmp_ordering__lt__(self, other):
+    c = self.__cmp__(other)
+    if c is NotImplemented:
+        return NotImplemented
+    return c < 0
+def cmp_ordering__le__(self, other):
+    c = self.__cmp__(other)
+    if c is NotImplemented:
+        return NotImplemented
+    return c <= 0
+def cmp_ordering__gt__(self, other):
+    c = self.__cmp__(other)
+    if c is NotImplemented:
+        return NotImplemented
+    return c > 0
+def cmp_ordering__ge__(self, other):
+    c = self.__cmp__(other)
+    if c is NotImplemented:
+        return NotImplemented
+    return c >= 0
+
+## semantics of __cmp__
+## a <=> b
+## -> <0 : a<b
+## -> 0  : a==b
+## -> >0 : a>b
+def cmp_ordering(cls):
+    """Class decorator that implements ordering based on the python 2 __cmp__"""
+    oplist = [('__eq__', cmp_ordering__eq__),
+              ('__ne__', cmp_ordering__ne__), 
+              ('__lt__', cmp_ordering__lt__), 
+              ('__le__', cmp_ordering__le__), 
+              ('__gt__', cmp_ordering__gt__), 
+              ('__ge__', cmp_ordering__ge__)]
+    for opname, opfunc in oplist:
+        opfunc.__name__ = opname
+        setattr(cls, opname, opfunc)
+    return cls
+
+@cmp_ordering
 class CenterPoint(object):
     def __init__(self, id):
         self.id = id
@@ -25,10 +75,13 @@ class CenterPoint(object):
             return 1
         if type(other) is RootPoint:
             return 1
+        if type(other) is int:
+            return -1
         return -1
     def __hash__(self):
         return hash("CenterPoint{0}".format(self.id))
 
+@cmp_ordering
 class FacePoint(object):
     def __init__(self, id):
         self.id = id
@@ -41,10 +94,13 @@ class FacePoint(object):
             return -1
         if type(other) is RootPoint:
             return 1
-        return -1
+        if type(other) is int:
+            return -1
+        return NotImplemented
     def __hash__(self):
         return hash("FacePoint{0}".format(self.id))
 
+@cmp_ordering
 class RootPoint(object):
     def __init__(self, id):
         self.id = id
@@ -57,7 +113,9 @@ class RootPoint(object):
             return -1
         if type(other) is CenterPoint:
             return -1
-        return -1
+        if type(other) is int:
+            return -1
+        return NotImplemented
     def __hash__(self):
         return hash("RootPoint{0}".format(self.id))
 

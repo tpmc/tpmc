@@ -2,11 +2,13 @@ from .permutation import Permutation
 
 class Transformation(Permutation):
     def __new__(cls, orientation, inverted, tup):
-        return Permutation.__new__(cls, orientation, tup)
+        return super(Transformation, cls).__new__(cls, orientation, tup)
     def __init__(self, orientation, inverted, tup):
         assert inverted == 0 or inverted == 1
         self.inverted = inverted
-        Permutation.__init__(self, orientation, tup)
+        super(Transformation, self).__init__(orientation, tup)
+    def __hash__(self):
+        return hash((super(Transformation,self).__hash__(), self.inverted))
     def __mul__(self, other):
         if type(other) is Transformation:
             return Transformation(self.orientation*other.orientation, 
