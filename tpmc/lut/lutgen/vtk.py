@@ -1,8 +1,8 @@
-from lutgen.output import Output
+from .output import Output
 
-from lutgen.referenceelements import GeometryType
-from lutgen.referenceelements import ReferenceElements
-from lutgen.geomobj import CenterPoint, FacePoint, RootPoint
+from .referenceelements import GeometryType
+from .referenceelements import ReferenceElements
+from .geomobj import CenterPoint, FacePoint, RootPoint
 
 from pyvtk import *
 
