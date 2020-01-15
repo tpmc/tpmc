@@ -50,14 +50,14 @@ class Vtk(Output):
 
 		if dim == 3:
 			renumber = [ None, None, None, None,
-						 ("simplex", range(4)),
+						 ("simplex", list(range(4))),
 						 ("pyramid", [0, 1, 3, 2, 4]),
 						 ("prism", [0,2,1,3,5,4]),
 						 None,
 						 ("cube", [0,1,3,2,4,5,7,6])]
 		elif dim == 2:
 			renumber = [ None, None, None,
-						 ("triangle", range(3)),
+						 ("triangle", list(range(3))),
 						 ("quad", [0,2,3,1])]
 		else:
 			assert 0
@@ -72,7 +72,7 @@ class Vtk(Output):
                 grps = []
 		counter = 0
 		# create elements
-		for k in xrange(len(cells)):
+		for k in range(len(cells)):
                         cell = cells[k]
 			if len(cell) == 0:
 				continue

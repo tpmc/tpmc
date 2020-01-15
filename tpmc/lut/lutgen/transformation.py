@@ -1,4 +1,4 @@
-from permutation import Permutation
+from .permutation import Permutation
 
 class Transformation(Permutation):
     def __new__(cls, orientation, inverted, tup):

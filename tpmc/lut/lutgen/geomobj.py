@@ -5,11 +5,11 @@ and a method for applying a permutation to the vertices of such an object
 
 import logging
 
-from permutation import Permutation
-from transformation import Transformation
-from referenceelements import ReferenceElements, GeometryType
-from polygon import Polygon
-from disambiguate import permute_faceid
+from .permutation import Permutation
+from .transformation import Transformation
+from .referenceelements import ReferenceElements, GeometryType
+from .polygon import Polygon
+from .disambiguate import permute_faceid
 
 LOGGER = logging.getLogger('lutgen.geomobject')
 
@@ -85,7 +85,7 @@ class GeomObject(object):
             return Permutation(-1, (3, 4, 5, 0, 1, 2))
         if (dim, count) == (3, 8):
             return Permutation(-1, (4, 5, 6, 7, 0, 1, 2, 3))
-        print "error: unkown geom obj %id, %i vertices" % (dim, count)
+        print("error: unkown geom obj %id, %i vertices" % (dim, count))
         assert 0
     def faces(self):
         """

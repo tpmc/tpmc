@@ -4,10 +4,10 @@ case triangulation. Currently four test are performed. For more
 information see documentation pdf in the doc/ folder
 """
 import logging
-from base_case_triangulation import LookupGenerators
-from disambiguate import TestFace, TestRegular
-from polygon import PolygonList
-from geomobj import GeomObject, CenterPoint, FacePoint, RootPoint
+from .base_case_triangulation import LookupGenerators
+from .disambiguate import TestFace, TestRegular
+from .polygon import PolygonList
+from .geomobj import GeomObject, CenterPoint, FacePoint, RootPoint
 
 LOGGER = logging.getLogger('lutgen.test')
 
@@ -175,7 +175,7 @@ class Test(object):
                           for x in triangulation.faces if len(x)>0]
         # remove those faces from interface_base intersecting reference element
         reference = GeomObject(self.generator.dim, 
-                               range(len(self.generator.ref_elem)),
+                               list(range(len(self.generator.ref_elem))),
                                self.generator.geometry_type)
         for (i,ref_face) in ((i,GeomObject(reference.dim-1, x, self.generator.geometry_type))
                              for (i,x) in enumerate(reference.faces())):
@@ -204,7 +204,7 @@ class Test(object):
                     for x in triangulation.interior + triangulation.exterior 
                     if len(x)>0]
         reference = GeomObject(self.generator.dim, 
-                               range(len(self.generator.ref_elem)),
+                               list(range(len(self.generator.ref_elem))),
                                self.generator.geometry_type)
         if not reference.matches(elements):
             LOGGER.error("elements do not match reference element:"
@@ -279,8 +279,8 @@ class Test(object):
         if not len(elements) == len(groups):
             LOGGER.error("group connectivity test for {} failed since the number of groups ({}) does not correspong to the number of elements ({})".format(name, len(groups), len(elements)))
             return 0
-        for i in xrange(len(elements)):
-            for j in xrange(i+1,len(elements)):
+        for i in range(len(elements)):
+            for j in range(i+1,len(elements)):
                 if len(set(elements[i]) & set(elements[j])) > 0:
                     if not groups[i] == groups[j]:
                         LOGGER.error("group connectivity test for {} for elements {} and groups {} failed\nelement {} and {} do not have the same groups {} != {}".format(name, elements, groups, elements[i], elements[j], groups[i], groups[j]))

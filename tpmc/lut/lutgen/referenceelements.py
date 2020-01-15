@@ -4,9 +4,9 @@ class GeometryType(tuple):
 			t=d[1]
 			d=d[0]
 		if not type(d) is int:
-			raise TypeError, "first parameter for GeometryType(dim,basicType) is not int"
+			raise TypeError("first parameter for GeometryType(dim,basicType) is not int")
 		if not type(t) is str:
-			raise TypeError, "second parameter for GeometryType(dim,basicType) is not str"
+			raise TypeError("second parameter for GeometryType(dim,basicType) is not str")
 		return tuple.__new__(cls, (d,t))
 	def __init__(self, d, t=None):
 		pass

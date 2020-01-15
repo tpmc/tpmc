@@ -3,13 +3,13 @@ containing test object for marching subes 33 tests, eg
 face-tests, interior-test
 """
 from math import log, floor
-from permutation import Permutation
-from transformation import Transformation
-from referenceelements import ReferenceElements
+from .permutation import Permutation
+from .transformation import Transformation
+from .referenceelements import ReferenceElements
 
 def permute_faceid(faceid, perm, faces):
     """ permutes the number of a tested face """
-    perm_vertices = perm*range(len(perm))
+    perm_vertices = perm*list(range(len(perm)))
     facesets = [set(f) for f in faces]
     permface = set([perm_vertices[i] for i in facesets[faceid]])
     return facesets.index(permface)
@@ -31,7 +31,7 @@ class TestFace(object):
             # index of refv in base_case
             refidx = faces[self.idx][self.refv]
             # perm * case = base_case
-            vertices = perm * range(len(ReferenceElements[(3,"cube")]))
+            vertices = perm * list(range(len(ReferenceElements[(3,"cube")])))
             # index of refv in case
             refidx2 = vertices[refidx]
             refv = [0, 1, 1, 0][face.index(refidx2)]
@@ -45,13 +45,13 @@ class TestFace(object):
             # index of refv in base_case
             refidx = faces[self.idx][self.refv]
             # perm * case = base_case
-            vertices = perm * range(len(ReferenceElements[(3,"prism")]))
+            vertices = perm * list(range(len(ReferenceElements[(3,"prism")])))
             # index of refv in case
             refidx2 = vertices[refidx]
             refv = [0, 1, 1, 0][face.index(refidx2)]
             return TestFace(newidx, refv)
         elif len(perm) == 4:
-            vertices = perm * range(4)
+            vertices = perm * list(range(4))
             refv = [0, 1, 1, 0][vertices[refv]]
             refidx = 0
     def __repr__(self):

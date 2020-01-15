@@ -14,9 +14,9 @@ class Consistency(object):
 				for face in ReferenceElements[gtype].faces:
 					self.checkCase(case, face)
 					faceid += 1
-		except ValueError, e:
-			print "Error:\tcase %s %s\n\tface %i\n\t%s" % \
-				  (repr(case.case), repr(self.gtype), faceid, str(e))
+		except ValueError as e:
+			print("Error:\tcase %s %s\n\tface %i\n\t%s" % \
+				  (repr(case.case), repr(self.gtype), faceid, str(e)))
 			exit(0)
 	def findMapping(self, a, setb):
 		for b in setb:
@@ -30,8 +30,8 @@ class Consistency(object):
 				return (mapping, setb.index(b))
 			except ValueError:
 				continue
-		raise ValueError, "can't map face " + repr(a) + \
-				  " to any face in " + repr(setb)
+		raise ValueError("can't map face " + repr(a) + \
+				  " to any face in " + repr(setb))
 	def subFacesFromCells(self, case, face):
 		csubfaces = []
 		for cell in case.cells:
@@ -76,8 +76,8 @@ class Consistency(object):
 		return tsubfaces
 	def compareFaces(self, seta, setb):
 		if (len(seta) != len(setb)):
-			raise ValueError, "inconsistent triangulation of face " + \
-				  repr(seta) + " vs " + repr(setb)
+			raise ValueError("inconsistent triangulation of face " + \
+				  repr(seta) + " vs " + repr(setb))
 		for fa in seta:
 			if fa == []:
 				continue
@@ -89,7 +89,7 @@ class Consistency(object):
 			a2b_index  = set([a2b]).issubset(aGenerators) # not necessary
 			# print repr(fa) + " * " + repr(a2b) + " " + repr(a2b_index) + " -> " + repr(fb)
 	def checkCase(self, case, face):
-		print "checking case: " + repr(case.case) + " " + repr(self.gtype)
+		print("checking case: " + repr(case.case) + " " + repr(self.gtype))
 		# print "-- face: " + repr(face)
 		csubfaces = self.subFacesFromCells(case, face)
 		# print "-- mapping cell triangulation to face: " + repr(csubfaces)

@@ -4,7 +4,7 @@ def generate_lut(ext, build_dir):
         filename = path.join(build_dir, 'tpmc_lut.cc')
         if newer(__file__, filename):
                 from tpmc.lut.lutgen.dunecode import DuneCode
-                print "importing lookup generators"
+                print("importing lookup generators")
                 from tpmc.lut.lutgen.base_case_triangulation import LookupGenerators
                 ## geometries of LookupGenerators
                 geometries = [(0,"any"),
@@ -26,16 +26,16 @@ extern \"C\" {
 
 """)
                 for g in geometries:
-                        print "generating table for %id %s" % g
+                        print("generating table for %id %s" % g)
                         generator = LookupGenerators[g]['standard']
                         generator.generate()
-                        print "writing code for %id %s" % g
+                        print("writing code for %id %s" % g)
                         DuneCode(generator).write(ccfile)
                 g = (3,'cube')
-                print "generating symmetric table for %id %s" % g
+                print("generating symmetric table for %id %s" % g)
                 generator = LookupGenerators[g]['symmetric']
                 generator.generate()
-                print "writing symmetric code for %id %s" % g
+                print("writing symmetric code for %id %s" % g)
                 DuneCode(generator, 'sym').write(ccfile)
                 ccfile.write("}\n")
                 ccfile.close()
@@ -107,22 +107,22 @@ def configuration(parent_package='', top_path=None):
 
 def subst_config_file(source, target ,inputdict):
         # read tpmc-config script
-        print "substituting configuration: %s -> %s" % (source, target)
+        print("substituting configuration: %s -> %s" % (source, target))
         infile = open(source,'r')
         content = ""
         for line in infile:
                 content = content + line
-        for key, value in inputdict.iteritems():
+        for key, value in inputdict.items():
                 content = content.replace("@"+key+"@", value)
         outfile = open(target, 'w')
-        print >> outfile, content
+        print(content, file=outfile)
 
 
 def substitute_setup_configuration (setup):
         install_scripts = None
         try:
                 install_scripts = setup.command_obj['install_scripts']
-                print "running install_scripts post-hook"
+                print("running install_scripts post-hook")
         except KeyError:
                 pass
         if install_scripts != None:
