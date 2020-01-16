@@ -80,7 +80,7 @@ input{style.sk}
 						skfile.write("  def x%i (center)\n" % v)
 			# define barycenter
 			skfile.write("  def s  (o)+((x" + \
-						 ")-(o)+(x".join(map(str,list(range(vs)))) + \
+                                                 ")-(o)+(x".join(map(str,range(vs))) + \
 						 ")-(o))/" + str(vs) + "\n" )
 			# define shrunken vertizes
 			for v in range(vs):
@@ -94,7 +94,7 @@ input{style.sk}
 							 % (f,sub, ")(y".join(skface)))
 			# use faces
 			skfile.write(
-				"  {f" + "} {f".join(map(str,list(range(len(subref.faces))))) + "}\n")
+                                "  {f" + "} {f".join(map(str,range(len(subref.faces)))) + "}\n")
 			# next sub element
 			skfile.write("}\n")
 			sub+=1

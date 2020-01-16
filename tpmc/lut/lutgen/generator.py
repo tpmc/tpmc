@@ -35,9 +35,9 @@ class LookupGenerator(object):
         generators = self.get_generators()
         # start with identity and inverted identity
         self.transformation_group = set([Transformation(1, 0, 
-                                                        list(range(self.p_size))) ,
+                                                        range(self.p_size)),
                                          Transformation(1, 1, 
-                                                        list(range(self.p_size)))])
+                                                        range(self.p_size))])
 
         i = 0
         g_size = 0
@@ -78,7 +78,7 @@ class LookupGenerator(object):
                     break
             if not found:
                 self.base_cases.append(BaseCase(dim, entry.case))
-                entry.transformation = Transformation(1, 0, list(range(self.p_size)))
+                entry.transformation = Transformation(1, 0, range(self.p_size))
                 entry.base_case = self.base_cases[-1]
     def get_generators(self):
         """
