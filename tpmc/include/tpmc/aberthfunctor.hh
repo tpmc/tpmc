@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <iostream>
 #include <type_traits>
 #include <tpmc/univariatepolynomial.hh>
 #include <tpmc/floatcmp.hh>

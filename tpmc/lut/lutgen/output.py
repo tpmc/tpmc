@@ -1,4 +1,4 @@
-from lutgen.referenceelements import ReferenceElements
+from .referenceelements import ReferenceElements
 import os
 
 class Output:
