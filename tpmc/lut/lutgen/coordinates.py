@@ -1,5 +1,5 @@
-from referenceelements import ReferenceElements
-from geomobj import CenterPoint, FacePoint, RootPoint
+from .referenceelements import ReferenceElements
+from .geomobj import CenterPoint, FacePoint, RootPoint
 
 class NotImplementedException(Exception):
     def __init__(self, value):
@@ -17,7 +17,7 @@ def calcWeight(vertex):
 
 def cmean(coords, weights):
     sw = 1.0/float(sum(weights))
-    return [float(sum(weights[i]*l[i]*sw for i in xrange(len(l)))) for l in zip(*coords)]
+    return [float(sum(weights[i]*l[i]*sw for i in range(len(l)))) for l in zip(*coords)]
 
 # assuming row-wise storage
 def det(m):

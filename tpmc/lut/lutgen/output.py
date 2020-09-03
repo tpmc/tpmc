@@ -7,7 +7,7 @@ class Output:
         if odir:
             odir = os.path.expanduser(odir) + '/'
             if not os.path.exists(odir):
-                os.makedirs(odir, 0755)
+                os.makedirs(odir, 0o755)
         else:
             odir = ""
         for case in self.lg.base_cases:

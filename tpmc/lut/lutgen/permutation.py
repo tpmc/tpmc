@@ -1,11 +1,12 @@
 class Permutation(tuple):
     def __new__ (cls, orientation, tup):
-        return tuple.__new__(cls, tup)
-    def __init__(self, orientation, tup):
+        obj = tuple.__new__(cls, tup)
         # Indicates the orientation, 1: normal -1: mirrored
-        self.orientation = orientation
+        obj.orientation = orientation
         assert orientation == -1 or orientation == 1
-        tuple.__init__(self, tup)
+        return obj
+    # def __init__(self, orientation, tup):
+    #     # tuple.__init__(self, tup)
     def __mul__ (self, other):
         if type(other) is Permutation:
             return Permutation(self.orientation*other.orientation, 
@@ -26,4 +27,5 @@ class Permutation(tuple):
         return type(other)(self[x] for x in other)
     def __repr__ (self):
         return ['?', '+', '-'][self.orientation] + tuple.__repr__(self)
-
+    def __hash__(self):
+        return tuple.__hash__(self) ^ self.orientation.__hash__()
