@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 def generate_lut(ext, build_dir):
         from os import path
         from distutils.dep_util import newer
