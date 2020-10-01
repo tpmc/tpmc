@@ -3,6 +3,8 @@ contains class GeomObject representing a geometric Object, eg a 3d cube
 and a method for applying a permutation to the vertices of such an object
 """
 
+# file deepcode ignore inconsistent~equality: we use @total_ordering, so we only need to specify __eq__
+
 import logging
 
 from .permutation import Permutation
