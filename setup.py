@@ -49,7 +49,9 @@ metadata = dict(
         author = 'Christian Engwer',
         author_email = 'christi@mathe-macht-spass.de',
         url = 'https://github.com/tpmc/tpmc',
-        long_description = open('README.rst').read(), # Get the long description from the relevant file
+        readme = open('README.rst')
+        long_description = readme.read(), # Get the long description from the relevant file
+        readme.close()
         license = 'LGPLv3+',
         py_modules= ['tpmc.__version__',
                      'tpmc.lut.__init__',
