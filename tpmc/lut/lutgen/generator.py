@@ -136,34 +136,8 @@ class LookupGenerator(object):
             for i in range(len(c.faces)):
                 # find interior element containing this face and use the numbering based on
                 # the elements reference element
-                ##### ielement = None
-                ##### print ("Search ielement")
-                ##### print (set(c.faces[i]))
-                ##### print ("->")
-                ##### for e in c.interior:
-                #####     G = GeomObject(self.dim, e, self.geometry_type)
-                #####     face = False
-                #####     for f in G.faces():
-                #####         print (set(f))
-                #####         if repr(set(f)) == repr(set(c.faces[i])):
-                #####             print (repr(set(f)) + " VS " + repr(set(c.faces[i])))
-                #####             print ("=> " + repr(set(f) == set(c.faces[i])))
-                #####         if set(f) == set(c.faces[i]):
-                #####             face = True
-                #####             break;
-                #####     if face:
-                #####         ielement = e
-                #####         break
-                ##### print ("............")
-                ##### assert(ielement != None)
                 ielement = next(e for e in c.interior for f in GeomObject(self.dim, e, self.geometry_type).faces()
                                 if set(f) == set(c.faces[i]))
-                #if c.faces[i] == [(0, 2), (Face0, 3), ((1, 5), 2)]:
-                #    print ielement
-                #    print flip(self.geometry_type, ielement)
-                #    print c.faces[i]
-                #    print next(f for f in GeomObject(self.dim, ielement, self.geometry_type).faces() if set(f) == set(c.faces[i]))
-                #    raise RuntimeError
                 ielement = flip(self.geometry_type, ielement)
                 if flipped(self.geometry_type, ielement):
                     raise RuntimeError("{} element {} still flipped".format(self.geometry_type, ielement))
