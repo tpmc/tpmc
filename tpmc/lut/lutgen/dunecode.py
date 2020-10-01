@@ -2,10 +2,12 @@
 Contains classes/constants for export to dune marchinglut.cc
 """
 
+# file deepcode ignore DuplicateKey: The check triggers a false positive. We reate keys from other keys and the check accidentially thinks we are using the same key multiple times
+
 import math
 import operator
-from referenceelements import ReferenceElements
-from geomobj import FacePoint, CenterPoint, RootPoint
+from .referenceelements import ReferenceElements
+from .geomobj import FacePoint, CenterPoint, RootPoint
 
 # Following constants are copied from marchinglut.hh
 # constants for vertex and edge numbering
@@ -211,7 +213,7 @@ class DuneCode:
                                                               table.offset,
                                                               ", ".join(str(g) for g in groups)), len(groups));
         def create_complex_vertices_line(lmapper, table):
-            sorted_keys = [x[0] for x in sorted(lmapper.vertices.items(), key=operator.itemgetter(1))]
+            sorted_keys = [x[0] for x in sorted(list(lmapper.vertices.items()), key=operator.itemgetter(1))]
             table.append("      /* {} */ {}, {} \n".format(table.offset, len(sorted_keys), "{} ,".format(", ".join(str(x) for x in sorted_keys)) if len(sorted_keys) else ""),1+len(sorted_keys))
         def create_tables(self, vmapper, offsets, complex_vertices, vertex_groups, codim0_exterior, codim0_exterior_groups, codim0_interior, codim0_interior_groups, codim1):
             """ creates string tables out of case tables """

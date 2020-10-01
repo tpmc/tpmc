@@ -47,6 +47,8 @@ class PolygonList(object):
                         break
                 if changed:
                     break
+    def __ne__(self, other):
+        return not __eq__(self,other)
     def __eq__(self, other):
         """ 
         returns true if first and second list form the same set of 

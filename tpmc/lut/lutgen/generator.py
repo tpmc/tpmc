@@ -6,11 +6,11 @@ marching cubes 33 algorithm
 import logging
 
 from pprint import pprint
-from transformation import Transformation
-from referenceelements import ReferenceElements
-from cases import Case, BaseCase
-from geomobj import GeomObject, Face0
-from coordinates import flip, flipped
+from .transformation import Transformation
+from .referenceelements import ReferenceElements
+from .cases import Case, BaseCase
+from .geomobj import GeomObject, Face0
+from .coordinates import flip, flipped
 
 LOGGER = logging.getLogger('lutgen.generator')
 
@@ -35,9 +35,9 @@ class LookupGenerator(object):
         generators = self.get_generators()
         # start with identity and inverted identity
         self.transformation_group = set([Transformation(1, 0, 
-                                                        range(self.p_size)) ,
+                                                        list(range(self.p_size))) ,
                                          Transformation(1, 1, 
-                                                        range(self.p_size))])
+                                                        list(range(self.p_size)))])
 
         i = 0
         g_size = 0
@@ -78,7 +78,7 @@ class LookupGenerator(object):
                     break
             if not found:
                 self.base_cases.append(BaseCase(dim, entry.case))
-                entry.transformation = Transformation(1, 0, range(self.p_size))
+                entry.transformation = Transformation(1, 0, list(range(self.p_size)))
                 entry.base_case = self.base_cases[-1]
     def get_generators(self):
         """
@@ -138,12 +138,6 @@ class LookupGenerator(object):
                 # the elements reference element
                 ielement = next(e for e in c.interior for f in GeomObject(self.dim, e, self.geometry_type).faces()
                                 if set(f) == set(c.faces[i]))
-                #if c.faces[i] == [(0, 2), (Face0, 3), ((1, 5), 2)]:
-                #    print ielement
-                #    print flip(self.geometry_type, ielement)
-                #    print c.faces[i]
-                #    print next(f for f in GeomObject(self.dim, ielement, self.geometry_type).faces() if set(f) == set(c.faces[i]))
-                #    raise RuntimeError
                 ielement = flip(self.geometry_type, ielement)
                 if flipped(self.geometry_type, ielement):
                     raise RuntimeError("{} element {} still flipped".format(self.geometry_type, ielement))
@@ -163,35 +157,35 @@ class LookupGenerator(object):
 
     def print_base(self, prefix="lut", face_count=0, cell_count=0):
         """ print all base cases """
-        print '# base cases {0} {1}D'.format(self.basic_type, self.dim)
+        print('# base cases {0} {1}D'.format(self.basic_type, self.dim))
         for (i, entry) in enumerate(self.base_cases):
             case = list(entry.case)
             case.reverse()
-            print '# {0} -> {1}'.format(",".join(str(x) for x in entry.case),
-                                        "".join(str(x) for x in case))
+            print('# {0} -> {1}'.format(",".join(str(x) for x in entry.case),
+                                        "".join(str(x) for x in case)))
             while len(entry.faces) < face_count:
                 entry.faces.append([])
-            print '{0}.base_cases[{1}].faces = {2}'.format(prefix, i,
-                                                           entry.faces)
+            print('{0}.base_cases[{1}].faces = {2}'.format(prefix, i,
+                                                           entry.faces))
             while len(entry.exterior) < cell_count:
                 entry.exterior.append([])
-            print '{0}.base_cases[{1}].exterior = {2}'.format(prefix, i,
-                                                              entry.exterior)
+            print('{0}.base_cases[{1}].exterior = {2}'.format(prefix, i,
+                                                              entry.exterior))
             while len(entry.interior) < cell_count:
                 entry.interior.append([])
-            print '{0}.base_cases[{1}].interior = {2}'.format(prefix, i,
-                                                              entry.interior)
-        print
+            print('{0}.base_cases[{1}].interior = {2}'.format(prefix, i,
+                                                              entry.interior))
+        print()
 
     def print_info(self):
         """ print all information on this generator """
         trans_list = list(self.transformation_group)
         trans_list.sort()
-        print len(self.transformation_group)
+        print(len(self.transformation_group))
         pprint(trans_list)
 
-        print len(self.base_cases)
+        print(len(self.base_cases))
         pprint(self.base_cases)
 
-        print len(self.all_cases)
+        print(len(self.all_cases))
         pprint(self.all_cases)

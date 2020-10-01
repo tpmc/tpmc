@@ -4,8 +4,8 @@ triangulation and base cases
 """
 
 from math import log, floor
-from geomobj import permute_geom_list
-from disambiguate import TestInvalid, TestRegular, TestInterior, TestFace
+from .geomobj import permute_geom_list
+from .disambiguate import TestInvalid, TestRegular, TestInterior, TestFace
 
 class Triangulation(object):
     """

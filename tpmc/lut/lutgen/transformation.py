@@ -1,12 +1,13 @@
-from permutation import Permutation
+from .permutation import Permutation
 
 class Transformation(Permutation):
     def __new__(cls, orientation, inverted, tup):
-        return Permutation.__new__(cls, orientation, tup)
-    def __init__(self, orientation, inverted, tup):
+        obj = Permutation.__new__(cls, orientation, tup)
         assert inverted == 0 or inverted == 1
-        self.inverted = inverted
-        Permutation.__init__(self, orientation, tup)
+        obj.inverted = inverted
+        return obj
+    # def __init__(self, orientation, inverted, tup):
+    #     Permutation.__init__(self, orientation, tup)
     def __mul__(self, other):
         if type(other) is Transformation:
             return Transformation(self.orientation*other.orientation, 
@@ -30,6 +31,8 @@ class Transformation(Permutation):
     def __eq__(self, other):
         return self.inverted == other.inverted \
             and Permutation.__eq__(self, other)
+    def __hash__(self):
+        return Permutation.__hash__(self) ^ self.inverted.__hash__()
     def __lt__(self,other):
         return tuple(self) + (self.orientation, self.inverted) < tuple(other) + (other.orientation, other.inverted)
     def __gt__(self,other):

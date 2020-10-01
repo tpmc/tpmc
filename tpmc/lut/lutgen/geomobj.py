@@ -5,59 +5,83 @@ and a method for applying a permutation to the vertices of such an object
 
 import logging
 
-from permutation import Permutation
-from transformation import Transformation
-from referenceelements import ReferenceElements, GeometryType
-from polygon import Polygon
-from disambiguate import permute_faceid
+from .permutation import Permutation
+from .transformation import Transformation
+from .referenceelements import ReferenceElements, GeometryType
+from .polygon import Polygon
+from .disambiguate import permute_faceid
+
+from functools import total_ordering
 
 LOGGER = logging.getLogger('lutgen.geomobject')
 
+# We represent the different points in a lookup table,
+# thus we must be able to sort them.
+# We order them within each group (center, face, root),
+# but also root < face < center < INT
+
+@total_ordering
 class CenterPoint(object):
     def __init__(self, id):
         self.id = id
     def __repr__(self):
         return "CenterPoint{0}".format(self.id)
-    def __cmp__(self, other):
-        if type(other) is CenterPoint:
-            return self.id - other.id
-        if type(other) is FacePoint:
-            return 1
-        if type(other) is RootPoint:
-            return 1
-        return -1
+    def __eq__(self, other):
+        return type(other) == CenterPoint and self.id == other.id
+    def __lt__(self, other):
+         if type(other) is CenterPoint:
+             return self.id < other.id
+         if type(other) is FacePoint:
+             return False
+         if type(other) is RootPoint:
+             return False
+         return True
+    # def __cmp__(self, other):
+    #     if type(other) is CenterPoint:
+    #         return self.id - other.id
+    #     if type(other) is FacePoint:
+    #         return 1
+    #     if type(other) is RootPoint:
+    #         return 1
+    #     return -1
     def __hash__(self):
         return hash("CenterPoint{0}".format(self.id))
 
+@total_ordering
 class FacePoint(object):
     def __init__(self, id):
         self.id = id
     def __repr__(self):
         return "FacePoint{0}".format(self.id)
-    def __cmp__(self, other):
-        if type(other) is FacePoint:
-            return self.id - other.id
-        if type(other) is CenterPoint:
-            return -1
-        if type(other) is RootPoint:
-            return 1
-        return -1
+    def __eq__(self, other):
+        return type(other) == FacePoint and self.id == other.id
+    def __lt__(self, other):
+         if type(other) is FacePoint:
+             return self.id < other.id
+         if type(other) is CenterPoint:
+             return True
+         if type(other) is RootPoint:
+             return False
+         return True
     def __hash__(self):
         return hash("FacePoint{0}".format(self.id))
 
+@total_ordering
 class RootPoint(object):
     def __init__(self, id):
         self.id = id
     def __repr__(self):
         return "RootPoint{0}".format(self.id)
-    def __cmp__(self, other):
-        if type(other) is RootPoint:
-            return self.id - other.id
-        if type(other) is FacePoint:
-            return -1
-        if type(other) is CenterPoint:
-            return -1
-        return -1
+    def __eq__(self, other):
+        return type(other) == RootPoint and self.id == other.id
+    def __lt__(self, other):
+         if type(other) is FacePoint:
+             return self.id < other.id
+         if type(other) is CenterPoint:
+             return True
+         if type(other) is RootPoint:
+             return True
+         return True
     def __hash__(self):
         return hash("RootPoint{0}".format(self.id))
 
@@ -85,7 +109,7 @@ class GeomObject(object):
             return Permutation(-1, (3, 4, 5, 0, 1, 2))
         if (dim, count) == (3, 8):
             return Permutation(-1, (4, 5, 6, 7, 0, 1, 2, 3))
-        print "error: unkown geom obj %id, %i vertices" % (dim, count)
+        print("error: unkown geom obj %id, %i vertices" % (dim, count))
         assert 0
     def faces(self):
         """

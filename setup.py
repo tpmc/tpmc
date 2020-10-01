@@ -1,10 +1,12 @@
+from __future__ import print_function
+
 def generate_lut(ext, build_dir):
         from os import path
         from distutils.dep_util import newer
         filename = path.join(build_dir, 'tpmc_lut.cc')
         if newer(__file__, filename):
                 from tpmc.lut.lutgen.dunecode import DuneCode
-                print "importing lookup generators"
+                print("importing lookup generators")
                 from tpmc.lut.lutgen.base_case_triangulation import LookupGenerators
                 ## geometries of LookupGenerators
                 geometries = [(0,"any"),
@@ -26,16 +28,16 @@ extern \"C\" {
 
 """)
                 for g in geometries:
-                        print "generating table for %id %s" % g
+                        print("generating table for %id %s" % g)
                         generator = LookupGenerators[g]['standard']
                         generator.generate()
-                        print "writing code for %id %s" % g
+                        print("writing code for %id %s" % g)
                         DuneCode(generator).write(ccfile)
                 g = (3,'cube')
-                print "generating symmetric table for %id %s" % g
+                print("generating symmetric table for %id %s" % g)
                 generator = LookupGenerators[g]['symmetric']
                 generator.generate()
-                print "writing symmetric code for %id %s" % g
+                print("writing symmetric code for %id %s" % g)
                 DuneCode(generator, 'sym').write(ccfile)
                 ccfile.write("}\n")
                 ccfile.close()
@@ -46,8 +48,10 @@ metadata = dict(
         description = 'python classes to generate TPMC lookup tables',
         author = 'Christian Engwer',
         author_email = 'christi@mathe-macht-spass.de',
-        url = 'http://users.dune-project.org/projects/libtpmc',
-        long_description = open('README.rst').read(), # Get the long description from the relevant file
+        url = 'https://github.com/tpmc/tpmc',
+        readme = open('README.rst')
+        long_description = readme.read(), # Get the long description from the relevant file
+        readme.close()
         license = 'LGPLv3+',
         py_modules= ['tpmc.__version__',
                      'tpmc.lut.__init__',
@@ -72,12 +76,10 @@ metadata = dict(
         ]
 )
 
-
 constants = dict(
         header_dir = 'tpmc/include/tpmc', # this is relative to config.path_in_package
         lib_dir = 'tpmc/lib' # this is relative to install path
 )
-
 
 def configuration(parent_package='', top_path=None):
         from numpy.distutils.misc_util import Configuration
@@ -87,6 +89,7 @@ def configuration(parent_package='', top_path=None):
         ## cmake files
         config.add_data_files('FindTpmc.cmake')
         ## header files
+        print(config.include_dirs)
         config.add_data_files(constants['header_dir'] + '/*.hh')
         from os.path import join
         config.add_include_dirs(join('tpmc', 'include'))
@@ -104,45 +107,41 @@ def configuration(parent_package='', top_path=None):
         config.add_scripts('tpmc-config')
         return config
 
-
-def subst_config_file(source, target ,inputdict):
-        # read tpmc-config script
-        print "substituting configuration: %s -> %s" % (source, target)
-        infile = open(source,'r')
-        content = ""
-        for line in infile:
-                content = content + line
-        for key, value in inputdict.iteritems():
-                content = content.replace("@"+key+"@", value)
-        outfile = open(target, 'w')
-        print >> outfile, content
-
-
-def substitute_setup_configuration (setup):
-        install_scripts = None
-        try:
-                install_scripts = setup.command_obj['install_scripts']
-                print "running install_scripts post-hook"
-        except KeyError:
-                pass
-        if install_scripts != None:
-
-                libdir = setup.command_obj['install_clib'].install_dir + "/" + constants['lib_dir']
-                incdir = setup.command_obj['install_data'].install_dir + "/tpmc/" + constants['header_dir']
+# install a hook to update scripts after installation
+import numpy.distutils.command.install as np_install
+class install(np_install.install):
+        def run(self):
+                np_install.install.run(self)
+                # call hook if scripts were installed
+                if 'install_scripts' in self.distribution.command_obj:
+                        print("running install_sripts post processing")
+                        self.post_install_scripts()
+        
+        def post_install_scripts(self):
+                command_obj = self.distribution.command_obj
+                libdir = command_obj['install_clib'].install_dir + "/" + constants['lib_dir']
+                incdir = command_obj['install_data'].install_dir + "/tpmc/" + constants['header_dir']
+                install_scripts = command_obj['install_scripts']
                 for target in install_scripts.outfiles:
                         from os import path
                         (bindir, source) = path.split(target) # get file name and bin directory from the path object
                         substitutes = { 'incdir' : path.relpath(incdir,bindir) , 'libdir' : path.relpath(libdir,bindir) }
-                        subst_config_file(source, target, substitutes)
+                        self.subst_config_file(source, target, substitutes)
 
-
+        def subst_config_file(self, source, target, inputdict):
+                # read tpmc-config script
+                print("substituting configuration: %s -> %s" % (source, target))
+                infile = open(source,'r')
+                content = ""
+                for line in infile:
+                        content = content + line
+                for key, value in inputdict.items():
+                        content = content.replace("@"+key+"@", value)
+                outfile = open(target, 'w')
+                print(content, file=outfile)
+                        
 if __name__ == '__main__':
         from numpy.distutils.core import setup as Setup
         metadata['configuration'] = configuration
+        metadata['cmdclass'] = dict(install=install)
         setup = Setup (**metadata)
-        substitute_setup_configuration(setup)
-        ### save the installation record for debugging
-        # import sys
-        # if len(sys.argv) >= 4 and sys.argv[2] == '--record':
-        #         import shutil
-        #         shutil.copy(sys.argv[3], '/tmp/log')

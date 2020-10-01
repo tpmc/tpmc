@@ -24,8 +24,7 @@ input{style.sk}
 		# create vertex numbering and print vertizes
 		for v in range(len(element)):
 			skfile.write("def v%i (%s)\n" % \
-						 (v, ",".join(map(lambda x:
-										  str(self.refSize * x),element[v]))))
+						 (v, ",".join([str(self.refSize * x) for x in element[v]])))
 		skfile.write("\n")
 		# create edge numbering and print edges
 		edges = {}
@@ -37,9 +36,7 @@ input{style.sk}
 			x2 = element[v2]
 			w1 = 2+case.case[v1]
 			w2 = 2+case.case[v2]
-			c = map(lambda i:
-					self.refSize*(w1*float(x1[i])+w2*float(x2[i]))/(w1+w2),
-					range(dim))
+			c = [self.refSize*(w1*float(x1[i])+w2*float(x2[i]))/(w1+w2) for i in range(dim)]
 			edges[tuple(edge)] = e
 			skfile.write("def e%i (%s)\n" % \
 						 (e, ",".join(map(str,c))))
@@ -83,7 +80,7 @@ input{style.sk}
 						skfile.write("  def x%i (center)\n" % v)
 			# define barycenter
 			skfile.write("  def s  (o)+((x" + \
-						 ")-(o)+(x".join(map(str,range(vs))) + \
+						 ")-(o)+(x".join(map(str,list(range(vs)))) + \
 						 ")-(o))/" + str(vs) + "\n" )
 			# define shrunken vertizes
 			for v in range(vs):
@@ -91,14 +88,13 @@ input{style.sk}
 							 "*((s)-(x%i)))\n" % (v,v,v) )
 			# define faces
 			for f in range(len(subref.faces)):
-				skface = map(lambda x: str(subref.faces[f][x]),
-							 renumber[len(subref.faces[f])])
+				skface = [str(subref.faces[f][x]) for x in renumber[len(subref.faces[f])]]
 				skfile.write("  def f%i polygon[fill style=element%i," \
 							 " line style=thick](y%s)\n" \
 							 % (f,sub, ")(y".join(skface)))
 			# use faces
 			skfile.write(
-				"  {f" + "} {f".join(map(str,range(len(subref.faces)))) + "}\n")
+				"  {f" + "} {f".join(map(str,list(range(len(subref.faces))))) + "}\n")
 			# next sub element
 			skfile.write("}\n")
 			sub+=1

@@ -34,10 +34,10 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s'
 ch.setFormatter(formatter)
 LOGGER.addHandler(ch)
 
-from lutgen.dunecode import DuneCode
-from lutgen.vtk import Vtk
-from lutgen.test import Test
-from lutgen.base_case_triangulation import LookupGenerators
+from .lutgen.dunecode import DuneCode
+from .lutgen.vtk import Vtk
+from .lutgen.test import Test
+from .lutgen.base_case_triangulation import LookupGenerators
 
 ################################################################################
 ## LookupGenerators                                                           ##
