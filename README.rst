@@ -1,7 +1,19 @@
 TPMC
 ====
-.. image:: https://secure.travis-ci.org/tpmc/tpmc.svg?branch=master
-  :target: https://travis-ci.org/#!/tpmc/tpmc
+.. image:: https://img.shields.io/badge/License-GPL%20v3-yellow.svg
+  :target: https://opensource.org/licenses
+		   
+.. image:: https://img.shields.io/github/v/release/tpmc/tpmc
+  :target: https://github.com/tpmc/tpmc
+
+.. image:: https://img.shields.io/travis/com/tpmc/tpmc-test?label=build%20tpmc
+  :target: https://travis-ci.com/github/tpmc/tpmc
+		   
+.. image:: https://www.deepcode.ai/api/gh/badge?key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybTEiOiJnaCIsIm93bmVyMSI6InRwbWMiLCJyZXBvMSI6InRwbWMiLCJpbmNsdWRlTGludCI6ZmFsc2UsImF1dGhvcklkIjoxNTg3OSwiaWF0IjoxNjAxNTgwNTU2fQ.YUDLEgIwVyoEN5zB5TDLqhsnsbUBuJEYEhDP_WhFwxg
+  :target: https://www.deepcode.ai/app/gh/tpmc/tpmc/_/dashboard?utm_content=gh%2Ftpmc%2Ftpmc
+		   
+.. image:: https://img.shields.io/travis/com/tpmc/tpmc-test?label=build%20tpmc-test
+  :target: https://travis-ci.com/github/tpmc/tpmc-test
 
 The TPMC library implements a *topology preserving marching cubes*
 algorithm.
