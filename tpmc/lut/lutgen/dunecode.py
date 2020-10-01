@@ -2,6 +2,8 @@
 Contains classes/constants for export to dune marchinglut.cc
 """
 
+# file deepcode ignore DuplicateKey: The check triggers a false positive. We reate keys from other keys and the check accidentially thinks we are using the same key multiple times
+
 import math
 import operator
 from .referenceelements import ReferenceElements
