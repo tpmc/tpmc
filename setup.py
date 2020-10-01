@@ -1,5 +1,11 @@
 from __future__ import print_function
 
+def readfile(name):
+        f = open(name)
+        content = f.read()
+        f.close()
+        return content
+
 def generate_lut(ext, build_dir):
         from os import path
         from distutils.dep_util import newer
@@ -49,9 +55,7 @@ metadata = dict(
         author = 'Christian Engwer',
         author_email = 'christi@mathe-macht-spass.de',
         url = 'https://github.com/tpmc/tpmc',
-        readme = open('README.rst')
-        long_description = readme.read(), # Get the long description from the relevant file
-        readme.close()
+        long_description = readfile('README.rst'), # Get the long description from the relevant file
         license = 'LGPLv3+',
         py_modules= ['tpmc.__version__',
                      'tpmc.lut.__init__',
