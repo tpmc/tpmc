@@ -103,7 +103,7 @@ class Test(object):
             lower_generator = LookupGenerators[ref_face_element.reference.type]['standard']
             lower_case = next((case for case in lower_generator.all_cases 
                                if case.case == lower_case_number), None)
-            assert(lower_case!=None)
+            assert(lower_case is not None)
             if len(lower_case.mc33) == 0:
                 lower_triangulation = lower_case
             else:
