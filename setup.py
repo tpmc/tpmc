@@ -143,6 +143,8 @@ class install(np_install.install):
                         content = content.replace("@"+key+"@", value)
                 outfile = open(target, 'w')
                 print(content, file=outfile)
+                infile.close()
+                outfile.close()
                         
 if __name__ == '__main__':
         from numpy.distutils.core import setup as Setup
