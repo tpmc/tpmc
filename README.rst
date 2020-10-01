@@ -16,7 +16,7 @@ TPMC
   :target: https://travis-ci.com/github/tpmc/tpmc-test
 
 The TPMC library implements a *topology preserving marching cubes*
-algorithm.
+algorithm, see [EN2017]_.
 
 The algorithm alows to compute polyhedral reconstructions of implicitly
 given interfaces and subdomains. In particular it is used to
@@ -29,6 +29,11 @@ The main part of the algorithm is a code generator written in python.
 With the library we ship the code generator and a simple C++
 implementation. The code is generated and the C++ library is build
 during the installation process.
+
+.. [EN2017] Engwer, C., & Nüßing, A. (2017). Geometric reconstruction of implicitly defined surfaces and domains with topological guarantees. ACM TOMS, 44(2), 1-20, `doi:10.1145`1_, `arxiv preprint`2_.
+
+.. _1: https://doi.org/10.1145
+.. _2: https://arxiv.org/abs/1601.03597
 
 License
 -------
