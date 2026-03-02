@@ -42,10 +42,9 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s'
 ch.setFormatter(formatter)
 LOGGER.addHandler(ch)
 
-from .lutgen.dunecode import DuneCode
-from .lutgen.vtk import Vtk
-from .lutgen.test import Test
-from .lutgen.base_case_triangulation import LookupGenerators
+from lutgen.dunecode import DuneCode
+from lutgen.test import Test
+from lutgen.base_case_triangulation import LookupGenerators
 
 ################################################################################
 ## LookupGenerators                                                           ##
@@ -61,6 +60,20 @@ cube2d = LookupGenerators[(2,"cube")]['standard']
 simplex2d = LookupGenerators[(2,"simplex")]['standard']
 lut1d = LookupGenerators[(1,"any")]['standard']
 lut0d = LookupGenerators[(0,"any")]['standard']
+
+################################################################################
+## Generate stuff                                                           ##
+################################################################################
+
+cube3d.generate()
+cube3dsym.generate()
+pyramid3d.generate()
+prism3d.generate()
+simplex3d.generate()
+cube2d.generate()
+simplex2d.generate()
+lut1d.generate()
+lut0d.generate()
 
 ################################################################################
 ## Tests                                                                      ##
@@ -131,9 +144,13 @@ DuneCode(cube3dsym, "sym").write(ccfile)
 ccfile.write("}\n")
 ccfile.close()
 
-Vtk(prism3d).write("lutgen/vtk")
-Vtk(pyramid3d).write("lutgen/vtk")
-Vtk(cube3d).write("lutgen/vtk")
-Vtk(cube2d).write("lutgen/vtk")
-Vtk(simplex2d).write("lutgen/vtk")
-Vtk(simplex3d).write("lutgen/vtk")
+try:
+    from lutgen.vtk import Vtk
+    Vtk(prism3d).write("lutgen/vtk")
+    Vtk(pyramid3d).write("lutgen/vtk")
+    Vtk(cube3d).write("lutgen/vtk")
+    Vtk(cube2d).write("lutgen/vtk")
+    Vtk(simplex2d).write("lutgen/vtk")
+    Vtk(simplex3d).write("lutgen/vtk")
+except:
+    print("Not writing vtk files since pyvtk could not be loaded")
