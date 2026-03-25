@@ -28,7 +28,7 @@ else:
 if args.outputPath:
     outputPath = args.outputPath[0]
 else:
-    outputPath = "marchinglut.cc"
+    outputPath = "tpmc_lut.cc"
 
 
 
