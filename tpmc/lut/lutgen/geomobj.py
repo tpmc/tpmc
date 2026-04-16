@@ -212,7 +212,7 @@ class GeomObject(object):
         #print "eq: {0} vs {1}: {2}".format(set(self.vertices), set(other.vertices),(self.dim == other.dim
         #                                                and set(self.vertices) == set(other.vertices)))
         return (self.dim == other.dim
-                and sorted(self.vertices) == sorted(other.vertices))
+                and set(self.vertices) == set(other.vertices))
     def __repr__(self):
         return 'GeomObject: {0}: {1}'.format(self.reference.type, self.vertices)
 

@@ -63,6 +63,24 @@ The development version can always be installed directly from github:
 
     > pip install git+https://github.com/tpmc/tpmc.git
 
+Alternatively you can clone the library using git and build it
+using CMake:
+
+::
+
+    > git clone https://github.com/tpmc/tpmc.git
+    > mkdir tpmc/build
+    > cd tpmc/build
+    > cmake ..
+    > make
+
+Notice that this requires a python interpreter for generating
+lookup tables and a C compiler for compiling the library. This
+will also generate a ``TpmcConfig.cmake`` file which can be used
+in other CMake-based projects by passing the path to the build
+directory and calling ``find_package(Tmpc)`` and linking against
+the CMake interface library ``tpmc``.
+
 Dependencies
 ~~~~~~~~~~~~
 
