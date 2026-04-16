@@ -9,9 +9,6 @@ TPMC
 .. image:: https://img.shields.io/travis/com/tpmc/tpmc-test?label=build%20tpmc
   :target: https://travis-ci.com/github/tpmc/tpmc
 		   
-.. image:: https://www.deepcode.ai/api/gh/badge?key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwbGF0Zm9ybTEiOiJnaCIsIm93bmVyMSI6InRwbWMiLCJyZXBvMSI6InRwbWMiLCJpbmNsdWRlTGludCI6ZmFsc2UsImF1dGhvcklkIjoxNTg3OSwiaWF0IjoxNjAxNTgwNTU2fQ.YUDLEgIwVyoEN5zB5TDLqhsnsbUBuJEYEhDP_WhFwxg
-  :target: https://www.deepcode.ai/app/gh/tpmc/tpmc/_/dashboard?utm_content=gh%2Ftpmc%2Ftpmc
-		   
 .. image:: https://img.shields.io/travis/com/tpmc/tpmc-test?label=build%20tpmc-test
   :target: https://travis-ci.com/github/tpmc/tpmc-test
 
@@ -49,21 +46,7 @@ See the file LICENSE.txt for full copying permissions.
 Installation
 ------------
 
-The easiest way to install the library is using pip:
-
-::
-
-    > pip install tpmc
-
-This will also install the C++ library
-
-The development version can always be installed directly from github:
-
-::
-
-    > pip install git+https://github.com/tpmc/tpmc.git
-
-Alternatively you can clone the library using git and build it
+The recommended way is to clone the library using git and build it
 using CMake:
 
 ::
@@ -84,14 +67,12 @@ the CMake interface library ``tpmc``.
 Dependencies
 ~~~~~~~~~~~~
 
-While most python dependencies are handled automatically, you have to
-make sure to fulfill two additional requirements, before installation:
+- Python3
 
-- `numpy <http://www.numpy.org/>`__: is needed for setup and thus pip
-  can not handle this dependency automatically
+- optional: pyvtk -- https://pypi.org/project/PyVTK/
 
 - C++ compiler: to build the C++ library. We successfully used recent
-  versions of g++ and clang++.
+  versions of g++ and clang++. The required standard is just C++-03.
 
 Using the C++ library
 ~~~~~~~~~~~~~~~~~~~~~
